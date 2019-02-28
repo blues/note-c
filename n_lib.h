@@ -4,7 +4,8 @@
 
 #pragma once
 
-#include "Notecard.h"
+#include <string.h>
+#include "note.h"
 
 // C-callable functions
 #ifdef __cplusplus
@@ -12,33 +13,56 @@ extern "C" {
 #endif
 
 // How long to wait for the card for any given transaction
-#define NOTECARD_TRANSACTION_TIMEOUT_SEC     10
+#define NOTECARD_TRANSACTION_TIMEOUT_SEC     30
+
+// The notecard is a real-time device that has a fixed size interrupt buffer.  We can push data
+// at it far, far faster than it can process it, therefore we push it in segments with a pause
+// between each segment.
+#define CARD_REQUEST_SEGMENT_MAX_LEN 1000
+#define CARD_REQUEST_SEGMENT_DELAY_MS 250
 
 // Transactions
-char *i2cNotecardTransaction(char *json, char **jsonResponse);
-bool i2cNotecardReset(void);
-char *serialNotecardTransaction(char *json, char **jsonResponse);
-bool serialNotecardReset(void);
+const char *i2cNoteTransaction(char *json, char **jsonResponse);
+bool i2cNoteReset(void);
+const char *serialNoteTransaction(char *json, char **jsonResponse);
+bool serialNoteReset(void);
 
 // Hooks
-void NotecardFnLockNotecard(void);
-void NotecardFnUnlockNotecard(void);
-void NotecardFnSerialReset(void);
-void NotecardFnSerialWriteLine(char *);
-void NotecardFnSerialWrite(char *);
-bool NotecardFnSerialAvailable(void);
-char NotecardFnSerialRead(void);
-void NotecardFnI2CReset(void);
-char *NotecardFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t TimeoutMs);
-char *NotecardFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t TimeoutMs);
-bool NotecardFnNotecardReset(void);
-char *NotecardFnTransaction(char *json, char **jsonResponse);
+void NoteFnLockNote(void);
+void NoteFnUnlockNote(void);
+void NoteFnSerialReset(void);
+void NoteFnSerialWriteLine(const char *);
+void NoteFnSerialWrite(uint8_t *, size_t);
+bool NoteFnSerialAvailable(void);
+char NoteFnSerialRead(void);
+void NoteFnI2CReset(void);
+const char *NoteFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
+const char *NoteFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
+bool NoteFnNoteReset(void);
+const char *NoteFnTransaction(char *json, char **jsonResponse);
 
-// Wrappers
-#define _malloc NotecardFnMalloc
-#define _free NotecardFnFree
-#define _delay NotecardFnDelayMs
-#define _millis NotecardFnGetMs
+// Readability wrappers.  Anything starting with _ is simply calling the wrapper function
+#define _LockNote NoteFnLockNote
+#define _UnlockNote NoteFnUnlockNote
+#define _SerialReset NoteFnSerialReset
+#define _SerialWriteLine NoteFnSerialWriteLine
+#define _SerialWrite NoteFnSerialWrite
+#define _SerialAvailable NoteFnSerialAvailable
+#define _SerialRead NoteFnSerialRead
+#define _I2CReset NoteFnI2CReset
+#define _I2CTransmit NoteFnI2CTransmit
+#define _I2CReceive NoteFnI2CReceive
+#define _NoteReset NoteFnNoteReset
+#define _Transaction NoteFnTransaction
+#define _Debug NoteFnDebug
+#define _Malloc NoteFnMalloc
+#define _Free NoteFnFree
+#define _GetMs NoteFnGetMs
+#define _DelayMs NoteFnDelayMs
+#define _LockI2C NoteFnLockI2C
+#define _UnlockI2C NoteFnUnlockI2C
+#define _I2CAddress NoteFnI2CAddress
+#define _I2CMax NoteFnI2CMax
 
 // End of C-callable functions
 #ifdef __cplusplus

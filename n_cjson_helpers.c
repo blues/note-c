@@ -2,18 +2,75 @@
 // Use of this source code is governed by licenses granted by the
 // copyright holder including that found in the LICENSE file.
 
+#include <string.h>
 #include <time.h>
 #include "n_lib.h"
 
+// Types used for safely looking at the inside of numbers
+struct inside {
+    union inside_float {
+        float number;
+        uint32_t as_uint32;
+    } float_union;
+    union inside_double {
+        float number;
+        uint64_t as_uint64;
+    } double_union;
+};
+
+// Return true if a float is valid
+bool JIsNumberFloat(float number) {
+    struct inside v;
+    v.float_union.number = number;
+    // Positive infinity
+    if (v.float_union.as_uint32 == 0x7F800000UL)
+        return false;
+    // Negativ.float_union.as_uint32e infinity
+    if (v.float_union.as_uint32 == 0xFF800000UL)
+        return false;
+    // Signalling NaN (NANS)
+    if ((v.float_union.as_uint32 >= 0x7F800001UL && v.float_union.as_uint32 <= 0x7FBFFFFFUL)
+        || (v.float_union.as_uint32 >= 0xFF800001UL && v.float_union.as_uint32 <= 0xFFBFFFFFUL))
+        return false;
+    // Quiet NaN (NANQ)
+    if ((v.float_union.as_uint32 >= 0x7FC00000UL && v.float_union.as_uint32 <= 0x7FFFFFFFUL)
+        || (v.float_union.as_uint32 >= 0xFFC00000UL && v.float_union.as_uint32 <= 0xFFFFFFFFUL))
+        return false;
+    // Valid
+    return true;
+}
+
+// Return true if a double is valid
+bool JIsNumberDouble(double number) {
+    struct inside v;
+    v.double_union.number = number;
+    // Positive infinity
+    if (v.double_union.as_uint64 == 0x7FF0000000000000ULL)
+        return false;
+    // Negative infinity
+    if (v.double_union.as_uint64 == 0xFFF0000000000000ULL)
+        return false;
+    // Signalling NaN (NANS)
+    if ((v.double_union.as_uint64 >= 0x7FF0000000000001ULL && v.double_union.as_uint64 <= 0x7FF7FFFFFFFFFFFFULL)
+        || (v.double_union.as_uint64 >= 0xFFF0000000000001ULL && v.double_union.as_uint64 <= 0xFFF7FFFFFFFFFFFFULL))
+        return false;
+    // Quiet NaN (NANQ)
+    if ((v.double_union.as_uint64 >= 0x7FF8000000000000ULL && v.double_union.as_uint64 <= 0x7FFFFFFFFFFFFFFFULL)
+        || (v.double_union.as_uint64 >= 0xFFF8000000000000ULL && v.double_union.as_uint64 <= 0xFFFFFFFFFFFFFFFFULL))
+        return false;
+    // Valid
+    return true;
+}
+
 // Return true if a field is present in the response
-bool JIsPresent(J *rsp, char *field) {
+bool JIsPresent(J *rsp, const char *field) {
     if (rsp == NULL)
         return false;
     return (JGetObjectItem(rsp, field) != NULL);
 }
 
 // Return a string from the specified JSON object, or "" if it's not present
-char *JGetString(J *rsp, char *field) {
+char *JGetString(J *rsp, const char *field) {
     if (rsp == NULL)
         return "";
     J *item = JGetObjectItem(rsp, field);
@@ -27,7 +84,7 @@ char *JGetString(J *rsp, char *field) {
 }
 
 // Return a number from the specified JSON object, or 0 if it's not present
-double JGetDouble(J *rsp, char *field) {
+double JGetNumber(J *rsp, const char *field) {
     if (rsp == NULL)
         return 0.0;
     J *item = JGetObjectItem(rsp, field);
@@ -39,7 +96,7 @@ double JGetDouble(J *rsp, char *field) {
 }
 
 // Return a number from the JSON object, or 0 if it's not present
-int JGetInt(J *rsp, char *field) {
+int JGetInt(J *rsp, const char *field) {
     if (rsp == NULL)
         return 0.0;
     J *item = JGetObjectItem(rsp, field);
@@ -51,7 +108,7 @@ int JGetInt(J *rsp, char *field) {
 }
 
 // Return a bool from the JSON object, or false if it's not present
-bool JGetBool(J *rsp, char *field) {
+bool JGetBool(J *rsp, const char *field) {
     if (rsp == NULL)
         return false;
     J *item = JGetObjectItem(rsp, field);
@@ -63,7 +120,7 @@ bool JGetBool(J *rsp, char *field) {
 }
 
 // Return true if the object is valid and if the field is not present or if it's null
-bool JIsNullString(J *rsp, char *field) {
+bool JIsNullString(J *rsp, const char *field) {
     if (rsp == NULL)
         return false;
     J *item = JGetObjectItem(rsp, field);
@@ -79,7 +136,7 @@ bool JIsNullString(J *rsp, char *field) {
 }
 
 // Return true if a field exists, and is a string, and is exactly text specified
-bool JIsExactString(J *rsp, char *field, char *teststr) {
+bool JIsExactString(J *rsp, const char *field, const char *teststr) {
     if (rsp == NULL)
         return false;
     J *item = JGetObjectItem(rsp, field);
@@ -89,14 +146,13 @@ bool JIsExactString(J *rsp, char *field, char *teststr) {
         return false;
     if (item->valuestring == NULL)
         return false;
-    uint32_t teststrlen = strlen(teststr);
     if (strlen(teststr) == 0)
         return false;
     return (strcmp(item->valuestring, teststr) == 0);
 }
 
 // Return true if a field exists, and is a string, and contains the text as a substring
-bool JContainsString(J *rsp, char *field, char *substr) {
+bool JContainsString(J *rsp, const char *field, const char *substr) {
     if (rsp == NULL)
         return false;
     J *item = JGetObjectItem(rsp, field);
@@ -106,7 +162,6 @@ bool JContainsString(J *rsp, char *field, char *substr) {
         return false;
     if (item->valuestring == NULL)
         return false;
-    uint32_t substrlen = strlen(substr);
     if (strlen(substr) == 0)
         return false;
     return (strstr(item->valuestring, substr) != NULL);

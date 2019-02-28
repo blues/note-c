@@ -53,9 +53,10 @@
 #include <limits.h>
 #include <ctype.h>
 
-// For Notecard, disable dependencies
-#undef ENABLE_LOCALES
-#define MINIMIZE_CLIB_DEPENDENCIES    1
+// For Note, disable dependencies
+#undef ENABLE_LOCALES 
+#define MINIMIZE_CLIB_DEPENDENCIES      0       // Use tiny but non-robust versions of float conversions
+                                                // for situations in which there is no clib support for doubles
 
 #include "n_lib.h"
 
@@ -133,8 +134,8 @@ typedef struct internal_hooks
     void *(*reallocate)(void *pointer, size_t size);
 } internal_hooks;
 
-#define internal_malloc _malloc
-#define internal_free _free
+#define internal_malloc _Malloc
+#define internal_free _Free
 #define internal_realloc NULL
 
 static internal_hooks default_hooks = { internal_malloc, internal_free, internal_realloc };
@@ -316,7 +317,7 @@ loop_end:
 #if !MINIMIZE_CLIB_DEPENDENCIES
     number = strtod((const char*)number_c_string, (char**)&after_end);
 #else
-    number = JAtoF((const char*)number_c_string, (char**)&after_end);
+    number = JAtoN((const char*)number_c_string, (char**)&after_end);
 #endif
     if (number_c_string == after_end)
     {
@@ -510,7 +511,7 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
             length = sprintf((char*)number_buffer, "%1.17g", d);
         }
 #else
-        JFtoA(d, number_buffer, 15);
+        JNtoA(d, number_buffer, -1);
         length = strlen(number_buffer);
 #endif
     }

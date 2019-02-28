@@ -29,113 +29,133 @@
 
 #include "n_lib.h"
 
-static const double rounders[FTOA_PRECISION + 1] =
+static const double rounders[JNTOA_PRECISION + 1] =
 {
-	0.5,				// 0
-	0.05,				// 1
-	0.005,				// 2
-	0.0005,				// 3
-	0.00005,			// 4
-	0.000005,			// 5
-	0.0000005,			// 6
-	0.00000005,			// 7
-	0.000000005,		// 8
-	0.0000000005,		// 9
-	0.00000000005		// 10
+    0.5,                // 0
+    0.05,               // 1
+    0.005,              // 2
+    0.0005,             // 3
+    0.00005,            // 4
+    0.000005,           // 5
+    0.0000005,          // 6
+    0.00000005,         // 7
+    0.000000005,        // 8
+    0.0000000005,       // 9
+    0.00000000005       // 10
 };
 
-char * JFtoA(double f, char * buf, int precision)
+char * JNtoA(double f, char * buf, int original_precision)
 {
-	char * ptr = buf;
-	char * p = ptr;
-	char * p1;
-	char c;
-	long intPart;
+    char * ptr = buf;
+    char * p = ptr;
+    char * p1;
+    char c;
+    long intPart;
 
-	// check precision bounds
-	if (precision < 0 || precision > FTOA_PRECISION)
-		precision = FTOA_PRECISION;
+    // Check specifically for uncommon but bad floating point numbers that can't be converted
+    uint8_t fbytes[8];
+    memcpy(&fbytes, &f, sizeof(fbytes));
+    bool wasFF = true;
+    for (int i=0; i<sizeof(fbytes); i++)
+        if (fbytes[i] != 0xff) wasFF = false;
+    if (wasFF)
+        f = 0.0;
 
-	// sign stuff
-	if (f < 0)
-	{
-		f = -f;
-		*ptr++ = '-';
-	}
+    // check precision bounds
+    int precision = original_precision;
+    if (precision < 0 || precision > JNTOA_PRECISION)
+        precision = JNTOA_PRECISION;
 
-	if (precision < 0)  // negative precision == automatic precision guess
-	{
-		if (f < 1.0) precision = 6;
-		else if (f < 10.0) precision = 5;
-		else if (f < 100.0) precision = 4;
-		else if (f < 1000.0) precision = 3;
-		else if (f < 10000.0) precision = 2;
-		else if (f < 100000.0) precision = 1;
-		else precision = 0;
-	}
+    // sign stuff
+    if (f < 0)
+    {
+        f = -f;
+        *ptr++ = '-';
+    }
 
-	// round value according the precision
-	if (precision)
-		f += rounders[precision];
+    if (original_precision < 0)  // negative precision == automatic precision guess
+    {
+        if (f < 1.0) precision = 6;
+        else if (f < 10.0) precision = 5;
+        else if (f < 100.0) precision = 4;
+        else if (f < 1000.0) precision = 3;
+        else if (f < 10000.0) precision = 2;
+        else if (f < 100000.0) precision = 1;
+        else precision = 0;
+    }
 
-	// integer part...
-	intPart = f;
-	f -= intPart;
+    // round value according the precision
+    if (precision)
+        f += rounders[precision];
 
-	if (!intPart)
-		*ptr++ = '0';
-	else
-	{
-		// save start pointer
-		p = ptr;
+    // integer part...
+    intPart = f;
+    f -= intPart;
 
-		// convert (reverse order)
-		while (intPart)
-		{
-			*p++ = '0' + intPart % 10;
-			intPart /= 10;
-		}
+    if (!intPart)
+        *ptr++ = '0';
+    else
+    {
+        // save start pointer
+        p = ptr;
 
-		// save end pos
-		p1 = p;
+        // convert (reverse order)
+        while (intPart)
+        {
+            *p++ = '0' + intPart % 10;
+            intPart /= 10;
+        }
 
-		// reverse result
-		while (p > ptr)
-		{
-			c = *--p;
-			*p = *ptr;
-			*ptr++ = c;
-		}
+        // save end pos
+        p1 = p;
 
-		// restore end pos
-		ptr = p1;
-	}
+        // reverse result
+        while (p > ptr)
+        {
+            c = *--p;
+            *p = *ptr;
+            *ptr++ = c;
+        }
 
-	// decimal part
-	if (precision)
-	{
-		// place decimal point
-		*ptr++ = '.';
+        // restore end pos
+        ptr = p1;
+    }
 
-		// convert
-		while (precision--)
-		{
-			f *= 10.0;
-			c = f;
-			*ptr++ = '0' + c;
-			f -= c;
-		}
-	}
+    // decimal part
+    if (precision)
+    {
 
-	// terminating zero
-	*ptr = 0;
+        // place decimal point
+        *ptr++ = '.';
 
-    // Remove trailing zero's
-    --ptr;
-    while (ptr > (buf+1) && *ptr == '0')
-        *ptr-- = 0;
-    if (*ptr == '.')
-        *ptr = 0;
+        // convert
+        while (precision--)
+        {
+            f *= 10.0;
+            c = f;
 
-	return buf;
+            // Invalid floating point numbers (specifically 0xffffff) end up at this point
+            // with a c == 255 after the coercion
+            if (c > 9) c = 0;
+
+            *ptr++ = '0' + c;
+            f -= c;
+        }
+    }
+
+    // terminating zero
+    *ptr = 0;
+
+    // Remove trailing zero's if automatic precision
+    if (NULL != strchr(buf, '.')) {
+        if (original_precision < 0) {
+            --ptr;
+            while (ptr > (buf+1) && *ptr == '0')
+                *ptr-- = 0;
+            if (*ptr == '.')
+                *ptr = 0;
+        }
+    }
+
+    return buf;
 }
