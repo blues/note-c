@@ -133,8 +133,8 @@ typedef struct internal_hooks
     void *(*reallocate)(void *pointer, size_t size);
 } internal_hooks;
 
-#define internal_malloc _malloc
-#define internal_free _free
+#define internal_malloc _Malloc
+#define internal_free _Free
 #define internal_realloc NULL
 
 static internal_hooks default_hooks = { internal_malloc, internal_free, internal_realloc };

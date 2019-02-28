@@ -133,7 +133,7 @@ void NotecardFnUnlockNotecard() {
         hookUnlockNotecard();
 }
 void NotecardFnSerialReset() {
-    if (hookSerialReset != NULL)
+    if (hookActiveInterface == interfaceSerial && hookSerialReset != NULL)
         hookSerialReset();
 }
 void NotecardFnSerialWriteLine(char *text) {

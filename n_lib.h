@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "Notecard.h"
+#include "notecard.h"
 
 // C-callable functions
 #ifdef __cplusplus
@@ -34,11 +34,28 @@ char *NotecardFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size,
 bool NotecardFnNotecardReset(void);
 char *NotecardFnTransaction(char *json, char **jsonResponse);
 
-// Wrappers
-#define _malloc NotecardFnMalloc
-#define _free NotecardFnFree
-#define _delay NotecardFnDelayMs
-#define _millis NotecardFnGetMs
+// Readability wrappers.  Anything starting with _ is simply calling the wrapper function
+#define _LockNotecard NotecardFnLockNotecard
+#define _UnlockNotecard NotecardFnUnlockNotecard
+#define _SerialReset NotecardFnSerialReset
+#define _SerialWriteLine NotecardFnSerialWriteLine
+#define _SerialWrite NotecardFnSerialWrite
+#define _SerialAvailable NotecardFnSerialAvailable
+#define _SerialRead NotecardFnSerialRead
+#define _I2CReset NotecardFnI2CReset
+#define _I2CTransmit NotecardFnI2CTransmit
+#define _I2CReceive NotecardFnI2CReceive
+#define _NotecardReset NotecardFnNotecardReset
+#define _Transaction NotecardFnTransaction
+#define _Debug NotecardFnDebug
+#define _Malloc NotecardFnMalloc
+#define _Free NotecardFnFree
+#define _GetMs NotecardFnGetMs
+#define _DelayMs NotecardFnDelayMs
+#define _LockI2C NotecardFnLockI2C
+#define _UnlockI2C NotecardFnUnlockI2C
+#define _I2CAddress NotecardFnI2CAddress
+#define _I2CMax NotecardFnI2CMax
 
 // End of C-callable functions
 #ifdef __cplusplus

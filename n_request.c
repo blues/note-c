@@ -39,22 +39,22 @@ J *NotecardTransaction(J *req) {
     }
 
     // Lock
-    NotecardFnLockNotecard();
+    _LockNotecard();
 
     // Serialize the JSON requet
     char *json = JPrintUnformatted(req);
     if (json == NULL) {
-        NotecardFnUnlockNotecard();
+        _UnlockNotecard();
         return errDoc("can't convert to JSON");
     }
     
 #ifdef SHOW_TRANSACTIONS
-    NotecardFnDebug("%s\n", json);
+    _Debug("%s\n", json);
 #endif
 
     // Pertform the transaction
     char *responseJSON;
-    char *errStr = NotecardFnTransaction(json, &responseJSON);
+    char *errStr = _Transaction(json, &responseJSON);
 
     // Free the json
     JFree(json);
@@ -62,29 +62,29 @@ J *NotecardTransaction(J *req) {
     // If error, queue up a reset
     if (errStr != NULL) {
         resetRequired = true;
-        NotecardFnUnlockNotecard();
+        _UnlockNotecard();
         return errDoc(errStr);
     }
 
     // Parse the reply from the card on the input stream
     J *rspdoc = JParse(responseJSON);
     if (rspdoc == NULL) {
-        _free(responseJSON);
-        NotecardFnDebug("unable to parse %d-byte response JSON: \"%s\"\n", strlen(responseJSON), responseJSON);
-        NotecardFnUnlockNotecard();
+        _Free(responseJSON);
+        _Debug("unable to parse %d-byte response JSON: \"%s\"\n", strlen(responseJSON), responseJSON);
+        _UnlockNotecard();
         return errDoc("unrecognized response from card");
     }
 
     // Debug
 #ifdef SHOW_TRANSACTIONS
-    NotecardFnDebug("%s\n", responseJSON);
+    _Debug("%s\n", responseJSON);
 #endif
 
     // Discard the buffer now that it's parsed
-    _free(responseJSON);
+    _Free(responseJSON);
 
     // Unlock
-    NotecardFnUnlockNotecard();
+    _UnlockNotecard();
 
     // Done
     return rspdoc;
@@ -93,8 +93,8 @@ J *NotecardTransaction(J *req) {
 
 // Initialize or re-initialize the module, returning false if anything fails
 bool NotecardReset() {
-    NotecardFnLockNotecard();
-    bool success = NotecardFnNotecardReset();
-    NotecardFnUnlockNotecard();
+    _LockNotecard();
+    bool success = _NotecardReset();
+    _UnlockNotecard();
     return success;
 }
