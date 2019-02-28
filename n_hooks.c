@@ -174,8 +174,13 @@ uint32_t NotecardFnI2CAddress() {
     return i2cAddress;
 }
 uint32_t NotecardFnI2CMax() {
+    // Many Arduino libraries (such as ESP32) have a limit less than 32, so if the max isn't specified
+    // we must assume the worst and segment the I2C messages into very tiny chunks.
     if (i2cMax == 0)
-        return 127;
+        return 30;
+    // Notecard design specs
+    if (i2cMax > 127)
+        i2cMax = 127;
     return i2cMax;
 }
 
