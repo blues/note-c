@@ -510,7 +510,7 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
             length = sprintf((char*)number_buffer, "%1.17g", d);
         }
 #else
-        JFtoA(d, number_buffer, 15);
+        JFtoA(d, number_buffer, -1);
         length = strlen(number_buffer);
 #endif
     }

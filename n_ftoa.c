@@ -44,7 +44,7 @@ static const double rounders[FTOA_PRECISION + 1] =
 	0.00000000005		// 10
 };
 
-char * JFtoA(double f, char * buf, int precision)
+char * JFtoA(double f, char * buf, int original_precision)
 {
 	char * ptr = buf;
 	char * p = ptr;
@@ -52,7 +52,18 @@ char * JFtoA(double f, char * buf, int precision)
 	char c;
 	long intPart;
 
+    // Check for bad floating point numbers
+    uint32_t test0, test1;
+    test1 = 0xffffffffL;
+    memcpy(&test0, &f, sizeof(test0));
+    if (test0 == test1)
+        f = 0.0;
+    test1 = 0;
+    if (test0 == test1)
+        f = 0.0;
+
 	// check precision bounds
+    int precision = original_precision;
 	if (precision < 0 || precision > FTOA_PRECISION)
 		precision = FTOA_PRECISION;
 
@@ -63,7 +74,7 @@ char * JFtoA(double f, char * buf, int precision)
 		*ptr++ = '-';
 	}
 
-	if (precision < 0)  // negative precision == automatic precision guess
+	if (original_precision < 0)  // negative precision == automatic precision guess
 	{
 		if (f < 1.0) precision = 6;
 		else if (f < 10.0) precision = 5;
@@ -114,6 +125,7 @@ char * JFtoA(double f, char * buf, int precision)
 	// decimal part
 	if (precision)
 	{
+
 		// place decimal point
 		*ptr++ = '.';
 
@@ -122,6 +134,11 @@ char * JFtoA(double f, char * buf, int precision)
 		{
 			f *= 10.0;
 			c = f;
+
+            // Invalid floating point numbers (specifically 0xffffff) end up at this point
+            // with a c == 255 after the coercion
+            if (c > 9) c = 0;
+
 			*ptr++ = '0' + c;
 			f -= c;
 		}
@@ -130,12 +147,14 @@ char * JFtoA(double f, char * buf, int precision)
 	// terminating zero
 	*ptr = 0;
 
-    // Remove trailing zero's
-    --ptr;
-    while (ptr > (buf+1) && *ptr == '0')
-        *ptr-- = 0;
-    if (*ptr == '.')
-        *ptr = 0;
+    // Remove trailing zero's if automatic precision
+    if (original_precision < 0) {
+        --ptr;
+        while (ptr > (buf+1) && *ptr == '0')
+            *ptr-- = 0;
+        if (*ptr == '.')
+            *ptr = 0;
+        }
 
 	return buf;
 }
