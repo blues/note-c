@@ -29,8 +29,8 @@ void NotecardFnSerialWrite(char *);
 bool NotecardFnSerialAvailable(void);
 char NotecardFnSerialRead(void);
 void NotecardFnI2CReset(void);
-char *NotecardFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t TimeoutMs);
-char *NotecardFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t TimeoutMs);
+char *NotecardFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
+char *NotecardFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 bool NotecardFnNotecardReset(void);
 char *NotecardFnTransaction(char *json, char **jsonResponse);
 

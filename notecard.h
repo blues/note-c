@@ -29,8 +29,8 @@ typedef void (*serialWriteFn) (char *text);
 typedef bool (*serialAvailableFn) (void);
 typedef char (*serialReadFn) (void);
 typedef void (*i2cResetFn) (void);
-typedef char * (*i2cTransmitFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t TimeoutMs);
-typedef char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t TimeoutMs);
+typedef char * (*i2cTransmitFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
+typedef char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 
 // External API
 bool NotecardReset(void);

@@ -158,14 +158,14 @@ void NotecardFnI2CReset() {
     if (hookActiveInterface == interfaceI2C && hookI2CReset != NULL)
         hookI2CReset();
 }
-char *NotecardFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t TimeoutMs) {
+char *NotecardFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size) {
     if (hookActiveInterface == interfaceI2C && hookI2CTransmit != NULL)
-        return hookI2CTransmit(DevAddress, pBuffer, Size, TimeoutMs);
+        return hookI2CTransmit(DevAddress, pBuffer, Size);
     return "i2c not active";
 }
-char *NotecardFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t TimeoutMs) {
+char *NotecardFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *available) {
     if (hookActiveInterface == interfaceI2C && hookI2CReceive != NULL)
-        return hookI2CReceive(DevAddress, pBuffer, Size, TimeoutMs);
+        return hookI2CReceive(DevAddress, pBuffer, Size, available);
     return "i2c not active";
 }
 uint32_t NotecardFnI2CAddress() {
