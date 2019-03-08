@@ -151,7 +151,7 @@ bool NotecardFnSerialAvailable() {
 }
 char NotecardFnSerialRead() {
     if (hookActiveInterface == interfaceSerial && hookSerialRead != NULL)
-        return hookRead();
+        return hookSerialRead();
     return 0;
 }
 void NotecardFnI2CReset() {
