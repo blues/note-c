@@ -8,7 +8,7 @@
 char *serialNotecardTransaction(char *json, char **jsonResponse) {
 
     // Send the transaction to serial, including the newline that initiates it
-    _SerialPrintln(json);
+    _SerialWriteLine(json);
 
     // Wait for something to become available, processing timeout errors up-front
     // because the json parse operation immediately following is subject to the
