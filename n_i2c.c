@@ -7,10 +7,17 @@
 // Initiate a transaction to the notecard using reqdoc, and return the result in rspdoc
 char *i2cNotecardTransaction(char *json, char **jsonResponse) {
 
+    // Append '\n' to the transaction
+    int jsonLen = strlen(json)+1;
+    uint8_t *transmitBuf = (uint8_t *) _Malloc(jsonLen);
+    if (transmitBuf == NULL)
+        return "insufficient memory";
+    memcpy(transmitBuf, json, jsonLen-1);
+    transmitBuf[jsonLen-1] = '\n';
+
     // Transmit it in chunks
     char *errstr;
-    uint8_t *chunk = (uint8_t *) json;
-    int jsonLen = strlen(json);
+    uint8_t *chunk = transmitBuf;
     while (jsonLen > 0) {
         int chunklen = (uint8_t) (jsonLen > _I2CMax() ? _I2CMax() : jsonLen);
         errstr = _I2CTransmit(_I2CAddress(), chunk, chunklen);
@@ -22,12 +29,8 @@ char *i2cNotecardTransaction(char *json, char **jsonResponse) {
         jsonLen -= chunklen;
     }
 
-    // Write the \n request terminator
-    errstr = _I2CTransmit(_I2CAddress(), (uint8_t *)"\n", 1);
-    if (errstr != NULL) {
-        _Debug("i2c transmit of terminator: %s\n", errstr);
-        return errstr;
-    }
+    // Free the transmit buffer
+    _Free(transmitBuf);
 
     // Dynamically grow the buffer as we read.  Note that we always put the +1 in the alloc
     // so we can be assured that it can be null-terminated, which must be the case because
