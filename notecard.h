@@ -73,6 +73,13 @@ bool JContainsString(J *rsp, char *field, char *substr);
 #define FTOA_MAX        ((2*FTOA_PRECISION)+1+1)
 char * JFtoA(double f, char * buf, int precision);
 double JAtoF(const char *string, char **endPtr);
+int JB64EncodeLen(int len);
+int JB64Encode(char * coded_dst, const char *plain_src,int len_plain_src);
+int JB64DecodeLen(const char * coded_src);
+int JB64Decode(char * plain_dst, const char *coded_src);
+#ifdef __cplusplus
+}
+#endif
 
 // End of C-callable functions
 #ifdef __cplusplus
