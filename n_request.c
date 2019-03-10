@@ -20,7 +20,7 @@ static J *errDoc(char *errmsg) {
 
 // Lock for mutual exclusion, not only because access to the card must be serialized, but also because
 // both C++ and ArduinoJSON call malloc() which is not a thread-safe operation.
-J *NotecardNewRequest(char *request) {
+J *NoteNewRequest(char *request) {
     J *reqdoc = JCreateObject();
     if (reqdoc != NULL)
         JAddStringToObject(reqdoc, "req", request);
@@ -28,23 +28,23 @@ J *NotecardNewRequest(char *request) {
 }
 
 // Initiate a transaction to the card using reqdoc, and return the result in rspdoc
-J *NotecardTransaction(J *req) {
+J *NoteTransaction(J *req) {
 
     // If a reset of the module is required for any reason, do it now.
     // We must do this before acquiring lock.
     if (resetRequired) {
         resetRequired = false;
-        if (!NotecardReset())
+        if (!NoteReset())
             return NULL;
     }
 
     // Lock
-    _LockNotecard();
+    _LockNote();
 
     // Serialize the JSON requet
     char *json = JPrintUnformatted(req);
     if (json == NULL) {
-        _UnlockNotecard();
+        _UnlockNote();
         return errDoc("can't convert to JSON");
     }
     
@@ -62,7 +62,7 @@ J *NotecardTransaction(J *req) {
     // If error, queue up a reset
     if (errStr != NULL) {
         resetRequired = true;
-        _UnlockNotecard();
+        _UnlockNote();
         return errDoc(errStr);
     }
 
@@ -71,7 +71,7 @@ J *NotecardTransaction(J *req) {
     if (rspdoc == NULL) {
         _Free(responseJSON);
         _Debug("unable to parse %d-byte response JSON: \"%s\"\n", strlen(responseJSON), responseJSON);
-        _UnlockNotecard();
+        _UnlockNote();
         return errDoc("unrecognized response from card");
     }
 
@@ -84,7 +84,7 @@ J *NotecardTransaction(J *req) {
     _Free(responseJSON);
 
     // Unlock
-    _UnlockNotecard();
+    _UnlockNote();
 
     // Done
     return rspdoc;
@@ -92,9 +92,9 @@ J *NotecardTransaction(J *req) {
 }
 
 // Initialize or re-initialize the module, returning false if anything fails
-bool NotecardReset() {
-    _LockNotecard();
-    bool success = _NotecardReset();
-    _UnlockNotecard();
+bool NoteReset() {
+    _LockNote();
+    bool success = _NoteReset();
+    _UnlockNote();
     return success;
 }

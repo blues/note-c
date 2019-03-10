@@ -15,47 +15,47 @@ extern "C" {
 #define NOTECARD_TRANSACTION_TIMEOUT_SEC     30
 
 // Transactions
-char *i2cNotecardTransaction(char *json, char **jsonResponse);
-bool i2cNotecardReset(void);
-char *serialNotecardTransaction(char *json, char **jsonResponse);
-bool serialNotecardReset(void);
+char *i2cNoteTransaction(char *json, char **jsonResponse);
+bool i2cNoteReset(void);
+char *serialNoteTransaction(char *json, char **jsonResponse);
+bool serialNoteReset(void);
 
 // Hooks
-void NotecardFnLockNotecard(void);
-void NotecardFnUnlockNotecard(void);
-void NotecardFnSerialReset(void);
-void NotecardFnSerialWriteLine(char *);
-void NotecardFnSerialWrite(char *);
-bool NotecardFnSerialAvailable(void);
-char NotecardFnSerialRead(void);
-void NotecardFnI2CReset(void);
-char *NotecardFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
-char *NotecardFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
-bool NotecardFnNotecardReset(void);
-char *NotecardFnTransaction(char *json, char **jsonResponse);
+void NoteFnLockNote(void);
+void NoteFnUnlockNote(void);
+void NoteFnSerialReset(void);
+void NoteFnSerialWriteLine(char *);
+void NoteFnSerialWrite(char *);
+bool NoteFnSerialAvailable(void);
+char NoteFnSerialRead(void);
+void NoteFnI2CReset(void);
+char *NoteFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
+char *NoteFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
+bool NoteFnNoteReset(void);
+char *NoteFnTransaction(char *json, char **jsonResponse);
 
 // Readability wrappers.  Anything starting with _ is simply calling the wrapper function
-#define _LockNotecard NotecardFnLockNotecard
-#define _UnlockNotecard NotecardFnUnlockNotecard
-#define _SerialReset NotecardFnSerialReset
-#define _SerialWriteLine NotecardFnSerialWriteLine
-#define _SerialWrite NotecardFnSerialWrite
-#define _SerialAvailable NotecardFnSerialAvailable
-#define _SerialRead NotecardFnSerialRead
-#define _I2CReset NotecardFnI2CReset
-#define _I2CTransmit NotecardFnI2CTransmit
-#define _I2CReceive NotecardFnI2CReceive
-#define _NotecardReset NotecardFnNotecardReset
-#define _Transaction NotecardFnTransaction
-#define _Debug NotecardFnDebug
-#define _Malloc NotecardFnMalloc
-#define _Free NotecardFnFree
-#define _GetMs NotecardFnGetMs
-#define _DelayMs NotecardFnDelayMs
-#define _LockI2C NotecardFnLockI2C
-#define _UnlockI2C NotecardFnUnlockI2C
-#define _I2CAddress NotecardFnI2CAddress
-#define _I2CMax NotecardFnI2CMax
+#define _LockNote NoteFnLockNote
+#define _UnlockNote NoteFnUnlockNote
+#define _SerialReset NoteFnSerialReset
+#define _SerialWriteLine NoteFnSerialWriteLine
+#define _SerialWrite NoteFnSerialWrite
+#define _SerialAvailable NoteFnSerialAvailable
+#define _SerialRead NoteFnSerialRead
+#define _I2CReset NoteFnI2CReset
+#define _I2CTransmit NoteFnI2CTransmit
+#define _I2CReceive NoteFnI2CReceive
+#define _NoteReset NoteFnNoteReset
+#define _Transaction NoteFnTransaction
+#define _Debug NoteFnDebug
+#define _Malloc NoteFnMalloc
+#define _Free NoteFnFree
+#define _GetMs NoteFnGetMs
+#define _DelayMs NoteFnDelayMs
+#define _LockI2C NoteFnLockI2C
+#define _UnlockI2C NoteFnUnlockI2C
+#define _I2CAddress NoteFnI2CAddress
+#define _I2CMax NoteFnI2CMax
 
 // End of C-callable functions
 #ifdef __cplusplus

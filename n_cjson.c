@@ -53,7 +53,7 @@
 #include <limits.h>
 #include <ctype.h>
 
-// For Notecard, disable dependencies
+// For Note, disable dependencies
 #undef ENABLE_LOCALES
 #define MINIMIZE_CLIB_DEPENDENCIES    1
 

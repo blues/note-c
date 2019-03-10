@@ -5,7 +5,7 @@
 #include "n_lib.h"
 
 // Initiate a transaction to the notecard using reqdoc, and return the result in rspdoc
-char *i2cNotecardTransaction(char *json, char **jsonResponse) {
+char *i2cNoteTransaction(char *json, char **jsonResponse) {
 
     // Append '\n' to the transaction
     int jsonLen = strlen(json)+1;
@@ -104,7 +104,7 @@ char *i2cNotecardTransaction(char *json, char **jsonResponse) {
             return "notecard request or response was lost";
         }
 
-        // Delay, simply waiting for the Notecard to process the request
+        // Delay, simply waiting for the Note to process the request
         _DelayMs(50);
 
     }
@@ -118,7 +118,7 @@ char *i2cNotecardTransaction(char *json, char **jsonResponse) {
 }
 
 // Initialize or re-initialize the module, returning false if anything fails
-bool i2cNotecardReset() {
+bool i2cNoteReset() {
 
     // Reset the I2C subsystem
     _I2CReset();

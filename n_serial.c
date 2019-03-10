@@ -5,7 +5,7 @@
 #include "n_lib.h"
 
 // Process a transaction over the serial port, returning NULL and a buffer if success, or an error string
-char *serialNotecardTransaction(char *json, char **jsonResponse) {
+char *serialNoteTransaction(char *json, char **jsonResponse) {
 
     // Send the transaction to serial, including the newline that initiates it
     _SerialWriteLine(json);
@@ -64,7 +64,7 @@ char *serialNotecardTransaction(char *json, char **jsonResponse) {
 }
 
 // Initialize or re-initialize the module, returning false if anything fails
-bool serialNotecardReset() {
+bool serialNoteReset() {
     bool notecardReady = false;
 
     // Initialize, or re-initialize.  Because we've observed Arduino serial driver flakiness,

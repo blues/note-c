@@ -33,26 +33,26 @@ typedef char * (*i2cTransmitFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t
 typedef char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 
 // External API
-bool NotecardReset(void);
-J *NotecardNewRequest(char *request);
-J *NotecardTransaction(J *req);
-void NotecardSetFnDebugOutput(debugOutputFn fn);
-void NotecardSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotecardfn, mutexFn unlockNotecardfn);
-void NotecardSetFnMem(mallocFn mallocfn, freeFn freefn);
-void NotecardSetFnTimer(delayMsFn delayfn, getMsFn millisfn);
-void NotecardSetFnSerial(serialResetFn resetfn, serialWriteLineFn printlnfn, serialWriteFn writefn, serialAvailableFn availfn, serialReadFn readfn);
-void NotecardSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTransmitFn transmitfn, i2cReceiveFn receivefn);
+bool NoteReset(void);
+J *NoteNewRequest(char *request);
+J *NoteTransaction(J *req);
+void NoteSetFnDebugOutput(debugOutputFn fn);
+void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, mutexFn unlockNotefn);
+void NoteSetFnMem(mallocFn mallocfn, freeFn freefn);
+void NoteSetFnTimer(delayMsFn delayfn, getMsFn millisfn);
+void NoteSetFnSerial(serialResetFn resetfn, serialWriteLineFn printlnfn, serialWriteFn writefn, serialAvailableFn availfn, serialReadFn readfn);
+void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTransmitFn transmitfn, i2cReceiveFn receivefn);
 
 // Calls to the functions set above
-void NotecardFnDebug(const char *format, ...);
-void *NotecardFnMalloc(size_t size);
-void NotecardFnFree(void *);
-uint32_t NotecardFnGetMs(void);
-void NotecardFnDelayMs(uint32_t ms);
-void NotecardFnLockI2C(void);
-void NotecardFnUnlockI2C(void);
-uint32_t NotecardFnI2CAddress(void);
-uint32_t NotecardFnI2CMax(void);
+void NoteFnDebug(const char *format, ...);
+void *NoteFnMalloc(size_t size);
+void NoteFnFree(void *);
+uint32_t NoteFnGetMs(void);
+void NoteFnDelayMs(uint32_t ms);
+void NoteFnLockI2C(void);
+void NoteFnUnlockI2C(void);
+uint32_t NoteFnI2CAddress(void);
+uint32_t NoteFnI2CMax(void);
 
 // JSON helpers
 void JInit(void);
