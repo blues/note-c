@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "notecard.h"
+#include "note.h"
 
 // C-callable functions
 #ifdef __cplusplus
