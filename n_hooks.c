@@ -140,9 +140,9 @@ void NoteFnSerialWriteLine(char *text) {
     if (hookActiveInterface == interfaceSerial && hookSerialWriteLine != NULL)
         hookSerialWriteLine(text);
 }
-void NoteFnSerialWrite(char *text) {
+void NoteFnSerialWrite(uint8_t *text, size_t len) {
     if (hookActiveInterface == interfaceSerial && hookSerialWrite != NULL)
-        hookSerialWrite(text);
+        hookSerialWrite(text, len);
 }
 bool NoteFnSerialAvailable() {
     if (hookActiveInterface == interfaceSerial && hookSerialAvailable != NULL)

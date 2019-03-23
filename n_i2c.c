@@ -15,9 +15,10 @@ char *i2cNoteTransaction(char *json, char **jsonResponse) {
     memcpy(transmitBuf, json, jsonLen-1);
     transmitBuf[jsonLen-1] = '\n';
 
-    // Transmit it in chunks
+    // Transmit the request in chunks, but also in segments so as not to overwhelm the notecard's interrupt buffers
     char *errstr;
     uint8_t *chunk = transmitBuf;
+    uint32_t sentInSegment = 0;
     while (jsonLen > 0) {
         int chunklen = (uint8_t) (jsonLen > _I2CMax() ? _I2CMax() : jsonLen);
         errstr = _I2CTransmit(_I2CAddress(), chunk, chunklen);
@@ -27,6 +28,11 @@ char *i2cNoteTransaction(char *json, char **jsonResponse) {
         }
         chunk += chunklen;
         jsonLen -= chunklen;
+        sentInSegment += chunklen;
+        if (sentInSegment > CARD_REQUEST_SEGMENT_MAX_LEN) {
+            sentInSegment -= CARD_REQUEST_SEGMENT_MAX_LEN;
+            _DelayMs(CARD_REQUEST_SEGMENT_DELAY_MS);
+        }
     }
 
     // Free the transmit buffer

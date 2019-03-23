@@ -14,6 +14,12 @@ extern "C" {
 // How long to wait for the card for any given transaction
 #define NOTECARD_TRANSACTION_TIMEOUT_SEC     30
 
+// The notecard is a real-time device that has a fixed size interrupt buffer.  We can push data
+// at it far, far faster than it can process it, therefore we push it in segments with a pause
+// between each segment.
+#define CARD_REQUEST_SEGMENT_MAX_LEN 1000
+#define CARD_REQUEST_SEGMENT_DELAY_MS 100
+
 // Transactions
 char *i2cNoteTransaction(char *json, char **jsonResponse);
 bool i2cNoteReset(void);
@@ -25,7 +31,7 @@ void NoteFnLockNote(void);
 void NoteFnUnlockNote(void);
 void NoteFnSerialReset(void);
 void NoteFnSerialWriteLine(char *);
-void NoteFnSerialWrite(char *);
+void NoteFnSerialWrite(uint8_t *, size_t);
 bool NoteFnSerialAvailable(void);
 char NoteFnSerialRead(void);
 void NoteFnI2CReset(void);

@@ -25,7 +25,7 @@ typedef uint32_t (*getMsFn) (void);
 typedef void (*debugOutputFn) (char *text);
 typedef void (*serialResetFn) (void);
 typedef void (*serialWriteLineFn) (char *text);
-typedef void (*serialWriteFn) (char *text);
+typedef void (*serialWriteFn) (uint8_t *data, size_t len);
 typedef bool (*serialAvailableFn) (void);
 typedef char (*serialReadFn) (void);
 typedef void (*i2cResetFn) (void);

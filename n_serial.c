@@ -7,8 +7,22 @@
 // Process a transaction over the serial port, returning NULL and a buffer if success, or an error string
 char *serialNoteTransaction(char *json, char **jsonResponse) {
 
-    // Send the transaction to serial, including the newline that initiates it
-    _SerialWriteLine(json);
+    // Transmit the request in segments so as not to overwhelm the notecard's interrupt buffers
+    uint32_t segOff = 0;
+    uint32_t segLeft = strlen(json);
+    while (true) {
+        size_t segLen = segLeft;
+        if (segLen > CARD_REQUEST_SEGMENT_MAX_LEN)
+            segLen = CARD_REQUEST_SEGMENT_MAX_LEN;
+        segLeft -= segLen;
+        if (segLeft == 0) {
+            _serialWriteLine(&json[segOff]);
+            break;
+        }
+        _SerialWrite((uint8_t *)&json[segOff], segLen);
+        segOff += segLen;        
+        _DelayMs(CARD_REQUEST_SEGMENT_DELAY_MS);
+    }
 
     // Wait for something to become available, processing timeout errors up-front
     // because the json parse operation immediately following is subject to the
@@ -22,9 +36,9 @@ char *serialNoteTransaction(char *json, char **jsonResponse) {
         _DelayMs(10);
     }
 
-    // If static mem, we read into a static buffer - else we dynamically grow as we read.  Note
-    // that we always put the +1 in the alloc so we can be assured that it can be null-terminated,
-    // which must be the case because json parsing requires a null-terminated string.
+    // Allocate a buffer for input, noting that we always put the +1 in the alloc so we can be assured
+    // that it can be null-terminated.  This must be the case because json parsing requires a
+    // null-terminated string.
     int jsonbufAllocLen = 1024;
     char *jsonbuf = (char *) _Malloc(jsonbufAllocLen+1);
     if (jsonbuf == NULL) {
@@ -84,8 +98,8 @@ bool serialNoteReset() {
 
         // Attempt to synchronize serial
         for (int i=0; i<10; i++) {
-            _SerialWrite("\n");
-            _SerialWrite("\n");
+            _SerialWrite("\n", 1);
+            _SerialWrite("\n", 1);
             _DelayMs(500);
             bool somethingFound = false;
             bool nonControlCharFound = false;
