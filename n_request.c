@@ -15,6 +15,9 @@ static J *errDoc(char *errmsg) {
     J *rspdoc = JCreateObject();
     if (rspdoc != NULL)
         JAddStringToObject(rspdoc, "err", errmsg);
+#ifdef SHOW_TRANSACTIONS
+    _Debug("{\"err\":\"%s\"}\n", errmsg);
+#endif
     return rspdoc;
 }
 
@@ -44,8 +47,9 @@ J *NoteTransaction(J *req) {
     // Serialize the JSON requet
     char *json = JPrintUnformatted(req);
     if (json == NULL) {
+        J *rsp = errDoc("can't convert to JSON");
         _UnlockNote();
-        return errDoc("can't convert to JSON");
+        return rsp;
     }
     
 #ifdef SHOW_TRANSACTIONS
@@ -62,8 +66,9 @@ J *NoteTransaction(J *req) {
     // If error, queue up a reset
     if (errStr != NULL) {
         resetRequired = true;
+        J *rsp = errDoc(errStr);
         _UnlockNote();
-        return errDoc(errStr);
+        return rsp;
     }
 
     // Parse the reply from the card on the input stream
@@ -71,8 +76,9 @@ J *NoteTransaction(J *req) {
     if (rspdoc == NULL) {
         _Free(responseJSON);
         _Debug("unable to parse %d-byte response JSON: \"%s\"\n", strlen(responseJSON), responseJSON);
+        J *rsp = errDoc("unrecognized response from card");
         _UnlockNote();
-        return errDoc("unrecognized response from card");
+        return rsp;
     }
 
     // Debug

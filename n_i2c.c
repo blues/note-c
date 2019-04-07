@@ -23,6 +23,7 @@ char *i2cNoteTransaction(char *json, char **jsonResponse) {
         int chunklen = (uint8_t) (jsonLen > _I2CMax() ? _I2CMax() : jsonLen);
         errstr = _I2CTransmit(_I2CAddress(), chunk, chunklen);
         if (errstr != NULL) {
+            _Free(transmitBuf);
             _Debug("i2c transmit: %s\n", errstr);
             return errstr;
         }
