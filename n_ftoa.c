@@ -147,12 +147,14 @@ char * JFtoA(double f, char * buf, int original_precision)
     *ptr = 0;
 
     // Remove trailing zero's if automatic precision
-    if (original_precision < 0) {
-        --ptr;
-        while (ptr > (buf+1) && *ptr == '0')
-            *ptr-- = 0;
-        if (*ptr == '.')
-            *ptr = 0;
+    if (NULL != strchr(buf, '.')) {
+        if (original_precision < 0) {
+            --ptr;
+            while (ptr > (buf+1) && *ptr == '0')
+                *ptr-- = 0;
+            if (*ptr == '.')
+                *ptr = 0;
+        }
     }
 
     return buf;
