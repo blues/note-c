@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <string.h>
 #include "note.h"
 
 // C-callable functions
@@ -21,24 +22,24 @@ extern "C" {
 #define CARD_REQUEST_SEGMENT_DELAY_MS 250
 
 // Transactions
-char *i2cNoteTransaction(char *json, char **jsonResponse);
+const char *i2cNoteTransaction(char *json, char **jsonResponse);
 bool i2cNoteReset(void);
-char *serialNoteTransaction(char *json, char **jsonResponse);
+const char *serialNoteTransaction(char *json, char **jsonResponse);
 bool serialNoteReset(void);
 
 // Hooks
 void NoteFnLockNote(void);
 void NoteFnUnlockNote(void);
 void NoteFnSerialReset(void);
-void NoteFnSerialWriteLine(char *);
+void NoteFnSerialWriteLine(const char *);
 void NoteFnSerialWrite(uint8_t *, size_t);
 bool NoteFnSerialAvailable(void);
 char NoteFnSerialRead(void);
 void NoteFnI2CReset(void);
-char *NoteFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
-char *NoteFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
+const char *NoteFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
+const char *NoteFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 bool NoteFnNoteReset(void);
-char *NoteFnTransaction(char *json, char **jsonResponse);
+const char *NoteFnTransaction(char *json, char **jsonResponse);
 
 // Readability wrappers.  Anything starting with _ is simply calling the wrapper function
 #define _LockNote NoteFnLockNote

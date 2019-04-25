@@ -5,7 +5,7 @@
 #include "n_lib.h"
 
 // Process a transaction over the serial port, returning NULL and a buffer if success, or an error string
-char *serialNoteTransaction(char *json, char **jsonResponse) {
+const char *serialNoteTransaction(char *json, char **jsonResponse) {
 
     // Transmit the request in segments so as not to overwhelm the notecard's interrupt buffers
     uint32_t segOff = 0;
@@ -16,7 +16,7 @@ char *serialNoteTransaction(char *json, char **jsonResponse) {
             segLen = CARD_REQUEST_SEGMENT_MAX_LEN;
         segLeft -= segLen;
         if (segLeft == 0) {
-            _serialWriteLine(&json[segOff]);
+            _SerialWriteLine(&json[segOff]);
             break;
         }
         _SerialWrite((uint8_t *)&json[segOff], segLen);

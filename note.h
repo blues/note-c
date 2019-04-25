@@ -22,19 +22,19 @@ typedef void * (*mallocFn) (size_t size);
 typedef void (*freeFn) (void *);
 typedef void (*delayMsFn) (uint32_t ms);
 typedef uint32_t (*getMsFn) (void);
-typedef void (*debugOutputFn) (char *text);
+typedef void (*debugOutputFn) (const char *text);
 typedef void (*serialResetFn) (void);
-typedef void (*serialWriteLineFn) (char *text);
+typedef void (*serialWriteLineFn) (const char *text);
 typedef void (*serialWriteFn) (uint8_t *data, size_t len);
 typedef bool (*serialAvailableFn) (void);
 typedef char (*serialReadFn) (void);
 typedef void (*i2cResetFn) (void);
-typedef char * (*i2cTransmitFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
-typedef char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
+typedef const char * (*i2cTransmitFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
+typedef const char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 
 // External API
 bool NoteReset(void);
-J *NoteNewRequest(char *request);
+J *NoteNewRequest(const char *request);
 J *NoteTransaction(J *req);
 void NoteSetFnDebugOutput(debugOutputFn fn);
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, mutexFn unlockNotefn);
@@ -59,14 +59,14 @@ void JInit(void);
 void JCheck(void);
 void *JMalloc(size_t size);
 void JFree(void *p);
-bool JIsPresent(J *rsp, char *field);
-char *JGetString(J *rsp, char *field);
-double JGetDouble(J *rsp, char *field);
-int JGetInt(J *rsp, char *field);
-bool JGetBool(J *rsp, char *field);
-bool JIsNullString(J *rsp, char *field);
-bool JIsExactString(J *rsp, char *field, char *teststr);
-bool JContainsString(J *rsp, char *field, char *substr);
+bool JIsPresent(J *rsp, const char *field);
+char *JGetString(J *rsp, const char *field);
+double JGetDouble(J *rsp, const char *field);
+int JGetInt(J *rsp, const char *field);
+bool JGetBool(J *rsp, const char *field);
+bool JIsNullString(J *rsp, const char *field);
+bool JIsExactString(J *rsp, const char *field, const char *teststr);
+bool JContainsString(J *rsp, const char *field, const char *substr);
 
 // Helper functions for apps that wish to limit their C library dependencies
 #define FTOA_PRECISION	(10)

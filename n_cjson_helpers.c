@@ -2,18 +2,19 @@
 // Use of this source code is governed by licenses granted by the
 // copyright holder including that found in the LICENSE file.
 
+#include <string.h>
 #include <time.h>
 #include "n_lib.h"
 
 // Return true if a field is present in the response
-bool JIsPresent(J *rsp, char *field) {
+bool JIsPresent(J *rsp, const char *field) {
     if (rsp == NULL)
         return false;
     return (JGetObjectItem(rsp, field) != NULL);
 }
 
 // Return a string from the specified JSON object, or "" if it's not present
-char *JGetString(J *rsp, char *field) {
+char *JGetString(J *rsp, const char *field) {
     if (rsp == NULL)
         return "";
     J *item = JGetObjectItem(rsp, field);
@@ -27,7 +28,7 @@ char *JGetString(J *rsp, char *field) {
 }
 
 // Return a number from the specified JSON object, or 0 if it's not present
-double JGetDouble(J *rsp, char *field) {
+double JGetDouble(J *rsp, const char *field) {
     if (rsp == NULL)
         return 0.0;
     J *item = JGetObjectItem(rsp, field);
@@ -39,7 +40,7 @@ double JGetDouble(J *rsp, char *field) {
 }
 
 // Return a number from the JSON object, or 0 if it's not present
-int JGetInt(J *rsp, char *field) {
+int JGetInt(J *rsp, const char *field) {
     if (rsp == NULL)
         return 0.0;
     J *item = JGetObjectItem(rsp, field);
@@ -51,7 +52,7 @@ int JGetInt(J *rsp, char *field) {
 }
 
 // Return a bool from the JSON object, or false if it's not present
-bool JGetBool(J *rsp, char *field) {
+bool JGetBool(J *rsp, const char *field) {
     if (rsp == NULL)
         return false;
     J *item = JGetObjectItem(rsp, field);
@@ -63,7 +64,7 @@ bool JGetBool(J *rsp, char *field) {
 }
 
 // Return true if the object is valid and if the field is not present or if it's null
-bool JIsNullString(J *rsp, char *field) {
+bool JIsNullString(J *rsp, const char *field) {
     if (rsp == NULL)
         return false;
     J *item = JGetObjectItem(rsp, field);
@@ -79,7 +80,7 @@ bool JIsNullString(J *rsp, char *field) {
 }
 
 // Return true if a field exists, and is a string, and is exactly text specified
-bool JIsExactString(J *rsp, char *field, char *teststr) {
+bool JIsExactString(J *rsp, const char *field, const char *teststr) {
     if (rsp == NULL)
         return false;
     J *item = JGetObjectItem(rsp, field);
@@ -96,7 +97,7 @@ bool JIsExactString(J *rsp, char *field, char *teststr) {
 }
 
 // Return true if a field exists, and is a string, and contains the text as a substring
-bool JContainsString(J *rsp, char *field, char *substr) {
+bool JContainsString(J *rsp, const char *field, const char *substr) {
     if (rsp == NULL)
         return false;
     J *item = JGetObjectItem(rsp, field);

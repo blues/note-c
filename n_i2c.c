@@ -5,7 +5,7 @@
 #include "n_lib.h"
 
 // Initiate a transaction to the notecard using reqdoc, and return the result in rspdoc
-char *i2cNoteTransaction(char *json, char **jsonResponse) {
+const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 
     // Append '\n' to the transaction
     int jsonLen = strlen(json)+1;
@@ -16,7 +16,7 @@ char *i2cNoteTransaction(char *json, char **jsonResponse) {
     transmitBuf[jsonLen-1] = '\n';
 
     // Transmit the request in chunks, but also in segments so as not to overwhelm the notecard's interrupt buffers
-    char *errstr;
+    const char *errstr;
     uint8_t *chunk = transmitBuf;
     uint32_t sentInSegment = 0;
     while (jsonLen > 0) {
@@ -59,7 +59,7 @@ char *i2cNoteTransaction(char *json, char **jsonResponse) {
 
         // Grow the buffer as necessary to read this next chunk
         if (jsonbufLen + chunklen > jsonbufAllocLen) {
-            uint8_t growlen = 1024;
+            int growlen = 1024;
             if (chunklen > growlen)
                 jsonbufAllocLen += chunklen;
             else
@@ -77,7 +77,7 @@ char *i2cNoteTransaction(char *json, char **jsonResponse) {
 
         // Read the chunk
         uint32_t available;
-        char *err = _I2CReceive(_I2CAddress(), (uint8_t *) &jsonbuf[jsonbufLen], chunklen, &available);
+        const char *err = _I2CReceive(_I2CAddress(), (uint8_t *) &jsonbuf[jsonbufLen], chunklen, &available);
         if (err != NULL) {
             _Free(jsonbuf);
             _Debug("%s: read of %d bytes\n", err, chunklen);
@@ -147,7 +147,7 @@ bool i2cNoteReset() {
             uint8_t buffer[128];
             chunklen = (chunklen > sizeof(buffer)) ? sizeof(buffer) : chunklen;
             chunklen = (chunklen > _I2CMax()) ? _I2CMax() : chunklen;
-            char *err = _I2CReceive(_I2CAddress(), buffer, chunklen, &available);
+            const char *err = _I2CReceive(_I2CAddress(), buffer, chunklen, &available);
             if (err) break;
 
             // If nothing left, we're ready to transmit a command to receive the data

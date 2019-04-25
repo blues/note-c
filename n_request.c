@@ -11,7 +11,7 @@
 static bool resetRequired = true;
 
 // Create an error response document
-static J *errDoc(char *errmsg) {
+static J *errDoc(const char *errmsg) {
     J *rspdoc = JCreateObject();
     if (rspdoc != NULL)
         JAddStringToObject(rspdoc, "err", errmsg);
@@ -23,7 +23,7 @@ static J *errDoc(char *errmsg) {
 
 // Lock for mutual exclusion, not only because access to the card must be serialized, but also because
 // both C++ and ArduinoJSON call malloc() which is not a thread-safe operation.
-J *NoteNewRequest(char *request) {
+J *NoteNewRequest(const char *request) {
     J *reqdoc = JCreateObject();
     if (reqdoc != NULL)
         JAddStringToObject(reqdoc, "req", request);
@@ -58,7 +58,7 @@ J *NoteTransaction(J *req) {
 
     // Pertform the transaction
     char *responseJSON;
-    char *errStr = _Transaction(json, &responseJSON);
+    const char *errStr = _Transaction(json, &responseJSON);
 
     // Free the json
     JFree(json);

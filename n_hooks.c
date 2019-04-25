@@ -2,6 +2,7 @@
 // Use of this source code is governed by licenses granted by the
 // copyright holder including that found in the LICENSE file.
 
+#include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include "n_lib.h"
@@ -37,7 +38,7 @@ i2cReceiveFn hookI2CReceive = NULL;
 
 // Internal hooks
 typedef bool (*nNoteResetFn) (void);
-typedef char * (*nTransactionFn) (char *, char **);
+typedef const char * (*nTransactionFn) (char *, char **);
 static nNoteResetFn notecardReset = NULL;
 static nTransactionFn notecardTransaction = NULL;
 
@@ -136,7 +137,7 @@ void NoteFnSerialReset() {
     if (hookActiveInterface == interfaceSerial && hookSerialReset != NULL)
         hookSerialReset();
 }
-void NoteFnSerialWriteLine(char *text) {
+void NoteFnSerialWriteLine(const char *text) {
     if (hookActiveInterface == interfaceSerial && hookSerialWriteLine != NULL)
         hookSerialWriteLine(text);
 }
@@ -158,12 +159,12 @@ void NoteFnI2CReset() {
     if (hookActiveInterface == interfaceI2C && hookI2CReset != NULL)
         hookI2CReset();
 }
-char *NoteFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size) {
+const char *NoteFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size) {
     if (hookActiveInterface == interfaceI2C && hookI2CTransmit != NULL)
         return hookI2CTransmit(DevAddress, pBuffer, Size);
     return "i2c not active";
 }
-char *NoteFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *available) {
+const char *NoteFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *available) {
     if (hookActiveInterface == interfaceI2C && hookI2CReceive != NULL)
         return hookI2CReceive(DevAddress, pBuffer, Size, available);
     return "i2c not active";
@@ -189,7 +190,7 @@ bool NoteFnNoteReset() {
         return "notecard not initialized";
     return notecardReset();
 }
-char *NoteFnTransaction(char *json, char **jsonResponse) {
+const char *NoteFnTransaction(char *json, char **jsonResponse) {
     if (notecardTransaction == NULL)
         return "notecard not initialized";
     return notecardTransaction(json, jsonResponse);
