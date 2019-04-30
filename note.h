@@ -61,7 +61,7 @@ void *JMalloc(size_t size);
 void JFree(void *p);
 bool JIsPresent(J *rsp, const char *field);
 char *JGetString(J *rsp, const char *field);
-double JGetDouble(J *rsp, const char *field);
+double JGetNumber(J *rsp, const char *field);
 int JGetInt(J *rsp, const char *field);
 bool JGetBool(J *rsp, const char *field);
 bool JIsNullString(J *rsp, const char *field);
@@ -69,10 +69,11 @@ bool JIsExactString(J *rsp, const char *field, const char *teststr);
 bool JContainsString(J *rsp, const char *field, const char *substr);
 
 // Helper functions for apps that wish to limit their C library dependencies
-#define FTOA_PRECISION	(10)
-#define FTOA_MAX        ((2*FTOA_PRECISION)+1+1)
-char * JFtoA(double f, char * buf, int precision);
-double JAtoF(const char *string, char **endPtr);
+#define JNRound(x,NUMDIGITS) ((round((x) * 1E##NUMDIGITS)) / 1E##NUMDIGITS)
+#define JNTOA_PRECISION	(10)
+#define JNTOA_MAX       ((2*JNTOA_PRECISION)+1+1)
+char * JNtoA(double f, char * buf, int precision);
+double JAtoN(const char *string, char **endPtr);
 int JB64EncodeLen(int len);
 int JB64Encode(char * coded_dst, const char *plain_src,int len_plain_src);
 int JB64DecodeLen(const char * coded_src);

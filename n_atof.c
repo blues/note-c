@@ -81,7 +81,7 @@ static double powersOf10[] = {	/* Table giving binary powers of 10.  Entry */
  */
 
 double
-JAtoF(string, endPtr)
+JAtoN(string, endPtr)
     const char *string;		/* A decimal ASCII floating-point number,
 				 * optionally preceded by white space.
 				 * Must have form "-I.FE-X", where I is the

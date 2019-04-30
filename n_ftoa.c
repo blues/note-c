@@ -29,7 +29,7 @@
 
 #include "n_lib.h"
 
-static const double rounders[FTOA_PRECISION + 1] =
+static const double rounders[JNTOA_PRECISION + 1] =
 {
     0.5,                // 0
     0.05,               // 1
@@ -44,7 +44,7 @@ static const double rounders[FTOA_PRECISION + 1] =
     0.00000000005       // 10
 };
 
-char * JFtoA(double f, char * buf, int original_precision)
+char * JNtoA(double f, char * buf, int original_precision)
 {
     char * ptr = buf;
     char * p = ptr;
@@ -63,8 +63,8 @@ char * JFtoA(double f, char * buf, int original_precision)
 
     // check precision bounds
     int precision = original_precision;
-    if (precision < 0 || precision > FTOA_PRECISION)
-        precision = FTOA_PRECISION;
+    if (precision < 0 || precision > JNTOA_PRECISION)
+        precision = JNTOA_PRECISION;
 
     // sign stuff
     if (f < 0)

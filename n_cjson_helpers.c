@@ -28,7 +28,7 @@ char *JGetString(J *rsp, const char *field) {
 }
 
 // Return a number from the specified JSON object, or 0 if it's not present
-double JGetDouble(J *rsp, const char *field) {
+double JGetNumber(J *rsp, const char *field) {
     if (rsp == NULL)
         return 0.0;
     J *item = JGetObjectItem(rsp, field);
