@@ -30,7 +30,45 @@ J *NoteNewRequest(const char *request) {
     return reqdoc;
 }
 
-// Initiate a transaction to the card using reqdoc, and return the result in rspdoc
+// Perform a request, FREEING THE REQUEST STRUCTURE, then returning true if success and
+// false if either we ran into an error such as out-of-memory or if an error was returned
+// from the transaction in the "err" field.
+bool NoteRequest(J *req) {
+    // Exit if null request.  This allows safe execution of the form NoteRequest(NoteNewRequest("xxx"))
+    if (req == NULL)
+        return false;
+    // Execute the transaction
+    J *rsp = NoteTransaction(req);
+    if (rsp == NULL) {
+        JDelete(req);
+        return false;
+    }
+    // Check for a transaction error, and exit
+    bool success = JIsNullString(rsp, "err");
+    JDelete(req);
+    JDelete(rsp);
+    return success;
+}
+
+// Perform a request, FREEING THE REQUEST STRUCTURE, and returning a reply structure or
+// NULL if there's insufficient memory.
+J *NoteRequestResponse(J *req) {
+    // Exit if null request.  This allows safe execution of the form NoteRequestResponse(NoteNewRequest("xxx"))
+    if (req == NULL)
+        return NULL;
+    // Execute the transaction
+    J *rsp = NoteTransaction(req);
+    if (rsp == NULL) {
+        JDelete(req);
+        return NULL;
+    }
+    // Free the request and exit
+    JDelete(req);
+    return rsp;
+}
+
+// Initiate a transaction to the card using reqdoc, and return the result in rspdoc.  This does
+// NOT free the request structure.
 J *NoteTransaction(J *req) {
 
     // If a reset of the module is required for any reason, do it now.
@@ -100,7 +138,30 @@ J *NoteTransaction(J *req) {
 // Initialize or re-initialize the module, returning false if anything fails
 bool NoteReset() {
     _LockNote();
+    resetRequired = false;
     bool success = _NoteReset();
     _UnlockNote();
     return success;
+}
+
+// Check to see if a notecard error is present
+bool NoteErrorContains(const char *errstr, const char *errtype) {
+    return (strstr(errstr, errtype) != NULL);
+}
+
+// Clean error strings out of the specified buffer
+void NoteErrorClean(char *begin) {
+    while (true) {
+        char *end = &begin[strlen(begin)+1];
+        char *beginBrace = strchr(begin, '{');
+        if (beginBrace == NULL)
+            break;
+        if (beginBrace>begin && *(beginBrace-1) == ' ')
+            beginBrace--;
+        char *endBrace = strchr(beginBrace, '}');
+        if (endBrace == NULL)
+            break;
+        char *afterBrace = endBrace + 1;
+        memmove(beginBrace, afterBrace, end-afterBrace);
+    }
 }

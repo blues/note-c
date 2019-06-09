@@ -122,7 +122,7 @@ JAtoN(string, endPtr)
      */
 
     p = string;
-    while (isspace(*p)) {
+    while (*p == ' ') {
 	p += 1;
     }
     if (*p == '-') {
@@ -144,7 +144,7 @@ JAtoN(string, endPtr)
     for (mantSize = 0; ; mantSize += 1)
     {
 	c = *p;
-	if (!isdigit(c)) {
+	if (c < '0' || c > '9') {
 	    if ((c != '.') || (decPt >= 0)) {
 		break;
 	    }
@@ -220,7 +220,7 @@ JAtoN(string, endPtr)
 	    }
 	    expSign = FALSE;
 	}
-	while (isdigit(*p)) {
+	while (*p >= '0' && *p <= '9') {
 	    exp = exp * 10 + (*p - '0');
 	    p += 1;
 	}

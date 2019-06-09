@@ -35,7 +35,14 @@ typedef const char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uin
 // External API
 bool NoteReset(void);
 J *NoteNewRequest(const char *request);
+J *NoteRequestResponse(J *req);
+bool NoteRequest(J *req);
+#define NoteResponseError(rsp) (!JIsNullString(rsp, "err"))
+#define NoteResponseErrorContains(rsp, errstr) (JContainsString(rsp, "err", errstr))
+#define NoteDeleteResponse(rsp) JDelete(rsp)
 J *NoteTransaction(J *req);
+bool NoteErrorContains(const char *errstr, const char *errtype);
+void NoteErrorClean(char *errbuf);
 void NoteSetFnDebugOutput(debugOutputFn fn);
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, mutexFn unlockNotefn);
 void NoteSetFnMem(mallocFn mallocfn, freeFn freefn);
@@ -53,6 +60,10 @@ void NoteFnLockI2C(void);
 void NoteFnUnlockI2C(void);
 uint32_t NoteFnI2CAddress(void);
 uint32_t NoteFnI2CMax(void);
+
+// String helpers to help encourage the world to abandon the horribly-error-prone strn*
+size_t strlcpy(char *dst, const char *src, size_t siz);
+size_t strlcat(char *dst, const char *src, size_t siz);
 
 // JSON helpers
 void JInit(void);
@@ -78,6 +89,8 @@ int JB64EncodeLen(int len);
 int JB64Encode(char * coded_dst, const char *plain_src,int len_plain_src);
 int JB64DecodeLen(const char * coded_src);
 int JB64Decode(char * plain_dst, const char *coded_src);
+bool JIsNumberFloat(float number);
+bool JIsNumberDouble(double number);
 
 // End of C-callable functions
 #ifdef __cplusplus

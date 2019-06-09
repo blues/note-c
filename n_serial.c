@@ -98,8 +98,8 @@ bool serialNoteReset() {
 
         // Attempt to synchronize serial
         for (int i=0; i<10; i++) {
-            _SerialWrite("\n", 1);
-            _SerialWrite("\n", 1);
+            _SerialWrite((uint8_t *)"\n", 1);
+            _SerialWrite((uint8_t *)"\n", 1);
             _DelayMs(500);
             bool somethingFound = false;
             bool nonControlCharFound = false;
