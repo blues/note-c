@@ -8,6 +8,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+// UNIX Epoch time (also known as POSIX time) is the  number of seconds that have elapsed since
+// 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC).  In this project, it always
+// originates from the Notecard, which synchronizes the time from both the cell network and GPS.
+typedef unsigned long int epoch;
+
 // C-callable functions
 #ifdef __cplusplus
 extern "C" {
@@ -91,6 +96,38 @@ int JB64DecodeLen(const char * coded_src);
 int JB64Decode(char * plain_dst, const char *coded_src);
 bool JIsNumberFloat(float number);
 bool JIsNumberDouble(double number);
+
+// High-level helper functions that are both useful and serve to show developers how to call the API
+bool NoteTimeValid(void);
+bool NoteTimeValidST(void);
+epoch NoteTime(void);
+epoch NoteTimeST(void);
+bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneOffset);
+bool NoteLocationValid(char *errbuf, uint32_t errbuflen);
+bool NoteLocationValidST(char *errbuf, uint32_t errbuflen);
+int NoteGetEnvInt(const char *variable, int defaultVal);
+void NoteGetEnv(const char *variable, const char *defaultVal, char *buf, uint32_t buflen);
+bool NoteGetEnvAll(char *statusBuf, int statusBufLen);
+bool NoteIsConnected(void);
+bool NoteIsConnectedST(void);
+bool NoteGetNetStatus(char *statusBuf, int statusBufLen);
+bool NoteGetVersion(char *versionBuf, int versionBufLen);
+bool NoteGetLocation(double *retLat, double *retLon, epoch *time, char *statusBuf, int statusBufLen);
+bool NoteSetLocation(double lat, double lon);
+bool NoteClearLocation(void);
+bool NoteGetLocationMode(char *modeBuf, int modeBufLen);
+bool NoteSetLocationMode(const char *mode);
+bool NoteGetServiceConfig(char *productBuf, int productBufLen, char *serviceBuf, int serviceBufLen, char *deviceBuf, int deviceBufLen, char *snBuf, int snBufLen);
+bool NoteGetStatus(char *statusBuf, int statusBufLen, epoch *bootTime, bool *retUSB, bool *retSignals);
+bool NoteGetStatusST(char *statusBuf, int statusBufLen, epoch *bootTime, bool *retUSB, bool *retSignals);
+bool NoteSleep(char *stateb64, uint32_t seconds);
+bool NoteWake(int stateLen, void *state);
+bool NoteFactoryReset(bool deleteConfigSettings);
+bool NoteSetSerialNumber(const char *sn);
+bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align);
+bool NoteTemplate(const char *target, J *body);
+bool NoteSend(const char *target, J *body, bool urgent);
+bool NoteSendToRoute(const char *method, const char *routeAlias, char *notefile, J *body);
 
 // End of C-callable functions
 #ifdef __cplusplus
