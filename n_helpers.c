@@ -14,24 +14,31 @@
 // such as the device location, its voltage level, and so on.  This file contains this kind of wrapper,
 // just implemented here as a convenience to all developers.
 
-// Time-related suppression timer variables
+// Time-related suppression timer and cache
 static long timeBaseSetAtMs = 0;
 static epoch timeBase = 0;
 static uint32_t timeTimer = 0;
-static bool zoneStillUnavailable = false;
+static bool zoneStillUnavailable = true;
 static char curZone[48] = {0};
 static char curArea[64] = {0};
 static char curCountry[8] = "";
 static int curZoneOffsetMins = 0;
 
-// Location-related suppression timer variables
+// Location-related suppression timer and cache
 static uint32_t locationTimer = 0;
 static char locationLastErr[64] = {0};
 static bool locationValid = false;
 
-// Connection-related suppression timer variables
-static bool cardConnected = false;
+// Connection-related suppression timer and cache
 static uint32_t connectivityTimer = 0;
+static bool cardConnected = false;
+
+// Service config-related suppression timer and cache
+static uint32_t serviceConfigTimer = 0;
+static char scDevice[128] = {0};
+static char scSN[128] = {0};
+static char scProduct[128] = {0};
+static char scService[128] = {0};
 
 // Forwards
 static bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs);
@@ -44,13 +51,12 @@ bool NoteTimeValid() {
 
 // See if the suppression-timer card time is valid
 bool NoteTimeValidST() {
-    NoteTime();
+    NoteTimeST();
     return (timeBase != 0);
 }
 
 // Get the current epoch time, unsuppressed
 epoch NoteTime() {
-    timeBase = 0;
     timeTimer = 0;
     return NoteTimeST();
 }
@@ -82,18 +88,21 @@ epoch NoteTimeST() {
                         setTime(seconds);
 
                         // Get the zone
-                        char *zone = JGetString(rsp, "zone");
-                        if (zone[0] != '\0') {
-                            if (memcmp(zone, "UTC", 3) == 0)
-                                zoneStillUnavailable = true;
-                            else {
-                                strlcpy(curZone, zone, sizeof(curZone));
-                                curZoneOffsetMins = JGetInt(rsp, "minutes");
-                                strlcpy(curCountry, JGetString(rsp, "country"), sizeof(curCountry));
-                                strlcpy(curArea, JGetString(rsp, "area"), sizeof(curArea));
-                                _Debug("%s, %s (%s,%d)\n", curArea, curCountry, curZone, curZoneOffsetMins);
-                                zoneStillUnavailable = false;
-                            }
+                        char *z = JGetString(rsp, "zone");
+                        if (z[0] != '\0') {
+                            char zone[64];
+                            strlcpy(zone, z, sizeof(zone));
+                            // Only use the 3-letter abbrev
+                            char *sep = strchr(zone, ',');
+                            if (sep == NULL)
+                                zone[0] = '\0';
+                            else
+                                *sep = '\0';
+                            zoneStillUnavailable = (memcmp(zone, "UTC", 3) == 0);
+                            strlcpy(curZone, zone, sizeof(curZone));
+                            curZoneOffsetMins = JGetInt(rsp, "minutes");
+                            strlcpy(curCountry, JGetString(rsp, "country"), sizeof(curCountry));
+                            strlcpy(curArea, JGetString(rsp, "area"), sizeof(curArea));
                         }
 
                     }
@@ -119,7 +128,7 @@ bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneO
         if (retArea != NULL)
             *retArea = "";
         if (retZone != NULL)
-            *retZone = "";
+            *retZone = curZone;
         if (retZoneOffset != NULL)
             *retZoneOffset = 0;
         return false;
@@ -363,32 +372,42 @@ bool NoteSetLocationMode(const char *mode) {
     return success;
 }
 
-// Get Service Configuration
+// Get the current epoch time, unsuppressed
 bool NoteGetServiceConfig(char *productBuf, int productBufLen, char *serviceBuf, int serviceBufLen, char *deviceBuf, int deviceBufLen, char *snBuf, int snBufLen) {
+    serviceConfigTimer = 0;
+    return NoteGetServiceConfigST(productBuf, productBufLen, serviceBuf, serviceBufLen, deviceBuf, deviceBufLen, snBuf, snBufLen);
+}
+
+// Get Service Configuration
+bool NoteGetServiceConfigST(char *productBuf, int productBufLen, char *serviceBuf, int serviceBufLen, char *deviceBuf, int deviceBufLen, char *snBuf, int snBufLen) {
     bool success = false;
-    if (productBuf != NULL)
-        productBuf[0] = '\0';
-    if (serviceBuf != NULL)
-        serviceBuf[0] = '\0';
-    if (deviceBuf != NULL)
-        deviceBuf[0] = '\0';
-    if (snBuf != NULL)
-        snBuf[0] = '\0';
-    J *rsp = NoteRequestResponse(NoteNewRequest("service.get"));
-    if (rsp != NULL) {
-        success = !NoteResponseError(rsp);
-        if (success) {
-            if (productBuf != NULL)
-                strlcpy(productBuf, JGetString(rsp, "product"), productBufLen);
-            if (serviceBuf != NULL)
-                strlcpy(serviceBuf, JGetString(rsp, "host"), serviceBufLen);
-            if (deviceBuf != NULL)
-                strlcpy(deviceBuf, JGetString(rsp, "device"), deviceBufLen);
-            if (snBuf != NULL)
-                strlcpy(snBuf, JGetString(rsp, "sn"), snBufLen);
+
+    // Use cache except for a rare refresh
+    if (scProduct[0] == '\0' || scDevice[0] == '\0' || timerExpiredSecs(&serviceConfigTimer, 4*60*60*1000)) {
+        J *rsp = NoteRequestResponse(NoteNewRequest("service.get"));
+        if (rsp != NULL) {
+            success = !NoteResponseError(rsp);
+            if (success) {
+                strlcpy(scProduct, JGetString(rsp, "product"), sizeof(scProduct));
+                strlcpy(scService, JGetString(rsp, "host"), sizeof(scService));
+                strlcpy(scDevice, JGetString(rsp, "device"), sizeof(scDevice));
+                strlcpy(scSN, JGetString(rsp, "sn"), sizeof(scSN));
+            }
+            NoteDeleteResponse(rsp);
         }
-        NoteDeleteResponse(rsp);
+    } else {
+        success = true;
     }
+
+    // Done
+    if (productBuf != NULL)
+        strlcpy(productBuf, scProduct, productBufLen);
+    if (serviceBuf != NULL)
+        strlcpy(serviceBuf, scService, serviceBufLen);
+    if (deviceBuf != NULL)
+        strlcpy(deviceBuf, scDevice, deviceBufLen);
+    if (snBuf != NULL)
+        strlcpy(snBuf, scSN, snBufLen);
     return success;
 }
 
@@ -464,20 +483,22 @@ bool NoteGetStatusST(char *statusBuf, int statusBufLen, epoch *bootTime, bool *r
 }
 
 // Save state and sleep, returning FALSE if failure to proceed
-bool NoteSleep(char *stateb64, uint32_t seconds) {
+bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes) {
     bool success = false;
 
-    // Request to be awakened on USB detect transitions
-    J *req = NoteNewRequest("card.attn");
-    if (req != NULL) {
-        JAddStringToObject(req, "mode", "usb");
-        if (!NoteRequest(req))
-            return false;
+    // If optional wakeup modes are specified, set them
+    if (modes != NULL) {
+        J *req = NoteNewRequest("card.attn");
+        if (req != NULL) {
+            JAddStringToObject(req, "mode", modes);
+            if (!NoteRequest(req))
+                return false;
+        }
     }
 
     // Put ourselves to sleep
     _Debug("requesting sleep for %d seconds\n", seconds);
-    req = NoteNewRequest("card.attn");
+    J *req = NoteNewRequest("card.attn");
     if (req != NULL) {
         // Add the base64 item in a wonderful way that doesn't strdup the huge string
         J *stringReferenceItem = JCreateStringReference(stateb64);
@@ -591,6 +612,8 @@ bool NoteSetSerialNumber(const char *sn) {
             JAddStringToObject(req, "sn", sn);
         success = NoteRequest(req);
     }
+    // Flush cache so that service config is re-fetched
+    serviceConfigTimer = 0;
     return success;
 }
 
@@ -690,6 +713,32 @@ bool NoteSendToRoute(const char *method, const char *routeAlias, char *notefile,
     // Perform the transaction
     return NoteRequest(req);
 
+}
+
+// Get the voltage of the Notecard
+bool NoteGetVoltage(double *voltage) {
+	bool success = false;
+    *voltage = 0.0;
+    J *rsp = NoteRequestResponse(NoteNewRequest("card.voltage"));
+	if (rsp != NULL) {
+        if (!NoteResponseError(rsp))
+            *voltage = JGetNumber(rsp, "value");
+        NoteDeleteResponse(rsp);
+    }
+	return success;
+}
+
+// Get the temperature of the Notecard
+bool NoteGetTemperature(double *temp) {
+	bool success = false;
+    *temp = 0.0;
+    J *rsp = NoteRequestResponse(NoteNewRequest("card.temp"));
+	if (rsp != NULL) {
+        if (!NoteResponseError(rsp))
+            *temp = JGetNumber(rsp, "value");
+        NoteDeleteResponse(rsp);
+    }
+	return success;
 }
 
 // A simple suppression timer based on a millisecond system clock.  This clock is reset to 0

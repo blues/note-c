@@ -42,7 +42,24 @@ typedef const char * (*nTransactionFn) (char *, char **);
 static nNoteResetFn notecardReset = NULL;
 static nTransactionFn notecardTransaction = NULL;
 
+// Set the debug output hooks if they aren't already set
+void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn) {
+	if (hookMalloc == NULL)
+	    hookMalloc = mallocfn;
+	if (hookFree == NULL)
+	    hookFree = freefn;
+	if (hookDelayMs == NULL)
+	    hookDelayMs = delayfn;
+	if (hookGetMs == NULL)
+	    hookGetMs = millisfn;
+}
 // Set the debug output hook
+void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn) {
+    hookMalloc = mallocfn;
+    hookFree = freefn;
+    hookDelayMs = delayfn;
+    hookGetMs = millisfn;
+}
 void NoteSetFnDebugOutput(debugOutputFn fn) {
     hookDebugOutput = fn;
 }
@@ -51,14 +68,6 @@ void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, 
     hookUnlockI2C = unlockI2Cfn;
     hookLockNote = lockNotefn;
     hookUnlockNote = unlockNotefn;
-}
-void NoteSetFnMem(mallocFn mallocfn, freeFn freefn) {
-    hookMalloc = mallocfn;
-    hookFree = freefn;
-}
-void NoteSetFnTimer(delayMsFn delayfn, getMsFn millisfn) {
-    hookDelayMs = delayfn;
-    hookGetMs = millisfn;
 }
 void NoteSetFnSerial(serialResetFn resetfn, serialWriteLineFn printlnfn, serialWriteFn writefn, serialAvailableFn availfn, serialReadFn readfn) {
     hookActiveInterface = interfaceSerial;
@@ -99,7 +108,7 @@ void NoteFnDebug(const char *format, ...) {
         hookDebugOutput(line);
     }
 }
-uint32_t NoteFnGetMs() {
+long unsigned int NoteFnGetMs() {
     if (hookGetMs == NULL)
         return 0;
     return hookGetMs();

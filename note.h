@@ -26,8 +26,8 @@ typedef void (*mutexFn) (void);
 typedef void * (*mallocFn) (size_t size);
 typedef void (*freeFn) (void *);
 typedef void (*delayMsFn) (uint32_t ms);
-typedef uint32_t (*getMsFn) (void);
-typedef void (*debugOutputFn) (const char *text);
+typedef long unsigned int (*getMsFn) (void);
+typedef size_t (*debugOutputFn) (const char *text);
 typedef void (*serialResetFn) (void);
 typedef void (*serialWriteLineFn) (const char *text);
 typedef void (*serialWriteFn) (uint8_t *data, size_t len);
@@ -50,8 +50,8 @@ bool NoteErrorContains(const char *errstr, const char *errtype);
 void NoteErrorClean(char *errbuf);
 void NoteSetFnDebugOutput(debugOutputFn fn);
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, mutexFn unlockNotefn);
-void NoteSetFnMem(mallocFn mallocfn, freeFn freefn);
-void NoteSetFnTimer(delayMsFn delayfn, getMsFn millisfn);
+void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
+void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
 void NoteSetFnSerial(serialResetFn resetfn, serialWriteLineFn printlnfn, serialWriteFn writefn, serialAvailableFn availfn, serialReadFn readfn);
 void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTransmitFn transmitfn, i2cReceiveFn receivefn);
 
@@ -59,7 +59,7 @@ void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTran
 void NoteFnDebug(const char *format, ...);
 void *NoteFnMalloc(size_t size);
 void NoteFnFree(void *);
-uint32_t NoteFnGetMs(void);
+long unsigned int NoteFnGetMs(void);
 void NoteFnDelayMs(uint32_t ms);
 void NoteFnLockI2C(void);
 void NoteFnUnlockI2C(void);
@@ -118,9 +118,10 @@ bool NoteClearLocation(void);
 bool NoteGetLocationMode(char *modeBuf, int modeBufLen);
 bool NoteSetLocationMode(const char *mode);
 bool NoteGetServiceConfig(char *productBuf, int productBufLen, char *serviceBuf, int serviceBufLen, char *deviceBuf, int deviceBufLen, char *snBuf, int snBufLen);
+bool NoteGetServiceConfigST(char *productBuf, int productBufLen, char *serviceBuf, int serviceBufLen, char *deviceBuf, int deviceBufLen, char *snBuf, int snBufLen);
 bool NoteGetStatus(char *statusBuf, int statusBufLen, epoch *bootTime, bool *retUSB, bool *retSignals);
 bool NoteGetStatusST(char *statusBuf, int statusBufLen, epoch *bootTime, bool *retUSB, bool *retSignals);
-bool NoteSleep(char *stateb64, uint32_t seconds);
+bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes);
 bool NoteWake(int stateLen, void *state);
 bool NoteFactoryReset(bool deleteConfigSettings);
 bool NoteSetSerialNumber(const char *sn);
@@ -128,6 +129,8 @@ bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align);
 bool NoteTemplate(const char *target, J *body);
 bool NoteSend(const char *target, J *body, bool urgent);
 bool NoteSendToRoute(const char *method, const char *routeAlias, char *notefile, J *body);
+bool NoteGetVoltage(double *voltage);
+bool NoteGetTemperature(double *temp);
 
 // End of C-callable functions
 #ifdef __cplusplus
