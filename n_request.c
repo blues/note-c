@@ -74,9 +74,9 @@ J *NoteTransaction(J *req) {
     // If a reset of the module is required for any reason, do it now.
     // We must do this before acquiring lock.
     if (resetRequired) {
-        resetRequired = false;
         if (!NoteReset())
             return NULL;
+        resetRequired = false;
     }
 
     // Lock
