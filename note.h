@@ -131,6 +131,8 @@ bool NoteSend(const char *target, J *body, bool urgent);
 bool NoteSendToRoute(const char *method, const char *routeAlias, char *notefile, J *body);
 bool NoteGetVoltage(double *voltage);
 bool NoteGetTemperature(double *temp);
+bool NoteGetContact(char *nameBuf, int nameBufLen, char *orgBuf, int orgBufLen, char *roleBuf, int roleBufLen, char *emailBuf, int emailBufLen);
+bool NoteSetContact(char *nameBuf, char *orgBuf, char *roleBuf, char *emailBuf);
 
 // End of C-callable functions
 #ifdef __cplusplus

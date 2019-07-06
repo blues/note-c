@@ -741,6 +741,54 @@ bool NoteGetTemperature(double *temp) {
 	return success;
 }
 
+// Get Contact Info
+bool NoteGetContact(char *nameBuf, int nameBufLen, char *orgBuf, int orgBufLen, char *roleBuf, int roleBufLen, char *emailBuf, int emailBufLen) {
+    bool success = false;
+
+	if (nameBuf != NULL)
+		*nameBuf = '\0';
+	if (orgBuf != NULL)
+		*orgBuf = '\0';
+	if (roleBuf != NULL)
+		*roleBuf = '\0';
+	if (emailBuf != NULL)
+		*emailBuf = '\0';
+
+    J *rsp = NoteRequestResponse(NoteNewRequest("card.contact"));
+    if (rsp != NULL) {
+        success = !NoteResponseError(rsp);
+        if (success) {
+			if (nameBuf != NULL)
+				strlcpy(nameBuf, JGetString(rsp, "name"), nameBufLen);
+			if (orgBuf != NULL)
+				strlcpy(orgBuf, JGetString(rsp, "org"), orgBufLen);
+			if (roleBuf != NULL)
+				strlcpy(roleBuf, JGetString(rsp, "role"), roleBufLen);
+			if (emailBuf != NULL)
+				strlcpy(emailBuf, JGetString(rsp, "email"), emailBufLen);
+            NoteDeleteResponse(rsp);
+        }
+    }
+
+    return success;
+}
+
+// Set Contact Info
+bool NoteSetContact(char *nameBuf, char *orgBuf, char *roleBuf, char *emailBuf) {
+	J *req = NoteNewRequest("card.contact");
+	if (req == NULL)
+		return false;
+	if (nameBuf != NULL)
+        JAddStringToObject(req, "name", nameBuf);
+	if (orgBuf != NULL)
+        JAddStringToObject(req, "org", orgBuf);
+	if (roleBuf != NULL)
+        JAddStringToObject(req, "role", roleBuf);
+	if (emailBuf != NULL)
+        JAddStringToObject(req, "email", emailBuf);
+    return NoteRequest(req);
+}
+
 // A simple suppression timer based on a millisecond system clock.  This clock is reset to 0
 // after boot and every wake.  This returns true if the specified interval has elapsed, in seconds,
 // and it updates the timer if it expires so that we will go another period.
