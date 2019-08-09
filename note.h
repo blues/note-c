@@ -125,6 +125,7 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes);
 bool NoteWake(int stateLen, void *state);
 bool NoteFactoryReset(bool deleteConfigSettings);
 bool NoteSetSerialNumber(const char *sn);
+bool NoteSetProductID(const char *productID);
 bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align);
 bool NoteTemplate(const char *target, J *body);
 bool NoteSend(const char *target, J *body, bool urgent);

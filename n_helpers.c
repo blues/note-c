@@ -601,6 +601,22 @@ bool NoteFactoryReset(bool deleteConfigSettings) {
 
 }
 
+// Set the card product ID
+bool NoteSetProductID(const char *productID) {
+    bool success = false;
+    J *req = NoteNewRequest("service.set");
+    if (req != NULL) {
+        if (productID[0] == '\0')
+            JAddStringToObject(req, "product", "-");
+        else
+            JAddStringToObject(req, "product", productID);
+        success = NoteRequest(req);
+    }
+    // Flush cache so that service config is re-fetched
+    serviceConfigTimer = 0;
+    return success;
+}
+
 // Set the card serial number
 bool NoteSetSerialNumber(const char *sn) {
     bool success = false;
