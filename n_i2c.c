@@ -87,9 +87,9 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
         // We've now received the chunk
         jsonbufLen += chunklen;
 
-  		// If the last byte of the chunk is \n, chances are that we're done.  However, just so
-   		// that we pull everything pending from the module, we only exit when we've received
-   		// a newline AND there's nothing left available from the module.
+        // If the last byte of the chunk is \n, chances are that we're done.  However, just so
+        // that we pull everything pending from the module, we only exit when we've received
+        // a newline AND there's nothing left available from the module.
         if (jsonbufLen > 0 && jsonbuf[jsonbufLen-1] == '\n')
             receivedNewline = true;
 

@@ -86,7 +86,7 @@ bool JContainsString(J *rsp, const char *field, const char *substr);
 
 // Helper functions for apps that wish to limit their C library dependencies
 #define JNRound(x,NUMDIGITS) ((round((x) * 1E##NUMDIGITS)) / 1E##NUMDIGITS)
-#define JNTOA_PRECISION	(10)
+#define JNTOA_PRECISION (10)
 #define JNTOA_MAX       ((2*JNTOA_PRECISION)+1+1)
 char * JNtoA(double f, char * buf, int precision);
 double JAtoN(const char *string, char **endPtr);

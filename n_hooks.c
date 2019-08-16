@@ -44,14 +44,14 @@ static nTransactionFn notecardTransaction = NULL;
 
 // Set the debug output hooks if they aren't already set
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn) {
-	if (hookMalloc == NULL)
-	    hookMalloc = mallocfn;
-	if (hookFree == NULL)
-	    hookFree = freefn;
-	if (hookDelayMs == NULL)
-	    hookDelayMs = delayfn;
-	if (hookGetMs == NULL)
-	    hookGetMs = millisfn;
+    if (hookMalloc == NULL)
+        hookMalloc = mallocfn;
+    if (hookFree == NULL)
+        hookFree = freefn;
+    if (hookDelayMs == NULL)
+        hookDelayMs = delayfn;
+    if (hookGetMs == NULL)
+        hookGetMs = millisfn;
 }
 // Set the debug output hook
 void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn) {

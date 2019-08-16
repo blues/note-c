@@ -733,55 +733,55 @@ bool NoteSendToRoute(const char *method, const char *routeAlias, char *notefile,
 
 // Get the voltage of the Notecard
 bool NoteGetVoltage(double *voltage) {
-	bool success = false;
+    bool success = false;
     *voltage = 0.0;
     J *rsp = NoteRequestResponse(NoteNewRequest("card.voltage"));
-	if (rsp != NULL) {
+    if (rsp != NULL) {
         if (!NoteResponseError(rsp))
             *voltage = JGetNumber(rsp, "value");
         NoteDeleteResponse(rsp);
     }
-	return success;
+    return success;
 }
 
 // Get the temperature of the Notecard
 bool NoteGetTemperature(double *temp) {
-	bool success = false;
+    bool success = false;
     *temp = 0.0;
     J *rsp = NoteRequestResponse(NoteNewRequest("card.temp"));
-	if (rsp != NULL) {
+    if (rsp != NULL) {
         if (!NoteResponseError(rsp))
             *temp = JGetNumber(rsp, "value");
         NoteDeleteResponse(rsp);
     }
-	return success;
+    return success;
 }
 
 // Get Contact Info
 bool NoteGetContact(char *nameBuf, int nameBufLen, char *orgBuf, int orgBufLen, char *roleBuf, int roleBufLen, char *emailBuf, int emailBufLen) {
     bool success = false;
 
-	if (nameBuf != NULL)
-		*nameBuf = '\0';
-	if (orgBuf != NULL)
-		*orgBuf = '\0';
-	if (roleBuf != NULL)
-		*roleBuf = '\0';
-	if (emailBuf != NULL)
-		*emailBuf = '\0';
+    if (nameBuf != NULL)
+        *nameBuf = '\0';
+    if (orgBuf != NULL)
+        *orgBuf = '\0';
+    if (roleBuf != NULL)
+        *roleBuf = '\0';
+    if (emailBuf != NULL)
+        *emailBuf = '\0';
 
     J *rsp = NoteRequestResponse(NoteNewRequest("card.contact"));
     if (rsp != NULL) {
         success = !NoteResponseError(rsp);
         if (success) {
-			if (nameBuf != NULL)
-				strlcpy(nameBuf, JGetString(rsp, "name"), nameBufLen);
-			if (orgBuf != NULL)
-				strlcpy(orgBuf, JGetString(rsp, "org"), orgBufLen);
-			if (roleBuf != NULL)
-				strlcpy(roleBuf, JGetString(rsp, "role"), roleBufLen);
-			if (emailBuf != NULL)
-				strlcpy(emailBuf, JGetString(rsp, "email"), emailBufLen);
+            if (nameBuf != NULL)
+                strlcpy(nameBuf, JGetString(rsp, "name"), nameBufLen);
+            if (orgBuf != NULL)
+                strlcpy(orgBuf, JGetString(rsp, "org"), orgBufLen);
+            if (roleBuf != NULL)
+                strlcpy(roleBuf, JGetString(rsp, "role"), roleBufLen);
+            if (emailBuf != NULL)
+                strlcpy(emailBuf, JGetString(rsp, "email"), emailBufLen);
             NoteDeleteResponse(rsp);
         }
     }
@@ -791,16 +791,16 @@ bool NoteGetContact(char *nameBuf, int nameBufLen, char *orgBuf, int orgBufLen, 
 
 // Set Contact Info
 bool NoteSetContact(char *nameBuf, char *orgBuf, char *roleBuf, char *emailBuf) {
-	J *req = NoteNewRequest("card.contact");
-	if (req == NULL)
-		return false;
-	if (nameBuf != NULL)
+    J *req = NoteNewRequest("card.contact");
+    if (req == NULL)
+        return false;
+    if (nameBuf != NULL)
         JAddStringToObject(req, "name", nameBuf);
-	if (orgBuf != NULL)
+    if (orgBuf != NULL)
         JAddStringToObject(req, "org", orgBuf);
-	if (roleBuf != NULL)
+    if (roleBuf != NULL)
         JAddStringToObject(req, "role", roleBuf);
-	if (emailBuf != NULL)
+    if (emailBuf != NULL)
         JAddStringToObject(req, "email", emailBuf);
     return NoteRequest(req);
 }
