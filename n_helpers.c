@@ -84,8 +84,9 @@ epoch NoteTimeST() {
                     epoch seconds = JGetInt(rsp, "time");
                     if (seconds != 0) {
 
-                        // Set the time
-                        setTime(seconds);
+                        // Set the time if it hasn't yet been set
+						if (timeBase == 0)
+	                        setTime(seconds);
 
                         // Get the zone
                         char *z = JGetString(rsp, "zone");
