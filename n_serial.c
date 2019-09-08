@@ -30,7 +30,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
     // in our error handling.
     for (int start = _GetMs(); !_SerialAvailable(); ) {
         if (_GetMs() >= start + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
-            _Debug("reply to request didn't arrive from module in %dmS\n", _GetMs() - start);
+            _Debug("reply to request didn't arrive from module in %dms\n", _GetMs() - start);
             return "transaction timeout";
         }
         _DelayMs(10);
@@ -47,8 +47,14 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
     }
     int jsonbufLen = 0;
     char ch = 0;
+    int start = _GetMs();
     while (ch != '\n') {
         if (!_SerialAvailable()) {
+			if (_GetMs() >= start + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+				jsonbuf[jsonbufLen] = '\0';
+	            _Debug("received only %d-byte partial reply after %dms: %s\n", jsonbufLen, _GetMs() - start, jsonbuf);
+	            return "transaction incomplete";
+			}
             _DelayMs(1);
             continue;
         }
@@ -97,7 +103,7 @@ bool serialNoteReset() {
         _Debug("notecard serial reset\n");
 
         // Attempt to synchronize serial
-        for (int i=0; i<10; i++) {
+        for (int i=0; i<3; i++) {
             _SerialWrite((uint8_t *)"\n", 1);
             _SerialWrite((uint8_t *)"\n", 1);
             _DelayMs(500);

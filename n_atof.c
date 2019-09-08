@@ -21,8 +21,6 @@
 #   include <stdlib.h>
 #endif
 #include <ctype.h>
-#include <errno.h>
-extern  int     errno;
 
 #include "n_lib.h"
 
@@ -246,7 +244,6 @@ JAtoN(string, endPtr)
     }
     if (exp > maxExponent) {
         exp = maxExponent;
-        errno = ERANGE;
     }
     dblExp = 1.0;
     for (d = powersOf10; exp != 0; exp >>= 1, d += 1) {
