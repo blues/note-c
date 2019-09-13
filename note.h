@@ -29,10 +29,9 @@ typedef void (*delayMsFn) (uint32_t ms);
 typedef long unsigned int (*getMsFn) (void);
 typedef size_t (*debugOutputFn) (const char *text);
 typedef void (*serialResetFn) (void);
-typedef void (*serialWriteLineFn) (const char *text);
-typedef void (*serialWriteFn) (uint8_t *data, size_t len);
+typedef void (*serialTransmitFn) (uint8_t *data, size_t len, bool flush);
 typedef bool (*serialAvailableFn) (void);
-typedef char (*serialReadFn) (void);
+typedef char (*serialReceiveFn) (void);
 typedef void (*i2cResetFn) (void);
 typedef const char * (*i2cTransmitFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
 typedef const char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
@@ -52,7 +51,9 @@ void NoteSetFnDebugOutput(debugOutputFn fn);
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, mutexFn unlockNotefn);
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
 void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
-void NoteSetFnSerial(serialResetFn resetfn, serialWriteLineFn printlnfn, serialWriteFn writefn, serialAvailableFn availfn, serialReadFn readfn);
+void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn writefn, serialAvailableFn availfn, serialReceiveFn readfn);
+#define NOTE_I2C_ADDR_DEFAULT	0
+#define NOTE_I2C_MAX_DEFAULT	0
 void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTransmitFn transmitfn, i2cReceiveFn receivefn);
 
 // Calls to the functions set above

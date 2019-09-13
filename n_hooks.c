@@ -25,10 +25,9 @@ getMsFn hookGetMs = NULL;
 uint32_t hookActiveInterface = interfaceNone;
 
 serialResetFn hookSerialReset = NULL;
-serialWriteLineFn hookSerialWriteLine = NULL;
-serialWriteFn hookSerialWrite = NULL;
+serialTransmitFn hookSerialTransmit = NULL;
 serialAvailableFn hookSerialAvailable = NULL;
-serialReadFn hookSerialRead = NULL;
+serialReceiveFn hookSerialReceive = NULL;
 
 uint32_t i2cAddress = 0;
 uint32_t i2cMax = 0;
@@ -69,14 +68,13 @@ void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, 
     hookLockNote = lockNotefn;
     hookUnlockNote = unlockNotefn;
 }
-void NoteSetFnSerial(serialResetFn resetfn, serialWriteLineFn printlnfn, serialWriteFn writefn, serialAvailableFn availfn, serialReadFn readfn) {
+void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn transmitfn, serialAvailableFn availfn, serialReceiveFn receivefn) {
     hookActiveInterface = interfaceSerial;
 
     hookSerialReset = resetfn;
-    hookSerialWriteLine = printlnfn;
-    hookSerialWrite = writefn;
+    hookSerialTransmit = transmitfn;
     hookSerialAvailable = availfn;
-    hookSerialRead = readfn;
+    hookSerialReceive = receivefn;
 
     notecardReset = serialNoteReset;
     notecardTransaction = serialNoteTransaction;
@@ -146,22 +144,18 @@ void NoteFnSerialReset() {
     if (hookActiveInterface == interfaceSerial && hookSerialReset != NULL)
         hookSerialReset();
 }
-void NoteFnSerialWriteLine(const char *text) {
-    if (hookActiveInterface == interfaceSerial && hookSerialWriteLine != NULL)
-        hookSerialWriteLine(text);
-}
-void NoteFnSerialWrite(uint8_t *text, size_t len) {
-    if (hookActiveInterface == interfaceSerial && hookSerialWrite != NULL)
-        hookSerialWrite(text, len);
+void NoteFnSerialTransmit(uint8_t *text, size_t len, bool flush) {
+    if (hookActiveInterface == interfaceSerial && hookSerialTransmit != NULL)
+        hookSerialTransmit(text, len, flush);
 }
 bool NoteFnSerialAvailable() {
     if (hookActiveInterface == interfaceSerial && hookSerialAvailable != NULL)
         return hookSerialAvailable();
     return false;
 }
-char NoteFnSerialRead() {
-    if (hookActiveInterface == interfaceSerial && hookSerialRead != NULL)
-        return hookSerialRead();
+char NoteFnSerialReceive() {
+    if (hookActiveInterface == interfaceSerial && hookSerialReceive != NULL)
+        return hookSerialReceive();
     return 0;
 }
 void NoteFnI2CReset() {
@@ -179,14 +173,14 @@ const char *NoteFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Siz
     return "i2c not active";
 }
 uint32_t NoteFnI2CAddress() {
-    if (i2cAddress == 0)
+    if (i2cAddress == NOTE_I2C_MAX_DEFAULT)
         return 0x17;
     return i2cAddress;
 }
 uint32_t NoteFnI2CMax() {
     // Many Arduino libraries (such as ESP32) have a limit less than 32, so if the max isn't specified
     // we must assume the worst and segment the I2C messages into very tiny chunks.
-    if (i2cMax == 0)
+    if (i2cMax == NOTE_I2C_MAX_DEFAULT)
         return 30;
     // Note design specs
     if (i2cMax > 127)

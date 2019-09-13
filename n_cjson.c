@@ -55,7 +55,7 @@
 
 // For Note, disable dependencies
 #undef ENABLE_LOCALES 
-#define MINIMIZE_CLIB_DEPENDENCIES      0       // Use tiny but non-robust versions of float conversions
+#define MINIMIZE_CLIB_DEPENDENCIES      1       // Use tiny but non-robust versions of float conversions
                                                 // for situations in which there is no clib support for doubles
 
 #include "n_lib.h"
