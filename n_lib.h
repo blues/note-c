@@ -31,10 +31,9 @@ bool serialNoteReset(void);
 void NoteFnLockNote(void);
 void NoteFnUnlockNote(void);
 void NoteFnSerialReset(void);
-void NoteFnSerialWriteLine(const char *);
-void NoteFnSerialWrite(uint8_t *, size_t);
+void NoteFnSerialTransmit(uint8_t *, size_t, bool);
 bool NoteFnSerialAvailable(void);
-char NoteFnSerialRead(void);
+char NoteFnSerialReceive(void);
 void NoteFnI2CReset(void);
 const char *NoteFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
 const char *NoteFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
@@ -45,10 +44,9 @@ const char *NoteFnTransaction(char *json, char **jsonResponse);
 #define _LockNote NoteFnLockNote
 #define _UnlockNote NoteFnUnlockNote
 #define _SerialReset NoteFnSerialReset
-#define _SerialWriteLine NoteFnSerialWriteLine
-#define _SerialWrite NoteFnSerialWrite
+#define _SerialTransmit NoteFnSerialTransmit
 #define _SerialAvailable NoteFnSerialAvailable
-#define _SerialRead NoteFnSerialRead
+#define _SerialReceive NoteFnSerialReceive
 #define _I2CReset NoteFnI2CReset
 #define _I2CTransmit NoteFnI2CTransmit
 #define _I2CReceive NoteFnI2CReceive

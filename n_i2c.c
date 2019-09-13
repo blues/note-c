@@ -4,6 +4,13 @@
 
 #include "n_lib.h"
 
+// We've noticed that there's an instability in some cards' implementations of I2C, and as a result
+// we introduce an intentional delay before each and every I2C I/O.  The timing was computed empirically based
+// on a number of commercial devices.
+static void _DelayIO() {
+  _DelayMs(6);
+}
+
 // Initiate a transaction to the notecard using reqdoc, and return the result in rspdoc
 const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 
@@ -21,12 +28,17 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
     uint32_t sentInSegment = 0;
     while (jsonLen > 0) {
         int chunklen = (uint8_t) (jsonLen > _I2CMax() ? _I2CMax() : jsonLen);
+        _LockI2C();
+        _DelayIO();
         errstr = _I2CTransmit(_I2CAddress(), chunk, chunklen);
         if (errstr != NULL) {
-            _Free(transmitBuf);
+          _Free(transmitBuf);
+        _I2CReset();
+        _UnlockI2C();
             _Debug("i2c transmit: %s\n", errstr);
             return errstr;
         }
+        _UnlockI2C();
         chunk += chunklen;
         jsonLen -= chunklen;
         sentInSegment += chunklen;
@@ -77,7 +89,10 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 
         // Read the chunk
         uint32_t available;
+        _LockI2C();
+        _DelayIO();
         const char *err = _I2CReceive(_I2CAddress(), (uint8_t *) &jsonbuf[jsonbufLen], chunklen, &available);
+        _UnlockI2C();
         if (err != NULL) {
             _Free(jsonbuf);
             _Debug("%s: read of %d bytes\n", err, chunklen);
@@ -128,7 +143,9 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 bool i2cNoteReset() {
 
     // Reset the I2C subsystem
+    _LockI2C();
     _I2CReset();
+    _UnlockI2C();
 
     // Synchronize by guaranteeing not only that I2C works, but that we drain the remainder of any
     // pending partial reply from a previously-aborted session.  This outer loop does retries on
@@ -147,7 +164,10 @@ bool i2cNoteReset() {
             uint8_t buffer[128];
             chunklen = (chunklen > sizeof(buffer)) ? sizeof(buffer) : chunklen;
             chunklen = (chunklen > _I2CMax()) ? _I2CMax() : chunklen;
+            _LockI2C();
+            _DelayIO();
             const char *err = _I2CReceive(_I2CAddress(), buffer, chunklen, &available);
+            _UnlockI2C();
             if (err) break;
 
             // If nothing left, we're ready to transmit a command to receive the data
@@ -166,7 +186,9 @@ bool i2cNoteReset() {
             break;
 
         // Reinitialize i2c if there's no response
+        _LockI2C();
         _I2CReset();
+        _UnlockI2C();
         _Debug("warning: notecard not responding\n");
         _DelayMs(2000);
 

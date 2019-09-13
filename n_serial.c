@@ -15,12 +15,12 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
         if (segLen > CARD_REQUEST_SEGMENT_MAX_LEN)
             segLen = CARD_REQUEST_SEGMENT_MAX_LEN;
         segLeft -= segLen;
+        _SerialTransmit((uint8_t *)&json[segOff], segLen, false);
         if (segLeft == 0) {
-            _SerialWriteLine(&json[segOff]);
+          _SerialTransmit("\n", 1, true);
             break;
         }
-        _SerialWrite((uint8_t *)&json[segOff], segLen);
-        segOff += segLen;        
+        segOff += segLen;
         _DelayMs(CARD_REQUEST_SEGMENT_DELAY_MS);
     }
 
@@ -50,15 +50,26 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
     int start = _GetMs();
     while (ch != '\n') {
         if (!_SerialAvailable()) {
-			if (_GetMs() >= start + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
-				jsonbuf[jsonbufLen] = '\0';
-	            _Debug("received only %d-byte partial reply after %dms: %s\n", jsonbufLen, _GetMs() - start, jsonbuf);
-	            return "transaction incomplete";
-			}
-            _DelayMs(1);
-            continue;
+          ch = 0;
+          if (_GetMs() >= start + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+            jsonbuf[jsonbufLen] = '\0';
+            _Debug("received only %d-byte partial reply after %dms: %s\n", jsonbufLen, _GetMs() - start, jsonbuf);
+            _Free(jsonbuf);
+            return "transaction incomplete";
+          }
+          _DelayMs(1);
+          continue;
         }
-        ch = _SerialRead();
+        ch = _SerialReceive();
+
+        // Because serial I/O can be error-prone, catch common bad data early, knowing that we only accept ASCII
+        if (ch == 0 || (ch & 0x80) != 0) {
+          _Debug("invalid data received on serial port from notecard: 0x%02x\n", ch);
+          _Free(jsonbuf);
+          return "serial communications error";
+        }
+
+        // Append into the json buffer
         jsonbuf[jsonbufLen++] = ch;
         if (jsonbufLen >= jsonbufAllocLen) {
             jsonbufAllocLen += 512;
@@ -85,7 +96,6 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 
 // Initialize or re-initialize the module, returning false if anything fails
 bool serialNoteReset() {
-    bool notecardReady = false;
 
     // Initialize, or re-initialize.  Because we've observed Arduino serial driver flakiness,
     // close the Arduino HardwareSerial port in order to re-initialize it.
@@ -98,42 +108,38 @@ bool serialNoteReset() {
 
     // The guaranteed behavior for robust resyncing is to send two newlines
     // and  wait for two echoed blank lines in return.
-    for (int retries=0; !notecardReady && retries<10; retries++) {
+    bool notecardReady = false;
+    for (int retries=0; retries<10; retries++) {
 
         _Debug("notecard serial reset\n");
 
-        // Attempt to synchronize serial
-        for (int i=0; i<3; i++) {
-            _SerialWrite((uint8_t *)"\n", 1);
-            _SerialWrite((uint8_t *)"\n", 1);
-            _DelayMs(500);
-            bool somethingFound = false;
-            bool nonControlCharFound = false;
-            while (_SerialAvailable() > 0) {
+        // Send a few newlines to the module to clean out request/response processing
+        _SerialTransmit((uint8_t *)"\n\n", 2, true);
+
+        // Drain all serial for 500ms
+        bool somethingFound = false;
+        bool nonControlCharFound = false;
+        int start = _GetMs();
+        while (_GetMs() < start+500) {
+            while (_SerialAvailable()) {
                 somethingFound = true;
-                char ch = _SerialRead();
-                if (ch >= ' ')
+                if (_SerialReceive() >= ' ')
                     nonControlCharFound = true;
             }
-            if (somethingFound && !nonControlCharFound) {
-                notecardReady = true;
-                break;
-            }
-            _DelayMs(1000);
+            _DelayMs(1);
         }
 
-        // Did we successfully communicate with the notecard?
-        if (notecardReady)
-            break;
+        // If all we got back is newlines, we're ready
+        if (somethingFound && !nonControlCharFound) {
+          notecardReady = true;
+          break;
+        }
 
-        _Debug("Warning: notecard not responding\n");
+        _Debug(somethingFound ? "unrecognized data from notecard\n" : "notecard not responding\n");
         _DelayMs(500);
         _SerialReset();
-    }
 
-    // Flush anything pending on input prior to sending the command
-    while (_SerialAvailable())
-        _SerialRead();
+    }
 
     // Done
     return notecardReady;
