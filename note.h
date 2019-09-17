@@ -57,6 +57,7 @@ void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn writefn, serialAvai
 void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTransmitFn transmitfn, i2cReceiveFn receivefn);
 
 // Calls to the functions set above
+#define NotePrintf NoteFnDebug
 void NoteFnDebug(const char *format, ...);
 void *NoteFnMalloc(size_t size);
 void NoteFnFree(void *);
