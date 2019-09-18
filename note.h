@@ -80,6 +80,7 @@ void JFree(void *p);
 bool JIsPresent(J *rsp, const char *field);
 char *JGetString(J *rsp, const char *field);
 double JGetNumber(J *rsp, const char *field);
+J *JGetObject(J *rsp, const char *field);
 int JGetInt(J *rsp, const char *field);
 bool JGetBool(J *rsp, const char *field);
 bool JIsNullString(J *rsp, const char *field);

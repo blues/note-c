@@ -83,6 +83,18 @@ char *JGetString(J *rsp, const char *field) {
     return item->valuestring;
 }
 
+// Return an object
+J *JGetObject(J *rsp, const char *field) {
+    if (rsp == NULL)
+        return NULL;
+    J *item = JGetObjectItem(rsp, field);
+    if (item == NULL)
+        return NULL;
+    if (!JIsObject(item))
+        return NULL;
+    return item;
+}
+
 // Return a number from the specified JSON object, or 0 if it's not present
 double JGetNumber(J *rsp, const char *field) {
     if (rsp == NULL)
