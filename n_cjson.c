@@ -60,6 +60,9 @@
 
 #include "n_lib.h"
 
+#define STRINGIFY(x) STRINGIFY_(x)
+#define STRINGIFY_(x) #x
+
 #ifdef ENABLE_LOCALES
 #include <locale.h>
 #endif
@@ -97,10 +100,7 @@ N_CJSON_PUBLIC(char *) JGetStringValue(J *item) {
 
 N_CJSON_PUBLIC(const char*) JVersion(void)
 {
-    static char version[15];
-    sprintf(version, "%i.%i.%i", N_CJSON_VERSION_MAJOR, N_CJSON_VERSION_MINOR, N_CJSON_VERSION_PATCH);
-
-    return version;
+    return STRINGIFY(N_CJSON_VERSION_MAJOR) "." STRINGIFY(N_CJSON_VERSION_MINOR) "." STRINGIFY(N_CJSON_VERSION_PATCH);
 }
 
 /* Case insensitive string comparison, doesn't consider two NULL pointers equal though */
@@ -486,7 +486,6 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
     size_t i = 0;
     unsigned char number_buffer[26]; /* temporary buffer to print the number into */
     unsigned char decimal_point = get_decimal_point();
-    double test;
 
     if (output_buffer == NULL)
     {
@@ -496,11 +495,14 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
     /* This checks for NaN and Infinity */
     if ((d * 0) != 0)
     {
-        length = sprintf((char*)number_buffer, "null");
+        char *nbuf = (char *) number_buffer;
+        strcpy(nbuf, "null");
+        length = strlen(nbuf);
     }
     else
     {
 #if !MINIMIZE_CLIB_DEPENDENCIES
+        double test;
         /* Try 15 decimal places of precision to avoid nonsignificant nonzero digits */
         length = sprintf((char*)number_buffer, "%1.15g", d);
 
@@ -511,12 +513,13 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
             length = sprintf((char*)number_buffer, "%1.17g", d);
         }
 #else
-        JNtoA(d, number_buffer, -1);
-        length = strlen(number_buffer);
+        char *nbuf = (char *) number_buffer;
+        JNtoA(d, nbuf, -1);
+        length = strlen(nbuf);
 #endif
     }
 
-    /* sprintf failed or buffer overrun occured */
+    /* conversion failed or buffer overrun occured */
     if ((length < 0) || (length > (int)(sizeof(number_buffer) - 1)))
     {
         return false;
@@ -835,6 +838,22 @@ fail:
     return false;
 }
 
+/* Convert a 16-bit number to 4 hex digits, null-terminating it */
+void htoa16(uint16_t n, unsigned char *p)
+{
+    int i;
+    for (i=0; i<4; i++)
+    {
+        uint16_t nibble = (n >> 12) & 0xff;
+        n = n << 4;
+        if (nibble >= 10)
+            *p++ = 'A' + (nibble-10);
+        else
+            *p++ = '0' + nibble;
+    }
+    *p = '\0';
+}
+
 /* Render the cstring provided to an escaped version that can be printed. */
 static Jbool print_string_ptr(const unsigned char * const input, printbuffer * const output_buffer)
 {
@@ -945,7 +964,8 @@ static Jbool print_string_ptr(const unsigned char * const input, printbuffer * c
                     break;
                 default:
                     /* escape and print as unicode codepoint */
-                    sprintf((char*)output_pointer, "u%04x", *input_pointer);
+                    *output_pointer++ = 'u';
+                    htoa16(*input_pointer, output_pointer);
                     output_pointer += 4;
                     break;
             }

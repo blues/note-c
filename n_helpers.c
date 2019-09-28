@@ -384,7 +384,7 @@ bool NoteGetServiceConfigST(char *productBuf, int productBufLen, char *serviceBu
     bool success = false;
 
     // Use cache except for a rare refresh
-    if (scProduct[0] == '\0' || scDevice[0] == '\0' || timerExpiredSecs(&serviceConfigTimer, 4*60*60*1000)) {
+    if (scProduct[0] == '\0' || scDevice[0] == '\0' || timerExpiredSecs(&serviceConfigTimer, 4*60*60)) {
         J *rsp = NoteRequestResponse(NoteNewRequest("service.get"));
         if (rsp != NULL) {
             success = !NoteResponseError(rsp);
@@ -720,7 +720,8 @@ bool NoteSendToRoute(const char *method, const char *routeAlias, char *notefile,
 
     // Create the post transaction
     char request[32];
-    snprintf(request, sizeof(request), "web.%s", method);
+    strlcpy(request, "web.", sizeof(request));
+    strlcat(request, method, sizeof(request));
     req = NoteNewRequest(request);
 
     // Add the body, and the alias of the route on the notehub, hard-wired here

@@ -151,7 +151,8 @@ bool i2cNoteReset() {
     // pending partial reply from a previously-aborted session.  This outer loop does retries on
     // I2C error, and is simply here for robustness.
     bool notecardReady = false;
-    for (int retries=0; !notecardReady && retries<3; retries++) {
+    int retries;
+    for (retries=0; !notecardReady && retries<3; retries++) {
 
         _Debug("notecard i2c reset\n");
 

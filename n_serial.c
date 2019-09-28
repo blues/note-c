@@ -28,7 +28,8 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
     // because the json parse operation immediately following is subject to the
     // serial port timeout. We'd like more flexibility in max timeout and ultimately
     // in our error handling.
-    for (int start = _GetMs(); !_SerialAvailable(); ) {
+    int start;
+    for (start = _GetMs(); !_SerialAvailable(); ) {
         if (_GetMs() >= start + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
             _Debug("reply to request didn't arrive from module in %dms\n", _GetMs() - start);
             return "transaction timeout";
@@ -47,7 +48,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
     }
     int jsonbufLen = 0;
     char ch = 0;
-    int start = _GetMs();
+    start = _GetMs();
     while (ch != '\n') {
         if (!_SerialAvailable()) {
           ch = 0;
@@ -109,7 +110,8 @@ bool serialNoteReset() {
     // The guaranteed behavior for robust resyncing is to send two newlines
     // and  wait for two echoed blank lines in return.
     bool notecardReady = false;
-    for (int retries=0; retries<10; retries++) {
+    int retries;
+    for (retries=0; retries<10; retries++) {
 
         _Debug("notecard serial reset\n");
 

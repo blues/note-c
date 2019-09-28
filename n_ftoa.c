@@ -56,7 +56,8 @@ char * JNtoA(double f, char * buf, int original_precision)
     uint8_t fbytes[8];
     memcpy(&fbytes, &f, sizeof(fbytes));
     bool wasFF = true;
-    for (int i=0; i<sizeof(fbytes); i++)
+    int i;
+    for (i=0; i<sizeof(fbytes); i++)
         if (fbytes[i] != 0xff) wasFF = false;
     if (wasFF)
         f = 0.0;
