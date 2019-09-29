@@ -99,12 +99,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 bool serialNoteReset() {
 
     // Initialize, or re-initialize.  Because we've observed Arduino serial driver flakiness,
-    // close the Arduino HardwareSerial port in order to re-initialize it.
-    static bool first = true;
-    if (first)
-        first = false;
-    else
-        _DelayMs(500);
+    _DelayMs(250);
     _SerialReset();
 
     // The guaranteed behavior for robust resyncing is to send two newlines

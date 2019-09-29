@@ -76,7 +76,6 @@ J *NoteTransaction(J *req) {
     if (resetRequired) {
         if (!NoteReset())
             return NULL;
-        resetRequired = false;
     }
 
     // Lock
@@ -103,7 +102,7 @@ J *NoteTransaction(J *req) {
 
     // If error, queue up a reset
     if (errStr != NULL) {
-        resetRequired = true;
+		NoteResetRequired();
         J *rsp = errDoc(errStr);
         _UnlockNote();
         return rsp;
@@ -133,6 +132,11 @@ J *NoteTransaction(J *req) {
     // Done
     return rspdoc;
     
+}
+
+// Mark that a reset will be required before doing further I/O on a given port
+void NoteResetRequired() {
+    resetRequired = true;
 }
 
 // Initialize or re-initialize the module, returning false if anything fails
