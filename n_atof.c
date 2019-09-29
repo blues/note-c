@@ -176,8 +176,8 @@ JAtoN(string, endPtr)
         p = string;
         goto done;
     } else {
-        int frac1, frac2;
-        frac1 = 0;
+        long frac1, frac2;
+        frac1 = 0L;
         for ( ; mantSize > 9; mantSize -= 1)
         {
             c = *p;
@@ -188,7 +188,7 @@ JAtoN(string, endPtr)
             }
             frac1 = 10*frac1 + (c - '0');
         }
-        frac2 = 0;
+        frac2 = 0L;
         for (; mantSize > 0; mantSize -= 1)
         {
             c = *p;
