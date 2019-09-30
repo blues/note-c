@@ -142,10 +142,9 @@ void NoteResetRequired() {
 // Initialize or re-initialize the module, returning false if anything fails
 bool NoteReset() {
     _LockNote();
-    resetRequired = false;
-    bool success = _NoteReset();
+    resetRequired = !_NoteReset();
     _UnlockNote();
-    return success;
+    return !resetRequired;
 }
 
 // Check to see if a notecard error is present
