@@ -31,7 +31,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 	uint32_t start;
 	for (start = _GetMs(); !_SerialAvailable(); ) {
 		if (_GetMs() >= start + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
-			_Debug("reply to request didn't arrive from module in %dms\n", _GetMs() - start);
+			_Debug("reply to request didn't arrive from module in time\n");
 			return "transaction timeout";
 		}
 		_DelayMs(10);
@@ -43,7 +43,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 	int jsonbufAllocLen = 1024;
 	char *jsonbuf = (char *) _Malloc(jsonbufAllocLen+1);
 	if (jsonbuf == NULL) {
-		_Debug("transaction: jsonbuf malloc(%d) failed\n", jsonbufAllocLen);
+		_Debug("transaction: jsonbuf malloc failed\n");
 		return "insufficient memory";
 	}
 	int jsonbufLen = 0;
@@ -54,7 +54,9 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 			ch = 0;
 			if (_GetMs() >= start + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
 				jsonbuf[jsonbufLen] = '\0';
-				_Debug("received only %d-byte partial reply after %dms: %s\n", jsonbufLen, _GetMs() - start, jsonbuf);
+				_Debug("received only partial reply after timeout:\n");
+				_Debug(jsonbuf);
+				_Debug("\n");
 				_Free(jsonbuf);
 				return "transaction incomplete";
 			}
@@ -65,7 +67,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 
 		// Because serial I/O can be error-prone, catch common bad data early, knowing that we only accept ASCII
 		if (ch == 0 || (ch & 0x80) != 0) {
-			_Debug("invalid data received on serial port from notecard: 0x%02x\n", ch);
+			_Debug("invalid data received on serial port from notecard\n");
 			_Free(jsonbuf);
 			return "serial communications error";
 		}
@@ -76,7 +78,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 			jsonbufAllocLen += 512;
 			char *jsonbufNew = (char *) _Malloc(jsonbufAllocLen+1);
 			if (jsonbufNew == NULL) {
-				_Debug("transaction: jsonbuf malloc(%d) grow failed\n", jsonbufAllocLen);
+				_Debug("transaction: jsonbuf malloc grow failed\n");
 				_Free(jsonbuf);
 				return "insufficient memory";
 			}

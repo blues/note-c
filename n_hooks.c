@@ -94,8 +94,11 @@ void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn, i2cT
     notecardTransaction = i2cNoteTransaction;
 }
 
-
 // Runtime hook wrappers
+void NoteFnDebugMsg(const char *line) {
+    if (hookDebugOutput != NULL)
+        hookDebugOutput(line);
+}
 void NoteFnDebug(const char *format, ...) {
     if (hookDebugOutput != NULL) {
         char line[256];

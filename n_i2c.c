@@ -35,7 +35,9 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 			_Free(transmitBuf);
 			_I2CReset();
 			_UnlockI2C();
-			_Debug("i2c transmit: %s\n", errstr);
+			_Debug("i2c transmit: ");
+			_Debug(errstr);
+			_Debug("\n");
 			return errstr;
 		}
 		_UnlockI2C();
@@ -57,7 +59,7 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 	int jsonbufAllocLen = 1024;
 	char *jsonbuf = (char *) _Malloc(jsonbufAllocLen+1);
 	if (jsonbuf == NULL) {
-		_Debug("transaction: jsonbuf malloc(%d) failed\n", jsonbufAllocLen);
+		_Debug("transaction: jsonbuf malloc failed\n");
 		return "insufficient memory";
 	}
 
@@ -78,7 +80,7 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 				jsonbufAllocLen += growlen;
 			char *jsonbufNew = (char *) _Malloc(jsonbufAllocLen+1);
 			if (jsonbufNew == NULL) {
-				_Debug("transaction: jsonbuf grow malloc(%d) failed\n", jsonbufAllocLen);
+				_Debug("transaction: jsonbuf grow malloc failed\n");
 				_Free(jsonbuf);
 				return "insufficient memory";
 			}
@@ -95,7 +97,7 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 		_UnlockI2C();
 		if (err != NULL) {
 			_Free(jsonbuf);
-			_Debug("%s: read of %d bytes\n", err, chunklen);
+			_Debug("i2c receive error\n");
 			return err;
 		}
 
@@ -122,7 +124,7 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 		// If we've timed out and nothing's available, exit
 		if (_GetMs() >= start + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
 			_Free(jsonbuf);
-			_Debug("reply to request didn't arrive from module in %ld sec\n", (_GetMs() - start)/1000);
+			_Debug("reply to request didn't arrive from module in time\n");
 			return "notecard request or response was lost";
 		}
 

@@ -65,7 +65,7 @@ epoch NoteTime() {
 static void setTime(epoch seconds) {
     timeBase = seconds;
     timeBaseSetAtMs = _GetMs();
-    _Debug("setting time to %d\n", seconds);
+    _Debug("setting time\n");
 }
 
 // Get the current epoch time as known by the module.  If it isn't known by the module, just
@@ -498,7 +498,7 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes) {
     }
 
     // Put ourselves to sleep
-    _Debug("requesting sleep for %d seconds\n", seconds);
+    _Debug("requesting sleep\n");
     J *req = NoteNewRequest("card.attn");
     if (req != NULL) {
         // Add the base64 item in a wonderful way that doesn't strdup the huge string
@@ -560,7 +560,7 @@ bool NoteWake(int stateLen, void *state) {
     int actualLen = JB64Decode(p, payload);
     if (actualLen != stateLen) {
         _Free(p);
-        _Debug("*** (%d != %d) discarding saved state\n", actualLen, stateLen);
+        _Debug("*** discarding saved state\n");
         NoteDeleteResponse(rsp);
         return false;
     }

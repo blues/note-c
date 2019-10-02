@@ -59,6 +59,7 @@ void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTran
 
 // Calls to the functions set above
 #define NotePrintf NoteFnDebug
+void NoteFnDebugMsg(const char *message);
 void NoteFnDebug(const char *format, ...);
 void *NoteFnMalloc(size_t size);
 void NoteFnFree(void *);

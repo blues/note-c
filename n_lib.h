@@ -52,7 +52,7 @@ const char *NoteFnTransaction(char *json, char **jsonResponse);
 #define _I2CReceive NoteFnI2CReceive
 #define _NoteReset NoteFnNoteReset
 #define _Transaction NoteFnTransaction
-#define _Debug NoteFnDebug
+#define _Debug NoteFnDebugMsg
 #define _Malloc NoteFnMalloc
 #define _Free NoteFnFree
 #define _GetMs NoteFnGetMs
