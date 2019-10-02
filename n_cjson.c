@@ -127,21 +127,7 @@ static int case_insensitive_strcmp(const unsigned char *string1, const unsigned 
     return tolower(*string1) - tolower(*string2);
 }
 
-typedef struct internal_hooks
-{
-    void *(*allocate)(size_t size);
-    void (*deallocate)(void *pointer);
-    void *(*reallocate)(void *pointer, size_t size);
-} internal_hooks;
-
-#define internal_malloc _Malloc
-#define internal_free _Free
-#define internal_realloc NULL
-
-static internal_hooks default_hooks = { internal_malloc, internal_free, internal_realloc };
-static internal_hooks global_hooks = { internal_malloc, internal_free, internal_realloc };
-
-static unsigned char* Jstrdup(const unsigned char* string, const internal_hooks * const hooks)
+static unsigned char* Jstrdup(const unsigned char* string)
 {
     size_t length = 0;
     unsigned char *copy = NULL;
@@ -152,7 +138,7 @@ static unsigned char* Jstrdup(const unsigned char* string, const internal_hooks 
     }
 
     length = strlen((const char*)string) + sizeof("");
-    copy = (unsigned char*)hooks->allocate(length);
+    copy = (unsigned char*)_Malloc(length);
     if (copy == NULL)
     {
         return NULL;
@@ -162,48 +148,17 @@ static unsigned char* Jstrdup(const unsigned char* string, const internal_hooks 
     return copy;
 }
 
-N_CJSON_PUBLIC(void) JInitHooks(JHooks* hooks)
-{
-    if (hooks == NULL)
-    {
-        /* Reset hooks */
-        global_hooks.allocate = default_hooks.allocate;
-        global_hooks.deallocate = default_hooks.deallocate;
-        global_hooks.reallocate = default_hooks.reallocate;
-        return;
-    }
-
-    global_hooks.allocate = default_hooks.allocate;
-    if (hooks->malloc_fn != NULL)
-    {
-        global_hooks.allocate = hooks->malloc_fn;
-    }
-
-    global_hooks.deallocate = default_hooks.deallocate;
-    if (hooks->free_fn != NULL)
-    {
-        global_hooks.deallocate = hooks->free_fn;
-    }
-
-    /* use realloc only if both free and malloc are used */
-    global_hooks.reallocate = default_hooks.reallocate;
-    if ((global_hooks.allocate == default_hooks.allocate) && (global_hooks.deallocate == default_hooks.deallocate))
-    {
-        global_hooks.reallocate = default_hooks.reallocate;
-    }
-}
-
 N_CJSON_PUBLIC(void *) JMalloc(size_t size) {
-    return global_hooks.allocate(size);
+    return _Malloc(size);
 }
 N_CJSON_PUBLIC(void) JFree(void *p) {
-    global_hooks.deallocate(p);
+    _Free(p);
 }
 
 /* Internal constructor. */
-static J *JNew_Item(const internal_hooks * const hooks)
+static J *JNew_Item()
 {
-    J* node = (J*)hooks->allocate(sizeof(J));
+    J* node = (J*)_Malloc(sizeof(J));
     if (node)
     {
         memset(node, '\0', sizeof(J));
@@ -225,13 +180,13 @@ N_CJSON_PUBLIC(void) JDelete(J *item)
         }
         if (!(item->type & JIsReference) && (item->valuestring != NULL))
         {
-            global_hooks.deallocate(item->valuestring);
+            _Free(item->valuestring);
         }
         if (!(item->type & JStringIsConst) && (item->string != NULL))
         {
-            global_hooks.deallocate(item->string);
+            _Free(item->string);
         }
-        global_hooks.deallocate(item);
+        _Free(item);
         item = next;
     }
 }
@@ -253,7 +208,6 @@ typedef struct
     size_t length;
     size_t offset;
     size_t depth; /* How deeply nested (in arrays/objects) is the input at the current offset. */
-    internal_hooks hooks;
 } parse_buffer;
 
 /* check if the given size is left to read in a given parse buffer (starting with 1) */
@@ -373,7 +327,6 @@ typedef struct
     size_t depth; /* current nesting depth (for formatted printing) */
     Jbool noalloc;
     Jbool format; /* is this print a formatted print */
-    internal_hooks hooks;
 } printbuffer;
 
 /* realloc printbuffer if necessary to have at least "needed" bytes more */
@@ -427,37 +380,21 @@ static unsigned char* ensure(printbuffer * const p, size_t needed)
         newsize = needed * 2;
     }
 
-    if (p->hooks.reallocate != NULL)
+    /* otherwise reallocate manually */
+    newbuffer = (unsigned char*)_Malloc(newsize);
+    if (!newbuffer)
     {
-        /* reallocate with realloc if available */
-        newbuffer = (unsigned char*)p->hooks.reallocate(p->buffer, newsize);
-        if (newbuffer == NULL)
-        {
-            p->hooks.deallocate(p->buffer);
-            p->length = 0;
-            p->buffer = NULL;
-
-            return NULL;
-        }
+        _Free(p->buffer);
+        p->length = 0;
+        p->buffer = NULL;
+        return NULL;
     }
-    else
+    if (newbuffer)
     {
-        /* otherwise reallocate manually */
-        newbuffer = (unsigned char*)p->hooks.allocate(newsize);
-        if (!newbuffer)
-        {
-            p->hooks.deallocate(p->buffer);
-            p->length = 0;
-            p->buffer = NULL;
-
-            return NULL;
-        }
-        if (newbuffer)
-        {
-            memcpy(newbuffer, p->buffer, p->offset + 1);
-        }
-        p->hooks.deallocate(p->buffer);
+        memcpy(newbuffer, p->buffer, p->offset + 1);
     }
+    _Free(p->buffer);
+
     p->length = newsize;
     p->buffer = newbuffer;
 
@@ -749,7 +686,7 @@ static Jbool parse_string(J * const item, parse_buffer * const input_buffer)
 
         /* This is at most how much we need for the output */
         allocation_length = (size_t) (input_end - buffer_at_offset(input_buffer)) - skipped_bytes;
-        output = (unsigned char*)input_buffer->hooks.allocate(allocation_length + sizeof(""));
+        output = (unsigned char*)_Malloc(allocation_length + sizeof(""));
         if (output == NULL)
         {
             goto fail; /* allocation failure */
@@ -827,7 +764,7 @@ static Jbool parse_string(J * const item, parse_buffer * const input_buffer)
 fail:
     if (output != NULL)
     {
-        input_buffer->hooks.deallocate(output);
+        _Free(output);
     }
 
     if (input_pointer != NULL)
@@ -1031,7 +968,7 @@ static parse_buffer *skip_utf8_bom(parse_buffer * const buffer)
 /* Parse an object - create a new root, and populate. */
 N_CJSON_PUBLIC(J *) JParseWithOpts(const char *value, const char **return_parse_end, Jbool require_null_terminated)
 {
-    parse_buffer buffer = { 0, 0, 0, 0, { 0, 0, 0 } };
+    parse_buffer buffer = { 0, 0, 0, 0 };
     J *item = NULL;
 
     /* reset error position */
@@ -1046,9 +983,8 @@ N_CJSON_PUBLIC(J *) JParseWithOpts(const char *value, const char **return_parse_
     buffer.content = (const unsigned char*)value;
     buffer.length = strlen((const char*)value) + sizeof("");
     buffer.offset = 0;
-    buffer.hooks = global_hooks;
 
-    item = JNew_Item(&global_hooks);
+    item = JNew_Item();
     if (item == NULL) /* memory fail */
     {
         goto fail;
@@ -1116,7 +1052,7 @@ N_CJSON_PUBLIC(J *) JParse(const char *value)
 
 #define cjson_min(a, b) ((a < b) ? a : b)
 
-static unsigned char *print(const J * const item, Jbool format, const internal_hooks * const hooks)
+static unsigned char *print(const J * const item, Jbool format)
 {
     static const size_t default_buffer_size = 256;
     printbuffer buffer[1];
@@ -1125,10 +1061,9 @@ static unsigned char *print(const J * const item, Jbool format, const internal_h
     memset(buffer, 0, sizeof(buffer));
 
     /* create buffer */
-    buffer->buffer = (unsigned char*) hooks->allocate(default_buffer_size);
+    buffer->buffer = (unsigned char*) _Malloc(default_buffer_size);
     buffer->length = default_buffer_size;
     buffer->format = format;
-    buffer->hooks = *hooks;
     if (buffer->buffer == NULL)
     {
         goto fail;
@@ -1141,40 +1076,29 @@ static unsigned char *print(const J * const item, Jbool format, const internal_h
     }
     update_offset(buffer);
 
-    /* check if reallocate is available */
-    if (hooks->reallocate != NULL)
+    /* copy the JSON over to a new buffer */
+    printed = (unsigned char*) _Malloc(buffer->offset + 1);
+    if (printed == NULL)
     {
-        printed = (unsigned char*) hooks->reallocate(buffer->buffer, buffer->offset + 1);
-        if (printed == NULL) {
-            goto fail;
-        }
-        buffer->buffer = NULL;
+        goto fail;
     }
-    else /* otherwise copy the JSON over to a new buffer */
-    {
-        printed = (unsigned char*) hooks->allocate(buffer->offset + 1);
-        if (printed == NULL)
-        {
-            goto fail;
-        }
-        memcpy(printed, buffer->buffer, cjson_min(buffer->length, buffer->offset + 1));
-        printed[buffer->offset] = '\0'; /* just to be sure */
+    memcpy(printed, buffer->buffer, cjson_min(buffer->length, buffer->offset + 1));
+    printed[buffer->offset] = '\0'; /* just to be sure */
 
-        /* free the buffer */
-        hooks->deallocate(buffer->buffer);
-    }
+    /* free the buffer */
+    _Free(buffer->buffer);
 
     return printed;
 
 fail:
     if (buffer->buffer != NULL)
     {
-        hooks->deallocate(buffer->buffer);
+        _Free(buffer->buffer);
     }
 
     if (printed != NULL)
     {
-        hooks->deallocate(printed);
+        _Free(printed);
     }
 
     return NULL;
@@ -1183,24 +1107,24 @@ fail:
 /* Render a J item/entity/structure to text. */
 N_CJSON_PUBLIC(char *) JPrint(const J *item)
 {
-    return (char*)print(item, true, &global_hooks);
+    return (char*)print(item, true);
 }
 
 N_CJSON_PUBLIC(char *) JPrintUnformatted(const J *item)
 {
-    return (char*)print(item, false, &global_hooks);
+    return (char*)print(item, false);
 }
 
 N_CJSON_PUBLIC(char *) JPrintBuffered(const J *item, int prebuffer, Jbool fmt)
 {
-    printbuffer p = { 0, 0, 0, 0, 0, 0, { 0, 0, 0 } };
+    printbuffer p = { 0, 0, 0, 0, 0, 0 };
 
     if (prebuffer < 0)
     {
         return NULL;
     }
 
-    p.buffer = (unsigned char*)global_hooks.allocate((size_t)prebuffer);
+    p.buffer = (unsigned char*)_Malloc((size_t)prebuffer);
     if (!p.buffer)
     {
         return NULL;
@@ -1210,11 +1134,10 @@ N_CJSON_PUBLIC(char *) JPrintBuffered(const J *item, int prebuffer, Jbool fmt)
     p.offset = 0;
     p.noalloc = false;
     p.format = fmt;
-    p.hooks = global_hooks;
 
     if (!print_value(item, &p))
     {
-        global_hooks.deallocate(p.buffer);
+        _Free(p.buffer);
         return NULL;
     }
 
@@ -1223,7 +1146,7 @@ N_CJSON_PUBLIC(char *) JPrintBuffered(const J *item, int prebuffer, Jbool fmt)
 
 N_CJSON_PUBLIC(Jbool) JPrintPreallocated(J *item, char *buf, const int len, const Jbool fmt)
 {
-    printbuffer p = { 0, 0, 0, 0, 0, 0, { 0, 0, 0 } };
+    printbuffer p = { 0, 0, 0, 0, 0, 0 };
 
     if ((len < 0) || (buf == NULL))
     {
@@ -1235,7 +1158,6 @@ N_CJSON_PUBLIC(Jbool) JPrintPreallocated(J *item, char *buf, const int len, cons
     p.offset = 0;
     p.noalloc = true;
     p.format = fmt;
-    p.hooks = global_hooks;
 
     return print_value(item, &p);
 }
@@ -1408,7 +1330,7 @@ static Jbool parse_array(J * const item, parse_buffer * const input_buffer)
     do
     {
         /* allocate next item */
-        J *new_item = JNew_Item(&(input_buffer->hooks));
+        J *new_item = JNew_Item();
         if (new_item == NULL)
         {
             goto fail; /* allocation failure */
@@ -1562,7 +1484,7 @@ static Jbool parse_object(J * const item, parse_buffer * const input_buffer)
     do
     {
         /* allocate next item */
-        J *new_item = JNew_Item(&(input_buffer->hooks));
+        J *new_item = JNew_Item();
         if (new_item == NULL)
         {
             goto fail; /* allocation failure */
@@ -1852,7 +1774,7 @@ static void suffix_object(J *prev, J *item)
 }
 
 /* Utility for handling references. */
-static J *create_reference(const J *item, const internal_hooks * const hooks)
+static J *create_reference(const J *item)
 {
     J *reference = NULL;
     if (item == NULL)
@@ -1860,7 +1782,7 @@ static J *create_reference(const J *item, const internal_hooks * const hooks)
         return NULL;
     }
 
-    reference = JNew_Item(hooks);
+    reference = JNew_Item();
     if (reference == NULL)
     {
         return NULL;
@@ -1924,7 +1846,7 @@ static void* cast_away_const(const void* string)
 #endif
 
 
-static Jbool add_item_to_object(J * const object, const char * const string, J * const item, const internal_hooks * const hooks, const Jbool constant_key)
+static Jbool add_item_to_object(J * const object, const char * const string, J * const item, const Jbool constant_key)
 {
     char *new_key = NULL;
     int new_type = JInvalid;
@@ -1941,7 +1863,7 @@ static Jbool add_item_to_object(J * const object, const char * const string, J *
     }
     else
     {
-        new_key = (char*)Jstrdup((const unsigned char*)string, hooks);
+        new_key = (char*)Jstrdup((const unsigned char*)string);
         if (new_key == NULL)
         {
             return false;
@@ -1952,7 +1874,7 @@ static Jbool add_item_to_object(J * const object, const char * const string, J *
 
     if (!(item->type & JStringIsConst) && (item->string != NULL))
     {
-        hooks->deallocate(item->string);
+        _Free(item->string);
     }
 
     item->string = new_key;
@@ -1963,13 +1885,13 @@ static Jbool add_item_to_object(J * const object, const char * const string, J *
 
 N_CJSON_PUBLIC(void) JAddItemToObject(J *object, const char *string, J *item)
 {
-    add_item_to_object(object, string, item, &global_hooks, false);
+    add_item_to_object(object, string, item, false);
 }
 
 /* Add an item to an object with constant string as key */
 N_CJSON_PUBLIC(void) JAddItemToObjectCS(J *object, const char *string, J *item)
 {
-    add_item_to_object(object, string, item, &global_hooks, true);
+    add_item_to_object(object, string, item, true);
 }
 
 N_CJSON_PUBLIC(void) JAddItemReferenceToArray(J *array, J *item)
@@ -1979,7 +1901,7 @@ N_CJSON_PUBLIC(void) JAddItemReferenceToArray(J *array, J *item)
         return;
     }
 
-    add_item_to_array(array, create_reference(item, &global_hooks));
+    add_item_to_array(array, create_reference(item));
 }
 
 N_CJSON_PUBLIC(void) JAddItemReferenceToObject(J *object, const char *string, J *item)
@@ -1989,13 +1911,13 @@ N_CJSON_PUBLIC(void) JAddItemReferenceToObject(J *object, const char *string, J 
         return;
     }
 
-    add_item_to_object(object, string, create_reference(item, &global_hooks), &global_hooks, false);
+    add_item_to_object(object, string, create_reference(item), false);
 }
 
 N_CJSON_PUBLIC(J*) JAddNullToObject(J * const object, const char * const name)
 {
     J *null = JCreateNull();
-    if (add_item_to_object(object, name, null, &global_hooks, false))
+    if (add_item_to_object(object, name, null, false))
     {
         return null;
     }
@@ -2007,7 +1929,7 @@ N_CJSON_PUBLIC(J*) JAddNullToObject(J * const object, const char * const name)
 N_CJSON_PUBLIC(J*) JAddTrueToObject(J * const object, const char * const name)
 {
     J *true_item = JCreateTrue();
-    if (add_item_to_object(object, name, true_item, &global_hooks, false))
+    if (add_item_to_object(object, name, true_item, false))
     {
         return true_item;
     }
@@ -2019,7 +1941,7 @@ N_CJSON_PUBLIC(J*) JAddTrueToObject(J * const object, const char * const name)
 N_CJSON_PUBLIC(J*) JAddFalseToObject(J * const object, const char * const name)
 {
     J *false_item = JCreateFalse();
-    if (add_item_to_object(object, name, false_item, &global_hooks, false))
+    if (add_item_to_object(object, name, false_item, false))
     {
         return false_item;
     }
@@ -2031,7 +1953,7 @@ N_CJSON_PUBLIC(J*) JAddFalseToObject(J * const object, const char * const name)
 N_CJSON_PUBLIC(J*) JAddBoolToObject(J * const object, const char * const name, const Jbool boolean)
 {
     J *bool_item = JCreateBool(boolean);
-    if (add_item_to_object(object, name, bool_item, &global_hooks, false))
+    if (add_item_to_object(object, name, bool_item, false))
     {
         return bool_item;
     }
@@ -2043,7 +1965,7 @@ N_CJSON_PUBLIC(J*) JAddBoolToObject(J * const object, const char * const name, c
 N_CJSON_PUBLIC(J*) JAddNumberToObject(J * const object, const char * const name, const double number)
 {
     J *number_item = JCreateNumber(number);
-    if (add_item_to_object(object, name, number_item, &global_hooks, false))
+    if (add_item_to_object(object, name, number_item, false))
     {
         return number_item;
     }
@@ -2055,7 +1977,7 @@ N_CJSON_PUBLIC(J*) JAddNumberToObject(J * const object, const char * const name,
 N_CJSON_PUBLIC(J*) JAddStringToObject(J * const object, const char * const name, const char * const string)
 {
     J *string_item = JCreateString(string);
-    if (add_item_to_object(object, name, string_item, &global_hooks, false))
+    if (add_item_to_object(object, name, string_item, false))
     {
         return string_item;
     }
@@ -2067,7 +1989,7 @@ N_CJSON_PUBLIC(J*) JAddStringToObject(J * const object, const char * const name,
 N_CJSON_PUBLIC(J*) JAddRawToObject(J * const object, const char * const name, const char * const raw)
 {
     J *raw_item = JCreateRaw(raw);
-    if (add_item_to_object(object, name, raw_item, &global_hooks, false))
+    if (add_item_to_object(object, name, raw_item, false))
     {
         return raw_item;
     }
@@ -2079,7 +2001,7 @@ N_CJSON_PUBLIC(J*) JAddRawToObject(J * const object, const char * const name, co
 N_CJSON_PUBLIC(J*) JAddObjectToObject(J * const object, const char * const name)
 {
     J *object_item = JCreateObject();
-    if (add_item_to_object(object, name, object_item, &global_hooks, false))
+    if (add_item_to_object(object, name, object_item, false))
     {
         return object_item;
     }
@@ -2091,7 +2013,7 @@ N_CJSON_PUBLIC(J*) JAddObjectToObject(J * const object, const char * const name)
 N_CJSON_PUBLIC(J*) JAddArrayToObject(J * const object, const char * const name)
 {
     J *array = JCreateArray();
-    if (add_item_to_object(object, name, array, &global_hooks, false))
+    if (add_item_to_object(object, name, array, false))
     {
         return array;
     }
@@ -2256,7 +2178,7 @@ static Jbool replace_item_in_object(J *object, const char *string, J *replacemen
     {
         Jfree(replacement->string);
     }
-    replacement->string = (char*)Jstrdup((const unsigned char*)string, &global_hooks);
+    replacement->string = (char*)Jstrdup((const unsigned char*)string);
     replacement->type &= ~JStringIsConst;
 
     JReplaceItemViaPointer(object, get_object_item(object, string, case_sensitive), replacement);
@@ -2277,7 +2199,7 @@ N_CJSON_PUBLIC(void) JReplaceItemInObjectCaseSensitive(J *object, const char *st
 /* Create basic types: */
 N_CJSON_PUBLIC(J *) JCreateNull(void)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if(item)
     {
         item->type = JNULL;
@@ -2288,7 +2210,7 @@ N_CJSON_PUBLIC(J *) JCreateNull(void)
 
 N_CJSON_PUBLIC(J *) JCreateTrue(void)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if(item)
     {
         item->type = JTrue;
@@ -2299,7 +2221,7 @@ N_CJSON_PUBLIC(J *) JCreateTrue(void)
 
 N_CJSON_PUBLIC(J *) JCreateFalse(void)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if(item)
     {
         item->type = JFalse;
@@ -2310,7 +2232,7 @@ N_CJSON_PUBLIC(J *) JCreateFalse(void)
 
 N_CJSON_PUBLIC(J *) JCreateBool(Jbool b)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if(item)
     {
         item->type = b ? JTrue : JFalse;
@@ -2321,7 +2243,7 @@ N_CJSON_PUBLIC(J *) JCreateBool(Jbool b)
 
 N_CJSON_PUBLIC(J *) JCreateNumber(double num)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if(item)
     {
         item->type = JNumber;
@@ -2347,11 +2269,11 @@ N_CJSON_PUBLIC(J *) JCreateNumber(double num)
 
 N_CJSON_PUBLIC(J *) JCreateString(const char *string)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if(item)
     {
         item->type = JString;
-        item->valuestring = (char*)Jstrdup((const unsigned char*)string, &global_hooks);
+        item->valuestring = (char*)Jstrdup((const unsigned char*)string);
         if(!item->valuestring)
         {
             JDelete(item);
@@ -2364,7 +2286,7 @@ N_CJSON_PUBLIC(J *) JCreateString(const char *string)
 
 N_CJSON_PUBLIC(J *) JCreateStringReference(const char *string)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if (item != NULL)
     {
         item->type = JString | JIsReference;
@@ -2376,7 +2298,7 @@ N_CJSON_PUBLIC(J *) JCreateStringReference(const char *string)
 
 N_CJSON_PUBLIC(J *) JCreateObjectReference(const J *child)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if (item != NULL) {
         item->type = JObject | JIsReference;
         item->child = (J*)cast_away_const(child);
@@ -2386,7 +2308,7 @@ N_CJSON_PUBLIC(J *) JCreateObjectReference(const J *child)
 }
 
 N_CJSON_PUBLIC(J *) JCreateArrayReference(const J *child) {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if (item != NULL) {
         item->type = JArray | JIsReference;
         item->child = (J*)cast_away_const(child);
@@ -2397,11 +2319,11 @@ N_CJSON_PUBLIC(J *) JCreateArrayReference(const J *child) {
 
 N_CJSON_PUBLIC(J *) JCreateRaw(const char *raw)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if(item)
     {
         item->type = JRaw;
-        item->valuestring = (char*)Jstrdup((const unsigned char*)raw, &global_hooks);
+        item->valuestring = (char*)Jstrdup((const unsigned char*)raw);
         if(!item->valuestring)
         {
             JDelete(item);
@@ -2414,7 +2336,7 @@ N_CJSON_PUBLIC(J *) JCreateRaw(const char *raw)
 
 N_CJSON_PUBLIC(J *) JCreateArray(void)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if(item)
     {
         item->type=JArray;
@@ -2425,7 +2347,7 @@ N_CJSON_PUBLIC(J *) JCreateArray(void)
 
 N_CJSON_PUBLIC(J *) JCreateObject(void)
 {
-    J *item = JNew_Item(&global_hooks);
+    J *item = JNew_Item();
     if (item)
     {
         item->type = JObject;
@@ -2592,7 +2514,7 @@ N_CJSON_PUBLIC(J *) JDuplicate(const J *item, Jbool recurse)
         goto fail;
     }
     /* Create new item */
-    newitem = JNew_Item(&global_hooks);
+    newitem = JNew_Item();
     if (!newitem)
     {
         goto fail;
@@ -2603,7 +2525,7 @@ N_CJSON_PUBLIC(J *) JDuplicate(const J *item, Jbool recurse)
     newitem->valuedouble = item->valuedouble;
     if (item->valuestring)
     {
-        newitem->valuestring = (char*)Jstrdup((unsigned char*)item->valuestring, &global_hooks);
+        newitem->valuestring = (char*)Jstrdup((unsigned char*)item->valuestring);
         if (!newitem->valuestring)
         {
             goto fail;
@@ -2611,7 +2533,7 @@ N_CJSON_PUBLIC(J *) JDuplicate(const J *item, Jbool recurse)
     }
     if (item->string)
     {
-        newitem->string = (item->type&JStringIsConst) ? item->string : (char*)Jstrdup((unsigned char*)item->string, &global_hooks);
+        newitem->string = (item->type&JStringIsConst) ? item->string : (char*)Jstrdup((unsigned char*)item->string);
         if (!newitem->string)
         {
             goto fail;
@@ -2951,14 +2873,4 @@ N_CJSON_PUBLIC(Jbool) JCompare(const J * const a, const J * const b, const Jbool
         default:
             return false;
     }
-}
-
-N_CJSON_PUBLIC(void *) Jmalloc(size_t size)
-{
-    return global_hooks.allocate(size);
-}
-
-N_CJSON_PUBLIC(void) Jfree(void *object)
-{
-    global_hooks.deallocate(object);
 }
