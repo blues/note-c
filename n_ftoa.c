@@ -29,7 +29,7 @@
 
 #include "n_lib.h"
 
-static const double rounders[JNTOA_PRECISION + 1] =
+static const JNUMBER rounders[JNTOA_PRECISION + 1] =
 {
 	0.5,				// 0
 	0.05,				// 1
@@ -44,7 +44,7 @@ static const double rounders[JNTOA_PRECISION + 1] =
 	0.00000000005		// 10
 };
 
-char * JNtoA(double f, char * buf, int original_precision)
+char * JNtoA(JNUMBER f, char * buf, int original_precision)
 {
 	char * ptr = buf;
 	char * p = ptr;

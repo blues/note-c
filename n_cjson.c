@@ -55,8 +55,7 @@
 
 // For Note, disable dependencies
 #undef ENABLE_LOCALES 
-#define MINIMIZE_CLIB_DEPENDENCIES      1       // Use tiny but non-robust versions of float conversions
-                                                // for situations in which there is no clib support for doubles
+#define MINIMIZE_CLIB_DEPENDENCIES      1       // Use tiny but non-robust versions of conversions
 
 #include "n_lib.h"
 
@@ -221,7 +220,7 @@ typedef struct
 /* Parse the input text to generate a number, and populate the result into item. */
 static Jbool parse_number(J * const item, parse_buffer * const input_buffer)
 {
-    double number = 0;
+    JNUMBER number = 0;
     unsigned char *after_end = NULL;
     unsigned char number_c_string[64];
     unsigned char decimal_point = get_decimal_point();
@@ -278,7 +277,7 @@ loop_end:
         return false; /* parse_error */
     }
 
-    item->valuedouble = number;
+    item->valuenumber = number;
 
     /* use saturation in case of overflow */
     if (number >= INT_MAX)
@@ -300,8 +299,8 @@ loop_end:
     return true;
 }
 
-/* don't ask me, but the original JSetNumberValue returns an integer or double */
-N_CJSON_PUBLIC(double) JSetNumberHelper(J *object, double number)
+/* don't ask me, but the original JSetNumberValue returns an integer or JNUMBER */
+N_CJSON_PUBLIC(JNUMBER) JSetNumberHelper(J *object, JNUMBER number)
 {
     if (number >= INT_MAX)
     {
@@ -316,7 +315,7 @@ N_CJSON_PUBLIC(double) JSetNumberHelper(J *object, double number)
         object->valueint = (int)number;
     }
 
-    return object->valuedouble = number;
+    return object->valuenumber = number;
 }
 
 typedef struct
@@ -418,7 +417,7 @@ static void update_offset(printbuffer * const buffer)
 static Jbool print_number(const J * const item, printbuffer * const output_buffer)
 {
     unsigned char *output_pointer = NULL;
-    double d = item->valuedouble;
+    JNUMBER d = item->valuenumber;
     int length = 0;
     size_t i = 0;
     unsigned char number_buffer[26]; /* temporary buffer to print the number into */
@@ -439,12 +438,12 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
     else
     {
 #if !MINIMIZE_CLIB_DEPENDENCIES
-        double test;
+        JNUMBER test;
         /* Try 15 decimal places of precision to avoid nonsignificant nonzero digits */
         length = sprintf((char*)number_buffer, "%1.15g", d);
 
         /* Check whether the original double can be recovered */
-        if ((sscanf((char*)number_buffer, "%lg", &test) != 1) || ((double)test != d))
+        if ((sscanf((char*)number_buffer, "%lg", &test) != 1) || ((JNUMBER)test != d))
         {
             /* If not, print with 17 decimal places of precision */
             length = sprintf((char*)number_buffer, "%1.17g", d);
@@ -1962,7 +1961,7 @@ N_CJSON_PUBLIC(J*) JAddBoolToObject(J * const object, const char * const name, c
     return NULL;
 }
 
-N_CJSON_PUBLIC(J*) JAddNumberToObject(J * const object, const char * const name, const double number)
+N_CJSON_PUBLIC(J*) JAddNumberToObject(J * const object, const char * const name, const JNUMBER number)
 {
     J *number_item = JCreateNumber(number);
     if (add_item_to_object(object, name, number_item, false))
@@ -2241,13 +2240,13 @@ N_CJSON_PUBLIC(J *) JCreateBool(Jbool b)
     return item;
 }
 
-N_CJSON_PUBLIC(J *) JCreateNumber(double num)
+N_CJSON_PUBLIC(J *) JCreateNumber(JNUMBER num)
 {
     J *item = JNew_Item();
     if(item)
     {
         item->type = JNumber;
-        item->valuedouble = num;
+        item->valuenumber = num;
 
         /* use saturation in case of overflow */
         if (num >= INT_MAX)
@@ -2392,43 +2391,7 @@ N_CJSON_PUBLIC(J *) JCreateIntArray(const int *numbers, int count)
     return a;
 }
 
-N_CJSON_PUBLIC(J *) JCreateFloatArray(const float *numbers, int count)
-{
-    size_t i = 0;
-    J *n = NULL;
-    J *p = NULL;
-    J *a = NULL;
-
-    if ((count < 0) || (numbers == NULL))
-    {
-        return NULL;
-    }
-
-    a = JCreateArray();
-
-    for(i = 0; a && (i < (size_t)count); i++)
-    {
-        n = JCreateNumber((double)numbers[i]);
-        if(!n)
-        {
-            JDelete(a);
-            return NULL;
-        }
-        if(!i)
-        {
-            a->child = n;
-        }
-        else
-        {
-            suffix_object(p, n);
-        }
-        p = n;
-    }
-
-    return a;
-}
-
-N_CJSON_PUBLIC(J *) JCreateDoubleArray(const double *numbers, int count)
+N_CJSON_PUBLIC(J *) JCreateNumberArray(const JNUMBER *numbers, int count)
 {
     size_t i = 0;
     J *n = NULL;
@@ -2522,7 +2485,7 @@ N_CJSON_PUBLIC(J *) JDuplicate(const J *item, Jbool recurse)
     /* Copy over all vars */
     newitem->type = item->type & (~JIsReference);
     newitem->valueint = item->valueint;
-    newitem->valuedouble = item->valuedouble;
+    newitem->valuenumber = item->valuenumber;
     if (item->valuestring)
     {
         newitem->valuestring = (char*)Jstrdup((unsigned char*)item->valuestring);
@@ -2789,7 +2752,7 @@ N_CJSON_PUBLIC(Jbool) JCompare(const J * const a, const J * const b, const Jbool
             return true;
 
         case JNumber:
-            if (a->valuedouble == b->valuedouble)
+            if (a->valuenumber == b->valuenumber)
             {
                 return true;
             }
