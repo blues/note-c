@@ -63,7 +63,7 @@ const char *NoteFnTransaction(char *json, char **jsonResponse);
 #ifdef NOTE_NODEBUG
 #define _Debug(x)
 #else
-#define _Debug(x) NoteFnDebugMsg
+#define _Debug(x) NoteFnDebugMsg(x)
 #endif
 
 // End of C-callable functions
