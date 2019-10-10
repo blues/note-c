@@ -93,6 +93,7 @@ J *NoteTransaction(J *req) {
     
 #ifdef SHOW_TRANSACTIONS
     _Debug(json);
+	_Debug("\n");
 #endif
 
     // Pertform the transaction
