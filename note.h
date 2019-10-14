@@ -127,7 +127,7 @@ bool NoteGetLocation(JNUMBER *retLat, JNUMBER *retLon, JTIME *time, char *status
 bool NoteSetLocation(JNUMBER lat, JNUMBER lon);
 bool NoteClearLocation(void);
 bool NoteGetLocationMode(char *modeBuf, int modeBufLen);
-bool NoteSetLocationMode(const char *mode);
+bool NoteSetLocationMode(const char *mode, uint32_t seconds);
 bool NoteGetServiceConfig(char *productBuf, int productBufLen, char *serviceBuf, int serviceBufLen, char *deviceBuf, int deviceBufLen, char *snBuf, int snBufLen);
 bool NoteGetServiceConfigST(char *productBuf, int productBufLen, char *serviceBuf, int serviceBufLen, char *deviceBuf, int deviceBufLen, char *snBuf, int snBufLen);
 bool NoteGetStatus(char *statusBuf, int statusBufLen, JTIME *bootTime, bool *retUSB, bool *retSignals);

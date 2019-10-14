@@ -361,13 +361,14 @@ bool NoteGetLocationMode(char *modeBuf, int modeBufLen) {
 }
 
 // Set Location Mode
-bool NoteSetLocationMode(const char *mode) {
+bool NoteSetLocationMode(const char *mode, uint32_t seconds) {
     bool success = false;
     J *req = NoteNewRequest("card.location.mode");
     if (req != NULL) {
         if (mode[0] == '\0')
             mode = "-";
         JAddStringToObject(req, "mode", mode);
+        JAddNumberToObject(req, "seconds", seconds);
         success = NoteRequest(req);
     }
     return success;
