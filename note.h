@@ -47,6 +47,7 @@ typedef const char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uin
 // External API
 bool NoteReset(void);
 void NoteResetRequired(void);
+#define NoteNewBody JCreateObject
 J *NoteNewRequest(const char *request);
 J *NoteRequestResponse(J *req);
 bool NoteRequest(J *req);
