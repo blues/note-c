@@ -863,7 +863,7 @@ bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel) {
 		J *body = JGetObject(rsp, "body");
 		if (body != NULL) {
 			if (maxLevel < 0 || JGetInt(body, "level") <= maxLevel)
-				NotePrintf("sync: %s: %s\n", JGetString(body, "subsystem"), JGetString(body, "text"));
+				NoteFnDebug("sync: %s: %s\n", JGetString(body, "subsystem"), JGetString(body, "text"));
 		}
 
 		// Done with this response
