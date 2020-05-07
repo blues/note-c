@@ -9,7 +9,16 @@
 #include <stdint.h>
 
 // Define our basic floating data type.  In most cases "double" is the right answer, however for
-// very small microcontrollers these libraries are simply too large.
+// very small microcontrollers these libraries are simply too large.  This ensures that we
+// use FLOATs when both are the same, and we don't define constants that are too large.
+#if (__FLT_MAX_EXP__ == __DBL_MAX_EXP__)
+#define NOTE_FLOAT
+#define	ERRSTR(x,y) (y)
+#else
+#define	ERRSTR(x,y) (x)
+#define	ERRDBG
+#endif
+
 #ifdef NOTE_FLOAT
 #define JNUMBER float
 #else
@@ -71,17 +80,21 @@ void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTran
 void NoteSetI2CAddress(uint32_t i2caddress);
 
 // Calls to the functions set above
-#define NotePrintf NoteFnDebug
-void NoteFnDebugMsg(const char *message);
-void NoteFnDebug(const char *format, ...);
-void *NoteFnMalloc(size_t size);
-void NoteFnFree(void *);
-long unsigned int NoteFnGetMs(void);
-void NoteFnDelayMs(uint32_t ms);
-void NoteFnLockI2C(void);
-void NoteFnUnlockI2C(void);
-uint32_t NoteFnI2CAddress(void);
-uint32_t NoteFnI2CMax(void);
+void NoteDebug(const char *message);
+void NoteDebugln(const char *message);
+void NoteDebugf(const char *format, ...);
+void *NoteMalloc(size_t size);
+void NoteFree(void *);
+long unsigned int NoteGetMs(void);
+void NoteDelayMs(uint32_t ms);
+void NoteLockI2C(void);
+void NoteUnlockI2C(void);
+uint32_t NoteI2CAddress(void);
+uint32_t NoteI2CMax(void);
+uint32_t NoteMemAvailable(void);
+bool NotePrint(const char *text);
+	void NotePrintln(const char *line);
+bool NotePrintf(const char *format, ...);
 
 // String helpers to help encourage the world to abandon the horribly-error-prone strn*
 size_t strlcpy(char *dst, const char *src, size_t siz);

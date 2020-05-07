@@ -40,25 +40,11 @@
 #define NULL 0
 #endif
 
-static int maxExponent = 511;   /* Largest possible base 10 exponent.  Any
+#define MAX_EXPONENT 511		/* Largest possible base 10 exponent.  Any
                                  * exponent larger than this will already
                                  * produce underflow or overflow, so there's
                                  * no need to worry about additional digits.
                                  */
-static JNUMBER powersOf10[] = {  /* Table giving binary powers of 10.  Entry */
-    10.,                        /* is 10^2^i.  Used to convert decimal */
-    100.,                       /* exponents into floating-point numbers. */
-    1.0e4,
-    1.0e8,
-    1.0e16,
-    1.0e32,
-#ifndef NOTE_FLOAT
-    1.0e64,
-    1.0e128,
-    1.0e256,
-#endif
-    0.0
-};
 
 /*
  *----------------------------------------------------------------------
@@ -99,7 +85,7 @@ JAtoN(string, endPtr)
                                  * address here. */
 {
     int sign, expSign = FALSE;
-    JNUMBER fraction, dblExp, *d;
+    JNUMBER fraction, dblExp;
     register const char *p;
     register int c;
     int exp = 0;                /* Exponent read from "EX" field. */
@@ -245,13 +231,51 @@ JAtoN(string, endPtr)
     } else {
         expSign = FALSE;
     }
-    if (exp > maxExponent) {
-        exp = maxExponent;
+    if (exp > MAX_EXPONENT) {
+        exp = MAX_EXPONENT;
     }
     dblExp = 1.0;
-    for (d = powersOf10; *d != 0.0 && exp != 0; exp >>= 1, d += 1) {
+	int d;
+    for (d = 0; exp != 0; exp >>= 1, d += 1) {
+		/* Table giving binary powers of 10.  Entry */
+		/* is 10^2^i.  Used to convert decimal */
+		/* exponents into floating-point numbers. */
+		JNUMBER p10 = 0.0;
+		switch (d) {
+		case 0:
+			p10 = 10.0;
+			break;
+		case 1:
+			p10 = 100.0;
+			break;
+		case 2:
+			p10 = 1.0e4;
+			break;
+		case 3:
+			p10 = 1.0e8;
+			break;
+		case 4:
+			p10 = 1.0e16;
+			break;
+		case 5:
+			p10 = 1.0e32;
+			break;
+#ifndef NOTE_FLOAT
+		case 6:
+			p10 = 1.0e64;
+			break;
+		case 7:
+			p10 = 1.0e128;
+			break;
+		case 8:
+			p10 = 1.0e256;
+			break;
+#endif
+		}
+		if (p10 == 0.0)
+			break;
         if (exp & 01) {
-            dblExp *= *d;
+            dblExp *= p10;
         }
     }
     if (expSign) {

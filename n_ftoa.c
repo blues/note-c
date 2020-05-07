@@ -29,21 +29,6 @@
 
 #include "n_lib.h"
 
-static const JNUMBER rounders[JNTOA_PRECISION + 1] =
-{
-	0.5,				// 0
-	0.05,				// 1
-	0.005,				// 2
-	0.0005,				// 3
-	0.00005,			// 4
-	0.000005,			// 5
-	0.0000005,			// 6
-	0.00000005,			// 7
-	0.000000005,		// 8
-	0.0000000005,		// 9
-	0.00000000005		// 10
-};
-
 char * JNtoA(JNUMBER f, char * buf, int original_precision)
 {
 	char * ptr = buf;
@@ -51,6 +36,22 @@ char * JNtoA(JNUMBER f, char * buf, int original_precision)
 	char * p1;
 	char c;
 	long intPart;
+
+	// For our low-SRAM devices we'd rather have this on the stack
+	const JNUMBER rounders[JNTOA_PRECISION + 1] =
+		{
+			0.5,				// 0
+			0.05,				// 1
+			0.005,				// 2
+			0.0005,				// 3
+			0.00005,			// 4
+			0.000005,			// 5
+			0.0000005,			// 6
+			0.00000005,			// 7
+			0.000000005,		// 8
+			0.0000000005,		// 9
+			0.00000000005		// 10
+		};
 
 	// Check specifically for uncommon but bad floating point numbers that can't be converted
 	uint8_t fbytes[8];

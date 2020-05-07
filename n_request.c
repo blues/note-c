@@ -14,7 +14,7 @@ static bool resetRequired = true;
 static J *errDoc(const char *errmsg) {
     J *rspdoc = JCreateObject();
     if (rspdoc != NULL)
-        JAddStringToObject(rspdoc, "err", errmsg);
+        JAddStringToObject(rspdoc, c_err, errmsg);
 	if (suppressShowTransactions == 0) {
 	    _Debug("{\"err\":\"");
 		_Debug(errmsg);
@@ -36,13 +36,13 @@ void NoteResumeTransactionDebug() {
 J *NoteNewRequest(const char *request) {
     J *reqdoc = JCreateObject();
     if (reqdoc != NULL)
-        JAddStringToObject(reqdoc, "req", request);
+        JAddStringToObject(reqdoc, c_req, request);
     return reqdoc;
 }
 
 // Perform a request, FREEING THE REQUEST STRUCTURE, then returning true if success and
 // false if either we ran into an error such as out-of-memory or if an error was returned
-// from the transaction in the "err" field.
+// from the transaction in the c_err field.
 bool NoteRequest(J *req) {
     // Exit if null request.  This allows safe execution of the form NoteRequest(NoteNewRequest("xxx"))
     if (req == NULL)
@@ -54,7 +54,7 @@ bool NoteRequest(J *req) {
         return false;
     }
     // Check for a transaction error, and exit
-    bool success = JIsNullString(rsp, "err");
+    bool success = JIsNullString(rsp, c_err);
     JDelete(req);
     JDelete(rsp);
     return success;
@@ -94,14 +94,13 @@ J *NoteTransaction(J *req) {
     // Serialize the JSON requet
     char *json = JPrintUnformatted(req);
     if (json == NULL) {
-        J *rsp = errDoc("can't convert to JSON");
+        J *rsp = errDoc(ERRSTR("can't convert to JSON",c_bad));
         _UnlockNote();
         return rsp;
     }
     
 	if (suppressShowTransactions == 0) {
-	    _Debug(json);
-		_Debug("\n");
+	    _Debugln(json);
 	}
 
     // Pertform the transaction
@@ -122,18 +121,17 @@ J *NoteTransaction(J *req) {
     // Parse the reply from the card on the input stream
     J *rspdoc = JParse(responseJSON);
     if (rspdoc == NULL) {
-        _Free(responseJSON);
-        _Debug("unable to parse response JSON:\n");
+        _Debug("invalid JSON: ");
 		_Debug(responseJSON);
-        J *rsp = errDoc("unrecognized response from card");
+        _Free(responseJSON);
+        J *rsp = errDoc(ERRSTR("unrecognized response from card",c_bad));
         _UnlockNote();
         return rsp;
     }
 
     // Debug
 	if (suppressShowTransactions == 0) {
-	    _Debug(responseJSON);
-		_Debug("\n");
+	    _Debugln(responseJSON);
 	}
 
     // Discard the buffer now that it's parsed
@@ -155,7 +153,7 @@ void NoteResetRequired() {
 // Initialize or re-initialize the module, returning false if anything fails
 bool NoteReset() {
     _LockNote();
-    resetRequired = !_NoteReset();
+    resetRequired = !_Reset();
     _UnlockNote();
     return !resetRequired;
 }

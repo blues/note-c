@@ -15,8 +15,8 @@
 // just implemented here as a convenience to all developers.
 
 // Time-related suppression timer and cache
-static long timeBaseSetAtMs = 0;
-static JTIME timeBase = 0;
+static uint32_t timeBaseSetAtMs = 0;
+static JTIME timeBaseSec = 0;
 static uint32_t timeTimer = 0;
 static bool zoneStillUnavailable = true;
 static char curZone[48] = {0};
@@ -52,7 +52,7 @@ bool NoteTimeValid() {
 // See if the suppression-timer card time is valid
 bool NoteTimeValidST() {
     NoteTimeST();
-    return (timeBase != 0);
+    return (timeBaseSec != 0);
 }
 
 // Get the current epoch time, unsuppressed
@@ -63,9 +63,44 @@ JTIME NoteTime() {
 
 // Set the time
 static void setTime(JTIME seconds) {
-    timeBase = seconds;
+    timeBaseSec = seconds;
     timeBaseSetAtMs = _GetMs();
     _Debug("setting time\n");
+}
+
+// Line version
+void NotePrintln(const char *line) {
+	NotePrint(line);
+	NotePrint(c_newline);
+}
+
+// Log text "raw" to either the active debug console or to the notecard's USB console
+bool NotePrint(const char *text) {
+	bool success = false;
+	if (NoteIsDebugOutputActive()) {
+		NoteDebug(text);
+		return true;
+	}
+    int inLog = 0;
+	if (inLog++ != 0) {
+		inLog--;
+		return false;
+	}
+    J *req = NoteNewRequest("card.log");
+    JAddStringToObject(req, "text", text);
+    success = NoteRequest(req);
+	inLog--;
+	return success;
+}
+
+// Formatted version of same
+bool NotePrintf(const char *format, ...) {
+    char line[256];
+    va_list args;
+    va_start(args, format);
+    vsnprintf(line, sizeof(line), format, args);
+    va_end(args);
+	return NotePrint(line);
 }
 
 // Get the current epoch time as known by the module.  If it isn't known by the module, just
@@ -74,7 +109,7 @@ JTIME NoteTimeST() {
 
     // If we haven't yet fetched the time, or if we still need the timezone, do so with a suppression
     // timer so that we don't hammer the module before it's had a chance to connect to the network to fetch time.
-    if (timeBase == 0 || zoneStillUnavailable) {
+    if (timeBaseSec == 0 || zoneStillUnavailable) {
         if (timerExpiredSecs(&timeTimer, 10)) {
 
             // Request time and zone info from the card
@@ -85,7 +120,7 @@ JTIME NoteTimeST() {
                     if (seconds != 0) {
 
                         // Set the time if it hasn't yet been set
-						if (timeBase == 0)
+						if (timeBaseSec == 0)
 	                        setTime(seconds);
 
                         // Get the zone
@@ -114,7 +149,7 @@ JTIME NoteTimeST() {
     }
 
     // Adjust the base time by the number of seconds that have elapsed since the base.
-    JTIME adjustedTime = timeBase + ((_GetMs() - timeBaseSetAtMs) / 1000);
+    JTIME adjustedTime = timeBaseSec + ((_GetMs() - timeBaseSetAtMs) / 1000);
 
     // Done
     return adjustedTime;
@@ -125,9 +160,9 @@ JTIME NoteTimeST() {
 bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneOffset) {
     if (zoneStillUnavailable) {
         if (retCountry != NULL)
-            *retCountry = "";
+            *retCountry = (char *) "";
         if (retArea != NULL)
-            *retArea = "";
+            *retArea = (char *) "";
         if (retZone != NULL)
             *retZone = curZone;
         if (retZoneOffset != NULL)
@@ -838,12 +873,14 @@ static bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs) {
 bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel) {
 
 	// Suppress polls so as to not overwhelm the notecard
-	static int lastCommStatusPoll = 0;
-	if (lastCommStatusPoll != 0 && _GetMs() < (lastCommStatusPoll + pollFrequencyMs))
+	static uint32_t lastCommStatusPollMs = 0;
+	if (lastCommStatusPollMs != 0 && _GetMs() < (lastCommStatusPollMs + pollFrequencyMs))
 		return false;
 
 	// Get the next queued status note
 	J *req = NoteNewRequest("note.get");
+	if (req == NULL)
+		return false;
 	JAddStringToObject(req, "file", "_synclog.qi");
 	JAddBoolToObject(req, "delete", true);
 	NoteSuspendTransactionDebug();
@@ -856,18 +893,22 @@ bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel) {
 		// error if there are no pending inbound notes, or a "file does not exist" error
 		// if the inbound queue hasn't yet been created on the service.
 		if (NoteResponseError(rsp)) {
-			NoteDeleteResponse(rsp);
-
 			// Only stop polling quickly if we don't receive anything
-			lastCommStatusPoll = _GetMs();
+			lastCommStatusPollMs = _GetMs();
+			NoteDeleteResponse(rsp);
 			return false;
 		}
 
 		// Get the note's body
 		J *body = JGetObject(rsp, "body");
 		if (body != NULL) {
-			if (maxLevel < 0 || JGetInt(body, "level") <= maxLevel)
-				NoteFnDebug("sync: %s: %s\n", JGetString(body, "subsystem"), JGetString(body, "text"));
+			if (maxLevel < 0 || JGetInt(body, "level") <= maxLevel) {
+				_Debug("sync: ");
+				_Debug(JGetString(body, "subsystem"));
+				_Debug(" ");
+				_Debug(JGetString(body, "text"));
+				_Debug("\n");
+			}
 		}
 
 		// Done with this response
@@ -877,4 +918,49 @@ bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel) {
 
 	return false;
 
+}
+
+// A general purpose, super nonperformant, but accurate way of figuring out how much memory
+// is available, while exercising the allocator to ensure that it competently deals with
+// adjacent block coalescing on free.
+typedef struct objHeader_s {
+    struct objHeader_s *prev;
+    int length;
+} objHeader;
+uint32_t NoteMemAvailable() {
+
+    // Allocate progressively smaller and smaller chunks
+    objHeader *lastObj = NULL;
+    static int maxsize = 35000;
+    for (int i=maxsize; i>=sizeof(objHeader); i=i-sizeof(objHeader)) {
+        for (int j=0;;j++) {
+            objHeader *thisObj;
+            thisObj = (objHeader *) malloc(i);
+            if (thisObj == NULL)
+                break;
+            thisObj->prev = lastObj;
+            thisObj->length = i;
+            lastObj = thisObj;
+        }
+    }
+
+    // Free the objects backwards
+    int lastLength = 0;
+    int lastLengthCount = 0;
+    uint32_t total = 0;
+    while (lastObj != NULL) {
+        if (lastObj->length != lastLength) {
+            lastLength = lastObj->length;
+            lastLengthCount = 1;
+        } else {
+            lastLengthCount++;
+        }
+        objHeader *thisObj = lastObj;
+        lastObj = lastObj->prev;
+        total += thisObj->length;
+        free(thisObj);
+    }
+
+	return total;
+  
 }

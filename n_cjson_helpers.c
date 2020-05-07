@@ -17,14 +17,14 @@ bool JIsPresent(J *rsp, const char *field) {
 // Return a string from the specified JSON object, or "" if it's not present
 char *JGetString(J *rsp, const char *field) {
 	if (rsp == NULL)
-		return "";
+		return (char *) c_nullstring;
 	J *item = JGetObjectItem(rsp, field);
 	if (item == NULL)
-		return "";
+		return (char *) c_nullstring;
 	if (!JIsString(item))
-		return "";
+		return (char *) c_nullstring;
 	if (item->valuestring == NULL)
-		return "";
+		return (char *) c_nullstring;
 	return item->valuestring;
 }
 

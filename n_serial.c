@@ -17,7 +17,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 		segLeft -= segLen;
 		_SerialTransmit((uint8_t *)&json[segOff], segLen, false);
 		if (segLeft == 0) {
-			_SerialTransmit((uint8_t *)"\n", 1, true);
+			_SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
 			break;
 		}
 		segOff += segLen;
@@ -28,11 +28,13 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 	// because the json parse operation immediately following is subject to the
 	// serial port timeout. We'd like more flexibility in max timeout and ultimately
 	// in our error handling.
-	uint32_t start;
-	for (start = _GetMs(); !_SerialAvailable(); ) {
-		if (_GetMs() >= start + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+	uint32_t startMs;
+	for (startMs = _GetMs(); !_SerialAvailable(); ) {
+		if (_GetMs() >= startMs + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+#ifdef ERRDBG
 			_Debug("reply to request didn't arrive from module in time\n");
-			return "transaction timeout";
+#endif
+			return ERRSTR("transaction timeout",c_timeout);
 		}
 		_DelayMs(10);
 	}
@@ -40,25 +42,29 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 	// Allocate a buffer for input, noting that we always put the +1 in the alloc so we can be assured
 	// that it can be null-terminated.	This must be the case because json parsing requires a
 	// null-terminated string.
-	int jsonbufAllocLen = 1024;
+	int jsonbufAllocLen = 128;
 	char *jsonbuf = (char *) _Malloc(jsonbufAllocLen+1);
 	if (jsonbuf == NULL) {
+#ifdef ERRDBG
 		_Debug("transaction: jsonbuf malloc failed\n");
-		return "insufficient memory";
+#endif
+		return ERRSTR("insufficient memory",c_mem);
 	}
 	int jsonbufLen = 0;
 	char ch = 0;
-	start = _GetMs();
+	startMs = _GetMs();
 	while (ch != '\n') {
 		if (!_SerialAvailable()) {
 			ch = 0;
-			if (_GetMs() >= start + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+			if (_GetMs() >= startMs + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+#ifdef ERRDBG
 				jsonbuf[jsonbufLen] = '\0';
 				_Debug("received only partial reply after timeout:\n");
 				_Debug(jsonbuf);
 				_Debug("\n");
+#endif
 				_Free(jsonbuf);
-				return "transaction incomplete";
+				return ERRSTR("transaction incomplete",c_timeout);
 			}
 			_DelayMs(1);
 			continue;
@@ -67,9 +73,11 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 
 		// Because serial I/O can be error-prone, catch common bad data early, knowing that we only accept ASCII
 		if (ch == 0 || (ch & 0x80) != 0) {
+#ifdef ERRDBG
 			_Debug("invalid data received on serial port from notecard\n");
+#endif
 			_Free(jsonbuf);
-			return "serial communications error";
+			return ERRSTR("serial communications error",c_timeout);
 		}
 
 		// Append into the json buffer
@@ -78,9 +86,11 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 			jsonbufAllocLen += 512;
 			char *jsonbufNew = (char *) _Malloc(jsonbufAllocLen+1);
 			if (jsonbufNew == NULL) {
+#ifdef ERRDBG
 				_Debug("transaction: jsonbuf malloc grow failed\n");
+#endif
 				_Free(jsonbuf);
-				return "insufficient memory";
+				return ERRSTR("insufficient memory",c_mem);
 			}
 			memcpy(jsonbufNew, jsonbuf, jsonbufLen);
 			_Free(jsonbuf);
@@ -110,16 +120,19 @@ bool serialNoteReset() {
 	int retries;
 	for (retries=0; retries<10; retries++) {
 
-		_Debug("notecard serial reset\n");
+#ifdef ERRDBG
+		_Debug("serial reset\n");
+#endif
 
 		// Send a few newlines to the module to clean out request/response processing
-		_SerialTransmit((uint8_t *)"\n\n", 2, true);
+		_SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
+		_SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
 
 		// Drain all serial for 500ms
 		bool somethingFound = false;
 		bool nonControlCharFound = false;
-		uint32_t start = _GetMs();
-		while (_GetMs() < start+500) {
+		uint32_t startMs = _GetMs();
+		while (_GetMs() < startMs+500) {
 			while (_SerialAvailable()) {
 				somethingFound = true;
 				if (_SerialReceive() >= ' ')
@@ -134,7 +147,11 @@ bool serialNoteReset() {
 			break;
 		}
 
+#ifdef ERRDBG
 		_Debug(somethingFound ? "unrecognized data from notecard\n" : "notecard not responding\n");
+#else
+		_Debug("no notecard\n");
+#endif
 		_DelayMs(500);
 		_SerialReset();
 

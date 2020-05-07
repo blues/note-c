@@ -685,7 +685,7 @@ static Jbool parse_string(J * const item, parse_buffer * const input_buffer)
 
         /* This is at most how much we need for the output */
         allocation_length = (size_t) (input_end - buffer_at_offset(input_buffer)) - skipped_bytes;
-        output = (unsigned char*)_Malloc(allocation_length + sizeof(""));
+        output = (unsigned char*)_Malloc(allocation_length + 1);	// trailing '\0'
         if (output == NULL)
         {
             goto fail; /* allocation failure */
@@ -808,12 +808,14 @@ static Jbool print_string_ptr(const unsigned char * const input, printbuffer * c
     /* empty string */
     if (input == NULL)
     {
-        output = ensure(output_buffer, sizeof("\"\""));
+        output = ensure(output_buffer, 2);	// sizeof("\"\"")
         if (output == NULL)
         {
             return false;
         }
-        strcpy((char*)output, "\"\"");
+		output[0] = '"';
+		output[1] = '"';
+		output[2] = '\0';
 
         return true;
     }
@@ -844,7 +846,7 @@ static Jbool print_string_ptr(const unsigned char * const input, printbuffer * c
     }
     output_length = (size_t)(input_pointer - input) + escape_characters;
 
-    output = ensure(output_buffer, output_length + sizeof("\"\""));
+    output = ensure(output_buffer, output_length + 2);	// sizeof("\"\"")
     if (output == NULL)
     {
         return false;
@@ -980,7 +982,7 @@ N_CJSON_PUBLIC(J *) JParseWithOpts(const char *value, const char **return_parse_
     }
 
     buffer.content = (const unsigned char*)value;
-    buffer.length = strlen((const char*)value) + sizeof("");
+    buffer.length = strlen((const char*)value) + 1;		// Trailing '\0'
     buffer.offset = 0;
 
     item = JNew_Item();
@@ -1053,7 +1055,7 @@ N_CJSON_PUBLIC(J *) JParse(const char *value)
 
 static unsigned char *print(const J * const item, Jbool format)
 {
-    static const size_t default_buffer_size = 256;
+    static const size_t default_buffer_size = 128;
     printbuffer buffer[1];
     unsigned char *printed = NULL;
 
@@ -1171,21 +1173,21 @@ static Jbool parse_value(J * const item, parse_buffer * const input_buffer)
 
     /* parse the different types of values */
     /* null */
-    if (can_read(input_buffer, 4) && (strncmp((const char*)buffer_at_offset(input_buffer), "null", 4) == 0))
+    if (can_read(input_buffer, 4) && (strncmp((const char*)buffer_at_offset(input_buffer), c_null, c_null_len) == 0))
     {
         item->type = JNULL;
         input_buffer->offset += 4;
         return true;
     }
     /* false */
-    if (can_read(input_buffer, 5) && (strncmp((const char*)buffer_at_offset(input_buffer), "false", 5) == 0))
+    if (can_read(input_buffer, 5) && (strncmp((const char*)buffer_at_offset(input_buffer), c_false, c_false_len) == 0))
     {
         item->type = JFalse;
         input_buffer->offset += 5;
         return true;
     }
     /* true */
-    if (can_read(input_buffer, 4) && (strncmp((const char*)buffer_at_offset(input_buffer), "true", 4) == 0))
+    if (can_read(input_buffer, 4) && (strncmp((const char*)buffer_at_offset(input_buffer), c_true, c_true_len) == 0))
     {
         item->type = JTrue;
         item->valueint = 1;
@@ -1229,30 +1231,30 @@ static Jbool print_value(const J * const item, printbuffer * const output_buffer
     switch ((item->type) & 0xFF)
     {
         case JNULL:
-            output = ensure(output_buffer, 5);
+            output = ensure(output_buffer, c_null_len+1);
             if (output == NULL)
             {
                 return false;
             }
-            strcpy((char*)output, "null");
+            strcpy((char*)output, c_null);
             return true;
 
         case JFalse:
-            output = ensure(output_buffer, 6);
+            output = ensure(output_buffer, c_false_len+1);
             if (output == NULL)
             {
                 return false;
             }
-            strcpy((char*)output, "false");
+            strcpy((char*)output, c_false);
             return true;
 
         case JTrue:
-            output = ensure(output_buffer, 5);
+            output = ensure(output_buffer, c_true_len+1);
             if (output == NULL)
             {
                 return false;
             }
-            strcpy((char*)output, "true");
+            strcpy((char*)output, c_true);
             return true;
 
         case JNumber:
@@ -1266,7 +1268,7 @@ static Jbool print_value(const J * const item, printbuffer * const output_buffer
                 return false;
             }
 
-            raw_length = strlen(item->valuestring) + sizeof("");
+            raw_length = strlen(item->valuestring) + 1;		// Trailing '\0';
             output = ensure(output_buffer, raw_length);
             if (output == NULL)
             {

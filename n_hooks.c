@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include "n_lib.h"
 
+// Show mallocs for debugging in very low mem environments
+#define	NOTE_SHOW_MALLOC	false
+
 // Which I/O port to use
 #define interfaceNone       0
 #define interfaceSerial     1
@@ -62,6 +65,9 @@ void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn mill
 void NoteSetFnDebugOutput(debugOutputFn fn) {
     hookDebugOutput = fn;
 }
+bool NoteIsDebugOutputActive() {
+    return hookDebugOutput != NULL;
+}
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, mutexFn unlockNotefn) {
     hookLockI2C = lockI2Cfn;
     hookUnlockI2C = unlockI2Cfn;
@@ -95,13 +101,18 @@ void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn, i2cT
 }
 
 // Runtime hook wrappers
-void NoteFnDebugMsg(const char *line) {
+void NoteDebugln(const char *line) {
+	NoteDebug(line);
+	NoteDebug(c_newline);
+}
+
+void NoteDebug(const char *line) {
 #ifndef NOTE_NODEBUG
     if (hookDebugOutput != NULL)
         hookDebugOutput(line);
 #endif
 }
-void NoteFnDebug(const char *format, ...) {
+void NoteDebugf(const char *format, ...) {
 #ifndef NOTE_NODEBUG
     if (hookDebugOutput != NULL) {
         char line[256];
@@ -113,73 +124,86 @@ void NoteFnDebug(const char *format, ...) {
     }
 #endif
 }
-long unsigned int NoteFnGetMs() {
+long unsigned int NoteGetMs() {
     if (hookGetMs == NULL)
         return 0;
     return hookGetMs();
 }
-void NoteFnDelayMs(uint32_t ms) {
+void NoteDelayMs(uint32_t ms) {
     if (hookDelayMs != NULL)
         hookDelayMs(ms);
 }
-void *NoteFnMalloc(size_t size) {
+#if NOTE_SHOW_MALLOC
+void *malloc_show(size_t len) {
+	char str[10];
+	itoa(len, str, 10);
+    hookDebugOutput(str);
+    hookDebugOutput("\r\n");
+    return hookMalloc(len);
+}
+#endif
+void *NoteMalloc(size_t size) {
     if (hookMalloc == NULL)
         return NULL;
+#if NOTE_SHOW_MALLOC
+	return malloc_show(size);
+#else
     return hookMalloc(size);
+#endif
 }
-void NoteFnFree(void *p) {
+void NoteFree(void *p) {
     if (hookFree != NULL)
         hookFree(p);
 }
-void NoteFnLockI2C() {
+void NoteLockI2C() {
     if (hookLockI2C != NULL)
         hookLockI2C();
 }
-void NoteFnUnlockI2C() {
+void NoteUnlockI2C() {
     if (hookUnlockI2C != NULL)
         hookUnlockI2C();
 }
-void NoteFnLockNote() {
+void NoteLockNote() {
     if (hookLockNote != NULL)
         hookLockNote();
 }
-void NoteFnUnlockNote() {
+void NoteUnlockNote() {
     if (hookUnlockNote != NULL)
         hookUnlockNote();
 }
-void NoteFnSerialReset() {
+void NoteSerialReset() {
     if (hookActiveInterface == interfaceSerial && hookSerialReset != NULL)
         hookSerialReset();
 }
-void NoteFnSerialTransmit(uint8_t *text, size_t len, bool flush) {
+void NoteSerialTransmit(uint8_t *text, size_t len, bool flush) {
     if (hookActiveInterface == interfaceSerial && hookSerialTransmit != NULL)
         hookSerialTransmit(text, len, flush);
 }
-bool NoteFnSerialAvailable() {
+bool NoteSerialAvailable() {
     if (hookActiveInterface == interfaceSerial && hookSerialAvailable != NULL)
         return hookSerialAvailable();
     return false;
 }
-char NoteFnSerialReceive() {
+char NoteSerialReceive() {
     if (hookActiveInterface == interfaceSerial && hookSerialReceive != NULL)
         return hookSerialReceive();
     return 0;
 }
-void NoteFnI2CReset() {
+void NoteI2CReset() {
     if (hookActiveInterface == interfaceI2C && hookI2CReset != NULL)
         hookI2CReset();
 }
-const char *NoteFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size) {
+const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size) {
     if (hookActiveInterface == interfaceI2C && hookI2CTransmit != NULL)
         return hookI2CTransmit(DevAddress, pBuffer, Size);
     return "i2c not active";
 }
-const char *NoteFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *available) {
+const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *available) {
     if (hookActiveInterface == interfaceI2C && hookI2CReceive != NULL)
         return hookI2CReceive(DevAddress, pBuffer, Size, available);
     return "i2c not active";
 }
-uint32_t NoteFnI2CAddress() {
+uint32_t NoteI2CAddress() {
     if (i2cAddress == NOTE_I2C_MAX_DEFAULT)
         return 0x17;
     return i2cAddress;
@@ -187,7 +211,7 @@ uint32_t NoteFnI2CAddress() {
 void NoteSetI2CAddress(uint32_t i2caddress) {
 	i2cAddress = i2caddress;
 }
-uint32_t NoteFnI2CMax() {
+uint32_t NoteI2CMax() {
     // Many Arduino libraries (such as ESP32) have a limit less than 32, so if the max isn't specified
     // we must assume the worst and segment the I2C messages into very tiny chunks.
     if (i2cMax == NOTE_I2C_MAX_DEFAULT)
@@ -198,12 +222,12 @@ uint32_t NoteFnI2CMax() {
     return i2cMax;
 }
 
-bool NoteFnNoteReset() {
+bool NoteHardReset() {
     if (notecardReset == NULL)
         return "notecard not initialized";
     return notecardReset();
 }
-const char *NoteFnTransaction(char *json, char **jsonResponse) {
+const char *NoteJSONTransaction(char *json, char **jsonResponse) {
     if (notecardTransaction == NULL)
         return "notecard not initialized";
     return notecardTransaction(json, jsonResponse);

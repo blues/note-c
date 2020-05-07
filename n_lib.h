@@ -28,42 +28,67 @@ const char *serialNoteTransaction(char *json, char **jsonResponse);
 bool serialNoteReset(void);
 
 // Hooks
-void NoteFnLockNote(void);
-void NoteFnUnlockNote(void);
-void NoteFnSerialReset(void);
-void NoteFnSerialTransmit(uint8_t *, size_t, bool);
-bool NoteFnSerialAvailable(void);
-char NoteFnSerialReceive(void);
-void NoteFnI2CReset(void);
-const char *NoteFnI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
-const char *NoteFnI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
-bool NoteFnNoteReset(void);
-const char *NoteFnTransaction(char *json, char **jsonResponse);
+void NoteLockNote(void);
+void NoteUnlockNote(void);
+void NoteSerialReset(void);
+void NoteSerialTransmit(uint8_t *, size_t, bool);
+bool NoteSerialAvailable(void);
+char NoteSerialReceive(void);
+void NoteI2CReset(void);
+const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
+const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
+bool NoteHardReset(void);
+const char *NoteJSONTransaction(char *json, char **jsonResponse);
+bool NoteIsDebugOutputActive(void);
+
+// Constants, a global optimization to save static string memory
+extern const char *c_null;
+#define	c_null_len 4
+extern const char *c_false;
+#define	c_false_len 5
+extern const char *c_true;
+#define	c_true_len 4
+extern const char *c_nullstring;
+#define	c_nullstring_len 0
+extern const char *c_newline;
+#define	c_newline_len 1
+extern const char *c_mem;
+#define	c_mem_len 3
+extern const char *c_timeout;
+#define	c_timeout_len 7
+extern const char *c_err;
+#define	c_err_len 3
+extern const char *c_req;
+#define	c_req_len 3
+extern const char *c_bad;
+#define	c_bad_len 3
 
 // Readability wrappers.  Anything starting with _ is simply calling the wrapper function
-#define _LockNote NoteFnLockNote
-#define _UnlockNote NoteFnUnlockNote
-#define _SerialReset NoteFnSerialReset
-#define _SerialTransmit NoteFnSerialTransmit
-#define _SerialAvailable NoteFnSerialAvailable
-#define _SerialReceive NoteFnSerialReceive
-#define _I2CReset NoteFnI2CReset
-#define _I2CTransmit NoteFnI2CTransmit
-#define _I2CReceive NoteFnI2CReceive
-#define _NoteReset NoteFnNoteReset
-#define _Transaction NoteFnTransaction
-#define _Malloc NoteFnMalloc
-#define _Free NoteFnFree
-#define _GetMs NoteFnGetMs
-#define _DelayMs NoteFnDelayMs
-#define _LockI2C NoteFnLockI2C
-#define _UnlockI2C NoteFnUnlockI2C
-#define _I2CAddress NoteFnI2CAddress
-#define _I2CMax NoteFnI2CMax
+#define _LockNote NoteLockNote
+#define _UnlockNote NoteUnlockNote
+#define _SerialReset NoteSerialReset
+#define _SerialTransmit NoteSerialTransmit
+#define _SerialAvailable NoteSerialAvailable
+#define _SerialReceive NoteSerialReceive
+#define _I2CReset NoteI2CReset
+#define _I2CTransmit NoteI2CTransmit
+#define _I2CReceive NoteI2CReceive
+#define _Reset NoteHardReset
+#define _Transaction NoteJSONTransaction
+#define _Malloc NoteMalloc
+#define _Free NoteFree
+#define _GetMs NoteGetMs
+#define _DelayMs NoteDelayMs
+#define _LockI2C NoteLockI2C
+#define _UnlockI2C NoteUnlockI2C
+#define _I2CAddress NoteI2CAddress
+#define _I2CMax NoteI2CMax
 #ifdef NOTE_NODEBUG
 #define _Debug(x)
+#define _Debugln(x)
 #else
-#define _Debug(x) NoteFnDebugMsg(x)
+#define _Debug(x) NoteDebug(x)
+#define _Debugln(x) NoteDebugln(x)
 #endif
 
 // End of C-callable functions
