@@ -124,8 +124,7 @@ bool serialNoteReset() {
 		_Debug("serial reset\n");
 #endif
 
-		// Send a few newlines to the module to clean out request/response processing
-		_SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
+		// Send a newline to the module to clean out request/response processing
 		_SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
 
 		// Drain all serial for 500ms
