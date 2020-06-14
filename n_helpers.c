@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdarg.h>
 #include "n_lib.h"
 
 // When interfacing with the Notecard, it is generally encouraged that the JSON object manipulation and
