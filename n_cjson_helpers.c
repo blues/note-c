@@ -147,6 +147,3 @@ const char *JGetItemName(const J * item) {
 	return item->string;
 }
 
-// Iterate over the fields of an object
-#define JObjectForEach JArrayForEach
-

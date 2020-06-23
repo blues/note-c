@@ -116,6 +116,7 @@ bool JIsNullString(J *rsp, const char *field);
 bool JIsExactString(J *rsp, const char *field, const char *teststr);
 bool JContainsString(J *rsp, const char *field, const char *substr);
 bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, uint32_t binaryDataLen);
+const char *JGetItemName(const J * item);
 
 // Helper functions for apps that wish to limit their C library dependencies
 #define JNRound(x,NUMDIGITS) ((round((x) * 1E##NUMDIGITS)) / 1E##NUMDIGITS)

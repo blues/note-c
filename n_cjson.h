@@ -280,6 +280,8 @@ N_CJSON_PUBLIC(JNUMBER) JSetNumberHelper(J *object, JNUMBER number);
 
 /* Macro for iterating over an array or object */
 #define JArrayForEach(element, array) for(element = (array != NULL) ? (array)->child : NULL; element != NULL; element = element->next)
+// Iterate over the fields of an object
+#define JObjectForEach(element, array) JArrayForEach(element, array)
 
 /* malloc/free objects using the malloc/free functions that have been set with JInitHooks */
 N_CJSON_PUBLIC(void *) Jmalloc(size_t size);
