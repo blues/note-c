@@ -139,3 +139,14 @@ bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, u
 	JAddItemToObject(req, fieldName, stringItem);
 	return true;
 }
+
+// Get the object name
+const char *JGetItemName(const J * item) {
+	if (item->string == NULL)
+		return "";
+	return item->string;
+}
+
+// Iterate over the fields of an object
+#define JObjectForEach JArrayForEach
+
