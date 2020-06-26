@@ -46,10 +46,11 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 		chunk += chunklen;
 		jsonLen -= chunklen;
 		sentInSegment += chunklen;
-		if (sentInSegment > CARD_REQUEST_SEGMENT_MAX_LEN) {
-			sentInSegment -= CARD_REQUEST_SEGMENT_MAX_LEN;
+		if (sentInSegment > CARD_REQUEST_I2C_SEGMENT_MAX_LEN) {
+			sentInSegment = 0;
+			_DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
 		}
-		_DelayMs(CARD_REQUEST_SEGMENT_DELAY_MS);
+		_DelayMs(CARD_REQUEST_I2C_CHUNK_DELAY_MS);
 	}
 
 	// Free the transmit buffer
