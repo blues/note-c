@@ -19,7 +19,7 @@ extern "C" {
 // at it far, far faster than it can process it, therefore we push it in segments with a pause
 // between each segment.
 #define CARD_REQUEST_I2C_SEGMENT_MAX_LEN 250
-#define CARD_REQUEST_I2C_SEGMENT_DELAY_MS 100
+#define CARD_REQUEST_I2C_SEGMENT_DELAY_MS 250
 #define CARD_REQUEST_I2C_CHUNK_DELAY_MS 20
 #define CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN 1000
 #define CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS 250
