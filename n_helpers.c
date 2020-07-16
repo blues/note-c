@@ -524,16 +524,6 @@ bool NoteGetStatusST(char *statusBuf, int statusBufLen, JTIME *bootTime, bool *r
 bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes) {
     bool success = false;
 
-    // If optional wakeup modes are specified, set them
-    if (modes != NULL) {
-        J *req = NoteNewRequest("card.attn");
-        if (req != NULL) {
-            JAddStringToObject(req, "mode", modes);
-            if (!NoteRequest(req))
-                return false;
-        }
-    }
-
     // Put ourselves to sleep
     _Debug("requesting sleep\n");
     J *req = NoteNewRequest("card.attn");
@@ -542,7 +532,13 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes) {
         J *stringReferenceItem = JCreateStringReference(stateb64);
         if (stringReferenceItem != NULL)
             JAddItemToObject(req, "payload", stringReferenceItem);
-        JAddStringToObject(req, "mode", "reset");
+		char modestr[64];
+		strLcpy(modestr, "arm");
+		if (modes != NULL) {
+			strLcat(modestr, ",");
+			strLcat(modestr, modes);
+		}
+        JAddStringToObject(req, "mode", modestr);
         JAddNumberToObject(req, "seconds", seconds);
         success = NoteRequest(req);
     }
