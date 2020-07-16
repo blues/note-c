@@ -533,10 +533,10 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes) {
         if (stringReferenceItem != NULL)
             JAddItemToObject(req, "payload", stringReferenceItem);
 		char modestr[64];
-		strLcpy(modestr, "arm");
+		strlcpy(modestr, "arm", sizeof(modestr));
 		if (modes != NULL) {
-			strLcat(modestr, ",");
-			strLcat(modestr, modes);
+			strlcat(modestr, ",", sizeof(modestr));
+			strlcat(modestr, modes, sizeof(modestr));
 		}
         JAddStringToObject(req, "mode", modestr);
         JAddNumberToObject(req, "seconds", seconds);
