@@ -234,11 +234,36 @@ bool NoteLocationValidST(char *errbuf, uint32_t errbuflen) {
 
 }
 
+// Set a service environment variable default
+bool NoteSetEnvDefault(const char *variable, char *buf) {
+    J *req = NoteNewRequest("env.default");
+    if (req != NULL) {
+        JAddStringToObject(req, "name", variable);
+		JAddStringToObject(req, "text", buf);
+        success = NoteRequest(req);
+    }
+	return success;
+}
+
+// Set the default value for a service environment variable
+bool NoteSetEnvDefaultInt(const char *variable, int defaultVal) {
+    char buf[32];
+	snprintf(buf, sizeof(buf), "%d", defaultVal);
+    return NoteSetEnvDefault(variable, buf);
+}
+
+// Set the default value for a service environment variable
+bool NoteSetEnvDefaultNumber(const char *variable, JNUMBER defaultVal) {
+    char buf[32];
+	JNtoA(defaultVal, buf, -1);
+    return NoteSetEnvDefault(variable, buf);
+}
+
 // Get a service environment variable integer
-int NoteGetEnvInt(const char *variable, int defaultVal) {
+int NoteGetEnvNumber(const char *variable, JNUMBER defaultVal) {
     char buf[64];
-    NoteGetEnv(variable, "0", buf, sizeof(buf));
-    return atoi(buf);
+    NoteGetEnv(variable, "0.0", buf, sizeof(buf));
+    return JAtoN(buf);
 }
 
 // Get a service environment variable
@@ -247,7 +272,7 @@ void NoteGetEnv(const char *variable, const char *defaultVal, char *buf, uint32_
         buf[0] = '\0';
     else
         strlcpy(buf, defaultVal, buflen);
-    J *req = NoteNewRequest("service.env");
+    J *req = NoteNewRequest("env.get");
     if (req != NULL) {
         JAddStringToObject(req, "name", variable);
         J *rsp = NoteRequestResponse(req);
@@ -260,23 +285,6 @@ void NoteGetEnv(const char *variable, const char *defaultVal, char *buf, uint32_
             NoteDeleteResponse(rsp);
         }
     }
-}
-
-// Get the entire set of available environment vars
-bool NoteGetEnvAll(char *statusBuf, int statusBufLen) {
-    bool success = false;
-    statusBuf[0] = '\0';
-    J *rsp = NoteRequestResponse(NoteNewRequest("service.env"));
-    if (rsp != NULL) {
-        success = !NoteResponseError(rsp);
-        if (success) {
-            char *text = JGetString(rsp, "text");
-            if (text[0] != '\0')
-                strlcpy(statusBuf, text, statusBufLen);
-        }
-        NoteDeleteResponse(rsp);
-    }
-    return success;
 }
 
 // See if we're connected to the net

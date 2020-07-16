@@ -136,8 +136,11 @@ bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneO
 bool NoteLocationValid(char *errbuf, uint32_t errbuflen);
 bool NoteLocationValidST(char *errbuf, uint32_t errbuflen);
 int NoteGetEnvInt(const char *variable, int defaultVal);
+JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal);
 void NoteGetEnv(const char *variable, const char *defaultVal, char *buf, uint32_t buflen);
-bool NoteGetEnvAll(char *statusBuf, int statusBufLen);
+bool NoteSetEnvDefault(const char *variable, char *buf);
+bool NoteSetEnvDefaultNumber(const char *variable, JNUMBER defaultVal);
+bool NoteSetEnvDefaultInt(const char *variable, int defaultVal);
 bool NoteIsConnected(void);
 bool NoteIsConnectedST(void);
 bool NoteGetNetStatus(char *statusBuf, int statusBufLen);
