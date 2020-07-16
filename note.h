@@ -104,8 +104,6 @@ size_t strlcat(char *dst, const char *src, size_t siz);
 // JSON helpers
 void JInit(void);
 void JCheck(void);
-void *JMalloc(size_t size);
-void JFree(void *p);
 bool JIsPresent(J *rsp, const char *field);
 char *JGetString(J *rsp, const char *field);
 JNUMBER JGetNumber(J *rsp, const char *field);
@@ -119,7 +117,6 @@ bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, u
 const char *JGetItemName(const J * item);
 
 // Helper functions for apps that wish to limit their C library dependencies
-#define JNRound(x,NUMDIGITS) ((round((x) * 1E##NUMDIGITS)) / 1E##NUMDIGITS)
 #define JNTOA_PRECISION (10)
 #define JNTOA_MAX       ((2*JNTOA_PRECISION)+1+1)
 char * JNtoA(JNUMBER f, char * buf, int precision);

@@ -149,7 +149,7 @@ N_CJSON_PUBLIC(const char*) JVersion(void);
 /* Supply malloc, realloc and free functions to J */
 N_CJSON_PUBLIC(void) JInitHooks(JHooks* hooks);
 
-/* Memory Management: the caller is always responsible to free the results from all variants of JParse (with JDelete) and JPrint (with stdlib free, JHooks.free_fn, or Jfree as appropriate). The exception is JPrintPreallocated, where the caller has full responsibility of the buffer. */
+/* Memory Management: the caller is always responsible to free the results from all variants of JParse (with JDelete) and JPrint (with stdlib free, JHooks.free_fn, or JFree as appropriate). The exception is JPrintPreallocated, where the caller has full responsibility of the buffer. */
 /* Supply a block of JSON, and this returns a J object you can interrogate. */
 N_CJSON_PUBLIC(J *) JParse(const char *value);
 /* ParseWithOpts allows you to require (and check) that the JSON is null terminated, and to retrieve the pointer to the final byte parsed. */
@@ -284,8 +284,8 @@ N_CJSON_PUBLIC(JNUMBER) JSetNumberHelper(J *object, JNUMBER number);
 #define JObjectForEach(element, array) JArrayForEach(element, array)
 
 /* malloc/free objects using the malloc/free functions that have been set with JInitHooks */
-N_CJSON_PUBLIC(void *) Jmalloc(size_t size);
-N_CJSON_PUBLIC(void) Jfree(void *object);
+N_CJSON_PUBLIC(void *) JMalloc(size_t size);
+N_CJSON_PUBLIC(void) JFree(void *object);
 
 #ifdef __cplusplus
 }
