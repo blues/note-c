@@ -60,6 +60,7 @@ void NoteResetRequired(void);
 #define NoteNewBody JCreateObject
 J *NoteNewRequest(const char *request);
 J *NoteRequestResponse(J *req);
+char *NoteRequestResponseJSON(char *reqJSON);
 void NoteSuspendTransactionDebug(void);
 void NoteResumeTransactionDebug(void);
 bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel);
