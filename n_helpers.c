@@ -689,6 +689,29 @@ bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align) {
 
 }
 
+// Set the upload and download mode and interval
+bool NoteSetSyncMode(const char *uploadMode, int uploadMinutes, int downlaodHours, bool align, bool sync) {
+    bool success = false;
+    J *req = NoteNewRequest("service.set");
+    if (req != NULL) {
+        JAddStringToObject(req, "mode", uploadMode);
+        if (uploadMinutes != 0) {
+            JAddNumberToObject(req, "minutes", uploadMinutes);
+            // Setting this flag aligns uploads to be grouped within the period,
+            // rather than counting the number of minutes from "first modified".
+            JAddBoolToObject(req, "align", align);
+        }
+        if (downloadHours != 0)
+            JAddNumberToObject(req, "hours", downloadHours);
+        // Setting this flag when mode is "continuous" causes an immediate sync
+        // when a file is modified on the service side via HTTP
+        JAddBoolToObject(req, "sync", sync);
+        success = NoteRequest(req);
+    }
+    return success;
+
+}
+
 // Set the JSON template for a target
 bool NoteTemplate(const char *target, J *body) {
     J *req = NoteNewRequest("note.template");
