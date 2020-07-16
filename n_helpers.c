@@ -236,6 +236,7 @@ bool NoteLocationValidST(char *errbuf, uint32_t errbuflen) {
 
 // Set a service environment variable default
 bool NoteSetEnvDefault(const char *variable, char *buf) {
+	bool success = false;
     J *req = NoteNewRequest("env.default");
     if (req != NULL) {
         JAddStringToObject(req, "name", variable);
@@ -263,7 +264,7 @@ bool NoteSetEnvDefaultNumber(const char *variable, JNUMBER defaultVal) {
 JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal) {
     char buf[64];
     NoteGetEnv(variable, "0.0", buf, sizeof(buf));
-    return JAtoN(buf);
+    return JAtoN(buf, NULL);
 }
 
 // Get a service environment variable integer
