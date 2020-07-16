@@ -77,6 +77,30 @@ J *NoteRequestResponse(J *req) {
     return rsp;
 }
 
+// Perform a JSON transaction as a string, and return the response JSON as a string that should be freed with JFree
+char *NoteRequestResponseJSON(char *reqJSON) {
+
+    // Parse the incoming JSON string
+    J *req = JParse(reqJSON);
+    if (req == NULL)
+        return NULL;
+
+    // Perform the transaction and free the req
+    J *rsp = NoteRequestResponse(req);
+    if (rsp == NULL)
+        return NULL;
+
+    // Convert response back to JSON and delete it
+    char *json = JPrintUnformatted(rsp);
+    NoteDeleteResponse(rsp);
+    if (json == NULL)
+        return NULL;
+
+    // Done
+    return json;
+
+}
+
 // Initiate a transaction to the card using reqdoc, and return the result in rspdoc.  This does
 // NOT free the request structure.
 J *NoteTransaction(J *req) {
