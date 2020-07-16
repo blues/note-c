@@ -686,7 +686,7 @@ bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align) {
 }
 
 // Set the upload and download mode and interval
-bool NoteSetSyncMode(const char *uploadMode, int uploadMinutes, int downlaodHours, bool align, bool sync) {
+bool NoteSetSyncMode(const char *uploadMode, int uploadMinutes, int downloadHours, bool align, bool sync) {
     bool success = false;
     J *req = NoteNewRequest("service.set");
     if (req != NULL) {
