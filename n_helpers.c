@@ -262,15 +262,17 @@ bool NoteSetEnvDefaultNumber(const char *variable, JNUMBER defaultVal) {
 
 // Get a service environment variable integer
 JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal) {
-    char buf[64];
-    NoteGetEnv(variable, "0.0", buf, sizeof(buf));
+    char buf[32], buf2[32];;
+	snprintf(buf2, sizeof(buf2), "%f", defaultVal);
+    NoteGetEnv(variable, buf2, buf, sizeof(buf));
     return JAtoN(buf, NULL);
 }
 
 // Get a service environment variable integer
 int NoteGetEnvInt(const char *variable, int defaultVal) {
-    char buf[64];
-    NoteGetEnv(variable, "0", buf, sizeof(buf));
+    char buf[32], buf2[32];;
+	snprintf(buf2, sizeof(buf2), "%d", defaultVal);
+    NoteGetEnv(variable, buf2, buf, sizeof(buf));
     return atoi(buf);
 }
 
