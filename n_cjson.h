@@ -81,7 +81,6 @@ typedef struct J
     int valueint;
     /* The item's number, if type==JNumber */
     JNUMBER valuenumber;
-
     /* The item's name string, if this item is the child of, or is in the list of subitems of an object. */
     char *string;
 } J;

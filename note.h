@@ -111,6 +111,10 @@ JNUMBER JGetNumber(J *rsp, const char *field);
 J *JGetObject(J *rsp, const char *field);
 int JGetInt(J *rsp, const char *field);
 bool JGetBool(J *rsp, const char *field);
+JNUMBER JNumberValue(J *item) {
+char *JStringValue(J *item);
+bool JBoolValue(J *item);
+int JIntValue(J *item);
 bool JIsNullString(J *rsp, const char *field);
 bool JIsExactString(J *rsp, const char *field, const char *teststr);
 bool JContainsString(J *rsp, const char *field, const char *substr);
