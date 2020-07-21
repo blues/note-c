@@ -111,7 +111,7 @@ JNUMBER JGetNumber(J *rsp, const char *field);
 J *JGetObject(J *rsp, const char *field);
 int JGetInt(J *rsp, const char *field);
 bool JGetBool(J *rsp, const char *field);
-JNUMBER JNumberValue(J *item) {
+JNUMBER JNumberValue(J *item);
 char *JStringValue(J *item);
 bool JBoolValue(J *item);
 int JIntValue(J *item);
