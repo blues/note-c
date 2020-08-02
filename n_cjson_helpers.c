@@ -44,7 +44,7 @@ J *JGetObject(J *rsp, const char *field) {
 bool JBoolValue(J *item) {
 	if (item == NULL)
 		return false;
-	return (item->type & 0xff == JTrue);
+	return ((item->type & 0xff) == JTrue);
 }
 
 // Return a number from the JSON object, or 0 if it's not present

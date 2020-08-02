@@ -13,8 +13,9 @@ static bool resetRequired = true;
 // Create an error response document
 static J *errDoc(const char *errmsg) {
     J *rspdoc = JCreateObject();
-    if (rspdoc != NULL)
+    if (rspdoc != NULL) {
         JAddStringToObject(rspdoc, c_err, errmsg);
+	}
 	if (suppressShowTransactions == 0) {
 	    _Debug("{\"err\":\"");
 		_Debug(errmsg);
