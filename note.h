@@ -46,11 +46,11 @@ typedef void (*freeFn) (void *);
 typedef void (*delayMsFn) (uint32_t ms);
 typedef long unsigned int (*getMsFn) (void);
 typedef size_t (*debugOutputFn) (const char *text);
-typedef void (*serialResetFn) (void);
+typedef bool (*serialResetFn) (void);
 typedef void (*serialTransmitFn) (uint8_t *data, size_t len, bool flush);
 typedef bool (*serialAvailableFn) (void);
 typedef char (*serialReceiveFn) (void);
-typedef void (*i2cResetFn) (void);
+typedef bool (*i2cResetFn) (void);
 typedef const char * (*i2cTransmitFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
 typedef const char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 

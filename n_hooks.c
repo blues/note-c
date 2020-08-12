@@ -171,9 +171,10 @@ void NoteUnlockNote() {
     if (hookUnlockNote != NULL)
         hookUnlockNote();
 }
-void NoteSerialReset() {
+bool NoteSerialReset() {
     if (hookActiveInterface == interfaceSerial && hookSerialReset != NULL)
-        hookSerialReset();
+        return hookSerialReset();
+	return false;
 }
 void NoteSerialTransmit(uint8_t *text, size_t len, bool flush) {
     if (hookActiveInterface == interfaceSerial && hookSerialTransmit != NULL)
@@ -189,9 +190,10 @@ char NoteSerialReceive() {
         return hookSerialReceive();
     return 0;
 }
-void NoteI2CReset() {
+bool NoteI2CReset() {
     if (hookActiveInterface == interfaceI2C && hookI2CReset != NULL)
-        hookI2CReset();
+        return hookI2CReset();
+	return false;
 }
 const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size) {
     if (hookActiveInterface == interfaceI2C && hookI2CTransmit != NULL)
@@ -224,7 +226,7 @@ uint32_t NoteI2CMax() {
 
 bool NoteHardReset() {
     if (notecardReset == NULL)
-        return "notecard not initialized";
+        return false;
     return notecardReset();
 }
 const char *NoteJSONTransaction(char *json, char **jsonResponse) {

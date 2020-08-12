@@ -155,10 +155,12 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 // Initialize or re-initialize the module, returning false if anything fails
 bool i2cNoteReset() {
 
-	// Reset the I2C subsystem
+	// Reset the I2C subsystem and exit if failure
 	_LockI2C();
-	_I2CReset();
+	bool success = _I2CReset();
 	_UnlockI2C();
+	if (!success)
+		return false;
 
 	// Synchronize by guaranteeing not only that I2C works, but that we drain the remainder of any
 	// pending partial reply from a previously-aborted session.	 This outer loop does retries on

@@ -112,7 +112,8 @@ bool serialNoteReset() {
 
 	// Initialize, or re-initialize.  Because we've observed Arduino serial driver flakiness,
 	_DelayMs(250);
-	_SerialReset();
+	if (!_SerialReset())
+		return false;
 
 	// The guaranteed behavior for robust resyncing is to send two newlines
 	// and	wait for two echoed blank lines in return.
