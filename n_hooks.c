@@ -172,37 +172,44 @@ void NoteUnlockNote() {
         hookUnlockNote();
 }
 bool NoteSerialReset() {
-    if (hookActiveInterface == interfaceSerial && hookSerialReset != NULL)
+    if (hookActiveInterface == interfaceSerial && hookSerialReset != NULL) {
         return hookSerialReset();
+	}
 	return false;
 }
 void NoteSerialTransmit(uint8_t *text, size_t len, bool flush) {
-    if (hookActiveInterface == interfaceSerial && hookSerialTransmit != NULL)
+    if (hookActiveInterface == interfaceSerial && hookSerialTransmit != NULL) {
         hookSerialTransmit(text, len, flush);
+	}
 }
 bool NoteSerialAvailable() {
-    if (hookActiveInterface == interfaceSerial && hookSerialAvailable != NULL)
+    if (hookActiveInterface == interfaceSerial && hookSerialAvailable != NULL) {
         return hookSerialAvailable();
+	}
     return false;
 }
 char NoteSerialReceive() {
-    if (hookActiveInterface == interfaceSerial && hookSerialReceive != NULL)
+    if (hookActiveInterface == interfaceSerial && hookSerialReceive != NULL) {
         return hookSerialReceive();
+	}
     return 0;
 }
 bool NoteI2CReset() {
-    if (hookActiveInterface == interfaceI2C && hookI2CReset != NULL)
+    if (hookActiveInterface == interfaceI2C && hookI2CReset != NULL) {
         return hookI2CReset();
+	}
 	return false;
 }
 const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size) {
-    if (hookActiveInterface == interfaceI2C && hookI2CTransmit != NULL)
+    if (hookActiveInterface == interfaceI2C && hookI2CTransmit != NULL) {
         return hookI2CTransmit(DevAddress, pBuffer, Size);
+	}
     return "i2c not active";
 }
 const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *available) {
-    if (hookActiveInterface == interfaceI2C && hookI2CReceive != NULL)
+    if (hookActiveInterface == interfaceI2C && hookI2CReceive != NULL) {
         return hookI2CReceive(DevAddress, pBuffer, Size, available);
+	}
     return "i2c not active";
 }
 uint32_t NoteI2CAddress() {
