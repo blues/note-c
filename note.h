@@ -166,7 +166,8 @@ bool NoteSetProductID(const char *productID);
 bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align);
 bool NoteSetSyncMode(const char *uploadMode, int uploadMinutes, int downlaodHours, bool align, bool sync);
 bool NoteTemplate(const char *target, J *body);
-bool NoteSend(const char *target, J *body, bool urgent);
+#define NoteSend NoteAdd
+bool NoteAdd(const char *target, J *body, bool urgent);
 bool NoteSendToRoute(const char *method, const char *routeAlias, char *notefile, J *body);
 bool NoteGetVoltage(JNUMBER *voltage);
 bool NoteGetTemperature(JNUMBER *temp);

@@ -739,7 +739,7 @@ bool NoteTemplate(const char *target, J *body) {
 }
 
 // Append a new value to be sent to the card, with an "urgent" flag indicating that it must be sent NOW.
-bool NoteSend(const char *target, J *body, bool urgent) {
+bool NoteAdd(const char *target, J *body, bool urgent) {
 
     // Initiate the request
     J *req = NoteNewRequest("note.add");
