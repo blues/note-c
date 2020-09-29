@@ -13,14 +13,29 @@
 
 #include "n_lib.h"
 
-// We've noticed that there's an instability in some cards' implementations of I2C, and as a result
-// we introduce an intentional delay before each and every I2C I/O.	 The timing was computed empirically based
-// on a number of commercial devices.
+/**************************************************************************/
+/*!
+    @brief  We've noticed that there's an instability in some cards'
+						implementations of I2C, and as a result we introduce an intentional
+						delay before each and every I2C I/O.The timing was computed
+						empirically based on a number of commercial devices.
+*/
+/**************************************************************************/
 static void _DelayIO() {
 	_DelayMs(6);
 }
 
-// Initiate a transaction to the notecard using reqdoc, and return the result in rspdoc
+/**************************************************************************/
+/*!
+    @brief  Given a JSON string, perform an I2C transaction with the Notecard.
+    @param   json
+               A c-string containing the JSON request object.
+		@param   jsonResponse
+							 An out parameter c-string buffer that will contain the JSON
+							 response from the Notercard.
+	@returns a c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
 const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 
 	// Append '\n' to the transaction
@@ -161,7 +176,13 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 	return NULL;
 }
 
-// Initialize or re-initialize the module, returning false if anything fails
+//**************************************************************************/
+/*!
+    @brief  Initialize or re-initialize the I2C subsystem, returning false if
+            anything fails.
+    @returns a boolean. `true` if the reset was successful, `false`, if not.
+*/
+/**************************************************************************/
 bool i2cNoteReset() {
 
 	// Reset the I2C subsystem and exit if failure

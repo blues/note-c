@@ -13,7 +13,17 @@
 
 #include "n_lib.h"
 
-// Process a transaction over the serial port, returning NULL and a buffer if success, or an error string
+/**************************************************************************/
+/*!
+    @brief  Given a JSON string, perform an Serial transaction with the Notecard.
+    @param   json
+               A c-string containing the JSON request object.
+		@param   jsonResponse
+							 An out parameter c-string buffer that will contain the JSON
+							 response from the Notercard.
+	@returns a c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
 const char *serialNoteTransaction(char *json, char **jsonResponse) {
 
 	// Transmit the request in segments so as not to overwhelm the notecard's interrupt buffers
@@ -116,7 +126,13 @@ const char *serialNoteTransaction(char *json, char **jsonResponse) {
 
 }
 
-// Initialize or re-initialize the module, returning false if anything fails
+//**************************************************************************/
+/*!
+    @brief  Initialize or re-initialize the Serial bus, returning false if
+            anything fails.
+    @returns a boolean. `true` if the reset was successful, `false`, if not.
+*/
+/**************************************************************************/
 bool serialNoteReset() {
 
 	// Initialize, or re-initialize.  Because we've observed Arduino serial driver flakiness,
