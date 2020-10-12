@@ -197,7 +197,7 @@ bool NoteFactoryReset(bool deleteConfigSettings);
 bool NoteSetSerialNumber(const char *sn);
 bool NoteSetProductID(const char *productID);
 bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align);
-bool NoteSetSyncMode(const char *uploadMode, int uploadMinutes, int downlaodHours, bool align, bool sync);
+bool NoteSetSyncMode(const char *uploadMode, int uploadMinutes, int downloadMinutes, bool align, bool sync);
 bool NoteTemplate(const char *target, J *body);
 #define NoteSend NoteAdd
 bool NoteAdd(const char *target, J *body, bool urgent);

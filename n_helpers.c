@@ -978,7 +978,7 @@ bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align) {
     if (req != NULL) {
         JAddStringToObject(req, "mode", uploadMode);
         if (uploadMinutes != 0) {
-            JAddNumberToObject(req, "minutes", uploadMinutes);
+            JAddNumberToObject(req, "outbound", uploadMinutes);
             // Setting this flag aligns uploads to be grouped within the period,
             // rather than counting the number of minutes from "first modified".
             JAddBoolToObject(req, "align", align);
@@ -996,7 +996,7 @@ bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align) {
              or `periodic`).
     @param   uploadMinutes The max number of minutes to wait between Notehub
              uploads.
-    @param   downloadHours The max number of hours to wait between Notehub
+    @param   downloadMinutes The max number of minutes to wait between Notehub
              downloads.
     @param   align Flag to specify that uploads should be grouped within the
              specified period, rather than counting the number of minutes
@@ -1006,19 +1006,19 @@ bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align) {
     @returns boolean. `true` if request was successful.
 */
 /**************************************************************************/
-bool NoteSetSyncMode(const char *uploadMode, int uploadMinutes, int downloadHours, bool align, bool sync) {
+bool NoteSetSyncMode(const char *uploadMode, int uploadMinutes, int downloadMinutes, bool align, bool sync) {
     bool success = false;
     J *req = NoteNewRequest("hub.set");
     if (req != NULL) {
         JAddStringToObject(req, "mode", uploadMode);
         if (uploadMinutes != 0) {
-            JAddNumberToObject(req, "minutes", uploadMinutes);
+            JAddNumberToObject(req, "outbound", uploadMinutes);
             // Setting this flag aligns uploads to be grouped within the period,
             // rather than counting the number of minutes from "first modified".
             JAddBoolToObject(req, "align", align);
         }
-        if (downloadHours != 0)
-            JAddNumberToObject(req, "hours", downloadHours);
+        if (downloadMinutes != 0)
+            JAddNumberToObject(req, "inbound", downloadMinutes);
         // Setting this flag when mode is "continuous" causes an immediate sync
         // when a file is modified on the service side via HTTP
         JAddBoolToObject(req, "sync", sync);
