@@ -552,7 +552,7 @@ const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size,
 */
 /**************************************************************************/
 uint32_t NoteI2CAddress() {
-    if (i2cAddress == NOTE_I2C_MAX_DEFAULT)
+    if (i2cAddress == NOTE_I2C_ADDR_DEFAULT)
         return 0x17;
     return i2cAddress;
 }
