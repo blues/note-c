@@ -503,9 +503,9 @@ char NoteSerialReceive() {
     @returns A boolean indicating whether the I2C bus was reset.
 */
 /**************************************************************************/
-bool NoteI2CReset() {
+bool NoteI2CReset(uint16_t DevAddress) {
     if (hookActiveInterface == interfaceI2C && hookI2CReset != NULL) {
-        return hookI2CReset();
+        return hookI2CReset(DevAddress);
 	}
 	return false;
 }

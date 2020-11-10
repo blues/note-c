@@ -87,7 +87,7 @@ bool NoteSerialReset(void);
 void NoteSerialTransmit(uint8_t *, size_t, bool);
 bool NoteSerialAvailable(void);
 char NoteSerialReceive(void);
-bool NoteI2CReset(void);
+bool NoteI2CReset(uint16_t DevAddress);
 const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
 const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 bool NoteHardReset(void);

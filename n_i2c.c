@@ -57,7 +57,7 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 		estr = _I2CTransmit(_I2CAddress(), chunk, chunklen);
 		if (estr != NULL) {
 			_Free(transmitBuf);
-			_I2CReset();
+			_I2CReset(_I2CAddress());
 			_UnlockI2C();
 #ifdef ERRDBG
 			_Debug("i2c transmit: ");
@@ -187,7 +187,7 @@ bool i2cNoteReset() {
 
 	// Reset the I2C subsystem and exit if failure
 	_LockI2C();
-	bool success = _I2CReset();
+	bool success = _I2CReset(_I2CAddress());
 	_UnlockI2C();
 	if (!success)
 		return false;
@@ -235,7 +235,7 @@ bool i2cNoteReset() {
 
 		// Reinitialize i2c if there's no response
 		_LockI2C();
-		_I2CReset();
+		_I2CReset(_I2CAddress());
 		_UnlockI2C();
 		_Debug(ERRSTR("notecard not responding\n", "no notecard\n"));
 		_DelayMs(2000);
