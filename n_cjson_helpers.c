@@ -151,13 +151,45 @@ int JIntValue(J *item) {
 /**************************************************************************/
 int JGetInt(J *rsp, const char *field) {
 	if (rsp == NULL)
-		return 0.0;
+		return 0;
 	J *item = JGetObjectItem(rsp, field);
 	if (item == NULL)
-		return 0.0;
+		return 0;
 	if (!JIsNumber(item))
-		return 0.0;
+		return 0;
 	return JIntValue(item);
+}
+
+//**************************************************************************/
+/*!
+    @brief  Return the unsigned integer repsentation of an item.
+    @param   item The JSON item.
+    @returns The number, or 0, if NULL.
+*/
+/**************************************************************************/
+unsigned int JUnsignedIntValue(J *item) {
+	if (item == NULL)
+		return 0;
+	return item->valueuint;
+}
+
+//**************************************************************************/
+/*!
+    @brief  Return an unsigned integer from the specified JSON object.
+    @param   rsp The JSON response object.
+    @param   field The field to return.
+    @returns The int found, or 0, if not present.
+*/
+/**************************************************************************/
+unsigned int JGetUnsignedInt(J *rsp, const char *field) {
+	if (rsp == NULL)
+		return 0;
+	J *item = JGetObjectItem(rsp, field);
+	if (item == NULL)
+		return 0;
+	if (!JIsNumber(item))
+		return 0;
+	return JUnsignedIntValue(item);
 }
 
 //**************************************************************************/

@@ -301,6 +301,19 @@ loop_end:
         item->valueint = (int)number;
     }
 
+    if (number >= UINT_MAX)
+    {
+        item->valueuint = UINT_MAX;
+    }
+    else if (number < 0)
+    {
+        item->valueuint = 0;
+    }
+    else
+    {
+        item->valueuint = (unsigned int)number;
+    }
+
     item->type = JNumber;
 
     input_buffer->offset += (size_t)(after_end - number_c_string);
@@ -323,7 +336,54 @@ N_CJSON_PUBLIC(JNUMBER) JSetNumberHelper(J *object, JNUMBER number)
         object->valueint = (int)number;
     }
 
+    if (number >= UINT_MAX)
+    {
+        object->valueuint = UINT_MAX;
+    }
+    else if (number < 0
+    {
+        object->valueuint = 0;
+    }
+    else
+    {
+        object->valueuint = (unsigned int)number;
+    }
+
     return object->valuenumber = number;
+}
+
+/* Set int value and propagate to other fields */
+void JSetIntValue(J *object, int number)
+{
+	if (object == NULL)
+		return;
+    object->valueint = number;
+    object->valuenumber = (JNUMBER) number;
+	if (number < 0)
+	{
+	    object->valueuint = 0;
+	}
+	else
+	{
+	    object->valueuint = (unsigned int) number;
+	}
+}
+
+/* Set int value and propagate to other fields */
+void JSetUnsignedIntValue(J *object, unsigned int number)
+{
+	if (object == NULL)
+		return;
+    object->valueuint = number;
+    object->valuenumber = (JNUMBER)number;	// May overflow if 32-bit FLOAT
+	if (number >= INT_MAX)
+	{
+	    object->valueint = INT_MAX;
+	}
+	else
+	{
+	    object->valueint = (int) number;
+	}
 }
 
 typedef struct
@@ -1199,6 +1259,7 @@ static Jbool parse_value(J * const item, parse_buffer * const input_buffer)
     {
         item->type = JTrue;
         item->valueint = 1;
+		item->valueuint = 1;
         input_buffer->offset += 4;
         return true;
     }
@@ -2271,6 +2332,19 @@ N_CJSON_PUBLIC(J *) JCreateNumber(JNUMBER num)
         {
             item->valueint = (int)num;
         }
+
+        if (num >= UINT_MAX)
+        {
+            item->valueuint = UINT_MAX;
+        }
+        else if (num <= 0)
+        {
+            item->valueuint = 0;
+        }
+        else
+        {
+            item->valueuint = (unsigned int)num;
+        }
     }
 
     return item;
@@ -2495,6 +2569,7 @@ N_CJSON_PUBLIC(J *) JDuplicate(const J *item, Jbool recurse)
     /* Copy over all vars */
     newitem->type = item->type & (~JIsReference);
     newitem->valueint = item->valueint;
+    newitem->valueuint = item->valueuint;
     newitem->valuenumber = item->valuenumber;
     if (item->valuestring)
     {
