@@ -38,6 +38,7 @@
 #pragma once
 
 // In case they're not yet defined
+#include <float.h>
 #include <stdbool.h>
 #include <stdint.h>
 
