@@ -148,8 +148,6 @@ JNUMBER JNumberValue(J *item);
 char *JStringValue(J *item);
 bool JBoolValue(J *item);
 int JIntValue(J *item);
-unsigned int JUnsignedIntValue(J *item);
-unsigned int JGetUnsignedInt(J *rsp, const char *field);
 bool JIsNullString(J *rsp, const char *field);
 bool JIsExactString(J *rsp, const char *field, const char *teststr);
 bool JContainsString(J *rsp, const char *field, const char *substr);

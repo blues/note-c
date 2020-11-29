@@ -85,8 +85,6 @@ typedef struct J
     char *valuestring;
     /* writing to valueint is DEPRECATED, use JSetNumberValue instead */
     int valueint;
-	/* The item's value, if type == JNumber */
-    unsigned int valueuint;
     /* The item's number, if type==JNumber */
     JNUMBER valuenumber;
     /* The item's name string, if this item is the child of, or is in the list of subitems of an object. */
@@ -279,10 +277,8 @@ N_CJSON_PUBLIC(J*) JAddArrayToObject(J * const object, const char * const name);
 #define JConvertToJSONString JPrintUnformatted
 #define JConvertFromJSONString JParse
 
-/* set fixed point numbers */
-void JSetIntValue(J *object, int number);
-void JSetUnsignedIntValue(J *object, unsigned int number);
-
+/* When assigning an integer value, it needs to be propagated to valuenumber too. */
+#define JSetIntValue(object, number) ((object) ? (object)->valueint = (object)->valuenumber = (number) : (number))
 /* helper for the JSetNumberValue macro */
 N_CJSON_PUBLIC(JNUMBER) JSetNumberHelper(J *object, JNUMBER number);
 #define JSetNumberValue(object, number) ((object != NULL) ? JSetNumberHelper(object, (JNUMBER)number) : (number))
