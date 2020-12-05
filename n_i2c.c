@@ -80,6 +80,10 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse) {
 	// Free the transmit buffer
 	_Free(transmitBuf);
 
+    // If no reply expected, we're done
+    if (jsonResponse == NULL)
+        return NULL;
+
 	// Dynamically grow the buffer as we read.	Note that we always put the +1 in the alloc
 	// so we can be assured that it can be null-terminated, which must be the case because
 	// our json parser requires a null-terminated string.

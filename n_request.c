@@ -174,6 +174,13 @@ char *NoteRequestResponseJSON(char *reqJSON) {
 /**************************************************************************/
 J *NoteTransaction(J *req) {
 
+    // Validate in case of memory failure of the requestor
+    if (req == NULL)
+        return NULL;
+
+    // Determine whether or not a response will be expected, by virtue of "cmd" being present
+    bool noResponseExpected = (JGetString(req, "req")[0] == '\0' && JGetString(req, "cmd")[0] != '\0');
+
     // If a reset of the module is required for any reason, do it now.
     // We must do this before acquiring lock.
     if (resetRequired) {
@@ -198,7 +205,11 @@ J *NoteTransaction(J *req) {
 
     // Pertform the transaction
     char *responseJSON;
-    const char *errStr = _Transaction(json, &responseJSON);
+    const char *errStr;
+    if (noResponseExpected)
+        errStr = _Transaction(json, NULL);
+    else
+        errStr = _Transaction(json, &responseJSON);
 
     // Free the json
     JFree(json);
@@ -209,6 +220,12 @@ J *NoteTransaction(J *req) {
         J *rsp = errDoc(errStr);
         _UnlockNote();
         return rsp;
+    }
+
+    // Exit with a blank object (with no err field) if no response expected
+    if (noResponseExpected) {
+        _UnlockNote();
+        return JCreateObject();
     }
 
     // Parse the reply from the card on the input stream
