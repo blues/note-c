@@ -101,6 +101,7 @@ bool NoteReset(void);
 void NoteResetRequired(void);
 #define NoteNewBody JCreateObject
 J *NoteNewRequest(const char *request);
+J *NoteNewCommand(const char *request);
 J *NoteRequestResponse(J *req);
 char *NoteRequestResponseJSON(char *reqJSON);
 void NoteSuspendTransactionDebug(void);
