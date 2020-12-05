@@ -792,10 +792,10 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes) {
     // Put ourselves to sleep
     _Debug("requesting sleep\n");
     J *req = JCreateObject();
-    if (req != NULL)
+    if (req != NULL) {
         // Use "cmd" rather than "req" so that the Notecard doesn't try to send
         // a response back to us, which would cause a communications error on that end.
-        JAddStringToObject(reqdoc, "cmd", "card.attn");
+        JAddStringToObject(req, "cmd", "card.attn");
         // Add the base64 item in a wonderful way that doesn't strdup the huge string
         J *stringReferenceItem = JCreateStringReference(stateb64);
         if (stringReferenceItem != NULL)
