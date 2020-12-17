@@ -1216,8 +1216,8 @@ bool NoteGetContact(char *nameBuf, int nameBufLen, char *orgBuf, int orgBufLen, 
                 strlcpy(roleBuf, JGetString(rsp, "role"), roleBufLen);
             if (emailBuf != NULL)
                 strlcpy(emailBuf, JGetString(rsp, "email"), emailBufLen);
-            NoteDeleteResponse(rsp);
         }
+        NoteDeleteResponse(rsp);
     }
 
     return success;
