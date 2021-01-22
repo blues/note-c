@@ -184,7 +184,7 @@ bool NoteLocationValid(char *errbuf, uint32_t errbuflen);
 bool NoteLocationValidST(char *errbuf, uint32_t errbuflen);
 int NoteGetEnvInt(const char *variable, int defaultVal);
 JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal);
-void NoteGetEnv(const char *variable, const char *defaultVal, char *buf, uint32_t buflen);
+bool NoteGetEnv(const char *variable, const char *defaultVal, char *buf, uint32_t buflen);
 bool NoteSetEnvDefault(const char *variable, char *buf);
 bool NoteSetEnvDefaultNumber(const char *variable, JNUMBER defaultVal);
 bool NoteSetEnvDefaultInt(const char *variable, int defaultVal);
