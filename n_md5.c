@@ -134,7 +134,7 @@ void NoteMD5Update(NoteMD5Context *ctx, unsigned char const *buf, unsigned len)
 }
 
 /*
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
+ * Final wrapup - pad to 64-byte boundary with the bit pattern
  * 1 0* (64-bit count of bits processed, MSB-first)
  */
 void NoteMD5Final(unsigned char *digest, NoteMD5Context *ctx)
@@ -298,7 +298,7 @@ void NoteMD5HashString(unsigned char *data, unsigned long len, char *strbuf, uns
     NoteMD5Hash(data, len, hash);
     char hashstr[NOTE_MD5_HASH_SIZE*3] = {0};
     for (int i=0; i<NOTE_MD5_HASH_SIZE; i++)
-		htoa8(hash[i], &hashstr[i*2]);
+	htoa8(hash[i], (unsigned char *)&hashstr[i*2]);
 	hashstr[NOTE_MD5_HASH_SIZE*2+1] = 0;
     strlcpy(strbuf, hashstr, buflen);
 }
@@ -307,6 +307,6 @@ void NoteMD5HashString(unsigned char *data, unsigned long len, char *strbuf, uns
 void NoteMD5HashToString(unsigned char *hash, char *strbuf, unsigned long buflen) {
     char hashstr[NOTE_MD5_HASH_SIZE*3] = {0};
     for (int i=0; i<NOTE_MD5_HASH_SIZE; i++)
-		htoa8(hash[i], &hashstr[i*2]);
+	htoa8(hash[i], (unsigned char *)&hashstr[i*2]);
     strlcpy(strbuf, hashstr, buflen);
 }
