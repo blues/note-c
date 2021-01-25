@@ -13,6 +13,24 @@
 
 #include "n_lib.h"
 
+//#define DEBUG
+
+#ifdef DEBUG
+static int nullRequest = 0;
+static int noteReset = 0;
+static int noteResetFail = 0;
+static int marshalFail = 0;
+static int resetReqCount = 0;
+static int notecardError = 0;
+static int invalidJSON = 0;
+static int jsonReqCount = 0;
+static int jsonRspCount = 0;
+#define DEBUGINC(x) x++
+#else
+#define DEBUGINC(x)
+#endif
+
+
 // For flow tracing
 static int suppressShowTransactions = 0;
 
@@ -192,8 +210,11 @@ char *NoteRequestResponseJSON(char *reqJSON) {
 J *NoteTransaction(J *req) {
 
     // Validate in case of memory failure of the requestor
-    if (req == NULL)
+    if (req == NULL){
+        DEBUGINC(nullRequest);
         return NULL;
+    }
+    DEBUGINC(jsonReqCount);
 
     // Determine whether or not a response will be expected, by virtue of "cmd" being present
     bool noResponseExpected = (JGetString(req, "req")[0] == '\0' && JGetString(req, "cmd")[0] != '\0');
@@ -201,8 +222,11 @@ J *NoteTransaction(J *req) {
     // If a reset of the module is required for any reason, do it now.
     // We must do this before acquiring lock.
     if (resetRequired) {
-        if (!NoteReset())
+        DEBUGINC(noteReset);
+        if (!NoteReset()){
+            DEBUGINC(noteResetFail);
             return NULL;
+        }
     }
 
     // Lock
@@ -211,6 +235,7 @@ J *NoteTransaction(J *req) {
     // Serialize the JSON requet
     char *json = JPrintUnformatted(req);
     if (json == NULL) {
+        DEBUGINC(marshalFail);
         J *rsp = errDoc(ERRSTR("can't convert to JSON",c_bad));
         _UnlockNote();
         return rsp;
@@ -233,7 +258,9 @@ J *NoteTransaction(J *req) {
 
     // If error, queue up a reset
     if (errStr != NULL) {
-		NoteResetRequired();
+        DEBUGINC(resetReqCount);
+	    NoteResetRequired();
+        _Debugln(errStr);
         J *rsp = errDoc(errStr);
         _UnlockNote();
         return rsp;
@@ -248,6 +275,7 @@ J *NoteTransaction(J *req) {
     // Parse the reply from the card on the input stream
     J *rspdoc = JParse(responseJSON);
     if (rspdoc == NULL) {
+        DEBUGINC(invalidJSON);
         _Debug("invalid JSON: ");
 		_Debug(responseJSON);
         _Free(responseJSON);
@@ -255,6 +283,16 @@ J *NoteTransaction(J *req) {
         _UnlockNote();
         return rsp;
     }
+
+#ifdef DEBUG
+    // Check for an error response from Notecard
+    if (NoteResponseError(rspdoc)) {
+        errStr = JGetString(rspdoc, "err");
+        _Debugln(errStr);
+        DEBUGINC(notecardError);
+    } else
+        DEBUGINC(jsonRspCount);
+#endif
 
     // Debug
 	if (suppressShowTransactions == 0) {
