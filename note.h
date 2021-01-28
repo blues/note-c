@@ -60,12 +60,12 @@
 // symbols that will save quite a bit of memory in the runtime image.
 #ifdef NOTE_FLOAT
 #define JNUMBER float
-#define	ERRSTR(x,y) (y)
+#define ERRSTR(x,y) (y)
 #define NOTE_LOWMEM
 #else
 #define JNUMBER double
-#define	ERRSTR(x,y) (x)
-#define	ERRDBG
+#define ERRSTR(x,y) (x)
+#define ERRDBG
 #endif
 
 // UNIX Epoch time (also known as POSIX time) is the  number of seconds that have elapsed since
@@ -119,8 +119,8 @@ void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, 
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
 void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
 void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn writefn, serialAvailableFn availfn, serialReceiveFn readfn);
-#define NOTE_I2C_ADDR_DEFAULT	0
-#define NOTE_I2C_MAX_DEFAULT	0
+#define NOTE_I2C_ADDR_DEFAULT 0
+#define NOTE_I2C_MAX_DEFAULT  0
 void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTransmitFn transmitfn, i2cReceiveFn receivefn);
 void NoteSetI2CAddress(uint32_t i2caddress);
 
@@ -138,7 +138,7 @@ uint32_t NoteI2CAddress(void);
 uint32_t NoteI2CMax(void);
 uint32_t NoteMemAvailable(void);
 bool NotePrint(const char *text);
-	void NotePrintln(const char *line);
+void NotePrintln(const char *line);
 bool NotePrintf(const char *format, ...);
 
 // String helpers to help encourage the world to abandon the horribly-error-prone strn*
@@ -176,9 +176,9 @@ int JB64Decode(char * plain_dst, const char *coded_src);
 
 // MD5 Helper functions
 typedef struct {
-	unsigned long buf[4];
-	unsigned long bits[2];
-	unsigned char in[64];
+  unsigned long buf[4];
+  unsigned long bits[2];
+  unsigned char in[64];
 } NoteMD5Context;
 #define NOTE_MD5_HASH_SIZE 16
 #define NOTE_MD5_HASH_STRING_SIZE (((NOTE_MD5_HASH_SIZE)*2)+1)
