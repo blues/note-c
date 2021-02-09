@@ -87,6 +87,10 @@ typedef struct {
 } error;
 static error global_error = { NULL, 0 };
 
+// Forwards
+void htoa16(uint16_t n, unsigned char *p);
+static J *JNew_Item(void);
+
 N_CJSON_PUBLIC(const char *) JGetErrorPtr(void)
 {
     return (const char*) (global_error.json + global_error.position);

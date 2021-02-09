@@ -28,24 +28,24 @@
 #include <string.h>
 #include "n_lib.h"
 
+// Forwards
+void htoa8(unsigned char n, unsigned char *p);
+static void putu32 (unsigned long data, unsigned char *addr);
+static unsigned long getu32 (const unsigned char *addr);
+
 /* Little-endian byte-swapping routines.  Note that these do not
    depend on the size of datatypes such as unsigned long, nor do they require
    us to detect the endianness of the machine we are running on.  It
    is possible they should be macros for speed, but I would be
    surprised if they were a performance bottleneck for MD5.  */
 
-static unsigned long
-getu32 (addr)
-const unsigned char *addr;
+static unsigned long getu32 (const unsigned char *addr)
 {
     return (((((unsigned long)addr[3] << 8) | addr[2]) << 8)
             | addr[1]) << 8 | addr[0];
 }
 
-static void
-putu32 (data, addr)
-unsigned long data;
-unsigned char *addr;
+static void putu32 (unsigned long data, unsigned char *addr)
 {
     addr[0] = (unsigned char)data;
     addr[1] = (unsigned char)(data >> 8);
@@ -56,7 +56,6 @@ unsigned char *addr;
 /* Convert an 8-bit number to 2 hex digits, null-terminating it */
 void htoa8(unsigned char n, unsigned char *p)
 {
-    int i;
     unsigned char nibble = (n >> 4) & 0xf;
     if (nibble >= 10) {
         *p++ = 'a' + (nibble-10);

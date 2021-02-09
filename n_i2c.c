@@ -13,6 +13,9 @@
 
 #include "n_lib.h"
 
+// Forwards
+static void _DelayIO(void);
+
 /**************************************************************************/
 /*!
     @brief  We've noticed that there's an instability in some cards'
