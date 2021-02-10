@@ -106,6 +106,11 @@ J *NoteRequestResponse(J *req);
 char *NoteRequestResponseJSON(char *reqJSON);
 void NoteSuspendTransactionDebug(void);
 void NoteResumeTransactionDebug(void);
+#define SYNCSTATUS_LEVEL_MAJOR         0
+#define SYNCSTATUS_LEVEL_MINOR         1
+#define SYNCSTATUS_LEVEL_DETAILED      2
+#define SYNCSTATUS_LEVEL_ALGORITHMIC   3
+#define SYNCSTATUS_LEVEL_ALL          -1
 bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel);
 bool NoteRequest(J *req);
 #define NoteResponseError(rsp) (!JIsNullString(rsp, "err"))
