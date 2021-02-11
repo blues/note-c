@@ -381,7 +381,7 @@ void JItoA(int n, char *s)
     @returns An integer, or 0 if invalid
 */
 /**************************************************************************/
-int JAtoI(const char *s)
+int JAtoI(const char *string)
 {
     int result = 0;
     unsigned int digit;
