@@ -304,6 +304,21 @@ void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn, i2cT
     notecardTransaction = i2cNoteTransaction;
 }
 
+//**************************************************************************/
+/*!
+  @brief  Set the platform-specific communications method to be disabled
+*/
+/**************************************************************************/
+void NoteSetFnDisabled()
+{
+
+    hookActiveInterface = interfaceNone;
+
+    notecardReset = NULL;
+    notecardTransaction = NULL;
+
+}
+
 // Runtime hook wrappers
 
 //**************************************************************************/
@@ -691,8 +706,8 @@ bool NoteHardReset()
 /**************************************************************************/
 const char *NoteJSONTransaction(char *json, char **jsonResponse)
 {
-    if (notecardTransaction == NULL) {
-        return "notecard not initialized";
+    if (notecardTransaction == NULL || hookActiveInterface == interfaceNone) {
+        return "i2c or serial interface must be selected";
     }
     return notecardTransaction(json, jsonResponse);
 }

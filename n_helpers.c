@@ -27,6 +27,7 @@
 // Time-related suppression timer and cache
 static uint32_t timeBaseSetAtMs = 0;
 static JTIME timeBaseSec = 0;
+static bool timeBaseSetManually = false;
 static uint32_t suppressionTimerSecs = 10;
 static uint32_t timeTimer = 0;
 static bool zoneStillUnavailable = true;
@@ -109,7 +110,38 @@ static void setTime(JTIME seconds)
 {
     timeBaseSec = seconds;
     timeBaseSetAtMs = _GetMs();
-    _Debug("setting time\n");
+    _Debug("setting time from notecard clock source\n");
+}
+
+//**************************************************************************/
+/*!
+  @brief  Set the time from a source that is NOT the Notecard
+  @param   seconds The UNIX Epoch time, or 0 to set back to automatic Notecard time
+  @param   offset The local time zone offset, in minutes, to adjust UTC
+  @param   zone The optional local time zone name (3 character c-string)
+  @param   zone The optional country
+  @param   area The optional region
+*/
+/**************************************************************************/
+void NoteTimeSet(JTIME secondsUTC, int offset, char *zone, char *country, char *area)
+{
+    if (secondsUTC == 0) {
+        timeBaseSec = 0;
+        timeBaseSetAtMs = 0;
+        timeBaseSetManually = false;
+        zoneStillUnavailable = true;
+        zoneForceRefresh = false;
+    } else {
+        timeBaseSec = secondsUTC;
+        timeBaseSetAtMs = _GetMs();
+        timeBaseSetManually = true;
+        zoneStillUnavailable = false;
+        curZoneOffsetMins = offset;
+        strlcpy(curZone, zone == NULL ? "UTC" : zone, sizeof(curZone));
+        strlcpy(curArea, area == NULL ? "" : area, sizeof(curArea));
+        strlcpy(curCountry, country == NULL ? "" : country, sizeof(curCountry));
+    }
+    _Debug("setting time from external clock source\n");
 }
 
 //**************************************************************************/
@@ -181,9 +213,16 @@ bool NotePrintf(const char *format, ...)
 JTIME NoteTimeST()
 {
 
+    // Handle timer tick wrap
+    uint32_t nowMs = _GetMs();
+    if (timeBaseSec != 0 && nowMs < timeBaseSetAtMs) {
+        timeBaseSec = 0;
+        timeBaseSetAtMs = 0;
+    }
+
     // If we haven't yet fetched the time, or if we still need the timezone, do so with a suppression
     // timer so that we don't hammer the module before it's had a chance to connect to the network to fetch time.
-    if (timeBaseSec == 0 || zoneStillUnavailable || zoneForceRefresh) {
+    if (!timeBaseSetManually && (timeBaseSec == 0 || zoneStillUnavailable || zoneForceRefresh)) {
         if (timerExpiredSecs(&timeTimer, suppressionTimerSecs)) {
 
             // Request time and zone info from the card
@@ -226,7 +265,7 @@ JTIME NoteTimeST()
     }
 
     // Adjust the base time by the number of seconds that have elapsed since the base.
-    JTIME adjustedTime = timeBaseSec + ((_GetMs() - timeBaseSetAtMs) / 1000);
+    JTIME adjustedTime = timeBaseSec + ((nowMs - timeBaseSetAtMs) / 1000);
 
     // Done
     return adjustedTime;
@@ -259,6 +298,7 @@ uint32_t NoteSetSTSecs(uint32_t secs)
 /**************************************************************************/
 bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneOffset)
 {
+    NoteTimeST();
     if (zoneStillUnavailable) {
         if (retCountry != NULL) {
             *retCountry = (char *) "";
@@ -320,10 +360,12 @@ bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint
     if (retSecond != NULL) {
         *retSecond = 0;
     }
-    if (retWeekday != NULL)
+    if (retWeekday != NULL) {
         *retWeekday = "";
-    if (retZone != NULL)
+    }
+    if (retZone != NULL) {
         *retZone = "";
+    }
 
     // Exit if time isn't yet valid
     if (!NoteTimeValidST()) {
@@ -345,8 +387,9 @@ bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint
     uint32_t secs;
     secs = (uint32_t) currentEpochTime + ((70*365L+17)*86400LU);
     days = secs / 86400;
-    if (retWeekday != NULL)
+    if (retWeekday != NULL) {
         *retWeekday = daynames[(days + 1) % 7];
+    }
     for (year = days / 365; days < (i = ytodays(year) + 365L * year); ) {
         --year;
     }
@@ -374,6 +417,9 @@ bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint
     if (retSecond != NULL) {
         *retSecond = (uint8_t) (secs % 60);
     }
+    if (retZone != NULL) {
+        *retZone = currentZone;
+    }
 
     // Determine whether or not we should refresh to check whether DST offset has changed, which
     // is between midnight and 3am local time (if available).
@@ -396,10 +442,11 @@ bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint
 static int ytodays(int year)
 {
     int days = 0;
-    if (0 < year)
+    if (0 < year) {
         days = (year - 1) / 4;
-    else if (year <= -4)
+    } else if (year <= -4) {
         days = year / 4;
+    }
     return days + daysByMonth(year)[0];
 }
 

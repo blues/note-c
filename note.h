@@ -127,6 +127,7 @@ void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn writefn, serialAvai
 #define NOTE_I2C_ADDR_DEFAULT 0
 #define NOTE_I2C_MAX_DEFAULT  0
 void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTransmitFn transmitfn, i2cReceiveFn receivefn);
+void NoteSetFnDisabled(void);
 void NoteSetI2CAddress(uint32_t i2caddress);
 
 // Calls to the functions set above
@@ -203,6 +204,7 @@ bool NoteTimeValid(void);
 bool NoteTimeValidST(void);
 JTIME NoteTime(void);
 JTIME NoteTimeST(void);
+void NoteTimeSet(JTIME secondsUTC, int offset, char *zone, char *country, char *area);
 bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint8_t *retHour, uint8_t *retMinute, uint8_t *retSecond, char **retWeekday, char **retZone);
 bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneOffset);
 bool NoteLocationValid(char *errbuf, uint32_t errbuflen);
