@@ -344,3 +344,69 @@ const char *JGetItemName(const J * item)
     return item->string;
 }
 
+//**************************************************************************/
+/*!
+    @brief  Convert an integer to text
+    @param   an integer
+    @returns The number converted to text, null-terminated.
+    @note The buffer midt be large enough because no bounds checking is done.
+*/
+/**************************************************************************/
+void JItoA(int n, char *s)
+{
+    char c;
+    int i, j, sign;
+    if ((sign = n) < 0) {
+        n = -n;
+    }
+    i = 0;
+    do {
+        s[i++] = n % 10 + '0';
+    } while ((n /= 10) > 0);
+    if (sign < 0) {
+        s[i++] = '-';
+    }
+    s[i] = '\0';
+    for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+        c = s[i];
+        s[i] = s[j];
+        s[j] = c;
+    }
+}
+
+//**************************************************************************/
+/*!
+    @brief  Convert text to an integer
+    @param   a null-terminated text buffer
+    @returns An integer, or 0 if invalid
+*/
+/**************************************************************************/
+int JAtoI(const char *s)
+{
+    int result = 0;
+    unsigned int digit;
+    int sign;
+    while (*string == ' ') {
+        string += 1;
+    }
+    if (*string == '-') {
+        sign = 1;
+        string += 1;
+    } else {
+        sign = 0;
+        if (*string == '+') {
+            string += 1;
+        }
+    }
+    for ( ; ; string += 1) {
+        digit = *string - '0';
+        if (digit > 9) {
+            break;
+        }
+        result = (10*result) + digit;
+    }
+    if (sign) {
+        result = -result;
+    }
+    return result;
+}

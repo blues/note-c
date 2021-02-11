@@ -389,28 +389,6 @@ void NoteDelayMs(uint32_t ms)
   @param   len the number of bytes of memory allocated by the last call.
 */
 /**************************************************************************/
-void ma_itoa(int n, char s[]);
-void ma_itoa(int n, char s[])
-{
-    char c;
-    int i, j, sign;
-    if ((sign = n) < 0) {
-        n = -n;
-    }
-    i = 0;
-    do {
-        s[i++] = n % 10 + '0';
-    } while ((n /= 10) > 0);
-    if (sign < 0) {
-        s[i++] = '-';
-    }
-    s[i] = '\0';
-    for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
-        c = s[i];
-        s[i] = s[j];
-        s[j] = c;
-    }
-}
 void htoa32(uint32_t n, char *p);
 void htoa32(uint32_t n, char *p)
 {
@@ -429,7 +407,7 @@ void htoa32(uint32_t n, char *p)
 void *malloc_show(size_t len)
 {
     char str[16];
-    ma_itoa(len, str);
+    JItoA(len, str);
     hookDebugOutput("malloc ");
     hookDebugOutput(str);
     void *p = hookMalloc(len);

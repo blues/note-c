@@ -174,6 +174,8 @@ const char *JGetItemName(const J * item);
 #define JNTOA_MAX       ((2*JNTOA_PRECISION)+1+1)
 char * JNtoA(JNUMBER f, char * buf, int precision);
 JNUMBER JAtoN(const char *string, char **endPtr);
+void JItoA(int n, char *s);
+int JAtoI(const char *s);
 int JB64EncodeLen(int len);
 int JB64Encode(char * coded_dst, const char *plain_src,int len_plain_src);
 int JB64DecodeLen(const char * coded_src);

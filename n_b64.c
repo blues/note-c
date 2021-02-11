@@ -179,10 +179,8 @@ int JB64Encode(char *encoded, const char *string, int len)
     p = encoded;
     for (i = 0; i < len - 2; i += 3) {
         *p++ = basis_64[(string[i] >> 2) & 0x3F];
-        *p++ = basis_64[((string[i] & 0x3) << 4) |
-                                           ((int) (string[i + 1] & 0xF0) >> 4)];
-        *p++ = basis_64[((string[i + 1] & 0xF) << 2) |
-                                               ((int) (string[i + 2] & 0xC0) >> 6)];
+        *p++ = basis_64[((string[i] & 0x3) << 4) | ((int) (string[i + 1] & 0xF0) >> 4)];
+        *p++ = basis_64[((string[i + 1] & 0xF) << 2) | ((int) (string[i + 2] & 0xC0) >> 6)];
         *p++ = basis_64[string[i + 2] & 0x3F];
     }
     if (i < len) {
@@ -191,8 +189,7 @@ int JB64Encode(char *encoded, const char *string, int len)
             *p++ = basis_64[((string[i] & 0x3) << 4)];
             *p++ = '=';
         } else {
-            *p++ = basis_64[((string[i] & 0x3) << 4) |
-                                               ((int) (string[i + 1] & 0xF0) >> 4)];
+            *p++ = basis_64[((string[i] & 0x3) << 4) | ((int) (string[i + 1] & 0xF0) >> 4)];
             *p++ = basis_64[((string[i + 1] & 0xF) << 2)];
         }
         *p++ = '=';

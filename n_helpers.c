@@ -146,8 +146,10 @@ bool NotePrint(const char *text)
     @brief  Write a formatted string to the debug output.
     @param   format  A format string for output.
     @param   ...  One or more values to interpolate into the format string.
+    @note.  Do NOT use this in a memory-constrained environment (vsnprintf is large)
 */
 /**************************************************************************/
+#ifndef NOTE_LOMEM
 bool NotePrintf(const char *format, ...)
 {
     char line[256];
@@ -157,6 +159,7 @@ bool NotePrintf(const char *format, ...)
     va_end(args);
     return NotePrint(line);
 }
+#endif
 
 //**************************************************************************/
 /*!
@@ -370,7 +373,7 @@ bool NoteSetEnvDefault(const char *variable, char *buf)
 bool NoteSetEnvDefaultInt(const char *variable, int defaultVal)
 {
     char buf[32];
-    snprintf(buf, sizeof(buf), "%d", defaultVal);
+    JItoA(defaultVal, buf);
     return NoteSetEnvDefault(variable, buf);
 }
 
@@ -400,7 +403,7 @@ bool NoteSetEnvDefaultNumber(const char *variable, JNUMBER defaultVal)
 JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal)
 {
     char buf[32], buf2[32];;
-    snprintf(buf2, sizeof(buf2), "%f", defaultVal);
+    JNtoA(defaultVal, buf2, -1);
     NoteGetEnv(variable, buf2, buf, sizeof(buf));
     return JAtoN(buf, NULL);
 }
@@ -416,7 +419,7 @@ JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal)
 int NoteGetEnvInt(const char *variable, int defaultVal)
 {
     char buf[32], buf2[32];;
-    snprintf(buf2, sizeof(buf2), "%d", defaultVal);
+    JItoA(defaultVal, buf2);
     NoteGetEnv(variable, buf2, buf, sizeof(buf));
     return atoi(buf);
 }
