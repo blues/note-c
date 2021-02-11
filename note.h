@@ -203,7 +203,7 @@ bool NoteTimeValid(void);
 bool NoteTimeValidST(void);
 JTIME NoteTime(void);
 JTIME NoteTimeST(void);
-bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint8_t *retHour, uint8_t *retMinute, uint8_t *retSecond, char **retDay, char **retZone);
+bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint8_t *retHour, uint8_t *retMinute, uint8_t *retSecond, char **retWeekday, char **retZone);
 bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneOffset);
 bool NoteLocationValid(char *errbuf, uint32_t errbuflen);
 bool NoteLocationValidST(char *errbuf, uint32_t errbuflen);

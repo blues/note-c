@@ -54,13 +54,13 @@ static char scService[128] = {0};
 
 // For date conversions
 #define daysByMonth(y) ((y)&03||(y)==0?normalYearDaysByMonth:leapYearDaysByMonth)
-static const short leapYearDaysByMonth[] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335};
-static const short normalYearDaysByMonth[] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
-static const char *daynames[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+static short leapYearDaysByMonth[] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335};
+static short normalYearDaysByMonth[] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
+static char *daynames[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 // Forwards
 static bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs);
-static int ymtodays(int year, int mon);
+static int ytodays(int year);
 
 //**************************************************************************/
 /*!
@@ -211,7 +211,7 @@ JTIME NoteTimeST()
                                 *sep = '\0';
                             }
                             zoneStillUnavailable = (memcmp(zone, "UTC", 3) == 0);
-							zoneForceRefresh = false;
+                            zoneForceRefresh = false;
                             strlcpy(curZone, zone, sizeof(curZone));
                             curZoneOffsetMins = JGetInt(rsp, "minutes");
                             strlcpy(curCountry, JGetString(rsp, "country"), sizeof(curCountry));
@@ -242,9 +242,9 @@ JTIME NoteTimeST()
 /**************************************************************************/
 uint32_t NoteSetSTSecs(uint32_t secs)
 {
-	uint32_t prev = suppressionTimerSecs;
-	suppressionTimerSecs = secs;
-	return prev;
+    uint32_t prev = suppressionTimerSecs;
+    suppressionTimerSecs = secs;
+    return prev;
 }
 
 //**************************************************************************/
@@ -298,86 +298,109 @@ bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneO
   @note    only call this if time is valid
 */
 /**************************************************************************/
-bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint8_t *retHour, uint8_t *retMinute, uint8_t *retSecond, char **retDay, char **retZone)
+bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint8_t *retHour, uint8_t *retMinute, uint8_t *retSecond, char **retWeekday, char **retZone)
 {
 
-	// Exit if time isn't yet valid
+    // Preset
+    if (retYear != NULL) {
+        *retYear = 0;
+    }
+    if (retMonth != NULL) {
+        *retMonth = 0;
+    }
+    if (retDay != NULL) {
+        *retDay = 0;
+    }
+    if (retHour != NULL) {
+        *retHour = 0;
+    }
+    if (retMinute != NULL) {
+        *retMinute = 0;
+    }
+    if (retSecond != NULL) {
+        *retSecond = 0;
+    }
+    if (retWeekday != NULL)
+        *retWeekday = "";
+    if (retZone != NULL)
+        *retZone = "";
+
+    // Exit if time isn't yet valid
     if (!NoteTimeValidST()) {
-		*year = 0;
-		*month = *day = *hour = *minute = *second = 0;
-		if (retZone != NULL)
-			*retZone = '\0';
-		return false;
-	}
+        return false;
+    }
 
-	// Get the current time and region, and compute local time
-	char  *currentZone;
-	int currentOffsetMins;
-	JTIME currentEpochTime = NoteTimeST();
-	bool regionAvailable = NoteRegion(NULL, NULL, &currentZone, &currentOffsetMins);
+    // Get the current time and region, and compute local time
+    char  *currentZone;
+    int currentOffsetMins;
+    JTIME currentEpochTime = NoteTimeST();
+    bool regionAvailable = NoteRegion(NULL, NULL, &currentZone, &currentOffsetMins);
 
-	// Offset the epoch time by time zone offset
-	currentEpochTime += currentOffsetMins * 60;
+    // Offset the epoch time by time zone offset
+    currentEpochTime += currentOffsetMins * 60;
 
-	// Convert from unix epoch time to local date/time
-	int i, year, mon;
-	int32_t days;
-	uint32_t secs;
-	secs = (uint32_t) currentEpochTime + ((70*365L+17)*86400LU);
-	days = secs / 86400;
-	if (retDay != NULL)
-		*retDay = daynames[(days + 1) % 7];
-	for (year = days / 365; days < (i = ytodays(year) + 365L * year); ) {
-		--year;
-	}
-	days -= i;
-	if (retYear != NULL) {
-		*retYear = (uint16_t) year+1900;
-	}
-	short *pm = daysByMonth(year);
-	for (mon = 12; days < pm[--mon]; ) ;
-	if (retMonth != NULL) {
-		*retMonth = (uint8_t) mon+1;
-	}
-	if (retDay != NULL) {
-		*retDay = days - pm[mon] + 1;
-	}
-	secs = secs % 86400;
-	uint8_t currentHour = (uint8_t) (secs / 3600);
-	if (retHour != NULL) {
-		*retHour = currentHour;
-	}
-	secs %= 3600;
-	if (retMinute != NULL) {
-		*retMinute = (uint8_t) (secs/60);
-	}
-	if (retSecond != NULL) {
-		*retSecond = (uint8_t) (secs % 60);
-	}
+    // Convert from unix epoch time to local date/time
+    int i, year, mon;
+    int32_t days;
+    uint32_t secs;
+    secs = (uint32_t) currentEpochTime + ((70*365L+17)*86400LU);
+    days = secs / 86400;
+    if (retWeekday != NULL)
+        *retWeekday = daynames[(days + 1) % 7];
+    for (year = days / 365; days < (i = ytodays(year) + 365L * year); ) {
+        --year;
+    }
+    days -= i;
+    if (retYear != NULL) {
+        *retYear = (uint16_t) year+1900;
+    }
+    short *pm = daysByMonth(year);
+    for (mon = 12; days < pm[--mon]; ) ;
+    if (retMonth != NULL) {
+        *retMonth = (uint8_t) mon+1;
+    }
+    if (retDay != NULL) {
+        *retDay = days - pm[mon] + 1;
+    }
+    secs = secs % 86400;
+    uint8_t currentHour = (uint8_t) (secs / 3600);
+    if (retHour != NULL) {
+        *retHour = currentHour;
+    }
+    secs %= 3600;
+    if (retMinute != NULL) {
+        *retMinute = (uint8_t) (secs/60);
+    }
+    if (retSecond != NULL) {
+        *retSecond = (uint8_t) (secs % 60);
+    }
 
-	// Determine whether or not we should refresh to check whether DST offset has changed, which
-	// is between midnight and 3am local time (if available).
-	static uint8 lastHour;
-	static bool lastInfoIsKnown = false;
-	if (regionAvailable && lastInfoIsKnown) {
-		if ((lastHour != 1 && currentHour == 1) || (lastHour != 2 && currentHour == 2) || (lastHour != 3 && currentHour == 3)) {
-			zoneForceRefresh = true;
-		}
-	}
-	lastInfoIsKnown = true;
-	lastHour = currentHour;
+    // Determine whether or not we should refresh to check whether DST offset has changed, which
+    // is between midnight and 3am local time (if available).
+    static uint8_t lastHour;
+    static bool lastInfoIsKnown = false;
+    if (regionAvailable && lastInfoIsKnown) {
+        if ((lastHour != 1 && currentHour == 1) || (lastHour != 2 && currentHour == 2) || (lastHour != 3 && currentHour == 3)) {
+            zoneForceRefresh = true;
+        }
+    }
+    lastInfoIsKnown = true;
+    lastHour = currentHour;
+
+    // Done
+    return regionAvailable;
 
 }
 
 // Figure out how many days at start of the year
 static int ytodays(int year)
 {
-	int days = 0;
-	if (0 < year)
-		days = (year - 1) / 4;
-	else if (year <= -4)
-		days = year / 4;
-	return days + daysByMonth(year)[0];
+    int days = 0;
+    if (0 < year)
+        days = (year - 1) / 4;
+    else if (year <= -4)
+        days = year / 4;
+    return days + daysByMonth(year)[0];
 }
 
 //**************************************************************************/
