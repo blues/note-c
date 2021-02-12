@@ -213,11 +213,14 @@ bool NotePrintf(const char *format, ...)
 JTIME NoteTimeST()
 {
 
-    // Handle timer tick wrap
+    // Handle timer tick wrap by resetting the base
     uint32_t nowMs = _GetMs();
     if (timeBaseSec != 0 && nowMs < timeBaseSetAtMs) {
-        timeBaseSec = 0;
-        timeBaseSetAtMs = 0;
+        int64_t actualTimeMs = 0x100000000LL + (int64_t) nowMs;
+        int64_t elapsedTimeMs = actualTimeMs - (int64_t) timeBaseSetAtMs;
+        uint32_t elapsedTimeSecs = (uint32_t) (elapsedTimeMs / 1000);
+        timeBaseSec += elapsedTimeSecs;
+        timeBaseSetAtMs = nowMs;
     }
 
     // If we haven't yet fetched the time, or if we still need the timezone, do so with a suppression
