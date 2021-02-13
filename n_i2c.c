@@ -258,7 +258,6 @@ bool i2cNoteReset()
         _I2CReset(_I2CAddress());
         _UnlockI2C();
         _Debug(ERRSTR("notecard not responding\n", "no notecard\n"));
-        _DelayMs(2000);
 
     }
 
