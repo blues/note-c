@@ -271,7 +271,11 @@ J *NoteTransaction(J *req)
 
     // Debug
     if (suppressShowTransactions == 0) {
-        _Debugln(responseJSON);
+        if (responseJSON[strlen(responseJSON)-1] == '\n') {
+            _Debug(responseJSON);
+        } else {
+            _Debugln(responseJSON);
+        }
     }
 
     // Discard the buffer now that it's parsed
