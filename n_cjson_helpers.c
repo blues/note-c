@@ -421,8 +421,9 @@ int JAtoI(const char *string)
 char *JAllocString(uint8_t *buffer, uint32_t len)
 {
     char *buf = _Malloc(len+1);
-    if (buf == NULL)
+    if (buf == NULL) {
         return false;
+    }
     if (len > 0) {
         memcpy(buf, buffer, len);
     }
