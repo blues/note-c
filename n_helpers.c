@@ -1664,7 +1664,7 @@ uint32_t NoteMemAvailable()
     for (int i=maxsize; i>=sizeof(objHeader); i=i-sizeof(objHeader)) {
         for (int j=0;; j++) {
             objHeader *thisObj;
-            thisObj = (objHeader *) malloc(i);
+            thisObj = (objHeader *) _Malloc(i);
             if (thisObj == NULL) {
                 break;
             }
@@ -1688,7 +1688,7 @@ uint32_t NoteMemAvailable()
         objHeader *thisObj = lastObj;
         lastObj = lastObj->prev;
         total += thisObj->length;
-        free(thisObj);
+        _Free(thisObj);
     }
 
     return total;

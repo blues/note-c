@@ -64,10 +64,7 @@ void NoteResumeTransactionDebug()
 /**************************************************************************/
 /*!
     @brief  Create a new request object to populate before sending to the Notecard.
-            Lock for mutual exclusion, not only because access to the card must be serialized, but also because
-            both C++ and ArduinoJSON call malloc() which is not a thread-safe operation.
-    @param   request
-               The name of the request, for example `hub.set`.
+    @param   request is The name of the request, for example `hub.set`.
   @returns a `J` cJSON object with the request name pre-populated.
 */
 /**************************************************************************/
@@ -83,10 +80,7 @@ J *NoteNewRequest(const char *request)
 /**************************************************************************/
 /*!
     @brief  Create a new command object to populate before sending to the Notecard.
-            Lock for mutual exclusion, not only because access to the card must be serialized, but also because
-            both C++ and ArduinoJSON call malloc() which is not a thread-safe operation.
-    @param   request
-               The name of the command, for example `hub.set`.
+    @param   request is the name of the command, for example `hub.set`.
   @returns a `J` cJSON object with the request name pre-populated.
 */
 /**************************************************************************/

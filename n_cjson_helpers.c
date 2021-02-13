@@ -315,14 +315,14 @@ bool JContainsString(J *rsp, const char *field, const char *substr)
 bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, uint32_t binaryDataLen)
 {
     unsigned stringDataLen = JB64EncodeLen(binaryDataLen);
-    char *stringData = (char *) malloc(stringDataLen);
+    char *stringData = (char *) _Malloc(stringDataLen);
     if (stringData == NULL) {
         return false;
     }
     JB64Encode(stringData, binaryData, binaryDataLen);
     J *stringItem = JCreateStringReference(stringData);
     if (stringItem == NULL) {
-        free(stringData);
+        _Free(stringData);
         return false;
     }
     JAddItemToObject(req, fieldName, stringItem);
@@ -409,4 +409,23 @@ int JAtoI(const char *string)
         result = -result;
     }
     return result;
+}
+
+//**************************************************************************/
+/*!
+    @brief  Convert a buffer/len to a null-terminated c-string
+    @param   a buffer containing text with a counted length
+    @returns A c-string (NULL if invalid) that must be freed with JFree()
+*/
+/**************************************************************************/
+char *JAllocString(uint8_t *buffer, uint32_t len)
+{
+    char *buf = _Malloc(len+1);
+    if (buf == NULL)
+        return false;
+    if (len > 0) {
+        memcpy(buf, buffer, len);
+    }
+    buf[len] = '\0';
+    return buf;
 }

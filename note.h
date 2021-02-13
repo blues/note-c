@@ -169,6 +169,7 @@ bool JIsExactString(J *rsp, const char *field, const char *teststr);
 bool JContainsString(J *rsp, const char *field, const char *substr);
 bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, uint32_t binaryDataLen);
 const char *JGetItemName(const J * item);
+char *JAllocString(uint8_t *buffer, uint32_t len);
 
 // Helper functions for apps that wish to limit their C library dependencies
 #define JNTOA_PRECISION (10)
