@@ -155,10 +155,6 @@ bool serialNoteReset()
     int retries;
     for (retries=0; retries<10; retries++) {
 
-#ifdef ERRDBG
-        _Debug("serial reset\n");
-#endif
-
         // Send a newline to the module to clean out request/response processing
         _SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
 

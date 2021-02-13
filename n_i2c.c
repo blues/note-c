@@ -216,10 +216,6 @@ bool i2cNoteReset()
     int retries;
     for (retries=0; !notecardReady && retries<3; retries++) {
 
-#ifdef ERRDBG
-        _Debug("i2c reset\n");
-#endif
-
         // Loop to drain all chunks of data that may be ready to transmit to us
         int chunklen = 0;
         while (true) {
