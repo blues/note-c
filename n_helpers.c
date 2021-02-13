@@ -110,7 +110,6 @@ static void setTime(JTIME seconds)
 {
     timeBaseSec = seconds;
     timeBaseSetAtMs = _GetMs();
-    _Debug("setting time from notecard clock source\n");
 }
 
 //**************************************************************************/
@@ -141,7 +140,6 @@ void NoteTimeSet(JTIME secondsUTC, int offset, char *zone, char *country, char *
         strlcpy(curArea, area == NULL ? "" : area, sizeof(curArea));
         strlcpy(curCountry, country == NULL ? "" : country, sizeof(curCountry));
     }
-    _Debug("setting time from external clock source\n");
 }
 
 //**************************************************************************/
