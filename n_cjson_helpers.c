@@ -430,3 +430,34 @@ char *JAllocString(uint8_t *buffer, uint32_t len)
     buf[len] = '\0';
     return buf;
 }
+
+//**************************************************************************/
+/*!
+    @brief  Return the type of an item, as a string
+    @param   item The JSON item.
+    @returns The type
+*/
+/**************************************************************************/
+const char *JType(J *item)
+{
+    if (item == NULL) {
+        return "";
+    }
+    switch (item->type & 0xff) {
+    case JTrue:
+    case JFalse:
+        return "bool";
+    case JNULL:
+        return "null";
+    case JNumber:
+        return "number";
+    case JRaw:
+    case JString:
+        return "string";
+    case JObject:
+        return "object";
+    case JArray:
+        return "array";
+    }
+    return "invalid";
+}

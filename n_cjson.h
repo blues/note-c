@@ -71,28 +71,28 @@ extern "C"
 
 /* The J structure: */
 typedef struct J {
-  /* next/prev allow you to walk array/object chains. Alternatively, use GetArraySize/GetArrayItem/GetObjectItem */
-  struct J *next;
-  struct J *prev;
-  /* An array or object item will have a child pointer pointing to a chain of the items in the array/object. */
-  struct J *child;
+    /* next/prev allow you to walk array/object chains. Alternatively, use GetArraySize/GetArrayItem/GetObjectItem */
+    struct J *next;
+    struct J *prev;
+    /* An array or object item will have a child pointer pointing to a chain of the items in the array/object. */
+    struct J *child;
 
-  /* The type of the item, as above. */
-  int type;
+    /* The type of the item, as above. */
+    int type;
 
-  /* The item's string, if type==JString  and type == JRaw */
-  char *valuestring;
-  /* writing to valueint is DEPRECATED, use JSetNumberValue instead */
-  int valueint;
-  /* The item's number, if type==JNumber */
-  JNUMBER valuenumber;
-  /* The item's name string, if this item is the child of, or is in the list of subitems of an object. */
-  char *string;
+    /* The item's string, if type==JString  and type == JRaw */
+    char *valuestring;
+    /* writing to valueint is DEPRECATED, use JSetNumberValue instead */
+    int valueint;
+    /* The item's number, if type==JNumber */
+    JNUMBER valuenumber;
+    /* The item's name string, if this item is the child of, or is in the list of subitems of an object. */
+    char *string;
 } J;
 
 typedef struct JHooks {
-  void *(*malloc_fn)(size_t sz);
-  void (*free_fn)(void *ptr);
+    void *(*malloc_fn)(size_t sz);
+    void (*free_fn)(void *ptr);
 } JHooks;
 
 typedef int Jbool;

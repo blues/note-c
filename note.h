@@ -170,6 +170,7 @@ bool JContainsString(J *rsp, const char *field, const char *substr);
 bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, uint32_t binaryDataLen);
 const char *JGetItemName(const J * item);
 char *JAllocString(uint8_t *buffer, uint32_t len);
+const char *JType(J *item);
 
 // Helper functions for apps that wish to limit their C library dependencies
 #define JNTOA_PRECISION (10)
@@ -185,9 +186,9 @@ int JB64Decode(char * plain_dst, const char *coded_src);
 
 // MD5 Helper functions
 typedef struct {
-  unsigned long buf[4];
-  unsigned long bits[2];
-  unsigned char in[64];
+    unsigned long buf[4];
+    unsigned long bits[2];
+    unsigned char in[64];
 } NoteMD5Context;
 #define NOTE_MD5_HASH_SIZE 16
 #define NOTE_MD5_HASH_STRING_SIZE (((NOTE_MD5_HASH_SIZE)*2)+1)
