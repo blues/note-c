@@ -237,7 +237,6 @@ bool NoteSetSerialNumber(const char *sn);
 bool NoteSetProductID(const char *productID);
 bool NoteSetUploadMode(const char *uploadMode, int uploadMinutes, bool align);
 bool NoteSetSyncMode(const char *uploadMode, int uploadMinutes, int downloadMinutes, bool align, bool sync);
-bool NoteTemplate(const char *target, J *body);
 #define NoteSend NoteAdd
 bool NoteAdd(const char *target, J *body, bool urgent);
 bool NoteSendToRoute(const char *method, const char *routeAlias, char *notefile, J *body);
@@ -245,6 +244,21 @@ bool NoteGetVoltage(JNUMBER *voltage);
 bool NoteGetTemperature(JNUMBER *temp);
 bool NoteGetContact(char *nameBuf, int nameBufLen, char *orgBuf, int orgBufLen, char *roleBuf, int roleBufLen, char *emailBuf, int emailBufLen);
 bool NoteSetContact(char *nameBuf, char *orgBuf, char *roleBuf, char *emailBuf);
+
+// C macro to convert a number to a string for use below
+#define _tstring(x)     #x
+
+// Hard-wired constants used to specify field types when creating note templates
+#define TINT8           11                  // 1-byte signed integer
+#define TINT16          12                  // 2-byte signed integer
+#define TINT24          13                  // 3-byte signed integer
+#define TINT32          14                  // 4-byte signed integer
+#define TINT64          18                  // 8-byte signed integer (note-c support depends upon platform)
+#define TFLOAT16        12.1                // 2-byte IEEE 754 floating point
+#define TFLOAT32        14.1                // 4-byte IEEE 754 floating point (a.k.a. "float")
+#define TFLOAT64        18.1                // 8-byte IEEE 754 floating point (a.k.a. "double")
+#define TSTRING(N)      _tstring(N)         // UTF-8 text of N bytes maximum (fixed-length reserved buffer)
+bool NoteTemplate(const char *notefileID, J *templateBody);
 
 // End of C-callable functions
 #ifdef __cplusplus
