@@ -182,26 +182,6 @@ bool NotePrint(const char *text)
 
 //**************************************************************************/
 /*!
-  @brief  Write a formatted string to the debug output.
-  @param   format  A format string for output.
-  @param   ...  One or more values to interpolate into the format string.
-  @note.  Do NOT use this in a memory-constrained environment (vsnprintf is large)
-*/
-/**************************************************************************/
-#ifndef NOTE_LOMEM
-bool NotePrintf(const char *format, ...)
-{
-    char line[256];
-    va_list args;
-    va_start(args, format);
-    vsnprintf(line, sizeof(line), format, args);
-    va_end(args);
-    return NotePrint(line);
-}
-#endif
-
-//**************************************************************************/
-/*!
   @brief  Get the current epoch time as known by the module. If it isn't known
   by the module, just return the time since boot as indicated by the
   millisecond clock.

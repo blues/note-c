@@ -350,27 +350,6 @@ void NoteDebug(const char *line)
 
 //**************************************************************************/
 /*!
-  @brief  Write a formatted string to the debug output.
-  @param   format  A format string for output.
-  @param   ...  One or more values to interpolate into the format string.
-*/
-/**************************************************************************/
-void NoteDebugf(const char *format, ...)
-{
-#ifndef NOTE_NODEBUG
-    if (hookDebugOutput != NULL) {
-        char line[256];
-        va_list args;
-        va_start(args, format);
-        vsnprintf(line, sizeof(line), format, args);
-        va_end(args);
-        hookDebugOutput(line);
-    }
-#endif
-}
-
-//**************************************************************************/
-/*!
   @brief  Get the current milliseconds value from the platform-specific
   hook.
   @returns  The current milliseconds value.
