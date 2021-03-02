@@ -175,14 +175,14 @@ int JIntValue(J *item)
 int JGetInt(J *rsp, const char *field)
 {
     if (rsp == NULL) {
-        return 0.0;
+        return 0;
     }
     J *item = JGetObjectItem(rsp, field);
     if (item == NULL) {
-        return 0.0;
+        return 0;
     }
     if (!JIsNumber(item)) {
-        return 0.0;
+        return 0;
     }
     return JIntValue(item);
 }
@@ -205,7 +205,7 @@ bool JGetBool(J *rsp, const char *field)
         return false;
     }
     if (!JIsBool(item)) {
-        return 0.0;
+        return false;
     }
     return JIsTrue(item);
 }
