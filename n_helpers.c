@@ -536,7 +536,7 @@ bool NoteSetEnvDefault(const char *variable, char *buf)
   @returns boolean indicating if variable was set.
 */
 /**************************************************************************/
-bool NoteSetEnvDefaultInt(const char *variable, int defaultVal)
+bool NoteSetEnvDefaultInt(const char *variable, long int defaultVal)
 {
     char buf[32];
     JItoA(defaultVal, buf);
@@ -582,7 +582,7 @@ JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal)
   @returns environment variable value.
 */
 /**************************************************************************/
-int NoteGetEnvInt(const char *variable, int defaultVal)
+long int NoteGetEnvInt(const char *variable, long int defaultVal)
 {
     char buf[32], buf2[32];;
     JItoA(defaultVal, buf2);
@@ -1640,9 +1640,9 @@ uint32_t NoteMemAvailable()
 
     // Allocate progressively smaller and smaller chunks
     objHeader *lastObj = NULL;
-    static int maxsize = 35000;
-    for (int i=maxsize; i>=sizeof(objHeader); i=i-sizeof(objHeader)) {
-        for (int j=0;; j++) {
+    static long int maxsize = 35000;
+    for (long int i=maxsize; i>=sizeof(objHeader); i=i-sizeof(objHeader)) {
+        for (long int j=0;; j++) {
             objHeader *thisObj;
             thisObj = (objHeader *) _Malloc(i);
             if (thisObj == NULL) {
@@ -1655,8 +1655,8 @@ uint32_t NoteMemAvailable()
     }
 
     // Free the objects backwards
-    int lastLength = 0;
-    int lastLengthCount = 0;
+    long int lastLength = 0;
+    long int lastLengthCount = 0;
     uint32_t total = 0;
     while (lastObj != NULL) {
         if (lastObj->length != lastLength) {

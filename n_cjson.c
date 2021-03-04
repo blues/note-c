@@ -279,12 +279,12 @@ loop_end:
     item->valuenumber = number;
 
     /* use saturation in case of overflow */
-    if (number >= INT_MAX) {
-        item->valueint = INT_MAX;
-    } else if (number <= INT_MIN) {
-        item->valueint = INT_MIN;
+    if (number >= LONG_MAX) {
+        item->valueint = LONG_MAX;
+    } else if (number <= LONG_MIN) {
+        item->valueint = LONG_MIN;
     } else {
-        item->valueint = (int)number;
+        item->valueint = (long int)number;
     }
 
     item->type = JNumber;
@@ -296,12 +296,12 @@ loop_end:
 /* don't ask me, but the original JSetNumberValue returns an integer or JNUMBER */
 N_CJSON_PUBLIC(JNUMBER) JSetNumberHelper(J *object, JNUMBER number)
 {
-    if (number >= INT_MAX) {
-        object->valueint = INT_MAX;
-    } else if (number <= INT_MIN) {
-        object->valueint = INT_MIN;
+    if (number >= LONG_MAX) {
+        object->valueint = LONG_MAX;
+    } else if (number <= LONG_MIN) {
+        object->valueint = LONG_MIN;
     } else {
-        object->valueint = (int)number;
+        object->valueint = (long int)number;
     }
 
     return object->valuenumber = number;
@@ -331,8 +331,8 @@ static unsigned char* ensure(printbuffer * const p, size_t needed)
         return NULL;
     }
 
-    if (needed > INT_MAX) {
-        /* sizes bigger than INT_MAX are currently not supported */
+    if (needed > LONG_MAX) {
+        /* sizes bigger than LONG_MAX are currently not supported */
         return NULL;
     }
 
@@ -346,10 +346,10 @@ static unsigned char* ensure(printbuffer * const p, size_t needed)
     }
 
     /* calculate new buffer size */
-    if (needed > (INT_MAX / 2)) {
-        /* overflow of int, use INT_MAX if possible */
-        if (needed <= INT_MAX) {
-            newsize = INT_MAX;
+    if (needed > (LONG_MAX / 2)) {
+        /* overflow of int, use LONG_MAX if possible */
+        if (needed <= LONG_MAX) {
+            newsize = LONG_MAX;
         } else {
             return NULL;
         }
@@ -454,9 +454,9 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
 }
 
 /* parse 4 digit hexadecimal number */
-static unsigned parse_hex4(const unsigned char * const input)
+static unsigned long parse_hex4(const unsigned char * const input)
 {
-    unsigned int h = 0;
+    unsigned long int h = 0;
     size_t i = 0;
 
     for (i = 0; i < 4; i++) {
@@ -485,7 +485,7 @@ static unsigned parse_hex4(const unsigned char * const input)
 static unsigned char utf16_literal_to_utf8(const unsigned char * const input_pointer, const unsigned char * const input_end, unsigned char **output_pointer)
 {
     long unsigned int codepoint = 0;
-    unsigned int first_code = 0;
+    unsigned long int first_code = 0;
     const unsigned char *first_sequence = input_pointer;
     unsigned char utf8_length = 0;
     unsigned char utf8_position = 0;
@@ -2007,12 +2007,12 @@ N_CJSON_PUBLIC(J *) JCreateNumber(JNUMBER num)
         item->valuenumber = num;
 
         /* use saturation in case of overflow */
-        if (num >= INT_MAX) {
-            item->valueint = INT_MAX;
-        } else if (num <= INT_MIN) {
-            item->valueint = INT_MIN;
+        if (num >= LONG_MAX) {
+            item->valueint = LONG_MAX;
+        } else if (num <= LONG_MIN) {
+            item->valueint = LONG_MIN;
         } else {
-            item->valueint = (int)num;
+            item->valueint = (long int)num;
         }
     }
 
@@ -2103,7 +2103,7 @@ N_CJSON_PUBLIC(J *) JCreateObject(void)
 }
 
 /* Create Arrays: */
-N_CJSON_PUBLIC(J *) JCreateIntArray(const int *numbers, int count)
+N_CJSON_PUBLIC(J *) JCreateIntArray(const long int *numbers, int count)
 {
     size_t i = 0;
     J *n = NULL;

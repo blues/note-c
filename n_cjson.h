@@ -83,7 +83,7 @@ typedef struct J {
     /* The item's string, if type==JString  and type == JRaw */
     char *valuestring;
     /* writing to valueint is DEPRECATED, use JSetNumberValue instead */
-    int valueint;
+    long int valueint;
     /* The item's number, if type==JNumber */
     JNUMBER valuenumber;
     /* The item's name string, if this item is the child of, or is in the list of subitems of an object. */
@@ -218,7 +218,7 @@ N_CJSON_PUBLIC(J *) JCreateObjectReference(const J *child);
 N_CJSON_PUBLIC(J *) JCreateArrayReference(const J *child);
 
 /* These utilities create an Array of count items. */
-N_CJSON_PUBLIC(J *) JCreateIntArray(const int *numbers, int count);
+N_CJSON_PUBLIC(J *) JCreateIntArray(const long int *numbers, int count);
 N_CJSON_PUBLIC(J *) JCreateNumberArray(const JNUMBER *numbers, int count);
 N_CJSON_PUBLIC(J *) JCreateStringArray(const char **strings, int count);
 

@@ -156,7 +156,7 @@ JNUMBER JGetNumber(J *rsp, const char *field)
     @returns The number, or 0, if NULL.
 */
 /**************************************************************************/
-int JIntValue(J *item)
+long int JIntValue(J *item)
 {
     if (item == NULL) {
         return 0;
@@ -172,7 +172,7 @@ int JIntValue(J *item)
     @returns The int found, or 0, if not present.
 */
 /**************************************************************************/
-int JGetInt(J *rsp, const char *field)
+long int JGetInt(J *rsp, const char *field)
 {
     if (rsp == NULL) {
         return 0;
@@ -352,10 +352,10 @@ const char *JGetItemName(const J * item)
     @note The buffer midt be large enough because no bounds checking is done.
 */
 /**************************************************************************/
-void JItoA(int n, char *s)
+void JItoA(long int n, char *s)
 {
     char c;
-    int i, j, sign;
+    long int i, j, sign;
     if ((sign = n) < 0) {
         n = -n;
     }
@@ -381,9 +381,9 @@ void JItoA(int n, char *s)
     @returns An integer, or 0 if invalid
 */
 /**************************************************************************/
-int JAtoI(const char *string)
+long int JAtoI(const char *string)
 {
-    int result = 0;
+    long int result = 0;
     unsigned int digit;
     int sign;
     while (*string == ' ') {
