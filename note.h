@@ -193,7 +193,7 @@ typedef struct {
 #define NOTE_MD5_HASH_SIZE 16
 #define NOTE_MD5_HASH_STRING_SIZE (((NOTE_MD5_HASH_SIZE)*2)+1)
 void NoteMD5Init(NoteMD5Context *ctx);
-void NoteMD5Update(NoteMD5Context *ctx, unsigned char const *buf, unsigned len);
+void NoteMD5Update(NoteMD5Context *ctx, unsigned char const *buf, unsigned long len);
 void NoteMD5Final(unsigned char *digest, NoteMD5Context *ctx);
 void NoteMD5Transform(unsigned long buf[4], const unsigned char inraw[64]);
 void NoteMD5Hash(unsigned char* data, unsigned long len, unsigned char *retHash);

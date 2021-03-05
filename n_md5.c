@@ -92,7 +92,7 @@ void NoteMD5Init(NoteMD5Context *ctx)
  * Update context to reflect the concatenation of another buffer full
  * of bytes.
  */
-void NoteMD5Update(NoteMD5Context *ctx, unsigned char const *buf, unsigned len)
+void NoteMD5Update(NoteMD5Context *ctx, unsigned char const *buf, unsigned long len)
 {
     unsigned long t;
 
