@@ -233,10 +233,8 @@ JTIME NoteTimeST()
                     JTIME seconds = JGetInt(rsp, "time");
                     if (seconds != 0) {
 
-                        // Set the time if it hasn't yet been set
-                        if (timeBaseSec == 0) {
-                            setTime(seconds);
-                        }
+                        // Set the time
+                        setTime(seconds);
 
                         // Get the zone
                         char *z = JGetString(rsp, "zone");
