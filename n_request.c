@@ -264,7 +264,7 @@ J *NoteTransaction(J *req)
         _Debug("invalid JSON: ");
         _Debug(responseJSON);
         _Free(responseJSON);
-        J *rsp = errDoc(ERRSTR("unrecognized response from card",c_bad));
+        J *rsp = errDoc(ERRSTR("unrecognized response from card {io}",c_iobad));
         _UnlockNote();
         return rsp;
     }
