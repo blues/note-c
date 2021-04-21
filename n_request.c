@@ -132,7 +132,7 @@ bool NoteRequest(J *req)
     @param   req
                The `J` cJSON request object.
              timeoutSeconds
-               Upper limit for retries if there is no response, or if the 
+               Upper limit for retries if there is no response, or if the
                response contains an io error.
   @returns a boolean. Returns `true` if successful or `false` if an error
             occurs, such as an out-of-memory or if an error was returned from
@@ -223,7 +223,7 @@ J *NoteRequestResponse(J *req)
     @param   req
                The `J` cJSON request object.
              timeoutSeconds
-               Upper limit for retries if there is no response, or if the 
+               Upper limit for retries if there is no response, or if the
                response contains an io error.
   @returns a `J` cJSON object with the response, or NULL if there is
              insufficient memory.
@@ -266,11 +266,11 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
 
     // Free the request
     JDelete(req);
-    
+
     if (rsp == NULL) {
         return NULL;
     }
-    
+
     // Return the response
     return rsp;
 }
