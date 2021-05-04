@@ -69,7 +69,7 @@ __attribute__((weak)) size_t strlcpy(char *dst, const char *src, size_t siz)
 size_t strlcat(char *dst, const char *src, size_t siz)
 #else
 __attribute__((weak)) size_t strlcat(char *dst, const char *src, size_t siz)
-#end
+#endif
 {
     char *d = dst;
     const char *s = src;
