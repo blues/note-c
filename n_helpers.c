@@ -264,7 +264,7 @@ JTIME NoteTimeST()
     }
 
     // Adjust the base time by the number of seconds that have elapsed since the base.
-    JTIME adjustedTime = timeBaseSec + ((nowMs - timeBaseSetAtMs) / 1000);
+    JTIME adjustedTime = timeBaseSec + (int32_t) (((int64_t) nowMs - (int64_t) timeBaseSetAtMs) / 1000);
 
     // Done
     return adjustedTime;
