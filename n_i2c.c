@@ -216,7 +216,7 @@ bool i2cNoteReset()
     int retries;
     _LockI2C();
     _DelayIO();
-    _I2CTransmit(_I2CAddress(), "\n", 1);
+    _I2CTransmit(_I2CAddress(), (uint8_t *)"\n", 1);
     _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
     _UnlockI2C();
     for (retries=0; !notecardReady && retries<3; retries++) {
