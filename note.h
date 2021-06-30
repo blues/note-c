@@ -126,8 +126,13 @@ void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, 
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
 void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
 void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn writefn, serialAvailableFn availfn, serialReceiveFn readfn);
-#define NOTE_I2C_ADDR_DEFAULT 0
-#define NOTE_I2C_MAX_DEFAULT  0
+#define NOTE_I2C_ADDR_DEFAULT	0x17
+#ifndef NOTE_I2C_MAX_DEFAULT
+#define NOTE_I2C_MAX_DEFAULT	30
+#endif
+#ifndef NOTE_I2C_MAX_MAX
+#define NOTE_I2C_MAX_MAX		127
+#endif
 void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTransmitFn transmitfn, i2cReceiveFn receivefn);
 void NoteSetFnDisabled(void);
 void NoteSetI2CAddress(uint32_t i2caddress);
