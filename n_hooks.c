@@ -502,6 +502,23 @@ void NoteUnlockNote()
 
 //**************************************************************************/
 /*!
+  @brief  Get the active interface's name
+  @returns A string
+*/
+/**************************************************************************/
+const char *NoteActiveInterface()
+{
+    switch (hookActiveInterface) {
+    case interfaceSerial:
+        return "serial";
+    case interfaceI2C:
+        return "i2c";
+    }
+    return "unknown";
+}
+
+//**************************************************************************/
+/*!
   @brief  Reset the Serial bus using the platform-specific hook.
   @returns A boolean indicating whether the Serial bus was reset.
 */

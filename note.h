@@ -137,6 +137,11 @@ void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTran
 void NoteSetFnDisabled(void);
 void NoteSetI2CAddress(uint32_t i2caddress);
 
+// User agent
+void NoteSetUserAgent(char *agent);
+void NoteSetUserAgentOS(char *os_name, char *os_platform, char *os_family, char *os_version);
+void NoteSetUserAgentCPU(int cpu_mem, int cpu_mhz, int cpu_cores, char *cpu_vendor, char *cpu_name);
+
 // Calls to the functions set above
 void NoteDebug(const char *message);
 void NoteDebugln(const char *message);
