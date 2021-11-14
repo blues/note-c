@@ -265,7 +265,7 @@ bool i2cNoteReset()
         _UnlockI2C();
         _Debug(ERRSTR("notecard not responding\n", "no notecard\n"));
     }
-
+    
     // Done
     return notecardReady;
 }
