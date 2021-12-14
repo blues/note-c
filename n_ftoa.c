@@ -23,16 +23,6 @@
 #include <stdint.h>
 #include <math.h>
 
-static void fmtstr(char *, size_t *, size_t, const char *, int, int, int);
-static void fmtflt(char *, size_t *, size_t, JNUMBER, int, int, int, int *);
-static void printsep(char *, size_t *, size_t);
-static int getnumsep(int);
-static int getexponent(JNUMBER);
-static int convert(uintmax_t, char *, size_t, int, int);
-static uintmax_t cast(JNUMBER);
-static uintmax_t myround(JNUMBER);
-static JNUMBER mypow10(int);
-#define MAX_CONVERT_LENGTH      43
 #define	PRINT_F_QUOTE		0x0001
 #define	PRINT_F_TYPE_E		0x0002
 #define	PRINT_F_TYPE_G		0x0004
@@ -42,6 +32,16 @@ static JNUMBER mypow10(int);
 #define	PRINT_F_ZERO		0x0040
 #define	PRINT_F_SPACE		0x0080
 #define	PRINT_F_UP			0x0100
+
+static void fmtstr(char *, size_t *, size_t, const char *, int, int, int);
+static void fmtflt(char *, size_t *, size_t, JNUMBER, int, int, int, int *);
+static void printsep(char *, size_t *, size_t);
+static int getnumsep(int);
+static int getexponent(JNUMBER);
+static int convert(uintmax_t, char *, size_t, int, int);
+static uintmax_t cast(JNUMBER);
+static uintmax_t myround(JNUMBER);
+static JNUMBER mypow10(int);
 #define OUTCHAR(str, len, size, ch) \
 do { \
 	if (len + 1 < size) \
@@ -74,8 +74,8 @@ fmtflt(char *str, size_t *len, size_t size, JNUMBER fvalue, int width,
     uintmax_t fracpart;
     uintmax_t mask;
     const char *infnan = NULL;
-    char iconvert[MAX_CONVERT_LENGTH];
-    char fconvert[MAX_CONVERT_LENGTH];
+    char iconvert[JNTOA_MAX];
+    char fconvert[JNTOA_MAX];
     char econvert[4];	/* "e-12" (without nul-termination). */
     char esign = 0;
     char sign = 0;
