@@ -47,8 +47,12 @@ do { \
 	if (len + 1 < size) \
 		str[len] = ch; \
 	(len)++; \
-} while (/* CONSTCOND */ 0)
+} while (0)
 
+// Convert a JNUMBER into a null-terminated text string.  Note that buf must
+// be pointing at a buffer of JNTOA_MAX length, which is defined so that it
+// includes enough space for the null terminator, so there's no need to
+// have a buffer of JNTOA_MAX+1.
 char * JNtoA(JNUMBER f, char * buf, int precision)
 {
     int overflow = 0;
