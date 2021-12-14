@@ -589,7 +589,7 @@ JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal)
     char buf[JNTOA_MAX], buf2[JNTOA_MAX];;
     JNtoA(defaultVal, buf2, -1);
     NoteGetEnv(variable, buf2, buf, sizeof(buf));
-    return JAtoN(buf, NULL);
+    return JAtoN((const char*)buf, NULL);
 }
 
 //**************************************************************************/
