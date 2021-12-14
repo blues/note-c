@@ -481,6 +481,10 @@ static uintmax_t myround(JNUMBER value)
 {
     uintmax_t intpart = cast(value);
 
+    if (intpart == UINTMAX_MAX) {
+        return UINTMAX_MAX;
+    }
+
     return ((value -= intpart) < 0.5) ? intpart : intpart + 1;
 }
 
