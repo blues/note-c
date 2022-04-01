@@ -701,7 +701,7 @@ uint32_t NoteI2CMax()
 bool NoteHardReset()
 {
     if (notecardReset == NULL) {
-        return false;
+        return true;
     }
     return notecardReset();
 }
