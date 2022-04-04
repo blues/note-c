@@ -314,6 +314,9 @@ bool JContainsString(J *rsp, const char *field, const char *substr)
 /**************************************************************************/
 bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, uint32_t binaryDataLen)
 {
+    if (req == NULL) {
+        return false;
+    }
     unsigned stringDataLen = JB64EncodeLen(binaryDataLen);
     char *stringData = (char *) _Malloc(stringDataLen);
     if (stringData == NULL) {
@@ -341,6 +344,9 @@ bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, u
 /**************************************************************************/
 bool JGetBinaryFromObject(J *rsp, const char *fieldName, uint8_t **retBinaryData, uint32_t *retBinaryDataLen)
 {
+    if (rsp == NULL) {
+        return false;
+    }
 
     char *payload = JGetString(rsp, fieldName);
     if (payload[0] == '\0') {
@@ -370,7 +376,7 @@ bool JGetBinaryFromObject(J *rsp, const char *fieldName, uint8_t **retBinaryData
 /**************************************************************************/
 const char *JGetItemName(const J * item)
 {
-    if (item->string == NULL) {
+    if (item == NULL || item->string == NULL) {
         return "";
     }
     return item->string;
