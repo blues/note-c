@@ -1600,7 +1600,7 @@ N_CJSON_PUBLIC(J *) JGetObjectItemCaseSensitive(const J * const object, const ch
 N_CJSON_PUBLIC(Jbool) JHasObjectItem(const J *object, const char *string)
 {
     if (object == NULL) {
-        return NULL;
+        return false;
     }
     return JGetObjectItem(object, string) ? 1 : 0;
 }
