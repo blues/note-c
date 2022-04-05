@@ -394,6 +394,10 @@ static void update_offset(printbuffer * const buffer)
 /* Render the number nicely from the given item into a string. */
 static Jbool print_number(const J * const item, printbuffer * const output_buffer)
 {
+    if (item == NULL) {
+        return false;
+    }
+
     unsigned char *output_pointer = NULL;
     JNUMBER d = item->valuenumber;
     int length = 0;
@@ -401,9 +405,6 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
     unsigned char number_buffer[JNTOA_MAX]; /* temporary buffer to print the number into */
     unsigned char decimal_point = get_decimal_point();
 
-    if (item == NULL) {
-        return false;
-    }
     if (output_buffer == NULL) {
         return false;
     }
