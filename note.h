@@ -285,6 +285,7 @@ bool NotePayloadGetSegment(NotePayloadDesc *desc, const char segtype[NP_SEGTYPE_
 #define _tstring(x)     #x
 
 // Hard-wired constants used to specify field types when creating note templates
+#define TBOOL           true                // bool
 #define TINT8           11                  // 1-byte signed integer
 #define TINT16          12                  // 2-byte signed integer
 #define TINT24          13                  // 3-byte signed integer
