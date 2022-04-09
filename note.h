@@ -100,6 +100,7 @@ typedef const char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uin
 bool NoteReset(void);
 void NoteResetRequired(void);
 #define NoteNewBody JCreateObject
+#define NoteAddBodyToObject(a, b) JAddItemToObject(a, "body", b)
 J *NoteNewRequest(const char *request);
 J *NoteNewCommand(const char *request);
 J *NoteRequestResponse(J *req);
