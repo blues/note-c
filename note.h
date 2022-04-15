@@ -78,6 +78,9 @@ typedef unsigned long int JTIME;
 extern "C" {
 #endif
 
+// Edge defs
+#include "n_edge.h"
+
 // cJSON wrappers
 #include "n_cjson.h"
 
