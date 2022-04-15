@@ -91,6 +91,8 @@ typedef struct {
     double scanBeganLocLon;
 #define EDGE_SCAN_BEGAN_LOC_HDOP "began_loc_hdop"
     uint32_t scanBeganLocHDOP;
+#define EDGE_SCAN_BEGAN_MOTION_TIME "began_motion_when"
+    uint32_t scanBeganMotionTime;
 #define EDGE_SCAN_ENDED_TIME "ended_when"
     uint32_t scanEndedTime;
 #define EDGE_SCAN_ENDED_LOC_TIME "ended_loc_when"
