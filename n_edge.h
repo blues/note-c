@@ -101,6 +101,8 @@ typedef struct {
     double scanEndedLocLon;
 #define EDGE_SCAN_ENDED_LOC_HDOP "ended_loc_hdop"
     uint32_t scanEndedLocHDOP;
+#define EDGE_SCAN_ENDED_MOTION_TIME "ended_motion_when"
+    uint32_t scanEndedMotionTime;
 #define EDGE_SCAN_LOC_LAT "loc_lat"
     double scanLocLat;
 #define EDGE_SCAN_LOC_LON "loc_lon"
