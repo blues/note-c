@@ -1003,7 +1003,7 @@ fail:
 N_CJSON_PUBLIC(char *) JPrint(const J *item)
 {
     if (item == NULL) {
-        return "";
+        return (char *)"";
     }
     return (char*)print(item, true);
 }
@@ -1011,7 +1011,7 @@ N_CJSON_PUBLIC(char *) JPrint(const J *item)
 N_CJSON_PUBLIC(char *) JPrintUnformatted(const J *item)
 {
     if (item == NULL) {
-        return "";
+        return (char *)"";
     }
     return (char*)print(item, false);
 }
@@ -1021,7 +1021,7 @@ N_CJSON_PUBLIC(char *) JPrintBuffered(const J *item, int prebuffer, Jbool fmt)
     printbuffer p = { 0, 0, 0, 0, 0, 0 };
 
     if (item == NULL) {
-        return "";
+        return (char *)"";
     }
 
     if (prebuffer < 0) {
