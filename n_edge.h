@@ -45,6 +45,8 @@ typedef struct {
     double humidity;
 #define TRACKPOINT_PRESSURE "pressure"
     double pressure;
+#define TRACKPOINT_VOLTAGE "voltage"
+    double voltage;
 #define TRACKPOINT_USB "usb"
     bool usb;
 #define TRACKPOINT_CHARGING "charging"
