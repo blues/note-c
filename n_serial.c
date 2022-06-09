@@ -34,8 +34,8 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
         return ERRSTR("insufficient memory",c_mem);
     }
     memcpy(transmitBuf, json, jsonLen);
-	memcpy(&transmitBuf[jsonLen], c_newline, c_newline_len);
-	jsonLen += c_newline_len;
+    memcpy(&transmitBuf[jsonLen], c_newline, c_newline_len);
+    jsonLen += c_newline_len;
 
     // Transmit the request in segments so as not to overwhelm the notecard's interrupt buffers
     uint32_t segOff = 0;
