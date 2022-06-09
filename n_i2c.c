@@ -45,7 +45,7 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse)
 
     // Append newline to the transaction
     int jsonLen = strlen(json);
-    uint8_t *transmitBuf = (uint8_t *) _Malloc(jsonLen)+c_newline_len;
+    uint8_t *transmitBuf = (uint8_t *) _Malloc(jsonLen+c_newline_len);
     if (transmitBuf == NULL) {
         return ERRSTR("insufficient memory",c_mem);
     }
