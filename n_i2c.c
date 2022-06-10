@@ -50,7 +50,7 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse)
         return ERRSTR("insufficient memory",c_mem);
     }
     memcpy(transmitBuf, json, jsonLen);
-	json[jsonLen++] = '\n';
+	transmitBuf[jsonLen++] = '\n';
 
     // Transmit the request in chunks, but also in segments so as not to overwhelm the notecard's interrupt buffers
     const char *estr;
