@@ -21,8 +21,8 @@ typedef struct {
     double lon;
 #define TRACKPOINT_TIME "time"
     uint32_t time;
-#define TRACKPOINT_HDOP "hdop"
-    uint32_t hdop;
+#define TRACKPOINT_HDOP "hdopv"
+    double hdop;
 #define TRACKPOINT_JOURNEY_TIME "journey"
     uint32_t journeyTime;
 #define TRACKPOINT_JOURNEY_COUNT "jcount"
@@ -91,8 +91,8 @@ typedef struct {
     double scanBeganLocLat;
 #define EDGE_SCAN_BEGAN_LOC_LON "began_loc_lon"
     double scanBeganLocLon;
-#define EDGE_SCAN_BEGAN_LOC_HDOP "began_loc_hdop"
-    uint32_t scanBeganLocHDOP;
+#define EDGE_SCAN_BEGAN_LOC_HDOP "began_loc_hdopv"
+    double scanBeganLocHDOP;
 #define EDGE_SCAN_BEGAN_MOTION_TIME "began_motion_when"
     uint32_t scanBeganMotionTime;
 #define EDGE_SCAN_ENDED_TIME "ended_when"
@@ -103,8 +103,8 @@ typedef struct {
     double scanEndedLocLat;
 #define EDGE_SCAN_ENDED_LOC_LON "ended_loc_lon"
     double scanEndedLocLon;
-#define EDGE_SCAN_ENDED_LOC_HDOP "ended_loc_hdop"
-    uint32_t scanEndedLocHDOP;
+#define EDGE_SCAN_ENDED_LOC_HDOP "ended_loc_hdopv"
+    double scanEndedLocHDOP;
 #define EDGE_SCAN_ENDED_MOTION_TIME "ended_motion_when"
     uint32_t scanEndedMotionTime;
 #define EDGE_SCAN_LOC_LAT "loc_lat"
