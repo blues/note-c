@@ -13,6 +13,9 @@
 
 #include "n_lib.h"
 
+// Turbo I/O mode
+extern bool cardTurboIO;
+
 /**************************************************************************/
 /*!
     @brief  Given a JSON string, perform an Serial transaction with the Notecard.
@@ -51,7 +54,9 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
         if (segLeft == 0) {
             break;
         }
-        _DelayMs(CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS);
+        if (!cardTurboIO) {
+            _DelayMs(CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS);
+        }
     }
 
     // Free the transmit buffer
@@ -74,7 +79,9 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
 #endif
             return ERRSTR("transaction timeout {io}",c_iotimeout);
         }
-        _DelayMs(10);
+        if (!cardTurboIO) {
+            _DelayMs(10);
+        }
     }
 
     // Allocate a buffer for input, noting that we always put the +1 in the alloc so we can be assured
@@ -104,7 +111,9 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
                 _Free(jsonbuf);
                 return ERRSTR("transaction incomplete {io}",c_iotimeout);
             }
-            _DelayMs(1);
+            if (!cardTurboIO) {
+                _DelayMs(1);
+            }
             continue;
         }
         ch = _SerialReceive();

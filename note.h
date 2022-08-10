@@ -233,6 +233,7 @@ bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint
 bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneOffset);
 bool NoteLocationValid(char *errbuf, uint32_t errbuflen);
 bool NoteLocationValidST(char *errbuf, uint32_t errbuflen);
+void NoteTurboIO(bool enable);
 long int NoteGetEnvInt(const char *variable, long int defaultVal);
 JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal);
 bool NoteGetEnv(const char *variable, const char *defaultVal, char *buf, uint32_t buflen);

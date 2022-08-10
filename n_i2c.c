@@ -13,6 +13,9 @@
 
 #include "n_lib.h"
 
+// Turbo I/O mode
+extern bool cardTurboIO;
+
 // Forwards
 static void _DelayIO(void);
 
@@ -26,7 +29,9 @@ static void _DelayIO(void);
 /**************************************************************************/
 static void _DelayIO()
 {
-    _DelayMs(6);
+    if (!cardTurboIO) {
+        _DelayMs(6);
+    }
 }
 
 /**************************************************************************/
@@ -50,7 +55,7 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse)
         return ERRSTR("insufficient memory",c_mem);
     }
     memcpy(transmitBuf, json, jsonLen);
-	transmitBuf[jsonLen++] = '\n';
+    transmitBuf[jsonLen++] = '\n';
 
     // Transmit the request in chunks, but also in segments so as not to overwhelm the notecard's interrupt buffers
     const char *estr;
@@ -78,9 +83,13 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse)
         sentInSegment += chunklen;
         if (sentInSegment > CARD_REQUEST_I2C_SEGMENT_MAX_LEN) {
             sentInSegment = 0;
-            _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
+            if (!cardTurboIO) {
+                _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
+            }
         }
-        _DelayMs(CARD_REQUEST_I2C_CHUNK_DELAY_MS);
+        if (!cardTurboIO) {
+            _DelayMs(CARD_REQUEST_I2C_CHUNK_DELAY_MS);
+        }
     }
 
     // Free the transmit buffer
@@ -179,7 +188,9 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse)
         }
 
         // Delay, simply waiting for the Note to process the request
-        _DelayMs(50);
+        if (!cardTurboIO) {
+            _DelayMs(50);
+        }
 
     }
 
@@ -215,7 +226,9 @@ bool i2cNoteReset()
     _LockI2C();
     _DelayIO();
     const char *transmitErr = _I2CTransmit(_I2CAddress(), (uint8_t *)"\n", 1);
-    _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
+    if (!cardTurboIO) {
+        _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
+    }
     _UnlockI2C();
 
     // This outer loop does retries on I2C error, and is simply here for robustness.

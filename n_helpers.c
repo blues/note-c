@@ -48,6 +48,9 @@ static bool locationValid = false;
 static uint32_t connectivityTimer = 0;
 static bool cardConnected = false;
 
+// Turbo communications mode, for special use cases and well-tested hardware
+bool cardTurboIO = false;
+
 // Service config-related suppression timer and cache
 static uint32_t serviceConfigTimer = 0;
 static char scDevice[128] = {0};
@@ -1925,4 +1928,16 @@ bool NotePayloadFindSegment(NotePayloadDesc *desc, const char segtype[NP_SEGTYPE
         }
     }
     return false;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Enable or disable turbo I/O mode, for special use cases and
+          very well tested hardware designs.
+  @returns  nothing
+*/
+/**************************************************************************/
+void NoteTurboIO(bool enable)
+{
+    cardTurboIO = enable;
 }
