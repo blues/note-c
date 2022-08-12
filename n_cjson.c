@@ -2138,6 +2138,16 @@ N_CJSON_PUBLIC(J *) JCreateString(const char *string)
     return item;
 }
 
+N_CJSON_PUBLIC(J *) JCreateStringValue(const char *string)
+{
+    J *item = JNew_Item();
+    if (item != NULL) {
+        item->type = JString;
+        item->valuestring = (char*)cast_away_const(string);
+    }
+    return item;
+}
+
 N_CJSON_PUBLIC(J *) JCreateStringReference(const char *string)
 {
     J *item = JNew_Item();

@@ -323,7 +323,7 @@ bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, u
         return false;
     }
     JB64Encode(stringData, binaryData, binaryDataLen);
-    J *stringItem = JCreateStringReference(stringData);
+    J *stringItem = JCreateStringValue(stringData);
     if (stringItem == NULL) {
         _Free(stringData);
         return false;

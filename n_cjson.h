@@ -211,6 +211,7 @@ N_CJSON_PUBLIC(J *) JCreateObject(void);
 
 /* Create a string where valuestring references a string so
  * it will not be freed by JDelete */
+N_CJSON_PUBLIC(J *) JCreateStringValue(const char *string);
 N_CJSON_PUBLIC(J *) JCreateStringReference(const char *string);
 /* Create an object/arrray that only references it's elements so
  * they will not be freed by JDelete */
