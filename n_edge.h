@@ -65,11 +65,22 @@ typedef struct {
     uint32_t motionCount;
 } MotionPoint;
 
+// LogData is the data structure that we use when capturing hub.log information
+typedef struct {
+#define LOGDATA_MESSAGE "message"
+    char message[256];
+#define LOGDATA_METHOD "method"
+    char method[64];
+#define LOGDATA_ALERT "alert"
+    bool alert;
+} LogData;
+
 // Format of the edge entry which is the dequeued note body
 #define	EDGE_NOTEFILE				"_edge.qi"
 #define EDGETYPE_SCAN				"scan"
 #define EDGETYPE_TRACKPOINT			"track"
 #define EDGETYPE_MOTIONPOINT		"motion"
+#define EDGETYPE_LOG				"log"
 typedef struct {
 #define EDGE_TYPE "type"
     char edgeType[32];
