@@ -63,6 +63,8 @@ typedef struct {
     char orientation[20];
 #define MOTIONPOINT_MOTION_COUNT "motion"
     uint32_t motionCount;
+#define MOTIONPOINT_TILT_COUNT "tilt"
+    uint32_t tiltCount;
 } MotionPoint;
 
 // LogData is the data structure that we use when capturing hub.log information
