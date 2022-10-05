@@ -93,14 +93,12 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse)
         }
     }
 
-    // Done with the bus
-    _UnlockI2C();
-
     // Free the transmit buffer
     _Free(transmitBuf);
 
     // If no reply expected, we're done
     if (jsonResponse == NULL) {
+        _UnlockI2C();
         return NULL;
     }
 
@@ -114,11 +112,9 @@ const char *i2cNoteTransaction(char *json, char **jsonResponse)
 #ifdef ERRDBG
         _Debug("transaction: jsonbuf malloc failed\n");
 #endif
+        _UnlockI2C();
         return ERRSTR("insufficient memory",c_mem);
     }
-
-    // Lock over the entire transaction
-    _LockI2C();
 
     // Loop, building a reply buffer out of received chunks.  We'll build the reply in the same
     // buffer we used to transmit, and will grow it as necessary.
