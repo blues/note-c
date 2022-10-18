@@ -251,6 +251,7 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
             // Free error response
             if (rsp != NULL) {
                 JDelete(rsp);
+                rsp = NULL;
             }
         } else {
 
