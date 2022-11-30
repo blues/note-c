@@ -7,11 +7,25 @@ This library allows you to control a Notecard by writing a C
 or C++ program. Your program may programmatically configure Notecard and send
 Notes to [Notehub.io][notehub].
 
-This library is used by the [note-arduino library][note-arduino], which includes it as a git submodule.
+This library is used by the [note-arduino library][note-arduino], which includes
+it as a git submodule.
 
 ## Documentation
 
 The documentation for this library can be found [here](https://blues.github.io/note-c/html/index.html).
+
+## CMake
+
+The CMake build system is primarily here for testing note-c on a development
+machine. You can use it to generate a static or shared note-c library, but
+embedded users will typically just compile all the .c source files into their
+firmware image. For more on testing, see tests/README.md.
+
+### Options
+
+- BUILD_TESTS: Build the tests. See the tests directory. Default: ON.
+- BUILD_SHARED_LIBS: Build the note-c library as shared instead of static. This
+reduces the total size of the compiled tests. Default: ON.
 
 ## Contributing
 
