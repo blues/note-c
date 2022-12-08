@@ -118,8 +118,15 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
         }
         ch = _SerialReceive();
 
-        // Because serial I/O can be error-prone, catch common bad data early, knowing that we only accept ASCII
-        if (ch == 0 || (ch & 0x80) != 0) {
+        // Because serial I/O can be error-prone, catch common bad data early
+        //
+        // UTF-8 can contain any value from 0-255 and each character can be
+        // up to 4 bytes long. We should not see any \0's though.
+        // In multi-byte encoding, the 2nd/3rd/4th bytes are always non-zero
+        //
+        // See https://en.wikipedia.org/wiki/UTF-8#Encoding
+        //
+        if (ch == 0) {
 #ifdef ERRDBG
             _Debug("invalid data received on serial port from notecard\n");
 #endif
