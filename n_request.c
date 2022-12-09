@@ -364,7 +364,7 @@ J *NoteTransaction(J *req)
     // Lock
     _LockNote();
 
-    // Serialize the JSON requet
+    // Serialize the JSON request
     char *json = JPrintUnformatted(req);
     if (json == NULL) {
         J *rsp = errDoc(ERRSTR("can't convert to JSON",c_bad));
@@ -376,8 +376,8 @@ J *NoteTransaction(J *req)
         _Debugln(json);
     }
 
-    // Pertform the transaction
-    char *responseJSON;
+    // Perform the transaction
+    char *responseJSON = NULL;
     const char *errStr;
     if (noResponseExpected) {
         errStr = _Transaction(json, NULL);
@@ -405,9 +405,11 @@ J *NoteTransaction(J *req)
     // Parse the reply from the card on the input stream
     J *rspdoc = JParse(responseJSON);
     if (rspdoc == NULL) {
-        _Debug("invalid JSON: ");
-        _Debug(responseJSON);
-        _Free(responseJSON);
+        if (responseJSON != NULL) {
+            _Debug("invalid JSON: ");
+            _Debug(responseJSON);
+            _Free(responseJSON);
+        }
         J *rsp = errDoc(ERRSTR("unrecognized response from card {io}",c_iobad));
         _UnlockNote();
         return rsp;
