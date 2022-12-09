@@ -32,7 +32,9 @@ endif(BUILD_CATCH)
 
 include(Catch)
 
-function(add_test TEST_NAME)
+set(TEST_TARGETS "")
+
+macro(add_test TEST_NAME)
     add_executable(
         ${TEST_NAME}
         ${TEST_NAME}.cpp
@@ -47,8 +49,39 @@ function(add_test TEST_NAME)
         Catch2::Catch2WithMain
     )
 
+    list(APPEND TEST_TARGETS ${TEST_NAME})
+
     catch_discover_tests(${TEST_NAME})
-endfunction()
+endmacro(add_test)
 
 add_test(NoteTransaction_test)
 add_test(NoteRequest_test)
+
+if(COVERAGE)
+    find_program(LCOV lcov REQUIRED)
+    message(STATUS "Found lcov: ${LCOV}")
+
+    target_compile_options(note_c PUBLIC --coverage -g -O0)
+    target_link_libraries(note_c gcov)
+
+    # Create the coverage directory and run ctest.
+    add_custom_target(
+        coverage
+        COMMAND mkdir -p coverage
+        COMMAND ${CMAKE_CTEST_COMMAND}
+        WORKING_DIRECTORY ${CMAKE_CURENT_BINARY_DIR}
+    )
+    # Run lcov to produce a coverage report in the coverage directory.
+    add_custom_command(
+        TARGET coverage POST_BUILD
+        COMMAND lcov --capture --no-external --directory ${NOTE_C_SRC_DIR} --output-file lcov.info --rc lcov_branch_coverage=1
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage
+    )
+    # The tests have to be built before we can generate the coverage report.
+    add_dependencies(coverage ${TEST_TARGETS})
+    # Delete the coverage directory when make clean is run.
+    set_property(
+        DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/coverage
+    )
+endif(COVERAGE)

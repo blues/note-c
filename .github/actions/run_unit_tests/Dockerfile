@@ -16,6 +16,7 @@ RUN ["dash", "-c", "\
      build-essential \
      ca-certificates \
      curl \
+     lcov \
  && apt-get clean \
  && apt-get purge \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
@@ -39,4 +40,4 @@ RUN ["dash", "-c", "\
  && rm -rf Catch2-3.2.1  v3.2.1.tar.gz \
 "]
 
-ENTRYPOINT ["./tests/scripts/run_unit_tests.sh"]
+ENTRYPOINT ["./tests/scripts/run_unit_tests.sh", "--coverage"]
