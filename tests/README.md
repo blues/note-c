@@ -23,6 +23,8 @@ ctest
 ```
 
 Alternatively, tests/scripts/run_unit_tests.sh will do all these steps for you.
+This script is also used by our CI pipeline (see the Dockerfile in
+.github/actions/run_unit_tests).
 
 ### Notes
 
@@ -35,3 +37,23 @@ and building in there is mandatory.
 installed verison. Default: OFF.
 - COVERAGE: Adds the target `coverage` to the build. Requires lcov. To generate
 a coverage report, run `make coverage`.
+
+## Development
+
+Each function in the API gets its own test executable in tests/src. The naming
+convention is FunctionName_test.cpp. Any functions that are mocked need to be
+added to the list of mocked functions in the root CMakeLists.txt (see
+MOCKED_FNS). Once written, the test needs to be added to tests/CMakeLists.txt
+with a call to the `add_test` macro.
+
+Assuming you ran cmake with coverage enabled (`-DCOVERAGE=1`), ran `make
+coverage`, and are in the build directory, you can view the coverage report as
+HTML with:
+
+```sh
+cd tests/coverage
+genhtml lcov.info -o tmp
+```
+
+This will generate HTML under tests/coverage/tmp. Open index.html in your
+browser to view the report.
