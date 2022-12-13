@@ -17,9 +17,10 @@
  *
  */
 
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
+
 #include "n_lib.h"
 
 //**************************************************************************/
@@ -27,16 +28,16 @@
   @brief  Show malloc operations for debugging in very low mem environments.
 */
 /**************************************************************************/
-#define NOTE_SHOW_MALLOC  false
+#define NOTE_SHOW_MALLOC false
 #if NOTE_SHOW_MALLOC
 #include <string.h>
 void *malloc_show(size_t len);
 #endif
 
 // Which I/O port to use
-#define interfaceNone       0
-#define interfaceSerial     1
-#define interfaceI2C        2
+#define interfaceNone 0
+#define interfaceSerial 1
+#define interfaceI2C 2
 
 // Externalized Hooks
 //**************************************************************************/
@@ -161,8 +162,8 @@ i2cTransmitFn hookI2CTransmit = NULL;
 i2cReceiveFn hookI2CReceive = NULL;
 
 // Internal hooks
-typedef bool (*nNoteResetFn) (void);
-typedef const char * (*nTransactionFn) (char *, char **);
+typedef bool (*nNoteResetFn)(void);
+typedef const char *(*nTransactionFn)(char *, char **);
 static nNoteResetFn notecardReset = NULL;
 static nTransactionFn notecardTransaction = NULL;
 
@@ -177,7 +178,8 @@ static nTransactionFn notecardTransaction = NULL;
   @param   millisfn  The default 'millis' function to use.
 */
 /**************************************************************************/
-void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn)
+void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn,
+                      getMsFn millisfn)
 {
     if (hookMalloc == NULL) {
         hookMalloc = mallocfn;
@@ -204,7 +206,8 @@ void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMs
   @param   millisfn  The platform-specific 'millis' function to use.
 */
 /**************************************************************************/
-void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn)
+void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn,
+               getMsFn millisfn)
 {
     hookMalloc = mallocfn;
     hookFree = freefn;
@@ -218,10 +221,7 @@ void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn mill
   @param   fn  A function pointer to call for debug output.
 */
 /**************************************************************************/
-void NoteSetFnDebugOutput(debugOutputFn fn)
-{
-    hookDebugOutput = fn;
-}
+void NoteSetFnDebugOutput(debugOutputFn fn) { hookDebugOutput = fn; }
 
 //**************************************************************************/
 /*!
@@ -230,10 +230,7 @@ void NoteSetFnDebugOutput(debugOutputFn fn)
   provided.
 */
 /**************************************************************************/
-bool NoteIsDebugOutputActive()
-{
-    return hookDebugOutput != NULL;
-}
+bool NoteIsDebugOutputActive() { return hookDebugOutput != NULL; }
 
 //**************************************************************************/
 /*!
@@ -246,7 +243,8 @@ bool NoteIsDebugOutputActive()
   to use.
 */
 /**************************************************************************/
-void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, mutexFn unlockNotefn)
+void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn,
+                    mutexFn unlockNotefn)
 {
     hookLockI2C = lockI2Cfn;
     hookUnlockI2C = unlockI2Cfn;
@@ -264,7 +262,8 @@ void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, 
   @param   receivefn  The platform-specific Serial receive function to use.
 */
 /**************************************************************************/
-void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn transmitfn, serialAvailableFn availfn, serialReceiveFn receivefn)
+void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn transmitfn,
+                     serialAvailableFn availfn, serialReceiveFn receivefn)
 {
     hookActiveInterface = interfaceSerial;
 
@@ -289,7 +288,8 @@ void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn transmitfn, serialA
   @param   receivefn  The platform-specific I2C receive function to use.
 */
 /**************************************************************************/
-void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn, i2cTransmitFn transmitfn, i2cReceiveFn receivefn)
+void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn,
+                  i2cTransmitFn transmitfn, i2cReceiveFn receivefn)
 {
     i2cAddress = i2caddress;
     i2cMax = i2cmax;
@@ -311,12 +311,10 @@ void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn, i2cT
 /**************************************************************************/
 void NoteSetFnDisabled()
 {
-
     hookActiveInterface = interfaceNone;
 
     notecardReset = NULL;
     notecardTransaction = NULL;
-
 }
 
 // Runtime hook wrappers
@@ -404,12 +402,13 @@ void htoa32(uint32_t n, char *p);
 void htoa32(uint32_t n, char *p)
 {
     int i;
-    for (i=0; i<8; i++) {
+    for (i = 0; i < 8; i++) {
         uint32_t nibble = (n >> 28) & 0xff;
         n = n << 4;
         if (nibble >= 10) {
-            *p++ = 'A' + (nibble-10);
-        } else {
+            *p++ = 'A' + (nibble - 10);
+        }
+        else {
             *p++ = '0' + nibble;
         }
     }
@@ -424,7 +423,8 @@ void *malloc_show(size_t len)
     void *p = hookMalloc(len);
     if (p == NULL) {
         hookDebugOutput("FAIL");
-    } else {
+    }
+    else {
         htoa32((uint32_t)p, str);
         hookDebugOutput(str);
     }
@@ -526,10 +526,10 @@ void NoteUnlockNote()
 const char *NoteActiveInterface()
 {
     switch (hookActiveInterface) {
-    case interfaceSerial:
-        return "serial";
-    case interfaceI2C:
-        return "i2c";
+        case interfaceSerial:
+            return "serial";
+        case interfaceI2C:
+            return "i2c";
     }
     return "unknown";
 }
@@ -617,7 +617,8 @@ bool NoteI2CReset(uint16_t DevAddress)
   if the bus is not active.
 */
 /**************************************************************************/
-const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size)
+const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t *pBuffer,
+                            uint16_t Size)
 {
     if (hookActiveInterface == interfaceI2C && hookI2CTransmit != NULL) {
         return hookI2CTransmit(DevAddress, pBuffer, Size);
@@ -636,7 +637,8 @@ const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size
   if the bus is not active.
 */
 /**************************************************************************/
-const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *available)
+const char *NoteI2CReceive(uint16_t DevAddress, uint8_t *pBuffer, uint16_t Size,
+                           uint32_t *available)
 {
     if (hookActiveInterface == interfaceI2C && hookI2CReceive != NULL) {
         return hookI2CReceive(DevAddress, pBuffer, Size, available);
@@ -664,10 +666,7 @@ uint32_t NoteI2CAddress()
   @param   i2caddress the I2C address to use for the Notecard.
 */
 /**************************************************************************/
-void NoteSetI2CAddress(uint32_t i2caddress)
-{
-    i2cAddress = i2caddress;
-}
+void NoteSetI2CAddress(uint32_t i2caddress) { i2cAddress = i2caddress; }
 
 //**************************************************************************/
 /*!
@@ -678,8 +677,9 @@ void NoteSetI2CAddress(uint32_t i2caddress)
 /**************************************************************************/
 uint32_t NoteI2CMax()
 {
-    // Many Arduino libraries (such as ESP32) have a limit less than 32, so if the max isn't specified
-    // we must assume the worst and segment the I2C messages into very tiny chunks.
+    // Many Arduino libraries (such as ESP32) have a limit less than 32, so if
+    // the max isn't specified we must assume the worst and segment the I2C
+    // messages into very tiny chunks.
     if (i2cMax == 0) {
         return NOTE_I2C_MAX_DEFAULT;
     }
@@ -690,12 +690,12 @@ uint32_t NoteI2CMax()
     return i2cMax;
 }
 
-
 //**************************************************************************/
 /*!
   @brief  Perform a hard reset on the Notecard using the platform-specific
   hook.
-  @returns A boolean indicating whether the Notecard has been reset successfully.
+  @returns A boolean indicating whether the Notecard has been reset
+  successfully.
 */
 /**************************************************************************/
 bool NoteHardReset()
@@ -705,7 +705,6 @@ bool NoteHardReset()
     }
     return notecardReset();
 }
-
 
 //**************************************************************************/
 /*!

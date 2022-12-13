@@ -46,24 +46,19 @@ static J *errDoc(const char *errmsg)
     @brief  Suppress showing transaction details.
 */
 /**************************************************************************/
-void NoteSuspendTransactionDebug()
-{
-    suppressShowTransactions++;
-}
+void NoteSuspendTransactionDebug() { suppressShowTransactions++; }
 
 /**************************************************************************/
 /*!
     @brief  Resume showing transaction details.
 */
 /**************************************************************************/
-void NoteResumeTransactionDebug()
-{
-    suppressShowTransactions--;
-}
+void NoteResumeTransactionDebug() { suppressShowTransactions--; }
 
 /**************************************************************************/
 /*!
-    @brief  Create a new request object to populate before sending to the Notecard.
+    @brief  Create a new request object to populate before sending to the
+  Notecard.
     @param   request is The name of the request, for example `hub.set`.
   @returns a `J` cJSON object with the request name pre-populated.
 */
@@ -79,7 +74,8 @@ J *NoteNewRequest(const char *request)
 
 /**************************************************************************/
 /*!
-    @brief  Create a new command object to populate before sending to the Notecard.
+    @brief  Create a new command object to populate before sending to the
+  Notecard.
     @param   request is the name of the command, for example `hub.set`.
   @returns a `J` cJSON object with the request name pre-populated.
 */
@@ -106,7 +102,8 @@ J *NoteNewCommand(const char *request)
 /**************************************************************************/
 bool NoteRequest(J *req)
 {
-    // Exit if null request.  This allows safe execution of the form NoteRequest(NoteNewRequest("xxx"))
+    // Exit if null request.  This allows safe execution of the form
+    // NoteRequest(NoteNewRequest("xxx"))
     if (req == NULL) {
         return false;
     }
@@ -127,8 +124,8 @@ bool NoteRequest(J *req)
 /*!
     @brief  Send a request to the Notecard.
             Frees the request structure from memory after sending the request.
-            Retries the request for up to the specified timeoutSeconds if there is
-            no response, or if the response indicates an io error.
+            Retries the request for up to the specified timeoutSeconds if there
+  is no response, or if the response indicates an io error.
     @param   req
                The `J` cJSON request object.
              timeoutSeconds
@@ -141,7 +138,8 @@ bool NoteRequest(J *req)
 /**************************************************************************/
 bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds)
 {
-    // Exit if null request.  This allows safe execution of the form NoteRequest(NoteNewRequest("xxx"))
+    // Exit if null request.  This allows safe execution of the form
+    // NoteRequest(NoteNewRequest("xxx"))
     if (req == NULL) {
         return false;
     }
@@ -151,20 +149,19 @@ bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds)
     // Calculate expiry time in milliseconds
     uint32_t expiresMs = _GetMs() + (timeoutSeconds * 1000);
 
-    while(true) {
+    while (true) {
         // Execute the transaction
         rsp = NoteTransaction(req);
 
         // Loop if there is no response, or if there is an io error
-        if ( (rsp == NULL) || JContainsString(rsp, c_err, c_ioerr)) {
-
+        if ((rsp == NULL) || JContainsString(rsp, c_err, c_ioerr)) {
             // Free error response
             if (rsp != NULL) {
                 JDelete(rsp);
                 rsp = NULL;
             }
-        } else {
-
+        }
+        else {
             // Exit loop on non-null response without io error
             break;
         }
@@ -200,7 +197,8 @@ bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds)
 /**************************************************************************/
 J *NoteRequestResponse(J *req)
 {
-    // Exit if null request.  This allows safe execution of the form NoteRequestResponse(NoteNewRequest("xxx"))
+    // Exit if null request.  This allows safe execution of the form
+    // NoteRequestResponse(NoteNewRequest("xxx"))
     if (req == NULL) {
         return NULL;
     }
@@ -219,8 +217,8 @@ J *NoteRequestResponse(J *req)
 /*!
     @brief  Send a request to the Notecard and return the response.
             Frees the request structure from memory after sending the request.
-            Retries the request for up to the specified timeoutSeconds if there is
-            no response, or if the response indicates an io error.
+            Retries the request for up to the specified timeoutSeconds if there
+  is no response, or if the response indicates an io error.
     @param   req
                The `J` cJSON request object.
              timeoutSeconds
@@ -232,7 +230,8 @@ J *NoteRequestResponse(J *req)
 /**************************************************************************/
 J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
 {
-    // Exit if null request.  This allows safe execution of the form NoteRequestResponse(NoteNewRequest("xxx"))
+    // Exit if null request.  This allows safe execution of the form
+    // NoteRequestResponse(NoteNewRequest("xxx"))
     if (req == NULL) {
         return NULL;
     }
@@ -242,20 +241,19 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
     // Calculate expiry time in milliseconds
     uint32_t expiresMs = _GetMs() + (timeoutSeconds * 1000);
 
-    while(true) {
+    while (true) {
         // Execute the transaction
         rsp = NoteTransaction(req);
 
         // Loop if there is no response, or if there is an io error
-        if ( (rsp == NULL) || JContainsString(rsp, c_err, c_ioerr)) {
-
+        if ((rsp == NULL) || JContainsString(rsp, c_err, c_ioerr)) {
             // Free error response
             if (rsp != NULL) {
                 JDelete(rsp);
                 rsp = NULL;
             }
-        } else {
-
+        }
+        else {
             // Exit loop on non-null response without io error
             break;
         }
@@ -289,7 +287,6 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
 /**************************************************************************/
 char *NoteRequestResponseJSON(char *reqJSON)
 {
-
     // Parse the incoming JSON string
     J *req = JParse(reqJSON);
     if (req == NULL) {
@@ -311,7 +308,6 @@ char *NoteRequestResponseJSON(char *reqJSON)
 
     // Done
     return json;
-
 }
 
 /**************************************************************************/
@@ -327,7 +323,6 @@ char *NoteRequestResponseJSON(char *reqJSON)
 /**************************************************************************/
 J *NoteTransaction(J *req)
 {
-
     // Validate in case of memory failure of the requestor
     if (req == NULL) {
         return NULL;
@@ -337,12 +332,13 @@ J *NoteTransaction(J *req)
     const char *reqType = JGetString(req, "req");
     const char *cmdType = JGetString(req, "cmd");
 
-    // Add the user agent object only when we're doing a hub.set and only when we're
-    // specifying the product UID.  The intent is that we only piggyback user agent
-    // data when the host is initializing the Notecard, as opposed to every time
-    // the host does a hub.set to change mode.
+    // Add the user agent object only when we're doing a hub.set and only when
+    // we're specifying the product UID.  The intent is that we only piggyback
+    // user agent data when the host is initializing the Notecard, as opposed to
+    // every time the host does a hub.set to change mode.
 #ifndef NOTE_DISABLE_USER_AGENT
-    if (!JIsPresent(req, "body") && (strcmp(reqType, "hub.set") == 0) && JIsPresent(req, "product")) {
+    if (!JIsPresent(req, "body") && (strcmp(reqType, "hub.set") == 0) &&
+        JIsPresent(req, "product")) {
         J *body = NoteUserAgent();
         if (body != NULL) {
             JAddItemToObject(req, "body", body);
@@ -350,7 +346,8 @@ J *NoteTransaction(J *req)
     }
 #endif
 
-    // Determine whether or not a response will be expected, by virtue of "cmd" being present
+    // Determine whether or not a response will be expected, by virtue of "cmd"
+    // being present
     bool noResponseExpected = (reqType[0] == '\0' && cmdType[0] != '\0');
 
     // If a reset of the module is required for any reason, do it now.
@@ -367,7 +364,7 @@ J *NoteTransaction(J *req)
     // Serialize the JSON request
     char *json = JPrintUnformatted(req);
     if (json == NULL) {
-        J *rsp = errDoc(ERRSTR("can't convert to JSON",c_bad));
+        J *rsp = errDoc(ERRSTR("can't convert to JSON", c_bad));
         _UnlockNote();
         return rsp;
     }
@@ -381,7 +378,8 @@ J *NoteTransaction(J *req)
     const char *errStr;
     if (noResponseExpected) {
         errStr = _Transaction(json, NULL);
-    } else {
+    }
+    else {
         errStr = _Transaction(json, &responseJSON);
     }
 
@@ -410,16 +408,18 @@ J *NoteTransaction(J *req)
             _Debug(responseJSON);
             _Free(responseJSON);
         }
-        J *rsp = errDoc(ERRSTR("unrecognized response from card {io}",c_iobad));
+        J *rsp =
+            errDoc(ERRSTR("unrecognized response from card {io}", c_iobad));
         _UnlockNote();
         return rsp;
     }
 
     // Debug
     if (suppressShowTransactions == 0) {
-        if (responseJSON[strlen(responseJSON)-1] == '\n') {
+        if (responseJSON[strlen(responseJSON) - 1] == '\n') {
             _Debug(responseJSON);
-        } else {
+        }
+        else {
             _Debugln(responseJSON);
         }
     }
@@ -432,7 +432,6 @@ J *NoteTransaction(J *req)
 
     // Done
     return rspdoc;
-
 }
 
 /**************************************************************************/
@@ -441,10 +440,7 @@ J *NoteTransaction(J *req)
             a given port.
 */
 /**************************************************************************/
-void NoteResetRequired()
-{
-    resetRequired = true;
-}
+void NoteResetRequired() { resetRequired = true; }
 
 /**************************************************************************/
 /*!
@@ -487,12 +483,12 @@ bool NoteErrorContains(const char *errstr, const char *errtype)
 void NoteErrorClean(char *begin)
 {
     while (true) {
-        char *end = &begin[strlen(begin)+1];
+        char *end = &begin[strlen(begin) + 1];
         char *beginBrace = strchr(begin, '{');
         if (beginBrace == NULL) {
             break;
         }
-        if (beginBrace>begin && *(beginBrace-1) == ' ') {
+        if (beginBrace > begin && *(beginBrace - 1) == ' ') {
             beginBrace--;
         }
         char *endBrace = strchr(beginBrace, '}');
@@ -500,6 +496,6 @@ void NoteErrorClean(char *begin)
             break;
         }
         char *afterBrace = endBrace + 1;
-        memmove(beginBrace, afterBrace, end-afterBrace);
+        memmove(beginBrace, afterBrace, end - afterBrace);
     }
 }

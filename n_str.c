@@ -20,6 +20,7 @@
  */
 
 #include <string.h>
+
 #include "note.h"
 
 /*
@@ -49,13 +50,13 @@ __attribute__((weak)) size_t strlcpy(char *dst, const char *src, size_t siz)
     /* Not enough room in dst, add NUL and traverse rest of src */
     if (n == 0) {
         if (siz != 0) {
-            *d = '\0';    /* NUL-terminate dst */
+            *d = '\0'; /* NUL-terminate dst */
         }
         while (*s++)
             ;
     }
 
-    return(s - src - 1);    /* count does not include NUL */
+    return (s - src - 1); /* count does not include NUL */
 }
 
 /*
@@ -84,7 +85,7 @@ __attribute__((weak)) size_t strlcat(char *dst, const char *src, size_t siz)
     n = siz - dlen;
 
     if (n == 0) {
-        return(dlen + strlen(s));
+        return (dlen + strlen(s));
     }
     while (*s != '\0') {
         if (n != 1) {
@@ -95,5 +96,5 @@ __attribute__((weak)) size_t strlcat(char *dst, const char *src, size_t siz)
     }
     *d = '\0';
 
-    return(dlen + (s - src));    /* count does not include NUL */
+    return (dlen + (s - src)); /* count does not include NUL */
 }

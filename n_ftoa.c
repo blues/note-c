@@ -18,20 +18,20 @@
  * modified) versions of this file, nor is leaving this notice intact mandatory.
  */
 
+#include <math.h>
+#include <stdint.h>
 
 #include "n_lib.h"
-#include <stdint.h>
-#include <math.h>
 
-#define	PRINT_F_QUOTE		0x0001
-#define	PRINT_F_TYPE_E		0x0002
-#define	PRINT_F_TYPE_G		0x0004
-#define	PRINT_F_NUM			0x0008
-#define	PRINT_F_PLUS		0x0010
-#define	PRINT_F_MINUS		0x0020
-#define	PRINT_F_ZERO		0x0040
-#define	PRINT_F_SPACE		0x0080
-#define	PRINT_F_UP			0x0100
+#define PRINT_F_QUOTE 0x0001
+#define PRINT_F_TYPE_E 0x0002
+#define PRINT_F_TYPE_G 0x0004
+#define PRINT_F_NUM 0x0008
+#define PRINT_F_PLUS 0x0010
+#define PRINT_F_MINUS 0x0020
+#define PRINT_F_ZERO 0x0040
+#define PRINT_F_SPACE 0x0080
+#define PRINT_F_UP 0x0100
 
 static void fmtstr(char *, size_t *, size_t, const char *, int, int, int);
 static void fmtflt(char *, size_t *, size_t, JNUMBER, int, int, int, int *);
@@ -42,18 +42,17 @@ static int convert(uintmax_t, char *, size_t, int, int);
 static uintmax_t cast(JNUMBER);
 static uintmax_t myround(JNUMBER);
 static JNUMBER mypow10(int);
-#define OUTCHAR(str, len, size, ch) \
-do { \
-	if (len + 1 < size) \
-		str[len] = ch; \
-	(len)++; \
-} while (0)
+#define OUTCHAR(str, len, size, ch)        \
+    do {                                   \
+        if (len + 1 < size) str[len] = ch; \
+        (len)++;                           \
+    } while (0)
 
 // Convert a JNUMBER into a null-terminated text string.  Note that buf must
 // be pointing at a buffer of JNTOA_MAX length, which is defined so that it
 // includes enough space for the null terminator, so there's no need to
 // have a buffer of JNTOA_MAX+1.
-char * JNtoA(JNUMBER f, char * buf, int precision)
+char *JNtoA(JNUMBER f, char *buf, int precision)
 {
     int overflow = 0;
     size_t len = 0;
@@ -69,9 +68,8 @@ char * JNtoA(JNUMBER f, char * buf, int precision)
     return buf;
 }
 
-static void
-fmtflt(char *str, size_t *len, size_t size, JNUMBER fvalue, int width,
-       int precision, int flags, int *overflow)
+static void fmtflt(char *str, size_t *len, size_t size, JNUMBER fvalue,
+                   int width, int precision, int flags, int *overflow)
 {
     JNUMBER ufvalue;
     uintmax_t intpart;
@@ -80,7 +78,7 @@ fmtflt(char *str, size_t *len, size_t size, JNUMBER fvalue, int width,
     const char *infnan = NULL;
     char iconvert[JNTOA_MAX];
     char fconvert[JNTOA_MAX];
-    char econvert[4];	/* "e-12" (without nul-termination). */
+    char econvert[4]; /* "e-12" (without nul-termination). */
     char esign = 0;
     char sign = 0;
     int leadfraczeros = 0;
@@ -106,15 +104,18 @@ fmtflt(char *str, size_t *len, size_t size, JNUMBER fvalue, int width,
 
     if (fvalue < 0.0) {
         sign = '-';
-    } else if (flags & PRINT_F_PLUS) {	/* Do a sign. */
+    }
+    else if (flags & PRINT_F_PLUS) { /* Do a sign. */
         sign = '+';
-    } else if (flags & PRINT_F_SPACE) {
+    }
+    else if (flags & PRINT_F_SPACE) {
         sign = ' ';
     }
 
     if (isnan(fvalue)) {
         infnan = (flags & PRINT_F_UP) ? "NAN" : "nan";
-    } else if (isinf(fvalue)) {
+    }
+    else if (isinf(fvalue)) {
         infnan = (flags & PRINT_F_UP) ? "INF" : "inf";
     }
 
@@ -166,25 +167,25 @@ again:
      * minus one) past the decimal point due to our conversion method.
      */
     switch (sizeof(uintmax_t)) {
-    case 16:
-        if (precision > 38) {
-            precision = 38;
-        }
-        break;
-    case 8:
-        if (precision > 19) {
-            precision = 19;
-        }
-        break;
-    default:
-        if (precision > 9) {
-            precision = 9;
-        }
-        break;
+        case 16:
+            if (precision > 38) {
+                precision = 38;
+            }
+            break;
+        case 8:
+            if (precision > 19) {
+                precision = 19;
+            }
+            break;
+        default:
+            if (precision > 9) {
+                precision = 9;
+            }
+            break;
     }
 
     ufvalue = (fvalue >= 0.0) ? fvalue : -fvalue;
-    if (estyle) {	/* We want exactly one integer digit. */
+    if (estyle) { /* We want exactly one integer digit. */
         ufvalue /= mypow10(exponent);
     }
 
@@ -241,8 +242,8 @@ again:
      *
      * Note that we had decremented the precision by one.
      */
-    if (flags & PRINT_F_TYPE_G && estyle &&
-            precision + 1 > exponent && exponent >= -4) {
+    if (flags & PRINT_F_TYPE_G && estyle && precision + 1 > exponent &&
+        exponent >= -4) {
         precision -= exponent;
         estyle = 0;
         goto again;
@@ -252,7 +253,8 @@ again:
         if (exponent < 0) {
             exponent = -exponent;
             esign = '-';
-        } else {
+        }
+        else {
             esign = '+';
         }
 
@@ -277,18 +279,18 @@ again:
 
     /* Convert the integer part and the fractional part. */
     ipos = convert(intpart, iconvert, sizeof(iconvert), 10, 0);
-    if (fracpart != 0) {	/* convert() would return 1 if fracpart == 0. */
+    if (fracpart != 0) { /* convert() would return 1 if fracpart == 0. */
         fpos = convert(fracpart, fconvert, sizeof(fconvert), 10, 0);
     }
 
     leadfraczeros = precision - fpos;
 
     if (omitzeros) {
-        if (fpos > 0)	/* Omit trailing fractional part zeros. */
+        if (fpos > 0) /* Omit trailing fractional part zeros. */
             while (omitcount < fpos && fconvert[omitcount] == '0') {
                 omitcount++;
             }
-        else {	/* The fractional part is zero, omit it completely. */
+        else { /* The fractional part is zero, omit it completely. */
             omitcount = precision;
             leadfraczeros = 0;
         }
@@ -302,17 +304,17 @@ again:
     if (precision > 0 || flags & PRINT_F_NUM) {
         emitpoint = 1;
     }
-    if (separators) {	/* Get the number of group separators we'll print. */
+    if (separators) { /* Get the number of group separators we'll print. */
         separators = getnumsep(ipos);
     }
 
-    padlen = width                  /* Minimum field width. */
-             - ipos                      /* Number of integer digits. */
-             - epos                      /* Number of exponent characters. */
-             - precision                 /* Number of fractional digits. */
-             - separators                /* Number of group separators. */
-             - (emitpoint ? 1 : 0)       /* Will we print a decimal point? */
-             - ((sign != 0) ? 1 : 0);    /* Will we print a sign character? */
+    padlen = width                    /* Minimum field width. */
+             - ipos                   /* Number of integer digits. */
+             - epos                   /* Number of exponent characters. */
+             - precision              /* Number of fractional digits. */
+             - separators             /* Number of group separators. */
+             - (emitpoint ? 1 : 0)    /* Will we print a decimal point? */
+             - ((sign != 0) ? 1 : 0); /* Will we print a sign character? */
 
     if (padlen < 0) {
         padlen = 0;
@@ -322,77 +324,78 @@ again:
      * C99 says: "If the `0' and `-' flags both appear, the `0' flag is
      * ignored." (7.19.6.1, 6)
      */
-    if (flags & PRINT_F_MINUS) {	/* Left justifty. */
+    if (flags & PRINT_F_MINUS) { /* Left justifty. */
         padlen = -padlen;
-    } else if (flags & PRINT_F_ZERO && padlen > 0) {
-        if (sign != 0) {	/* Sign. */
+    }
+    else if (flags & PRINT_F_ZERO && padlen > 0) {
+        if (sign != 0) { /* Sign. */
             OUTCHAR(str, *len, size, sign);
             sign = 0;
         }
-        while (padlen > 0) {	/* Leading zeros. */
+        while (padlen > 0) { /* Leading zeros. */
             OUTCHAR(str, *len, size, '0');
             padlen--;
         }
     }
-    while (padlen > 0) {	/* Leading spaces. */
+    while (padlen > 0) { /* Leading spaces. */
         OUTCHAR(str, *len, size, ' ');
         padlen--;
     }
-    if (sign != 0) {	/* Sign. */
+    if (sign != 0) { /* Sign. */
         OUTCHAR(str, *len, size, sign);
     }
-    while (ipos > 0) {	/* Integer part. */
+    while (ipos > 0) { /* Integer part. */
         ipos--;
         OUTCHAR(str, *len, size, iconvert[ipos]);
         if (separators > 0 && ipos > 0 && ipos % 3 == 0) {
             printsep(str, len, size);
         }
     }
-    if (emitpoint) {	/* Decimal point. */
+    if (emitpoint) { /* Decimal point. */
         OUTCHAR(str, *len, size, '.');
     }
-    while (leadfraczeros > 0) {	/* Leading fractional part zeros. */
+    while (leadfraczeros > 0) { /* Leading fractional part zeros. */
         OUTCHAR(str, *len, size, '0');
         leadfraczeros--;
     }
-    while (fpos > omitcount) {	/* The remaining fractional part. */
+    while (fpos > omitcount) { /* The remaining fractional part. */
         fpos--;
         OUTCHAR(str, *len, size, fconvert[fpos]);
     }
-    while (epos > 0) {	/* Exponent. */
+    while (epos > 0) { /* Exponent. */
         epos--;
         OUTCHAR(str, *len, size, econvert[epos]);
     }
-    while (padlen < 0) {	/* Trailing spaces. */
+    while (padlen < 0) { /* Trailing spaces. */
         OUTCHAR(str, *len, size, ' ');
         padlen++;
     }
 }
 
-static void fmtstr(char *str, size_t *len, size_t size, const char *value, int width,
-                   int precision, int flags)
+static void fmtstr(char *str, size_t *len, size_t size, const char *value,
+                   int width, int precision, int flags)
 {
-    int padlen, strln;	/* Amount to pad. */
+    int padlen, strln; /* Amount to pad. */
     int noprecision = (precision == -1);
 
-    if (value == NULL) {	/* We're forgiving. */
+    if (value == NULL) { /* We're forgiving. */
         value = "(null)";
     }
 
     /* If a precision was specified, don't read the string past it. */
-    for (strln = 0; value[strln] != '\0' &&
-            (noprecision || strln < precision); strln++) {
+    for (strln = 0; value[strln] != '\0' && (noprecision || strln < precision);
+         strln++) {
         continue;
     }
 
     if ((padlen = width - strln) < 0) {
         padlen = 0;
     }
-    if (flags & PRINT_F_MINUS) {	/* Left justify. */
+    if (flags & PRINT_F_MINUS) { /* Left justify. */
         padlen = -padlen;
     }
 
-    while (padlen > 0) {	/* Leading spaces. */
+    while (padlen > 0) { /* Leading spaces. */
         OUTCHAR(str, *len, size, ' ');
         padlen--;
     }
@@ -400,7 +403,7 @@ static void fmtstr(char *str, size_t *len, size_t size, const char *value, int w
         OUTCHAR(str, *len, size, *value);
         value++;
     }
-    while (padlen < 0) {	/* Trailing spaces. */
+    while (padlen < 0) { /* Trailing spaces. */
         OUTCHAR(str, *len, size, ' ');
         padlen++;
     }

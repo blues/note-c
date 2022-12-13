@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 #include "n_lib.h"
 
 //**************************************************************************/
@@ -43,17 +44,17 @@ bool JIsPresent(J *rsp, const char *field)
 char *JGetString(J *rsp, const char *field)
 {
     if (rsp == NULL) {
-        return (char *) c_nullstring;
+        return (char *)c_nullstring;
     }
     J *item = JGetObjectItem(rsp, field);
     if (item == NULL) {
-        return (char *) c_nullstring;
+        return (char *)c_nullstring;
     }
     if (!JIsString(item)) {
-        return (char *) c_nullstring;
+        return (char *)c_nullstring;
     }
     if (item->valuestring == NULL) {
-        return (char *) c_nullstring;
+        return (char *)c_nullstring;
     }
     return item->valuestring;
 }
@@ -312,13 +313,14 @@ bool JContainsString(J *rsp, const char *field, const char *substr)
     @returns bool. Whether the binary field was set.
 */
 /**************************************************************************/
-bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, uint32_t binaryDataLen)
+bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData,
+                        uint32_t binaryDataLen)
 {
     if (req == NULL) {
         return false;
     }
     unsigned stringDataLen = JB64EncodeLen(binaryDataLen);
-    char *stringData = (char *) _Malloc(stringDataLen);
+    char *stringData = (char *)_Malloc(stringDataLen);
     if (stringData == NULL) {
         return false;
     }
@@ -334,52 +336,57 @@ bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, u
 
 //**************************************************************************/
 /*!
-    @brief  Get binary from an object that is expected to be a Base64-encoded string.
+    @brief  Get binary from an object that is expected to be a Base64-encoded
+   string.
     @param   rsp The JSON object containing the  field.
     @param   fieldName The field to get data from.
-    @param   retBinaryData The binary data object allocated.  (Use standard "free" method to free it.)
-			 Note that, as a convenience to the caller in case the "binary data" is actually a string,
-			 one byte extra is allocated in the return buffer which is filled with '\0'.  This byte
-			 is not included in the retBinaryDataLen length.
+    @param   retBinaryData The binary data object allocated.  (Use standard
+   "free" method to free it.) Note that, as a convenience to the caller in case
+   the "binary data" is actually a string, one byte extra is allocated in the
+   return buffer which is filled with '\0'.  This byte is not included in the
+   retBinaryDataLen length.
     @param   retBinaryDataLen The length of the binary data.
     @returns bool. Whether the binary data was allocated and returned.
 */
 /**************************************************************************/
-bool JGetBinaryFromObject(J *rsp, const char *fieldName, uint8_t **retBinaryData, uint32_t *retBinaryDataLen)
+bool JGetBinaryFromObject(J *rsp, const char *fieldName,
+                          uint8_t **retBinaryData, uint32_t *retBinaryDataLen)
 {
     if (rsp == NULL) {
         return false;
     }
 
-    // In some cases, the caller may already have extracted the string from a different field, in which
-    // case "rsp" will be set to the payload pointer.
+    // In some cases, the caller may already have extracted the string from a
+    // different field, in which case "rsp" will be set to the payload pointer.
     char *payload;
     if (fieldName == NULL) {
-        payload = (char *) rsp;
-    } else {
+        payload = (char *)rsp;
+    }
+    else {
         payload = JGetString(rsp, fieldName);
     }
     if (payload[0] == '\0') {
         return false;
     }
 
-    // Allocate a buffer for the payload, with an extra 'convenience byte' for null termination.  (see below)
-    char *p = (char *) _Malloc(JB64DecodeLen(payload)+1);
+    // Allocate a buffer for the payload, with an extra 'convenience byte' for
+    // null termination.  (see below)
+    char *p = (char *)_Malloc(JB64DecodeLen(payload) + 1);
     if (p == NULL) {
         return false;
     }
     uint32_t actualLen = JB64Decode(p, payload);
 
-    // As a convenience to the caller, null-terminate the returned buffer in case it's a string.
-    // (If we didn't do this, the caller would be forced to alloc another buffer of length+1 and
-    // copy it to add the null terminator, while it's easy for us to do it here.)
+    // As a convenience to the caller, null-terminate the returned buffer in
+    // case it's a string. (If we didn't do this, the caller would be forced to
+    // alloc another buffer of length+1 and copy it to add the null terminator,
+    // while it's easy for us to do it here.)
     p[actualLen] = '\0';
 
     // Return the binary to the caller
     *retBinaryData = (uint8_t *)p;
     *retBinaryDataLen = actualLen;
     return true;
-
 }
 
 //**************************************************************************/
@@ -389,7 +396,7 @@ bool JGetBinaryFromObject(J *rsp, const char *fieldName, uint8_t **retBinaryData
     @returns The number, or and empty string, if NULL.
 */
 /**************************************************************************/
-const char *JGetItemName(const J * item)
+const char *JGetItemName(const J *item)
 {
     if (item == NULL || item->string == NULL) {
         return "";
@@ -420,7 +427,7 @@ void JItoA(long int n, char *s)
         s[i++] = '-';
     }
     s[i] = '\0';
-    for (i = 0, j = strlen(s)-1; i<j; i++, j--) {
+    for (i = 0, j = strlen(s) - 1; i < j; i++, j--) {
         c = s[i];
         s[i] = s[j];
         s[j] = c;
@@ -445,18 +452,19 @@ long int JAtoI(const char *string)
     if (*string == '-') {
         sign = 1;
         string += 1;
-    } else {
+    }
+    else {
         sign = 0;
         if (*string == '+') {
             string += 1;
         }
     }
-    for ( ; ; string += 1) {
+    for (;; string += 1) {
         digit = *string - '0';
         if (digit > 9) {
             break;
         }
-        result = (10*result) + digit;
+        result = (10 * result) + digit;
     }
     if (sign) {
         result = -result;
@@ -473,7 +481,7 @@ long int JAtoI(const char *string)
 /**************************************************************************/
 char *JAllocString(uint8_t *buffer, uint32_t len)
 {
-    char *buf = _Malloc(len+1);
+    char *buf = _Malloc(len + 1);
     if (buf == NULL) {
         return false;
     }
@@ -497,20 +505,20 @@ const char *JType(J *item)
         return "";
     }
     switch (item->type & 0xff) {
-    case JTrue:
-    case JFalse:
-        return "bool";
-    case JNULL:
-        return "null";
-    case JNumber:
-        return "number";
-    case JRaw:
-    case JString:
-        return "string";
-    case JObject:
-        return "object";
-    case JArray:
-        return "array";
+        case JTrue:
+        case JFalse:
+            return "bool";
+        case JNULL:
+            return "null";
+        case JNumber:
+            return "number";
+        case JRaw:
+        case JString:
+            return "string";
+        case JObject:
+            return "object";
+        case JArray:
+            return "array";
     }
     return "invalid";
 }
@@ -534,52 +542,49 @@ int JGetType(J *rsp, const char *field)
         return JTYPE_NOT_PRESENT;
     }
     switch (item->type & 0xff) {
-    case JTrue:
-        return JTYPE_BOOL_TRUE;
-    case JFalse:
-        return JTYPE_BOOL_FALSE;
-    case JNULL:
-        return JTYPE_NULL;
-    case JNumber:
-        if (item->valueint == 0 && item->valuenumber == 0) {
-            return JTYPE_NUMBER_ZERO;
-        }
-        return JTYPE_NUMBER;
-    case JRaw:
-    case JString:
-        v = item->valuestring;
-        if (v == NULL || v[0] == 0) {
-            return JTYPE_STRING_BLANK;
-        }
-        int vlen = strlen(v);
-        char *endstr;
-        JNUMBER value = JAtoN(v, &endstr);
-        if (endstr[0] == 0) {
-            if (value == 0) {
-                return JTYPE_STRING_ZERO;
+        case JTrue:
+            return JTYPE_BOOL_TRUE;
+        case JFalse:
+            return JTYPE_BOOL_FALSE;
+        case JNULL:
+            return JTYPE_NULL;
+        case JNumber:
+            if (item->valueint == 0 && item->valuenumber == 0) {
+                return JTYPE_NUMBER_ZERO;
             }
-            return JTYPE_STRING_NUMBER;
-        }
-        if (vlen == 4 && (
-                    (v[0] == 't' || v[0] == 'T')
-                    && (v[1] == 'r' || v[1] == 'R')
-                    && (v[2] == 'u' || v[2] == 'U')
-                    && (v[3] == 'e' || v[3] == 'E'))) {
-            return JTYPE_STRING_BOOL_TRUE;
-        }
-        if (vlen == 5 && (
-                    (v[0] == 'f' || v[0] == 'F')
-                    && (v[1] == 'a' || v[1] == 'A')
-                    && (v[2] == 'l' || v[2] == 'L')
-                    && (v[3] == 's' || v[3] == 'S')
-                    && (v[4] == 'e' || v[4] == 'E'))) {
-            return JTYPE_STRING_BOOL_FALSE;
-        }
-        return JTYPE_STRING;
-    case JObject:
-        return JTYPE_OBJECT;
-    case JArray:
-        return JTYPE_ARRAY;
+            return JTYPE_NUMBER;
+        case JRaw:
+        case JString:
+            v = item->valuestring;
+            if (v == NULL || v[0] == 0) {
+                return JTYPE_STRING_BLANK;
+            }
+            int vlen = strlen(v);
+            char *endstr;
+            JNUMBER value = JAtoN(v, &endstr);
+            if (endstr[0] == 0) {
+                if (value == 0) {
+                    return JTYPE_STRING_ZERO;
+                }
+                return JTYPE_STRING_NUMBER;
+            }
+            if (vlen == 4 &&
+                ((v[0] == 't' || v[0] == 'T') && (v[1] == 'r' || v[1] == 'R') &&
+                 (v[2] == 'u' || v[2] == 'U') &&
+                 (v[3] == 'e' || v[3] == 'E'))) {
+                return JTYPE_STRING_BOOL_TRUE;
+            }
+            if (vlen == 5 &&
+                ((v[0] == 'f' || v[0] == 'F') && (v[1] == 'a' || v[1] == 'A') &&
+                 (v[2] == 'l' || v[2] == 'L') && (v[3] == 's' || v[3] == 'S') &&
+                 (v[4] == 'e' || v[4] == 'E'))) {
+                return JTYPE_STRING_BOOL_FALSE;
+            }
+            return JTYPE_STRING;
+        case JObject:
+            return JTYPE_OBJECT;
+        case JArray:
+            return JTYPE_ARRAY;
     }
     return JTYPE_NOT_PRESENT;
 }

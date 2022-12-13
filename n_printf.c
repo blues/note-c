@@ -11,9 +11,10 @@
  *
  */
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "n_lib.h"
 
 // Externalized Hooks
@@ -50,7 +51,8 @@ void NoteDebugf(const char *format, ...)
   @brief  Write a formatted string to the debug output.
   @param   format  A format string for output.
   @param   ...  One or more values to interpolate into the format string.
-  @note.  Do NOT use this in a memory-constrained environment (vsnprintf is large)
+  @note.  Do NOT use this in a memory-constrained environment (vsnprintf is
+  large)
 */
 /**************************************************************************/
 #ifndef NOTE_LOMEM

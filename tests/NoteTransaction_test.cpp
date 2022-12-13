@@ -12,8 +12,8 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
 
+#include "fff.h"
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS;
@@ -22,15 +22,14 @@ DEFINE_FFF_GLOBALS;
 FAKE_VALUE_FUNC(bool, NoteReset)
 FAKE_VALUE_FUNC(const char *, NoteJSONTransaction, char *, char **)
 
-namespace
-{
+namespace {
 
 const char *NoteJSONTransactionValid(char *req, char **resp)
 {
     static char respString[] = "{ \"total\": 1 }";
 
     if (resp) {
-        char* respBuf = reinterpret_cast<char *>(malloc(sizeof(respString)));
+        char *respBuf = reinterpret_cast<char *>(malloc(sizeof(respString)));
         memcpy(respBuf, respString, sizeof(respString));
         *resp = respBuf;
     }
@@ -48,7 +47,7 @@ const char *NoteJSONTransactionBadJSON(char *req, char **resp)
     static char respString[] = "Bad JSON";
 
     if (resp) {
-        char* respBuf = reinterpret_cast<char *>(malloc(sizeof(respString)));
+        char *respBuf = reinterpret_cast<char *>(malloc(sizeof(respString)));
         memcpy(respBuf, respString, sizeof(respString));
         *resp = respBuf;
     }
@@ -184,4 +183,4 @@ TEST_CASE("NoteTransaction")
     }
 }
 
-}
+}  // namespace

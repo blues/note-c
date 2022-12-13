@@ -14,6 +14,7 @@
 #pragma once
 
 #include <string.h>
+
 #include "note.h"
 
 // C-callable functions
@@ -26,7 +27,7 @@ extern "C" {
     @brief  How long to wait for the card for any given transaction.
 */
 /**************************************************************************/
-#define NOTECARD_TRANSACTION_TIMEOUT_SEC     10
+#define NOTECARD_TRANSACTION_TIMEOUT_SEC 10
 
 // The notecard is a real-time device that has a fixed size interrupt buffer.
 // We can push data at it far, far faster than it can process it, therefore we
@@ -46,7 +47,8 @@ extern "C" {
 #define CARD_REQUEST_I2C_SEGMENT_DELAY_MS 250
 /**************************************************************************/
 /*!
-    @brief  The delay, in miliseconds, between each request chunk when using I2C.
+    @brief  The delay, in miliseconds, between each request chunk when using
+   I2C.
 */
 /**************************************************************************/
 #define CARD_REQUEST_I2C_CHUNK_DELAY_MS 20
@@ -89,8 +91,10 @@ void NoteSerialTransmit(uint8_t *, size_t, bool);
 bool NoteSerialAvailable(void);
 char NoteSerialReceive(void);
 bool NoteI2CReset(uint16_t DevAddress);
-const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
-const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
+const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t *pBuffer,
+                            uint16_t Size);
+const char *NoteI2CReceive(uint16_t DevAddress, uint8_t *pBuffer, uint16_t Size,
+                           uint32_t *avail);
 bool NoteHardReset(void);
 const char *NoteJSONTransaction(char *json, char **jsonResponse);
 bool NoteIsDebugOutputActive(void);
@@ -134,7 +138,6 @@ extern const char *c_iobad;
 
 extern const char *c_ioerr;
 #define c_ioerr_len 4
-
 
 // Readability wrappers.  Anything starting with _ is simply calling the wrapper
 // function.

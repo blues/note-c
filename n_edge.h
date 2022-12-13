@@ -78,11 +78,11 @@ typedef struct {
 } LogData;
 
 // Format of the edge entry which is the dequeued note body
-#define	EDGE_NOTEFILE				"_edge.qi"
-#define EDGETYPE_SCAN				"scan"
-#define EDGETYPE_TRACKPOINT			"track"
-#define EDGETYPE_MOTIONPOINT		"motion"
-#define EDGETYPE_LOG				"log"
+#define EDGE_NOTEFILE "_edge.qi"
+#define EDGETYPE_SCAN "scan"
+#define EDGETYPE_TRACKPOINT "track"
+#define EDGETYPE_MOTIONPOINT "motion"
+#define EDGETYPE_LOG "log"
 typedef struct {
 #define EDGE_TYPE "type"
     char edgeType[32];
@@ -127,23 +127,23 @@ typedef struct {
 } EdgeData;
 
 // Scan formats
-#define SCAN_SEP            '\n'			// inter-reading separator
-#define SCAN_TYPE_GSM       'g'             // FORMAT_2G
-#define SCAN_TYPE_CDMA      'c'             // FORMAT_2G
-#define SCAN_TYPE_UMTS      'u'             // FORMAT_3G
-#define SCAN_TYPE_WCDMA     'w'             // FORMAT_3G
-#define SCAN_TYPE_LTE       'l'             // FORMAT_4G
-#define SCAN_TYPE_EMTC      'e'             // FORMAT_4G
-#define SCAN_TYPE_NBIOT     'i'             // FORMAT_4G
-#define SCAN_TYPE_NR        'n'             // FORMAT_5G
-#define SCAN_TYPE_WIFI      'x'             // FORMAT_WIFI
-#define SCAN_TYPE_CELLTIME  't'             // FORMAT_TIME
-#define SCAN_TYPE_WIFITIME  's'             // FORMAT_TIME
-#define SCAN_TYPE_GPS       'd'             // FORMAT_GPS
-#define SCAN_FORMAT_2G      "xmcc,xmnc,xlac,xcid,xrssi"
-#define SCAN_FORMAT_3G      "xmcc,xmnc,xlac,xcid,xpsc,xrscp"
-#define SCAN_FORMAT_4G      "xmcc,xmnc,xtac,xcid,xpci,rssi,rsrp,rsrq,xband,xchan"
-#define SCAN_FORMAT_5G      "xmcc,xmnc,xtac,xcid,xpci,rssi,rsrp,rsrq,xband,xchan"
-#define SCAN_FORMAT_WIFI    "xbssid,xchannel,xfreq,rssi,snr,\"ssid\""
-#define SCAN_FORMAT_TIME    "epochsecs"
-#define SCAN_FORMAT_GPS     "epochsecs,olc,hdop"
+#define SCAN_SEP '\n'           // inter-reading separator
+#define SCAN_TYPE_GSM 'g'       // FORMAT_2G
+#define SCAN_TYPE_CDMA 'c'      // FORMAT_2G
+#define SCAN_TYPE_UMTS 'u'      // FORMAT_3G
+#define SCAN_TYPE_WCDMA 'w'     // FORMAT_3G
+#define SCAN_TYPE_LTE 'l'       // FORMAT_4G
+#define SCAN_TYPE_EMTC 'e'      // FORMAT_4G
+#define SCAN_TYPE_NBIOT 'i'     // FORMAT_4G
+#define SCAN_TYPE_NR 'n'        // FORMAT_5G
+#define SCAN_TYPE_WIFI 'x'      // FORMAT_WIFI
+#define SCAN_TYPE_CELLTIME 't'  // FORMAT_TIME
+#define SCAN_TYPE_WIFITIME 's'  // FORMAT_TIME
+#define SCAN_TYPE_GPS 'd'       // FORMAT_GPS
+#define SCAN_FORMAT_2G "xmcc,xmnc,xlac,xcid,xrssi"
+#define SCAN_FORMAT_3G "xmcc,xmnc,xlac,xcid,xpsc,xrscp"
+#define SCAN_FORMAT_4G "xmcc,xmnc,xtac,xcid,xpci,rssi,rsrp,rsrq,xband,xchan"
+#define SCAN_FORMAT_5G "xmcc,xmnc,xtac,xcid,xpci,rssi,rsrp,rsrq,xband,xchan"
+#define SCAN_FORMAT_WIFI "xbssid,xchannel,xfreq,rssi,snr,\"ssid\""
+#define SCAN_FORMAT_TIME "epochsecs"
+#define SCAN_FORMAT_GPS "epochsecs,olc,hdop"

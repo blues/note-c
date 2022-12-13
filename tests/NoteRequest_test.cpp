@@ -12,23 +12,19 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
 
-#include "note.h"
+#include "fff.h"
 #include "n_lib.h"
+#include "note.h"
 
 DEFINE_FFF_GLOBALS;
 // These note-c functions are mocked for the purposes of testing
 // NoteRequest.
 FAKE_VALUE_FUNC(J *, NoteTransaction, J *)
 
-namespace
-{
+namespace {
 
-J *NoteTransactionValid(J *req)
-{
-    return JCreateObject();
-}
+J *NoteTransactionValid(J *req) { return JCreateObject(); }
 
 J *NoteTransactionError(J *req)
 {
@@ -49,7 +45,6 @@ TEST_CASE("NoteRequest")
     {
         REQUIRE(!NoteRequest(NULL));
     }
-
 
     SECTION("NoteTransaction returns NULL")
     {
@@ -82,4 +77,4 @@ TEST_CASE("NoteRequest")
     }
 }
 
-}
+}  // namespace
