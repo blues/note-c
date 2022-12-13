@@ -33,14 +33,12 @@ TEST_CASE("NoteRequestResponse")
 
     RESET_FAKE(NoteTransaction);
 
-    SECTION("Passing a NULL request returns NULL")
-    {
+    SECTION("Passing a NULL request returns NULL") {
         REQUIRE(NoteRequestResponse(NULL) == NULL);
     }
 
 
-    SECTION("NoteTransaction returns NULL")
-    {
+    SECTION("NoteTransaction returns NULL") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != nullptr);
         NoteTransaction_fake.return_val = NULL;
@@ -49,8 +47,7 @@ TEST_CASE("NoteRequestResponse")
         REQUIRE(NoteTransaction_fake.call_count == 1);
     }
 
-    SECTION("NoteTransaction returns a valid response")
-    {
+    SECTION("NoteTransaction returns a valid response") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != nullptr);
         NoteTransaction_fake.custom_fake = NoteTransactionValid;

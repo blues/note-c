@@ -60,13 +60,11 @@ TEST_CASE("NoteTransaction")
     // it to fail.
     NoteReset_fake.return_val = true;
 
-    SECTION("Passing a NULL request returns NULL")
-    {
+    SECTION("Passing a NULL request returns NULL") {
         REQUIRE(NoteTransaction(NULL) == NULL);
     }
 
-    SECTION("A response is expected and the response is valid")
-    {
+    SECTION("A response is expected and the response is valid") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
         NoteJSONTransaction_fake.custom_fake = NoteJSONTransactionValid;
@@ -82,8 +80,7 @@ TEST_CASE("NoteTransaction")
         JDelete(resp);
     }
 
-    SECTION("A response is expected and the response has an error")
-    {
+    SECTION("A response is expected and the response has an error") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
         NoteJSONTransaction_fake.return_val = "This is an error.";
@@ -99,8 +96,7 @@ TEST_CASE("NoteTransaction")
         JDelete(resp);
     }
 
-    SECTION("A reset is required and it fails")
-    {
+    SECTION("A reset is required and it fails") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
         NoteResetRequired();
@@ -118,8 +114,7 @@ TEST_CASE("NoteTransaction")
         JDelete(req);
     }
 
-    SECTION("Serializing the JSON request fails")
-    {
+    SECTION("Serializing the JSON request fails") {
         // Create an invalid J object.
         J *req = reinterpret_cast<J *>(malloc(sizeof(J)));
         REQUIRE(req != NULL);
@@ -138,8 +133,7 @@ TEST_CASE("NoteTransaction")
         JDelete(resp);
     }
 
-    SECTION("No response is expected")
-    {
+    SECTION("No response is expected") {
         J *req = NoteNewCommand("note.add");
         REQUIRE(req != NULL);
         NoteJSONTransaction_fake.custom_fake = NoteJSONTransactionValid;
@@ -159,8 +153,7 @@ TEST_CASE("NoteTransaction")
         JDelete(expectedResp);
     }
 
-    SECTION("Parsing the JSON response fails")
-    {
+    SECTION("Parsing the JSON response fails") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
         NoteJSONTransaction_fake.custom_fake = NoteJSONTransactionBadJSON;

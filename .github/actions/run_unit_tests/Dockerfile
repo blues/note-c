@@ -40,4 +40,4 @@ RUN ["dash", "-c", "\
  && rm -rf Catch2-3.2.1  v3.2.1.tar.gz \
 "]
 
-ENTRYPOINT ["./tests/scripts/run_unit_tests.sh", "--coverage"]
+ENTRYPOINT ["./scripts/run_unit_tests.sh", "--coverage"]
