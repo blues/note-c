@@ -16,6 +16,7 @@ endif()
 
 option(BUILD_TESTS "Build tests." ON)
 option(BUILD_SHARED_LIBS "Build note-c as a shared library." ON)
+option(COVERAGE "Compile for test coverage reporting." OFF)
 
 set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(

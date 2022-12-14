@@ -1,5 +1,15 @@
 #!/bin/bash
 
+COVERAGE=0
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --coverage) COVERAGE=1 ;;
+        *) echo "Unknown parameter: $1"; exit 1 ;;
+    esac
+    shift
+done
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ROOT_SRC_DIR="$SCRIPT_DIR/../.."
 
@@ -10,26 +20,33 @@ fi
 
 pushd $ROOT_SRC_DIR $@ > /dev/null
 
-cmake -B build/
-if [ $? != 0 ]; then
+CMAKE_OPTIONS=""
+BUILD_OPTIONS=""
+if [ $COVERAGE -eq 1 ]; then
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCOVERAGE=1"
+    BUILD_OPTIONS="${BUILD_OPTIONS} coverage"
+fi
+
+cmake -B build/ $CMAKE_OPTIONS
+if [ $? -ne 0 ]; then
     echo "Failed to run CMake."
-    popd
+    popd $@ > /dev/null
     exit 1
 fi
 
-cmake --build build/
-if [ $? != 0 ]; then
+cmake --build build/ -- $BUILD_OPTIONS
+if [ $? -ne 0 ]; then
     echo "Failed to build code."
-    popd
+    popd $@ > /dev/null
     exit 1
 fi
 
 ctest --test-dir build/ --output-on-failure
-if [ $? != 0 ]; then
+if [ $? -ne 0 ]; then
     echo "ctest failed."
-    popd
+    popd $@ > /dev/null
     exit 1
 fi
 
 echo "Tests passed."
-popd $@ > /dev/null 
+popd $@ > /dev/null

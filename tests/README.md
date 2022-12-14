@@ -22,6 +22,8 @@ make -j
 ctest
 ```
 
+Alternatively, tests/scripts/run_unit_tests.sh will do all these steps for you.
+
 ### Notes
 
 - We forbid in-source builds, so creating a build directory (e.g. `mkdir build`)
@@ -31,3 +33,5 @@ and building in there is mandatory.
 
 - BUILD_CATCH: Download and build Catch2 from source, rather than looking for an
 installed verison. Default: OFF.
+- COVERAGE: Adds the target `coverage` to the build. Requires lcov. To generate
+a coverage report, run `make coverage`.
