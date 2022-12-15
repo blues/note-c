@@ -1,5 +1,5 @@
 /*!
- * @file NoteRequest_test.cpp
+ * @file NoteRequestResponse_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -14,40 +14,28 @@
 #include <catch2/catch_test_macros.hpp>
 #include "fff.h"
 
-#include "note.h"
 #include "n_lib.h"
 
-DEFINE_FFF_GLOBALS;
-// These note-c functions are mocked for the purposes of testing
-// NoteRequest.
+DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteTransaction, J *)
 
 namespace
 {
 
-J *NoteTransactionValid(J *req)
+J *NoteTransactionValid(J *)
 {
     return JCreateObject();
 }
 
-J *NoteTransactionError(J *req)
-{
-    J *resp = JCreateObject();
-    assert(resp != NULL);
-    JAddStringToObject(resp, c_err, "An error.");
-
-    return resp;
-}
-
-TEST_CASE("NoteRequest")
+TEST_CASE("NoteRequestResponse")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
     RESET_FAKE(NoteTransaction);
 
-    SECTION("Passing a NULL request returns false")
+    SECTION("Passing a NULL request returns NULL")
     {
-        REQUIRE(!NoteRequest(NULL));
+        REQUIRE(NoteRequestResponse(NULL) == NULL);
     }
 
 
@@ -57,17 +45,7 @@ TEST_CASE("NoteRequest")
         REQUIRE(req != nullptr);
         NoteTransaction_fake.return_val = NULL;
 
-        REQUIRE(!NoteRequest(req));
-        REQUIRE(NoteTransaction_fake.call_count == 1);
-    }
-
-    SECTION("NoteTransaction returns a response with an error")
-    {
-        J *req = NoteNewRequest("note.add");
-        REQUIRE(req != nullptr);
-        NoteTransaction_fake.custom_fake = NoteTransactionError;
-
-        REQUIRE(!NoteRequest(req));
+        REQUIRE(NoteRequestResponse(req) == NULL);
         REQUIRE(NoteTransaction_fake.call_count == 1);
     }
 
@@ -77,8 +55,11 @@ TEST_CASE("NoteRequest")
         REQUIRE(req != nullptr);
         NoteTransaction_fake.custom_fake = NoteTransactionValid;
 
-        REQUIRE(NoteRequest(req));
+        J *resp = NoteRequestResponse(req);
+        REQUIRE(resp != NULL);
         REQUIRE(NoteTransaction_fake.call_count == 1);
+
+        JDelete(resp);
     }
 }
 

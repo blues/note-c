@@ -16,16 +16,14 @@
 
 #include "n_lib.h"
 
-DEFINE_FFF_GLOBALS;
-// These note-c functions are mocked for the purposes of testing
-// NoteTransaction.
+DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, NoteReset)
 FAKE_VALUE_FUNC(const char *, NoteJSONTransaction, char *, char **)
 
 namespace
 {
 
-const char *NoteJSONTransactionValid(char *req, char **resp)
+const char *NoteJSONTransactionValid(char *, char **resp)
 {
     static char respString[] = "{ \"total\": 1 }";
 
@@ -38,12 +36,7 @@ const char *NoteJSONTransactionValid(char *req, char **resp)
     return NULL;
 }
 
-const char *NoteJSONTransactionError(char *req, char **resp)
-{
-    return "This is an error.";
-}
-
-const char *NoteJSONTransactionBadJSON(char *req, char **resp)
+const char *NoteJSONTransactionBadJSON(char *, char **resp)
 {
     static char respString[] = "Bad JSON";
 
@@ -69,19 +62,19 @@ TEST_CASE("NoteTransaction")
 
     SECTION("Passing a NULL request returns NULL")
     {
-        REQUIRE(NoteTransaction(NULL) == nullptr);
+        REQUIRE(NoteTransaction(NULL) == NULL);
     }
 
     SECTION("A response is expected and the response is valid")
     {
         J *req = NoteNewRequest("note.add");
-        REQUIRE(req != nullptr);
+        REQUIRE(req != NULL);
         NoteJSONTransaction_fake.custom_fake = NoteJSONTransactionValid;
 
         J *resp = NoteTransaction(req);
 
         REQUIRE(NoteJSONTransaction_fake.call_count == 1);
-        REQUIRE(resp != nullptr);
+        REQUIRE(resp != NULL);
         // Ensure there's no error in the response.
         REQUIRE(!NoteResponseError(resp));
 
@@ -92,14 +85,14 @@ TEST_CASE("NoteTransaction")
     SECTION("A response is expected and the response has an error")
     {
         J *req = NoteNewRequest("note.add");
-        REQUIRE(req != nullptr);
-        NoteJSONTransaction_fake.custom_fake = NoteJSONTransactionError;
+        REQUIRE(req != NULL);
+        NoteJSONTransaction_fake.return_val = "This is an error.";
 
         J *resp = NoteTransaction(req);
 
         REQUIRE(NoteJSONTransaction_fake.call_count == 1);
         // Ensure there's an error in the response.
-        REQUIRE(resp != nullptr);
+        REQUIRE(resp != NULL);
         REQUIRE(NoteResponseError(resp));
 
         JDelete(req);
@@ -109,7 +102,7 @@ TEST_CASE("NoteTransaction")
     SECTION("A reset is required and it fails")
     {
         J *req = NoteNewRequest("note.add");
-        REQUIRE(req != nullptr);
+        REQUIRE(req != NULL);
         NoteResetRequired();
         // Force NoteReset failure.
         NoteReset_fake.return_val = false;
@@ -120,7 +113,7 @@ TEST_CASE("NoteTransaction")
         // The transaction shouldn't be attempted if reset failed.
         REQUIRE(NoteJSONTransaction_fake.call_count == 0);
         // The response should be null if reset failed.
-        REQUIRE(resp == nullptr);
+        REQUIRE(resp == NULL);
 
         JDelete(req);
     }
@@ -129,7 +122,7 @@ TEST_CASE("NoteTransaction")
     {
         // Create an invalid J object.
         J *req = reinterpret_cast<J *>(malloc(sizeof(J)));
-        REQUIRE(req != nullptr);
+        REQUIRE(req != NULL);
         memset(req, 0, sizeof(J));
 
         J *resp = NoteTransaction(req);
@@ -138,7 +131,7 @@ TEST_CASE("NoteTransaction")
         // serialized.
         REQUIRE(NoteJSONTransaction_fake.call_count == 0);
         // Ensure there's an error in the response.
-        REQUIRE(resp != nullptr);
+        REQUIRE(resp != NULL);
         REQUIRE(NoteResponseError(resp));
 
         JDelete(req);
@@ -148,13 +141,13 @@ TEST_CASE("NoteTransaction")
     SECTION("No response is expected")
     {
         J *req = NoteNewCommand("note.add");
-        REQUIRE(req != nullptr);
+        REQUIRE(req != NULL);
         NoteJSONTransaction_fake.custom_fake = NoteJSONTransactionValid;
 
         J *resp = NoteTransaction(req);
 
         REQUIRE(NoteJSONTransaction_fake.call_count == 1);
-        REQUIRE(resp != nullptr);
+        REQUIRE(resp != NULL);
         // Ensure there's no error in the response.
         REQUIRE(!NoteResponseError(resp));
         // Ensure a blank object was returned.
@@ -169,13 +162,13 @@ TEST_CASE("NoteTransaction")
     SECTION("Parsing the JSON response fails")
     {
         J *req = NoteNewRequest("note.add");
-        REQUIRE(req != nullptr);
+        REQUIRE(req != NULL);
         NoteJSONTransaction_fake.custom_fake = NoteJSONTransactionBadJSON;
 
         J *resp = NoteTransaction(req);
 
         REQUIRE(NoteJSONTransaction_fake.call_count == 1);
-        REQUIRE(resp != nullptr);
+        REQUIRE(resp != NULL);
         // Ensure there's an error in the response.
         REQUIRE(NoteResponseError(resp));
 

@@ -37,10 +37,11 @@ set(TEST_TARGETS "")
 macro(add_test TEST_NAME)
     add_executable(
         ${TEST_NAME}
-        ${TEST_NAME}.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/${TEST_NAME}.cpp
     )
     target_include_directories(
         ${TEST_NAME} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${NOTE_C_SRC_DIR}
     )
     target_link_libraries(
@@ -56,6 +57,9 @@ endmacro(add_test)
 
 add_test(NoteTransaction_test)
 add_test(NoteRequest_test)
+add_test(NoteRequestResponse_test)
+add_test(NoteRequestResponseJSON_test)
+add_test(NoteRequestWithRetry_test)
 
 if(COVERAGE)
     find_program(LCOV lcov REQUIRED)

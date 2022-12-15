@@ -18,6 +18,8 @@ option(BUILD_TESTS "Build tests." ON)
 option(BUILD_SHARED_LIBS "Build note-c as a shared library." ON)
 option(COVERAGE "Compile for test coverage reporting." OFF)
 
+add_compile_options(-Wall -Wextra -Werror -Wpedantic)
+
 set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(
     note_c
@@ -54,7 +56,8 @@ if(BUILD_TESTS)
         MOCKED_FNS
         "NoteReset;
          NoteJSONTransaction;
-         NoteTransaction"
+         NoteTransaction;
+         NoteGetMs"
     )
     foreach(MOCKED_FN ${MOCKED_FNS})
         string(APPEND OBJCOPY_WEAKEN "-W ${MOCKED_FN} ")
