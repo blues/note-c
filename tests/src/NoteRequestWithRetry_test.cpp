@@ -48,13 +48,11 @@ TEST_CASE("NoteRequestWithRetry")
     RESET_FAKE(NoteTransaction);
     RESET_FAKE(NoteGetMs);
 
-    SECTION("NULL request")
-    {
+    SECTION("NULL request") {
         REQUIRE(!NoteRequestWithRetry(NULL, 0));
     }
 
-    SECTION("Non-NULL request")
-    {
+    SECTION("Non-NULL request") {
         // With this timeout configuration, NoteTransaction will be retried at
         // most one time.
         const uint32_t timeoutSec = 5;
@@ -64,16 +62,13 @@ TEST_CASE("NoteRequestWithRetry")
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != nullptr);
 
-        SECTION("Timeout expires")
-        {
+        SECTION("Timeout expires") {
             SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 3);
 
-            SECTION("NULL responses")
-            {
+            SECTION("NULL responses") {
                 NoteTransaction_fake.return_val = NULL;
             }
-            SECTION("I/O error responses")
-            {
+            SECTION("I/O error responses") {
                 NoteTransaction_fake.custom_fake = NoteTransactionIOError;
             }
 
@@ -81,24 +76,21 @@ TEST_CASE("NoteRequestWithRetry")
             REQUIRE(NoteTransaction_fake.call_count == 2);
         }
 
-        SECTION("Non-I/O error")
-        {
+        SECTION("Non-I/O error") {
             NoteTransaction_fake.custom_fake = NoteTransactionNonIOError;
 
             REQUIRE(!NoteRequestWithRetry(req, timeoutSec));
             REQUIRE(NoteTransaction_fake.call_count == 1);
         }
 
-        SECTION("Response on first try")
-        {
+        SECTION("Response on first try") {
             NoteTransaction_fake.return_val = JCreateObject();
 
             REQUIRE(NoteRequestWithRetry(req, timeoutSec));
             REQUIRE(NoteTransaction_fake.call_count == 1);
         }
 
-        SECTION("Response after retry")
-        {
+        SECTION("Response after retry") {
             J *noteTransactionReturnVals[2] = {NULL, JCreateObject()};
             SET_RETURN_SEQ(NoteTransaction, noteTransactionReturnVals, 2);
 

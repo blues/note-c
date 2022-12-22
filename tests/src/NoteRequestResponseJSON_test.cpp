@@ -65,20 +65,17 @@ TEST_CASE("NoteRequestResponseJSON")
     RESET_FAKE(NoteRequestResponse);
     RESET_FAKE(JPrintUnformatted);
 
-    SECTION("Passing a NULL request returns NULL")
-    {
+    SECTION("Passing a NULL request returns NULL") {
         REQUIRE(NoteRequestResponseJSON(NULL) == NULL);
     }
 
 
-    SECTION("Invalid request JSON")
-    {
+    SECTION("Invalid request JSON") {
         char req[] = "note.add";
         REQUIRE(NoteRequestResponseJSON(req) == NULL);
     }
 
-    SECTION("NULL response")
-    {
+    SECTION("NULL response") {
         char req[] = "{\"req\": \"note.add\"}";
         NoteRequestResponse_fake.custom_fake = NoteRequestResponseNULL;
 
@@ -86,8 +83,7 @@ TEST_CASE("NoteRequestResponseJSON")
         REQUIRE(NoteRequestResponse_fake.call_count == 1);
     }
 
-    SECTION("JPrintUnformatted returns NULL")
-    {
+    SECTION("JPrintUnformatted returns NULL") {
         char req[] = "{\"req\": \"note.add\"}";
         NoteRequestResponse_fake.custom_fake = NoteRequestResponseValid;
         JPrintUnformatted_fake.return_val = NULL;
@@ -97,8 +93,7 @@ TEST_CASE("NoteRequestResponseJSON")
         REQUIRE(JPrintUnformatted_fake.call_count == 1);
     }
 
-    SECTION("Valid response")
-    {
+    SECTION("Valid response") {
         char req[] = "{\"req\": \"note.add\"}";
         NoteRequestResponse_fake.custom_fake = NoteRequestResponseValid;
         JPrintUnformatted_fake.custom_fake = JPrintUnformattedValid;

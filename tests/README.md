@@ -22,8 +22,8 @@ make -j
 ctest
 ```
 
-Alternatively, tests/scripts/run_unit_tests.sh will do all these steps for you.
-This script is also used by our CI pipeline (see the Dockerfile in
+Alternatively, scripts/run_unit_tests.sh will do all these steps for you. This
+script is also used by our CI pipeline (see the Dockerfile in
 .github/actions/run_unit_tests).
 
 ### Notes

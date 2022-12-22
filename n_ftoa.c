@@ -284,11 +284,11 @@ again:
     leadfraczeros = precision - fpos;
 
     if (omitzeros) {
-        if (fpos > 0)	/* Omit trailing fractional part zeros. */
+        if (fpos > 0) {    /* Omit trailing fractional part zeros. */
             while (omitcount < fpos && fconvert[omitcount] == '0') {
                 omitcount++;
             }
-        else {	/* The fractional part is zero, omit it completely. */
+        } else {  /* The fractional part is zero, omit it completely. */
             omitcount = precision;
             leadfraczeros = 0;
         }
