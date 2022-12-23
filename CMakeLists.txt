@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 
-if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}") 
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
     message(FATAL_ERROR "In-source builds are not allowed.
     Please create a build directory and use `cmake ..` inside it.
     NOTE: cmake will now create CMakeCache.txt and CMakeFiles/*.
@@ -18,7 +18,12 @@ option(BUILD_TESTS "Build tests." ON)
 option(BUILD_SHARED_LIBS "Build note-c as a shared library." ON)
 option(COVERAGE "Compile for test coverage reporting." OFF)
 
-add_compile_options(-Wall -Wextra -Werror -Wpedantic)
+add_compile_options(
+    -Wall
+    -Wextra
+    -Wpedantic
+    -Werror
+)
 
 set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(

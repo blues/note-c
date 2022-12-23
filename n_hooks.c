@@ -551,7 +551,7 @@ void NoteUnlockNote()
 bool NoteStartTransaction(uint32_t timeoutMs)
 {
     if (hookStartTransaction != NULL) {
-        return hookStartTransaction();
+        return hookStartTransaction(timeoutMs);
     }
     return true;
 }
@@ -561,12 +561,11 @@ bool NoteStartTransaction(uint32_t timeoutMs)
   @brief  Indicate that we've completed a transaction using the platform-specific hook.
 */
 /**************************************************************************/
-bool NoteStopTransaction(uint32_t timeoutMs)
+void NoteStopTransaction()
 {
     if (hookStopTransaction != NULL) {
-        return hookStopTransaction();
+        hookStopTransaction();
     }
-    return true;
 }
 
 //**************************************************************************/
