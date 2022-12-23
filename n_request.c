@@ -106,20 +106,15 @@ J *NoteNewCommand(const char *request)
 /**************************************************************************/
 bool NoteRequest(J *req)
 {
-    // Exit if null request.  This allows safe execution of the form NoteRequest(NoteNewRequest("xxx"))
-    if (req == NULL) {
-        return false;
-    }
-    // Execute the transaction
-    J *rsp = NoteTransaction(req);
+    J *rsp = NoteRequestResponse(req);
     if (rsp == NULL) {
-        JDelete(req);
         return false;
     }
+
     // Check for a transaction error, and exit
     bool success = JIsNullString(rsp, c_err);
-    JDelete(req);
     JDelete(rsp);
+
     return success;
 }
 
@@ -141,50 +136,16 @@ bool NoteRequest(J *req)
 /**************************************************************************/
 bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds)
 {
-    // Exit if null request.  This allows safe execution of the form NoteRequest(NoteNewRequest("xxx"))
-    if (req == NULL) {
-        return false;
-    }
-
-    J *rsp;
-
-    // Calculate expiry time in milliseconds
-    uint32_t expiresMs = _GetMs() + (timeoutSeconds * 1000);
-
-    while(true) {
-        // Execute the transaction
-        rsp = NoteTransaction(req);
-
-        // Loop if there is no response, or if there is an io error
-        if ( (rsp == NULL) || JContainsString(rsp, c_err, c_ioerr)) {
-
-            // Free error response
-            if (rsp != NULL) {
-                JDelete(rsp);
-                rsp = NULL;
-            }
-        } else {
-
-            // Exit loop on non-null response without io error
-            break;
-        }
-
-        // Exit loop on timeout
-        if (_GetMs() >= expiresMs) {
-            break;
-        }
-    }
-
-    // Free the request
-    JDelete(req);
-
+    J *rsp = NoteRequestResponseWithRetry(req, timeoutSeconds);
     // If there is no response return false
     if (rsp == NULL) {
         return false;
     }
+
     // Check for a transaction error, and exit
     bool success = JIsNullString(rsp, c_err);
     JDelete(rsp);
+
     return success;
 }
 
@@ -200,7 +161,8 @@ bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds)
 /**************************************************************************/
 J *NoteRequestResponse(J *req)
 {
-    // Exit if null request.  This allows safe execution of the form NoteRequestResponse(NoteNewRequest("xxx"))
+    // Exit if null request. This allows safe execution of the form
+    // NoteRequestResponse(NoteNewRequest("xxx"))
     if (req == NULL) {
         return NULL;
     }
@@ -232,7 +194,8 @@ J *NoteRequestResponse(J *req)
 /**************************************************************************/
 J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
 {
-    // Exit if null request.  This allows safe execution of the form NoteRequestResponse(NoteNewRequest("xxx"))
+    // Exit if null request. This allows safe execution of the form
+    // NoteRequestResponse(NoteNewRequest("xxx"))
     if (req == NULL) {
         return NULL;
     }
