@@ -74,13 +74,13 @@ mutexFn hookUnlockNote = NULL;
   @brief  Hook for the calling platform's transaction initiation function.
 */
 /**************************************************************************/
-txnStartFn hookStartTransaction = NULL;
+txnStartFn hookTransactionStart = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's transaction completion function.
 */
 /**************************************************************************/
-txnStopFn hookStopTransaction = NULL;
+txnStopFn hookTransactionStop = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's memory allocation function.
@@ -257,8 +257,8 @@ bool NoteIsDebugOutputActive()
 /**************************************************************************/
 void NoteSetFnTransaction(txnStartFn startFn, txnStopFn stopFn)
 {
-    hookStartTransaction = startFn;
-    hookStopTransaction = stopFn;
+    hookTransactionStart = startFn;
+    hookTransactionStop = stopFn;
 }
 
 //**************************************************************************/
@@ -548,10 +548,10 @@ void NoteUnlockNote()
   @brief  Indicate that we're initiating a transaction using the platform-specific hook.
 */
 /**************************************************************************/
-bool NoteStartTransaction(uint32_t timeoutMs)
+bool NoteTransactionStart(uint32_t timeoutMs)
 {
-    if (hookStartTransaction != NULL) {
-        return hookStartTransaction(timeoutMs);
+    if (hookTransactionStart != NULL) {
+        return hookTransactionStart(timeoutMs);
     }
     return true;
 }
@@ -561,10 +561,10 @@ bool NoteStartTransaction(uint32_t timeoutMs)
   @brief  Indicate that we've completed a transaction using the platform-specific hook.
 */
 /**************************************************************************/
-void NoteStopTransaction()
+void NoteTransactionStop()
 {
-    if (hookStopTransaction != NULL) {
-        hookStopTransaction();
+    if (hookTransactionStop != NULL) {
+        hookTransactionStop();
     }
 }
 
