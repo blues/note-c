@@ -297,7 +297,7 @@ J *NoteTransaction(J *req)
     }
 
     // Make sure that we get access to the notecard hardware before we begin
-    if (!_StartTransaction(NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+    if (!_TransactionStart(NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
         return NULL;
     }
 
@@ -325,7 +325,7 @@ J *NoteTransaction(J *req)
     // We must do this before acquiring lock.
     if (resetRequired) {
         if (!NoteReset()) {
-            _StopTransaction();
+            _TransactionStop();
             return NULL;
         }
     }
@@ -338,7 +338,7 @@ J *NoteTransaction(J *req)
     if (json == NULL) {
         J *rsp = errDoc(ERRSTR("can't convert to JSON",c_bad));
         _UnlockNote();
-        _StopTransaction();
+        _TransactionStop();
         return rsp;
     }
 
@@ -363,14 +363,14 @@ J *NoteTransaction(J *req)
         NoteResetRequired();
         J *rsp = errDoc(errStr);
         _UnlockNote();
-        _StopTransaction();
+        _TransactionStop();
         return rsp;
     }
 
     // Exit with a blank object (with no err field) if no response expected
     if (noResponseExpected) {
         _UnlockNote();
-        _StopTransaction();
+        _TransactionStop();
         return JCreateObject();
     }
 
@@ -384,7 +384,7 @@ J *NoteTransaction(J *req)
         }
         J *rsp = errDoc(ERRSTR("unrecognized response from card {io}",c_iobad));
         _UnlockNote();
-        _StopTransaction();
+        _TransactionStop();
         return rsp;
     }
 
@@ -404,7 +404,7 @@ J *NoteTransaction(J *req)
     _UnlockNote();
 
     // Stop the transaction
-    _StopTransaction();
+    _TransactionStop();
 
     // Done
     return rspdoc;
