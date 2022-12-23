@@ -83,6 +83,8 @@ bool serialNoteReset(void);
 // Hooks
 void NoteLockNote(void);
 void NoteUnlockNote(void);
+bool NoteStartTransaction(uint32_t timeoutMs);
+void NoteStopTransaction(void);
 const char *NoteActiveInterface(void);
 bool NoteSerialReset(void);
 void NoteSerialTransmit(uint8_t *, size_t, bool);
@@ -140,6 +142,8 @@ extern const char *c_ioerr;
 // function.
 #define _LockNote NoteLockNote
 #define _UnlockNote NoteUnlockNote
+#define _StartTransaction NoteStartTransaction
+#define _StopTransaction NoteStopTransaction
 #define _SerialReset NoteSerialReset
 #define _SerialTransmit NoteSerialTransmit
 #define _SerialAvailable NoteSerialAvailable

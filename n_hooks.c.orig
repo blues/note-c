@@ -553,7 +553,7 @@ bool NoteStartTransaction(uint32_t timeoutMs)
     if (hookStartTransaction != NULL) {
         return hookStartTransaction();
     }
-    return true;
+	return true;
 }
 
 //**************************************************************************/
@@ -566,7 +566,7 @@ bool NoteStopTransaction(uint32_t timeoutMs)
     if (hookStopTransaction != NULL) {
         return hookStopTransaction();
     }
-    return true;
+	return true;
 }
 
 //**************************************************************************/

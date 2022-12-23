@@ -98,6 +98,8 @@ typedef char (*serialReceiveFn) (void);
 typedef bool (*i2cResetFn) (uint16_t DevAddress);
 typedef const char * (*i2cTransmitFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
 typedef const char * (*i2cReceiveFn) (uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
+typedef bool (*txnStartFn) (uint32_t timeoutMs);
+typedef void (*txnStopFn) (void);
 
 // External API
 bool NoteReset(void);
@@ -127,10 +129,12 @@ J *NoteTransaction(J *req);
 bool NoteErrorContains(const char *errstr, const char *errtype);
 void NoteErrorClean(char *errbuf);
 void NoteSetFnDebugOutput(debugOutputFn fn);
+void NoteSetFnTransaction(txnStartFn startFn, txnStopFn stopFn);
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, mutexFn unlockNotefn);
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
 void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
 void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn writefn, serialAvailableFn availfn, serialReceiveFn readfn);
+
 #define NOTE_I2C_ADDR_DEFAULT	0x17
 #ifndef NOTE_I2C_MAX_DEFAULT
 #define NOTE_I2C_MAX_DEFAULT	30
