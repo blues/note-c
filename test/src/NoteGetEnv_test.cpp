@@ -11,6 +11,9 @@
  *
  */
 
+
+#ifdef TEST
+
 #include <catch2/catch_test_macros.hpp>
 #include "fff.h"
 
@@ -88,3 +91,5 @@ TEST_CASE("NoteGetEnv")
 }
 
 }
+
+#endif // TEST

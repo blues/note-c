@@ -1874,7 +1874,7 @@ bool NotePayloadAddSegment(NotePayloadDesc *desc, const char segtype[NP_SEGTYPE_
   @brief  Find and copy a named segment from a segmented payload
   @param   desc Pointer to the payload descriptor
   @param   segtype Pointer to the 4-character payload identifier
-  @param   pdata Pointer to the found segment if return is true
+  @param   pdata Buffer to copy found segment to if return is true
   @param   len The expected length of the returned segment
   @returns boolean. `true` if named segment is restored successfully
 */

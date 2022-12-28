@@ -40,11 +40,13 @@ a coverage report, run `make coverage`.
 
 ## Development
 
-Each function in the API gets its own test executable in test/src. The naming
-convention is FunctionName_test.cpp. Any functions that are mocked need to be
-added to the list of mocked functions in the root CMakeLists.txt (see
-MOCKED_FNS). Once written, the test needs to be added to test/CMakeLists.txt
-with a call to the `add_test` macro.
+For the most part, each function in the API gets its own test executable in
+test/src. The naming convention is FunctionName_test.cpp. Some functions make
+sense to test together, like the NotePayload* family, so they're exercised in
+one executable (NotePayload_test.cpp, in this case). Any functions that are
+mocked need to be added to the list of mocked functions in the root
+CMakeLists.txt (see MOCKED_FNS). Once written, the test needs to be added to
+test/CMakeLists.txt with a call to the `add_test` macro.
 
 Assuming you ran cmake with coverage enabled (`-DCOVERAGE=1`), ran `make
 coverage`, and are in the build directory, you can view the coverage report as
