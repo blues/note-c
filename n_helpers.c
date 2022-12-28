@@ -615,8 +615,11 @@ long int NoteGetEnvInt(const char *variable, long int defaultVal)
 /*!
   @brief  Get a service environment variable.
   @param   variable The variable key.
-  @param   defaultVal The variable value.
-  @param   buf (out) The buffer in which to place the variable value.
+  @param   defaultVal The default variable value, if the environment variable
+           hasn't been set.
+  @param   buf (out) The buffer in which to place the variable value. If the
+           environment variable hasn't been set, defaultVal will be copied into
+           buf.
   @param   buflen The length of the output buffer.
   @returns true if there is no error (JSON response with no explicit error)
 */

@@ -66,7 +66,8 @@ if(BUILD_TESTS)
         "NoteReset;
          NoteJSONTransaction;
          NoteTransaction;
-         NoteGetMs"
+         NoteGetMs;
+         NoteRequestResponse"
     )
     foreach(MOCKED_FN ${MOCKED_FNS})
         string(APPEND OBJCOPY_WEAKEN "-W ${MOCKED_FN} ")
