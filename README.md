@@ -19,7 +19,7 @@ The documentation for this library can be found [here](https://blues.github.io/n
 The CMake build system is primarily here for testing note-c on a development
 machine. You can use it to generate a static or shared note-c library, but
 embedded users will typically just compile all the .c source files into their
-firmware image. For more on testing, see tests/README.md.
+firmware image. For more on testing, see test/README.md.
 
 ### Options
 
@@ -39,15 +39,15 @@ For details on contributions we accept and the process for contributing, see our
 
 For additional Notecard SDKs and Libraries, see:
 
-* [note-arduino][note-arduino] for Arduino support
-* [note-python][note-python] for Python
-* [note-go][note-go] for Go
+- [note-arduino][note-arduino] for Arduino support
+- [note-python][note-python] for Python
+- [note-go][note-go] for Go
 
 ## To learn more about Blues Wireless, the Notecard and Notehub, see:
 
-* [blues.com](https://blues.io)
-* [notehub.io][notehub]
-* [wireless.dev](https://wireless.dev)
+- [blues.com](https://blues.io)
+- [notehub.io][notehub]
+- [wireless.dev](https://wireless.dev)
 
 ## License
 

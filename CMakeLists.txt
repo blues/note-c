@@ -18,6 +18,10 @@ option(BUILD_TESTS "Build tests." ON)
 option(BUILD_SHARED_LIBS "Build note-c as a shared library." ON)
 option(COVERAGE "Compile for test coverage reporting." OFF)
 
+add_compile_definitions(
+    TEST
+)
+
 add_compile_options(
     -Wall
     -Wextra
@@ -46,8 +50,8 @@ add_library(
 )
 
 if(BUILD_TESTS)
-    # Including this here rather than in tests/CMakeLists.txt allows us to run
-    # ctest from the root build directory (e.g. build/ instead of build/tests/).
+    # Including this here rather than in test/CMakeLists.txt allows us to run
+    # ctest from the root build directory (e.g. build/ instead of build/test/).
     include(CTest)
 
     # If we don't weaken the functions we're mocking in the tests, the linker
@@ -74,5 +78,5 @@ if(BUILD_TESTS)
         COMMENT "Weakening mocked functions."
     )
 
-    add_subdirectory(tests)
+    add_subdirectory(test)
 endif(BUILD_TESTS)

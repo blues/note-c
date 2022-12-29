@@ -39,15 +39,13 @@ macro(add_test TEST_NAME)
         ${TEST_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/src/${TEST_NAME}.cpp
     )
-    target_include_directories(
-        ${TEST_NAME} PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${NOTE_C_SRC_DIR}
+    target_include_directories(${TEST_NAME}
+        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include
+        PRIVATE ${NOTE_C_SRC_DIR}
     )
-    target_link_libraries(
-        ${TEST_NAME}
-        note_c
-        Catch2::Catch2WithMain
+    target_link_libraries(${TEST_NAME}
+        PRIVATE note_c
+        PRIVATE Catch2::Catch2WithMain
     )
 
     list(APPEND TEST_TARGETS ${TEST_NAME})

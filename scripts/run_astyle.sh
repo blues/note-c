@@ -20,7 +20,7 @@ fi
 
 # These files won't be formatted.
 EXCLUDE_FILES=(
-    tests/include/fff.h
+    test/include/fff.h
 )
 
 CHECK=0

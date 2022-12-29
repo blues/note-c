@@ -8,9 +8,9 @@ mocking and is bundled with the test code (see fff.h).
 
 - [CMake](https://cmake.org/install), version 3.13+.
 - [Catch2](https://github.com/catchorg/Catch2), v3.
-    - If Catch2 isn't installed, we'll attempt to download and build Catch2 from
+  - If Catch2 isn't installed, we'll attempt to download and build Catch2 from
     source.
-    - We require C++14, which is the minimum expected by Catch2 v3.
+  - We require C++14, which is the minimum expected by Catch2 v3.
 
 ## Running the Tests
 
@@ -40,10 +40,10 @@ a coverage report, run `make coverage`.
 
 ## Development
 
-Each function in the API gets its own test executable in tests/src. The naming
+Each function in the API gets its own test executable in test/src. The naming
 convention is FunctionName_test.cpp. Any functions that are mocked need to be
 added to the list of mocked functions in the root CMakeLists.txt (see
-MOCKED_FNS). Once written, the test needs to be added to tests/CMakeLists.txt
+MOCKED_FNS). Once written, the test needs to be added to test/CMakeLists.txt
 with a call to the `add_test` macro.
 
 Assuming you ran cmake with coverage enabled (`-DCOVERAGE=1`), ran `make
@@ -51,9 +51,9 @@ coverage`, and are in the build directory, you can view the coverage report as
 HTML with:
 
 ```sh
-cd tests/coverage
+cd test/coverage
 genhtml lcov.info -o tmp
 ```
 
-This will generate HTML under tests/coverage/tmp. Open index.html in your
+This will generate HTML under test/coverage/tmp. Open index.html in your
 browser to view the report.
