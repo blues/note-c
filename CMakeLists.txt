@@ -72,7 +72,8 @@ if(BUILD_TESTS)
          NoteI2CTransmit;
          NoteI2CReceive;
          NoteLockI2C;
-         NoteUnlockI2C"
+         NoteUnlockI2C;
+         NoteI2CReset"
     )
     foreach(MOCKED_FN ${MOCKED_FNS})
         string(APPEND OBJCOPY_WEAKEN "-W ${MOCKED_FN} ")

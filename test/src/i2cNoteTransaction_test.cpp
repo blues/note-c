@@ -17,6 +17,7 @@
 #include "fff.h"
 
 #include "n_lib.h"
+#include "i2c_mocks.h"
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
@@ -30,54 +31,7 @@ FAKE_VOID_FUNC(NoteUnlockI2C)
 namespace
 {
 
-static const char *NoteI2CReceiveNothing(uint16_t, uint8_t*, uint16_t,
-        uint32_t *avail)
-{
-    assert(avail != NULL);
-
-    *avail = 0;
-
-    return NULL;
-}
-
-static const char *NoteI2CReceiveOne(uint16_t, uint8_t* pBuffer, uint16_t size,
-                                     uint32_t *avail)
-{
-    assert(avail != NULL);
-
-    if (size == 0) {
-        *avail = 1;
-    } else {
-        *avail = 0;
-        pBuffer[0] = '\n';
-    }
-
-    return NULL;
-}
-
 #define I2C_MULTI_CHUNK_RECV_BYTES (ALLOC_CHUNK * 2)
-
-static const char *NoteI2CReceiveMultiChunk(uint16_t, uint8_t* pBuffer,
-        uint16_t size, uint32_t *avail)
-{
-    static uint32_t left = I2C_MULTI_CHUNK_RECV_BYTES;
-
-    assert(avail != NULL);
-
-    if (size == 0) {
-        *avail = left;
-    } else {
-        memset(pBuffer, 1, size);
-        left -= size;
-        *avail = left;
-        if (left == 0) {
-            pBuffer[size - 1] = '\n';
-            left = I2C_MULTI_CHUNK_RECV_BYTES;
-        }
-    }
-
-    return NULL;
-}
 
 TEST_CASE("i2cNoteTransaction")
 {
