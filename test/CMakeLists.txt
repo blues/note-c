@@ -60,6 +60,7 @@ add_test(NoteRequestResponseJSON_test)
 add_test(NoteRequestWithRetry_test)
 add_test(NoteGetEnv_test)
 add_test(NotePayload_test)
+add_test(i2cNoteTransaction_test)
 
 if(COVERAGE)
     find_program(LCOV lcov REQUIRED)

@@ -3,14 +3,13 @@
  *
  * Written by the Blues Inc. team.
  *
- * Copyright (c) 2022 Blues Inc. MIT License. Use of this source code is
+ * Copyright (c) 2023 Blues Inc. MIT License. Use of this source code is
  * governed by licenses granted by the copyright holder including that found in
  * the
  * <a href="https://github.com/blues/note-c/blob/master/LICENSE">LICENSE</a>
  * file.
  *
  */
-
 
 #ifdef TEST
 
