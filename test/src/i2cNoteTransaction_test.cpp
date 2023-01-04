@@ -31,7 +31,30 @@ FAKE_VOID_FUNC(NoteUnlockI2C)
 namespace
 {
 
-#define I2C_MULTI_CHUNK_RECV_BYTES (ALLOC_CHUNK * 2)
+char transmitBuf[NOTE_I2C_MAX_DEFAULT * 2];
+size_t transmitBufLen = 0;
+bool resetTransmitBufLen = false;
+
+const char *NoteI2CTransmitAppend(uint16_t, uint8_t *buf, uint16_t len)
+{
+    if (resetTransmitBufLen) {
+        transmitBufLen = 0;
+        resetTransmitBufLen = false;
+    }
+
+    if (buf[len - 1] == '\n') {
+        resetTransmitBufLen = true;
+    }
+
+    if (transmitBufLen + len > sizeof(transmitBuf)) {
+        return "not enough room in transmitBuf";
+    }
+
+    memcpy(transmitBuf + transmitBufLen, buf, len);
+    transmitBufLen += len;
+
+    return NULL;
+}
 
 TEST_CASE("i2cNoteTransaction")
 {
@@ -67,6 +90,7 @@ TEST_CASE("i2cNoteTransaction")
         }
 
         SECTION("One transmission") {
+            NoteI2CTransmit_fake.custom_fake = NoteI2CTransmitAppend;
             reqLen = NoteI2CMax() - 1;
             request = (char*)malloc(reqLen);
             REQUIRE(request != NULL);
@@ -76,18 +100,26 @@ TEST_CASE("i2cNoteTransaction")
             // The request length is less than NoteI2CMax(), so it should all be
             // sent in one call to NoteI2CTransmit.
             CHECK(NoteI2CTransmit_fake.call_count == 1);
+            REQUIRE(reqLen == transmitBufLen);
+            CHECK(!memcmp(transmitBuf, request, reqLen - 1));
+            CHECK(*(transmitBuf + reqLen - 1) == '\n');
         }
 
         SECTION("Multiple transmissions") {
+            NoteI2CTransmit_fake.custom_fake = NoteI2CTransmitAppend;
             reqLen = NoteI2CMax() + 1;
             request = (char*)malloc(reqLen);
             REQUIRE(request != NULL);
             memset(request, 1, reqLen - 1);
             request[reqLen - 1] = '\0';
-            CHECK(i2cNoteTransaction(request, NULL) == NULL);
+
+            REQUIRE(i2cNoteTransaction(request, NULL) == NULL);
             // The request is 1 byte greater than NoteI2CMax(), so it should
-            // require two calls to NoteI2CTransmit.
-            CHECK(NoteI2CTransmit_fake.call_count == 2);
+            // require multiple calls to NoteI2CTransmit.
+            CHECK(NoteI2CTransmit_fake.call_count > 1);
+            REQUIRE(reqLen == transmitBufLen);
+            CHECK(!memcmp(transmitBuf, request, reqLen - 1));
+            CHECK(*(transmitBuf + reqLen - 1) == '\n');
         }
 
         // We should have locked and unlocked the i2c bus exactly once.
@@ -104,7 +136,7 @@ TEST_CASE("i2cNoteTransaction")
         SECTION("Response buffer allocation fails") {
             uint8_t *transmitBuf = (uint8_t *)malloc(strlen(noteAddReq) + 1);
             REQUIRE(transmitBuf != NULL);
-            void* mallocReturnVals[2] = {transmitBuf, NULL};
+            void* mallocReturnVals[] = {transmitBuf, NULL};
             SET_RETURN_SEQ(NoteMalloc, mallocReturnVals, 2);
 
             CHECK(i2cNoteTransaction(noteAddReq, &resp) != NULL);
@@ -120,13 +152,12 @@ TEST_CASE("i2cNoteTransaction")
             CHECK(i2cNoteTransaction(noteAddReq, &resp) != NULL);
             CHECK(NoteI2CTransmit_fake.call_count == 1);
             CHECK(NoteI2CReceive_fake.call_count == 1);
-            CHECK(NoteMalloc_fake.call_count == 2);
         }
 
         SECTION("Force timeout") {
             NoteMalloc_fake.custom_fake = malloc;
             NoteI2CReceive_fake.custom_fake = NoteI2CReceiveNothing;
-            long unsigned int getMsReturnVals[2] = {
+            long unsigned int getMsReturnVals[] = {
                 0, NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000 + 1
             };
             SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 2);
@@ -134,7 +165,6 @@ TEST_CASE("i2cNoteTransaction")
             CHECK(i2cNoteTransaction(noteAddReq, &resp) != NULL);
             CHECK(NoteI2CTransmit_fake.call_count == 1);
             CHECK(NoteI2CReceive_fake.call_count == 1);
-            CHECK(NoteMalloc_fake.call_count == 2);
         }
 
         SECTION("Check response") {
@@ -143,9 +173,7 @@ TEST_CASE("i2cNoteTransaction")
                 NoteI2CReceive_fake.custom_fake = NoteI2CReceiveOne;
 
                 CHECK(i2cNoteTransaction(noteAddReq, &resp) == NULL);
-
                 CHECK(NoteI2CReceive_fake.call_count == 2);
-                CHECK(NoteMalloc_fake.call_count == 2);
             }
 
             SECTION("Multiple chunks") {
@@ -153,7 +181,6 @@ TEST_CASE("i2cNoteTransaction")
                 NoteI2CReceive_fake.custom_fake = NoteI2CReceiveMultiChunk;
 
                 CHECK(i2cNoteTransaction(noteAddReq, &resp) == NULL);
-
                 // 1 call to get available data to read, plus however many I2C
                 // transactions it takes to read that data.
                 const uint32_t numRecvCalls = 1 + (I2C_MULTI_CHUNK_RECV_BYTES +

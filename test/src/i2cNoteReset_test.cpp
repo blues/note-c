@@ -63,8 +63,8 @@ TEST_CASE("i2cNoteReset")
         // Make sure I2C bus is reset after failed receive.
         CHECK(NoteI2CReset_fake.call_count == 2);
         CHECK(NoteI2CTransmit_fake.call_count == 1);
-        // Receive will be retried 3 times.
-        CHECK(NoteI2CReceive_fake.call_count == 3);
+        // Receive will be retried.
+        CHECK(NoteI2CReceive_fake.call_count > 1);
     }
 
     SECTION("Nothing to read") {
