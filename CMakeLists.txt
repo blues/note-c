@@ -18,10 +18,6 @@ option(BUILD_TESTS "Build tests." ON)
 option(BUILD_SHARED_LIBS "Build note-c as a shared library." ON)
 option(COVERAGE "Compile for test coverage reporting." OFF)
 
-add_compile_definitions(
-    TEST
-)
-
 add_compile_options(
     -Wall
     -Wextra
@@ -50,6 +46,10 @@ add_library(
 )
 
 if(BUILD_TESTS)
+    add_compile_definitions(
+        TEST
+    )
+
     # Including this here rather than in test/CMakeLists.txt allows us to run
     # ctest from the root build directory (e.g. build/ instead of build/test/).
     include(CTest)
@@ -66,7 +66,14 @@ if(BUILD_TESTS)
         "NoteReset;
          NoteJSONTransaction;
          NoteTransaction;
-         NoteGetMs"
+         NoteGetMs;
+         NoteRequestResponse;
+         NoteMalloc;
+         NoteI2CTransmit;
+         NoteI2CReceive;
+         NoteLockI2C;
+         NoteUnlockI2C;
+         NoteI2CReset"
     )
     foreach(MOCKED_FN ${MOCKED_FNS})
         string(APPEND OBJCOPY_WEAKEN "-W ${MOCKED_FN} ")

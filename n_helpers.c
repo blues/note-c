@@ -615,8 +615,11 @@ long int NoteGetEnvInt(const char *variable, long int defaultVal)
 /*!
   @brief  Get a service environment variable.
   @param   variable The variable key.
-  @param   defaultVal The variable value.
-  @param   buf (out) The buffer in which to place the variable value.
+  @param   defaultVal The default variable value, if the environment variable
+           hasn't been set.
+  @param   buf (out) The buffer in which to place the variable value. If the
+           environment variable hasn't been set, defaultVal will be copied into
+           buf.
   @param   buflen The length of the output buffer.
   @returns true if there is no error (JSON response with no explicit error)
 */
@@ -1871,7 +1874,7 @@ bool NotePayloadAddSegment(NotePayloadDesc *desc, const char segtype[NP_SEGTYPE_
   @brief  Find and copy a named segment from a segmented payload
   @param   desc Pointer to the payload descriptor
   @param   segtype Pointer to the 4-character payload identifier
-  @param   pdata Pointer to the found segment if return is true
+  @param   pdata Buffer to copy found segment to if return is true
   @param   len The expected length of the returned segment
   @returns boolean. `true` if named segment is restored successfully
 */
