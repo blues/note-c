@@ -8,7 +8,7 @@ or C++ program. Your program may programmatically configure Notecard and send
 Notes to [Notehub.io][notehub].
 
 This library is used by the [note-arduino library][note-arduino], which includes
-it as a git submodule.
+it as a git subtree.
 
 ## Documentation
 
