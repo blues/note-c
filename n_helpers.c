@@ -989,7 +989,7 @@ bool NoteGetStatus(char *statusBuf, int statusBufLen, JTIME *bootTime, bool *ret
 
 //**************************************************************************/
 /*!
-  @brief  Get Status of the Notecard, with a supression timer.
+  @brief  Get Status of the Notecard, with a suppression timer.
   @param  statusBuf (out) a buffer to populate with the Notecard status
   from the response.
   @param  statusBufLen The length of the status buffer.
