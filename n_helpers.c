@@ -182,19 +182,16 @@ void NotePrintln(const char *line)
 bool NotePrint(const char *text)
 {
     bool success = false;
+
     if (NoteIsDebugOutputActive()) {
         NoteDebug(text);
         return true;
     }
-    int inLog = 0;
-    if (inLog++ != 0) {
-        inLog--;
-        return false;
-    }
+
     J *req = NoteNewRequest("card.log");
     JAddStringToObject(req, "text", text);
     success = NoteRequest(req);
-    inLog--;
+
     return success;
 }
 
@@ -328,7 +325,7 @@ bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneO
     if (retZoneOffset != NULL) {
         *retZoneOffset = curZoneOffsetMins;
     }
-    return true;;
+    return true;
 }
 
 //**************************************************************************/
