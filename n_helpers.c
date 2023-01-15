@@ -1114,7 +1114,7 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes)
     if (req != NULL) {
         // Add the base64 item in a wonderful way that doesn't strdup the huge string
         if (stateb64 != NULL) {
-            J *stringReferenceItem = JCreateStringValue(stateb64);
+            J *stringReferenceItem = JCreateStringReference(stateb64);
             if (stringReferenceItem != NULL) {
                 JAddItemToObject(req, "payload", stringReferenceItem);
             }
