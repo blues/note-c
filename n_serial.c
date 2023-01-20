@@ -73,7 +73,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
     // in our error handling.
     uint32_t startMs;
     for (startMs = _GetMs(); !_SerialAvailable(); ) {
-        if (_GetMs() >= startMs + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+        if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
 #ifdef ERRDBG
             _Debug("reply to request didn't arrive from module in time\n");
 #endif
@@ -101,7 +101,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
     while (ch != '\n') {
         if (!_SerialAvailable()) {
             ch = 0;
-            if (_GetMs() >= startMs + (NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+            if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
 #ifdef ERRDBG
                 jsonbuf[jsonbufLen] = '\0';
                 _Debug("received only partial reply after timeout:\n");
