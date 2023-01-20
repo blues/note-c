@@ -100,6 +100,42 @@ TEST_CASE("NoteRequestWithRetry")
             CHECK(NoteTransaction_fake.call_count == 2);
         }
     }
+
+    SECTION("Overflow in NoteGetMs happens") {
+	const long unsigned int max_uint32 = 4294967295;
+
+        const uint32_t timeoutSec = 5;
+        const uint32_t timeoutMSec = timeoutSec * 1000;
+
+        // Setup overflow condition in array:
+        // 1. First value is 5 seconds before overflow
+        // 2. Second value is 4 seconds before overflow
+        // 3. Third value is 3 seconds after overflow
+        long unsigned int getMsReturnVals[3] = {
+		max_uint32 - timeoutMSec , 
+		max_uint32 - (timeoutMSec  - 1000), 
+		3000
+	};
+
+        SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 3);
+
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != nullptr);
+
+        SECTION("Timeout expires") {
+
+            SECTION("NULL responses") {
+                NoteTransaction_fake.return_val = NULL;
+            }
+            SECTION("I/O error responses") {
+                NoteTransaction_fake.custom_fake = NoteTransactionIOError;
+            }
+
+	    printf("Running\n");
+            CHECK(!NoteRequestWithRetry(req, timeoutSec));
+            CHECK(NoteTransaction_fake.call_count == 2);
+        }
+    }
 }
 
 }
