@@ -167,6 +167,27 @@ TEST_CASE("i2cNoteTransaction")
             CHECK(NoteI2CReceive_fake.call_count == 1);
         }
 
+        SECTION("Force overflow timeout") {
+            NoteMalloc_fake.custom_fake = malloc;
+            NoteI2CReceive_fake.custom_fake = NoteI2CReceiveNothing;
+
+	    const long unsigned int max_uint32 = 4294967295;
+
+	    // Setup overflow condition in array:
+	    // 1. First value is NOTECARD_TRANSACTION_TIMEOUT_SEC seconds before overflow.
+	    // 2. Second value is 0 seconds after overflow.
+            long unsigned int getMsReturnVals[] = {
+		    max_uint32 - NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000,
+		    0
+	    };
+
+            SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 2);
+
+            CHECK(i2cNoteTransaction(noteAddReq, &resp) != NULL);
+            CHECK(NoteI2CTransmit_fake.call_count == 1);
+            CHECK(NoteI2CReceive_fake.call_count == 1);
+        }
+
         SECTION("Check response") {
             SECTION("One receipt") {
                 NoteMalloc_fake.custom_fake = malloc;
