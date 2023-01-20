@@ -203,7 +203,8 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
     J *rsp;
 
     // Calculate expiry time in milliseconds
-    uint32_t expiresMs = _GetMs() + (timeoutSeconds * 1000);
+    uint32_t expiresMs = _GetMs();
+    uint32_t timeouMilliSeconds = timeoutSeconds * 1000;
 
     while(true) {
         // Execute the transaction
@@ -224,7 +225,7 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
         }
 
         // Exit loop on timeout
-        if (_GetMs() >= expiresMs) {
+        if (_GetMs() - expiresMs >= timeouMilliSeconds) {
             break;
         }
     }
