@@ -113,6 +113,22 @@ TEST_CASE("serialNoteReset")
 
         CHECK(NoteSerialReceive_fake.call_count > 0);
     }
+
+    SECTION("Overflow in NoteGetMs happens") {
+
+        NoteSerialReset_fake.return_val = true;
+        NoteSerialReceive_fake.return_val = ' ' - 1;
+
+        bool serialAvailRetVals[] = {true, false};
+        SET_RETURN_SEQ(NoteSerialAvailable, serialAvailRetVals, 2);
+
+	const long unsigned int max_uint32 = 4294967295;
+        long unsigned int getMsReturnVals[] = {max_uint32 - 500, max_uint32 - 400, 0};
+
+        SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 3);
+
+        CHECK(serialNoteReset());
+    }
 }
 
 }
