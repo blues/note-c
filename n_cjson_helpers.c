@@ -546,8 +546,7 @@ int JGetType(J *rsp, const char *field)
         }
         return JTYPE_NUMBER;
     case JRaw:
-    case JString:
-      {
+    case JString: {
         v = item->valuestring;
         if (v == NULL || v[0] == 0) {
             return JTYPE_STRING_BLANK;
@@ -577,7 +576,7 @@ int JGetType(J *rsp, const char *field)
             return JTYPE_STRING_BOOL_FALSE;
         }
         return JTYPE_STRING;
-      }
+    }
     case JObject:
         return JTYPE_OBJECT;
     case JArray:
