@@ -190,7 +190,7 @@ bool serialNoteReset()
         bool somethingFound = false;
         bool nonControlCharFound = false;
         uint32_t startMs = _GetMs();
-        while (_GetMs() < startMs+500) {
+        while (_GetMs() - startMs < 500) {
             while (_SerialAvailable()) {
                 somethingFound = true;
                 if (_SerialReceive() >= ' ') {
