@@ -171,6 +171,33 @@ TEST_CASE("serialNoteTransaction")
             REQUIRE(NoteSerialReceive_fake.call_count == 0);
         }
 
+        SECTION("Force overflow timeout before receive") {
+            NoteSerialAvailable_fake.return_val = false;
+            NoteMalloc_fake.custom_fake = malloc;
+            NoteSerialReceive_fake.return_val = '{';
+
+            const long unsigned int max_uint32 = 4294967295;
+
+            // Setup overflow condition in array:
+            // 1. First value is NOTECARD_TRANSACTION_TIMEOUT_SEC seconds before overflow
+            // 2. Second value is NOTECARD_TRANSACTION_TIMEOUT_SEC - 1 seconds before overflow
+            // 3. Third value is just after overflow
+            long unsigned int getMsReturnVals[] = {
+                    max_uint32 - NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000,
+                    max_uint32 - (NOTECARD_TRANSACTION_TIMEOUT_SEC - 1) * 1000,
+                    0
+            };
+
+            SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 3);
+            const char* err;
+
+            REQUIRE((err = serialNoteTransaction(noteAddReq, &resp)) != NULL);
+            // Make sure we actually timed out by checking the error message.
+            REQUIRE(strstr(err, "timeout") != NULL);
+            REQUIRE(NoteSerialTransmit_fake.call_count == 1);
+            REQUIRE(NoteSerialReceive_fake.call_count == 0);
+        }
+
         SECTION("Check response") {
             SECTION("One receipt") {
                 NoteSerialAvailable_fake.return_val = true;
