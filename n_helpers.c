@@ -754,7 +754,7 @@ bool NoteGetLocation(JNUMBER *retLat, JNUMBER *retLon, JTIME *time, char *status
     J *rsp = NoteRequestResponse(NoteNewRequest("card.location"));
     if (rsp != NULL) {
         if (statusBuf != NULL) {
-            strlcpy(statusBuf, JGetString(rsp, "err"), statusBufLen);
+            strlcpy(statusBuf, JGetString(rsp, "status"), statusBufLen);
         }
         if (JIsPresent(rsp, "lat") && JIsPresent(rsp, "lon")) {
             if (retLat != NULL) {
