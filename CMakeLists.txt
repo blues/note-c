@@ -80,7 +80,9 @@ if(BUILD_TESTS)
          NoteSerialReset;
          NoteIsDebugOutputActive;
          NoteDebug;
-         NotePrint"
+         NotePrint;
+         NoteNewCommand;
+         NoteRequest"
     )
     foreach(MOCKED_FN ${MOCKED_FNS})
         string(APPEND OBJCOPY_WEAKEN "-W ${MOCKED_FN} ")
