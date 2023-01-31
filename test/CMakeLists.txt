@@ -108,6 +108,8 @@ if(COVERAGE)
     foreach(EXCLUDE_FILE ${EXCLUDE_FROM_COVERAGE})
         string(APPEND LCOV_EXCLUDE "--exclude '*/${EXCLUDE_FILE}' ")
     endforeach()
+    # We don't care about coverage for the tests themselves.
+    string(APPEND LCOV_EXCLUDE "--exclude '*/test/*' ")
     separate_arguments(LCOV_EXCLUDE_LIST NATIVE_COMMAND "${LCOV_EXCLUDE}")
     # Run lcov to produce a coverage report in the coverage directory.
     add_custom_command(
