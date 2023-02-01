@@ -158,9 +158,24 @@ TEST_CASE("serialNoteTransaction")
             NoteSerialAvailable_fake.return_val = false;
             NoteMalloc_fake.custom_fake = malloc;
             NoteSerialReceive_fake.return_val = '{';
-            long unsigned int getMsReturnVals[] = {
-                0, 100, NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000 + 1
-            };
+            long unsigned int getMsReturnVals[3];
+
+            SECTION("No millisecond overflow") {
+                getMsReturnVals[0] = 0;
+                getMsReturnVals[1] = 100;
+                getMsReturnVals[2] = NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000
+                                     + 1;
+            }
+
+            SECTION("Millisecond overflow") {
+                getMsReturnVals[0] = UINT32_MAX -
+                                     NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000;
+                getMsReturnVals[1] = UINT32_MAX -
+                                     (NOTECARD_TRANSACTION_TIMEOUT_SEC - 1) *
+                                     1000;
+                getMsReturnVals[2] = 0;
+            }
+
             SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 3);
             const char* err;
 
