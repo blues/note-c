@@ -17,6 +17,7 @@ endif()
 option(BUILD_TESTS "Build tests." ON)
 option(BUILD_SHARED_LIBS "Build note-c as a shared library." ON)
 option(COVERAGE "Compile for test coverage reporting." OFF)
+option(MEM_CHECK "Run tests with Valgrind." OFF)
 
 add_compile_options(
     -Wall
@@ -50,8 +51,16 @@ if(BUILD_TESTS)
         TEST
     )
 
-    # Including this here rather than in test/CMakeLists.txt allows us to run
+    # Including CTest here rather than in test/CMakeLists.txt allows us to run
     # ctest from the root build directory (e.g. build/ instead of build/test/).
+    # We also need to set MEMORYCHECK_COMMAND_OPTIONS before including this.
+    # See: https://stackoverflow.com/a/60741757
+    if(MEM_CHECK)
+        # Go ahead and make sure we can find valgrind while we're here.
+        find_program(VALGRIND valgrind REQUIRED)
+        message(STATUS "Found valgrind: ${VALGRIND}")
+        set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --error-exitcode=1")
+    endif(MEM_CHECK)
     include(CTest)
 
     # If we don't weaken the functions we're mocking in the tests, the linker

@@ -1,10 +1,12 @@
 #!/bin/bash
 
 COVERAGE=0
+MEM_CHECK=0
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --coverage) COVERAGE=1 ;;
+        --mem-check) MEM_CHECK=1 ;;
         *) echo "Unknown parameter: $1"; exit 1 ;;
     esac
     shift
@@ -22,9 +24,14 @@ pushd $ROOT_SRC_DIR $@ > /dev/null
 
 CMAKE_OPTIONS=""
 BUILD_OPTIONS=""
+CTEST_OPTIONS=""
 if [[ $COVERAGE -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCOVERAGE=1"
     BUILD_OPTIONS="${BUILD_OPTIONS} coverage"
+fi
+if [[ $MEM_CHECK -eq 1 ]]; then
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DMEM_CHECK=1"
+    CTEST_OPTIONS="${CTEST_OPTIONS} -T memcheck"
 fi
 
 cmake -B build/ $CMAKE_OPTIONS
@@ -34,14 +41,14 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-cmake --build build/ -- $BUILD_OPTIONS
+cmake --build build/ -- $BUILD_OPTIONS -j
 if [[ $? -ne 0 ]]; then
     echo "Failed to build code."
     popd $@ > /dev/null
     exit 1
 fi
 
-ctest --test-dir build/ --output-on-failure
+ctest --test-dir build/ --output-on-failure ${CTEST_OPTIONS}
 if [[ $? -ne 0 ]]; then
     echo "ctest failed."
     popd $@ > /dev/null

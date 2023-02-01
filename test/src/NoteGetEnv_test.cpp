@@ -47,7 +47,9 @@ TEST_CASE("NoteGetEnv")
     }
 
     SECTION("Response is invalid") {
-        NoteNewRequest_fake.return_val = JCreateObject();
+        J *req = JCreateObject();
+        REQUIRE(req != NULL);
+        NoteNewRequest_fake.return_val = req;
 
         SECTION("Response is NULL") {
             NoteRequestResponse_fake.return_val = NULL;
@@ -74,6 +76,8 @@ TEST_CASE("NoteGetEnv")
         CHECK(NoteRequestResponse_fake.call_count == 1);
         // Ensure the default value was copied into outBuf.
         CHECK(!strcmp(outBuf, defaultVal));
+
+        JDelete(req);
     }
 
     SECTION("Response is valid") {
