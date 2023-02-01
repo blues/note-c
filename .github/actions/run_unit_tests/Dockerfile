@@ -17,6 +17,7 @@ RUN ["dash", "-c", "\
      ca-certificates \
      curl \
      lcov \
+     valgrind \
  && apt-get clean \
  && apt-get purge \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
