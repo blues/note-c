@@ -94,7 +94,11 @@ if(BUILD_TESTS)
          NoteRequest;
          JCreateObject;
          NoteTransactionStart;
-         NoteUserAgent"
+         NoteUserAgent;
+         serialNoteReset;
+         serialNoteTransaction;
+         i2cNoteReset;
+         i2cNoteTransaction"
     )
     foreach(MOCKED_FN ${MOCKED_FNS})
         string(APPEND OBJCOPY_WEAKEN "-W ${MOCKED_FN} ")
