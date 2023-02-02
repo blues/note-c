@@ -91,7 +91,10 @@ if(BUILD_TESTS)
          NoteDebug;
          NotePrint;
          NoteNewCommand;
-         NoteRequest"
+         NoteRequest;
+         JCreateObject;
+         NoteTransactionStart;
+         NoteUserAgent"
     )
     foreach(MOCKED_FN ${MOCKED_FNS})
         string(APPEND OBJCOPY_WEAKEN "-W ${MOCKED_FN} ")
