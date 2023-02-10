@@ -111,6 +111,8 @@ add_test(JGetItemName_test)
 add_test(JAllocString_test)
 add_test(JType_test)
 add_test(JGetType_test)
+add_test(NotePrintf_test)
+add_test(NoteDebugf_test)
 
 if(COVERAGE)
     find_program(LCOV lcov REQUIRED)

@@ -1,5 +1,5 @@
 /*!
- * @file NotePrintln_test.cpp
+ * @file NotePrintf_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -24,29 +24,24 @@ FAKE_VALUE_FUNC(bool, NotePrint, const char *)
 namespace
 {
 
-char printBuf[32];
-size_t printBufLen = 0;
+char printBuf[32] = {0};
 
 bool NotePrintSave(const char* text)
 {
-    strcpy(printBuf + printBufLen, text);
-    printBufLen += strlen(text);
-    printBuf[printBufLen] = '\0';
-
+    strcpy(printBuf, text);
     return true;
 }
 
-TEST_CASE("NotePrintln")
+TEST_CASE("NotePrintf")
 {
+    RESET_FAKE(NotePrint);
     NotePrint_fake.custom_fake = NotePrintSave;
-
+    NoteSetFnDefault(malloc, free, NULL, NULL);
     const char msg[] = "Hello world!";
-    size_t len = strlen(msg);
 
-    NotePrintln(msg);
+    NotePrintf("Hello %s!", "world");
 
-    CHECK(!(memcmp(printBuf, msg, len)));
-    CHECK(!(memcmp(printBuf + len, c_newline, 2)));
+    CHECK(strcmp(printBuf, msg) == 0);
 }
 
 }
