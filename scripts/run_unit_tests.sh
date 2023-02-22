@@ -22,7 +22,8 @@ fi
 
 pushd $ROOT_SRC_DIR $@ > /dev/null
 
-CMAKE_OPTIONS=""
+# Shared library makes the build smaller.
+CMAKE_OPTIONS="-DBUILD_TESTS=1 -DBUILD_SHARED_LIBS=1"
 BUILD_OPTIONS=""
 CTEST_OPTIONS=""
 if [[ $COVERAGE -eq 1 ]]; then

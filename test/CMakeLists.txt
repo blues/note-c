@@ -47,6 +47,9 @@ macro(add_test TEST_NAME)
         PRIVATE note_c
         PRIVATE Catch2::Catch2WithMain
     )
+    target_compile_definitions(${TEST_NAME}
+        PRIVATE TEST
+    )
 
     list(APPEND TEST_TARGETS ${TEST_NAME})
 
