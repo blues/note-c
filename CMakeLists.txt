@@ -14,17 +14,10 @@ if(NOT EXISTS ${PROJECT_BINARY_DIR}/.gitignore)
     file(WRITE ${PROJECT_BINARY_DIR}/.gitignore "*")
 endif()
 
-option(BUILD_TESTS "Build tests." ON)
-option(BUILD_SHARED_LIBS "Build note-c as a shared library." ON)
+option(BUILD_TESTS "Build tests." OFF)
+option(BUILD_SHARED_LIBS "Build note-c as a shared library." OFF)
 option(COVERAGE "Compile for test coverage reporting." OFF)
 option(MEM_CHECK "Run tests with Valgrind." OFF)
-
-add_compile_options(
-    -Wall
-    -Wextra
-    -Wpedantic
-    -Werror
-)
 
 set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(
@@ -45,12 +38,20 @@ add_library(
     ${NOTE_C_SRC_DIR}/n_request.c
     ${NOTE_C_SRC_DIR}/n_str.c
 )
+target_compile_options(
+    note_c
+    PRIVATE
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Werror
+)
+target_include_directories(
+    note_c
+    PUBLIC ${NOTE_C_SRC_DIR}
+)
 
 if(BUILD_TESTS)
-    add_compile_definitions(
-        TEST
-    )
-
     # Including CTest here rather than in test/CMakeLists.txt allows us to run
     # ctest from the root build directory (e.g. build/ instead of build/test/).
     # We also need to set MEMORYCHECK_COMMAND_OPTIONS before including this.

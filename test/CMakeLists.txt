@@ -25,8 +25,7 @@ else()
     if(Catch2_FOUND)
         message(STATUS "Found Catch2: ${Catch2_CONFIG}")
     else()
-        message(STATUS "Couldn't find installed Catch2.")
-        download_catch2()
+        message(FATAL_ERROR "Couldn't find installed Catch2. To download Catch2 and build from source, re-run cmake with -DBUILD_CATCH=1.")
     endif(Catch2_FOUND)
 endif(BUILD_CATCH)
 
@@ -46,6 +45,9 @@ macro(add_test TEST_NAME)
     target_link_libraries(${TEST_NAME}
         PRIVATE note_c
         PRIVATE Catch2::Catch2WithMain
+    )
+    target_compile_definitions(${TEST_NAME}
+        PRIVATE TEST
     )
 
     list(APPEND TEST_TARGETS ${TEST_NAME})
