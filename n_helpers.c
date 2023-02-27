@@ -586,7 +586,7 @@ bool NoteSetEnvDefaultNumber(const char *variable, JNUMBER defaultVal)
 /**************************************************************************/
 JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal)
 {
-    char buf[JNTOA_MAX], buf2[JNTOA_MAX];;
+    char buf[JNTOA_MAX], buf2[JNTOA_MAX];
     JNtoA(defaultVal, buf2, -1);
     NoteGetEnv(variable, buf2, buf, sizeof(buf));
     return JAtoN((const char*)buf, NULL);
@@ -602,7 +602,7 @@ JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal)
 /**************************************************************************/
 long int NoteGetEnvInt(const char *variable, long int defaultVal)
 {
-    char buf[32], buf2[32];;
+    char buf[32], buf2[32];
     JItoA(defaultVal, buf2);
     NoteGetEnv(variable, buf2, buf, sizeof(buf));
     return atoi(buf);
@@ -1140,8 +1140,7 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes)
 //**************************************************************************/
 /*!
   @brief  Wake the module by restoring state into a state buffer of a
-  specified length, and fail if it isn't available or isn't that
-  length.
+  specified length, and fail if it isn't available or isn't that length.
   @param  stateLen A length of the state payload buffer to return to the host.
   @param  state (out) The in-memory payload to return to the host.
   @returns boolean. `true` if request was successful.
@@ -1167,8 +1166,8 @@ bool NoteWake(int stateLen, void *state)
 /*!
   @brief  Wake the module by restoring state into a state buffer, returning
   its length, and fail if it isn't available.
-  @param  payloadLen (out) Optional place to receive the length of the returned buffer
-  @param  payload (out) The place to store address of returned in-memory payload
+  @param  NotePayloadDesc (out) Payload descriptor to hold the retrieved
+  payload.
   @returns boolean. `true` if request was successful.
 */
 /**************************************************************************/
