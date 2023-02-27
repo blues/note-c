@@ -100,7 +100,10 @@ if(BUILD_TESTS)
          serialNoteTransaction;
          i2cNoteReset;
          i2cNoteTransaction;
-         JCreateStringValue"
+         JCreateStringValue;
+         NoteSetEnvDefault;
+         NoteSleep;
+         NotePayloadRetrieveAfterSleep"
     )
     foreach(MOCKED_FN ${MOCKED_FNS})
         string(APPEND OBJCOPY_WEAKEN "-W ${MOCKED_FN} ")
