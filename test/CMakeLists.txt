@@ -121,6 +121,7 @@ add_test(NoteGetEnvNumber_test)
 add_test(NotePayloadSaveAndSleep_test)
 add_test(NoteWake_test)
 add_test(NotePayloadRetrieveAfterSleep_test)
+add_test(NoteUserAgent_test)
 
 if(COVERAGE)
     find_program(LCOV lcov REQUIRED)
