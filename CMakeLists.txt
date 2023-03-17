@@ -103,7 +103,10 @@ if(BUILD_TESTS)
          JCreateStringValue;
          NoteSetEnvDefault;
          NoteSleep;
-         NotePayloadRetrieveAfterSleep"
+         NotePayloadRetrieveAfterSleep;
+         NoteTimeValidST;
+         NoteTimeST;
+         NoteRegion"
     )
     foreach(MOCKED_FN ${MOCKED_FNS})
         string(APPEND OBJCOPY_WEAKEN "-W ${MOCKED_FN} ")
