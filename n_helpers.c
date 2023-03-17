@@ -135,7 +135,10 @@ static void setTime(JTIME seconds)
   @brief  Set the time from a source that is NOT the Notecard
   @param   seconds The UNIX Epoch time, or 0 to set back to automatic Notecard time
   @param   offset The local time zone offset, in minutes, to adjust UTC
-  @param   zone The optional local time zone name (3 character c-string)
+  @param   zone The optional local time zone name (3 character c-string). Note
+                that this isn't used in any time calculations. To compute
+                accurate local time, only the offset is used. See
+                https://www.iana.org/time-zones for a time zone database.
   @param   zone The optional country
   @param   area The optional region
 */
@@ -330,7 +333,7 @@ bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneO
 
 //**************************************************************************/
 /*!
-  @brief  Return local region info, if known. Returns true if valid.
+  @brief  Return local time info, if known. Returns true if valid.
   @param   year, month, day, hour, minute, second - pointers to where to return time/date
   @param   retZone (in-out) if NULL, local time will be returned in UTC, else returns pointer to zone string
   @returns boolean indicating if either the zone or DST have changed since last call
@@ -1414,7 +1417,8 @@ bool NoteTemplate(const char *target, J *body)
 
 //**************************************************************************/
 /*!
-  @brief  Add a Note to a Notefile with `note.add`.
+  @brief  Add a Note to a Notefile with `note.add`. Body is freed, regardless
+          of success.
   @param   target The Notefile on which to set a template.
   @param   body The template body.
   @param   urgent Whether to perform an immediate sync after the Note
@@ -1488,11 +1492,15 @@ bool NoteSendToRoute(const char *method, const char *routeAlias, char *notefile,
     body = JDetachItemFromObject(rsp, "body");
     NoteDeleteResponse(rsp);
 
-    // Create the post transaction
+    // Create the web transaction
     char request[32];
     strlcpy(request, "web.", sizeof(request));
     strlcat(request, method, sizeof(request));
     req = NoteNewRequest(request);
+    if (req == NULL) {
+        JDelete(body);
+        return false;
+    }
 
     // Add the body, and the alias of the route on the notehub, hard-wired here
     JAddItemToObject(req, "body", body);
