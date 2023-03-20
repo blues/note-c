@@ -1583,10 +1583,10 @@ bool NoteGetContact(char *nameBuf, int nameBufLen, char *orgBuf, int orgBufLen, 
 //**************************************************************************/
 /*!
   @brief  Set the Notecard contact info.
-  @param   nameBuf (out) The contact name buffer.
-  @param   orgBuf (out) The contact organization buffer.
-  @param   roleBuf (out) The contact role buffer.
-  @param   emailBuf (out) The contact email buffer.
+  @param   nameBuf (in) The contact name buffer.
+  @param   orgBuf (in) The contact organization buffer.
+  @param   roleBuf (in) The contact role buffer.
+  @param   emailBuf (in) The contact email buffer.
   @returns boolean. `true` if request was successful.
 */
 /**************************************************************************/
@@ -1650,7 +1650,7 @@ bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel)
 
     // Suppress polls so as to not overwhelm the notecard
     static uint32_t lastCommStatusPollMs = 0;
-    if (lastCommStatusPollMs != 0 && _GetMs() < (lastCommStatusPollMs + pollFrequencyMs)) {
+    if (lastCommStatusPollMs != 0 && (_GetMs() - lastCommStatusPollMs) < (uint32_t) pollFrequencyMs) {
         return false;
     }
 
