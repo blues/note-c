@@ -48,6 +48,9 @@ static bool locationValid = false;
 static uint32_t connectivityTimer = 0;
 static bool cardConnected = false;
 
+// Status suppression timer
+static uint32_t statusTimer = 0;
+
 // Turbo communications mode, for special use cases and well-tested hardware
 bool cardTurboIO = false;
 
@@ -955,39 +958,8 @@ bool NoteGetServiceConfigST(char *productBuf, int productBufLen, char *serviceBu
 /**************************************************************************/
 bool NoteGetStatus(char *statusBuf, int statusBufLen, JTIME *bootTime, bool *retUSB, bool *retSignals)
 {
-    bool success = false;
-    if (statusBuf != NULL) {
-        statusBuf[0] = '\0';
-    }
-    if (bootTime != NULL) {
-        *bootTime = 0;
-    }
-    if (retUSB != NULL) {
-        *retUSB = false;
-    }
-    if (retSignals != NULL) {
-        *retSignals = false;
-    }
-    J *rsp = NoteRequestResponse(NoteNewRequest("card.status"));
-    if (rsp != NULL) {
-        success = !NoteResponseError(rsp);
-        if (success) {
-            if (statusBuf != NULL) {
-                strlcpy(statusBuf, JGetString(rsp, "status"), statusBufLen);
-            }
-            if (bootTime != NULL) {
-                *bootTime = JGetInt(rsp, "time");
-            }
-            if (retUSB != NULL) {
-                *retUSB = JGetBool(rsp, "usb");
-            }
-            if (retSignals != NULL && JGetBool(rsp, "connected")) {
-                *retSignals = (JGetInt(rsp, "signals") > 0);
-            }
-        }
-        NoteDeleteResponse(rsp);
-    }
-    return success;
+    statusTimer = 0;
+    return NoteGetStatusST(statusBuf, statusBufLen, bootTime, retUSB, retSignals);
 }
 
 //**************************************************************************/
@@ -1009,7 +981,6 @@ bool NoteGetStatusST(char *statusBuf, int statusBufLen, JTIME *bootTime, bool *r
     static JTIME lastBootTime = 0;
     static bool lastUSB = false;
     static bool lastSignals = false;
-    static uint32_t statusTimer = 0;
 
     // Refresh if it's time to do so
     if (timerExpiredSecs(&statusTimer, suppressionTimerSecs)) {
