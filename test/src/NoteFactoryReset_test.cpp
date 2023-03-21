@@ -26,7 +26,7 @@ FAKE_VALUE_FUNC(bool, NoteReset)
 namespace
 {
 
-TEST_CASE("NoteFactoryReset_test")
+TEST_CASE("NoteFactoryReset")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
