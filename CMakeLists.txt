@@ -64,6 +64,11 @@ if(BUILD_TESTS)
     endif(MEM_CHECK)
     include(CTest)
 
+    target_compile_definitions(
+        note_c
+        PUBLIC TEST
+    )
+
     # If we don't weaken the functions we're mocking in the tests, the linker
     # will complain about multiple function definitions: the mocked one and the
     # "real" one from note-c. Weakening the real function causes the mock
