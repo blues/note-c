@@ -130,7 +130,7 @@ void NoteResumeTransactionDebug(void);
 #define SYNCSTATUS_LEVEL_ALL          -1
 bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel);
 bool NoteRequest(J *req);
-bool NoteRequestWithRetry(J *req, uint32_t timeoutms);
+bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds);
 #define NoteResponseError(rsp) (!JIsNullString(rsp, "err"))
 #define NoteResponseErrorContains(rsp, errstr) (JContainsString(rsp, "err", errstr))
 #define NoteDeleteResponse(rsp) JDelete(rsp)
