@@ -33,6 +33,10 @@ fi
 if [[ $MEM_CHECK -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DMEM_CHECK=1"
     CTEST_OPTIONS="${CTEST_OPTIONS} -T memcheck"
+
+    # This fixes a problem when running valgrind in a Docker container when the
+    # host machine is running Fedora. See https://stackoverflow.com/a/75293014.
+    ulimit -n 1024
 fi
 
 cmake -B build/ $CMAKE_OPTIONS
