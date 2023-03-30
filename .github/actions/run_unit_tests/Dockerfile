@@ -13,10 +13,16 @@ FROM debian:stable-slim
 RUN ["dash", "-c", "\
     apt-get update --quiet \
  && apt-get install --assume-yes --no-install-recommends --quiet \
-     build-essential \
+     astyle \
      ca-certificates \
      curl \
+     g++ \
+     gcc \
+     gdb \
+     git \
      lcov \
+     make \
+     nano \
      valgrind \
  && apt-get clean \
  && apt-get purge \

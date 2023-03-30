@@ -140,6 +140,8 @@ void NoteErrorClean(char *errbuf);
 void NoteSetFnDebugOutput(debugOutputFn fn);
 void NoteSetFnTransaction(txnStartFn startFn, txnStopFn stopFn);
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, mutexFn unlockNotefn);
+void NoteSetFnI2CMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn);
+void NoteSetFnNoteMutex(mutexFn lockNotefn, mutexFn unlockNotefn);
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
 void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn);
 void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn writefn, serialAvailableFn availfn, serialReceiveFn readfn);
