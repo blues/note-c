@@ -1027,7 +1027,9 @@ bool NoteGetStatusST(char *statusBuf, int statusBufLen, JTIME *bootTime, bool *r
   @param  payload An optional binary payload to keep in memory while the host sleeps.
   @param  seconds The duration to sleep.
   @param  modes Optional list of additional `card.attn` modes.
-  @returns boolean. `true` if request was successful.
+  @returns boolean. `true` if the cmd is sent without error. The Notecard
+           does not reply to `cmd` so a `true` return value does not guarantee
+           that the sleep request was received and processed by the Notecard.
 */
 /**************************************************************************/
 bool NotePayloadSaveAndSleep(NotePayloadDesc *desc, uint32_t seconds, const char *modes)
@@ -1071,7 +1073,9 @@ bool NotePayloadSaveAndSleep(NotePayloadDesc *desc, uint32_t seconds, const char
   @param  stateb64 A base64 payload to keep in memory while the host sleeps.
   @param  seconds The duration to sleep.
   @param  modes Optional list of additional `card.attn` modes.
-  @returns boolean. `true` if request was successful.
+  @returns boolean. `true` if the cmd is sent without error. The Notecard
+           does not reply to `cmd` so a `true` return value does not guarantee
+           that the sleep request was received and processed by the Notecard.
 */
 /**************************************************************************/
 bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes)
@@ -1101,6 +1105,9 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes)
         }
         JAddStringToObject(req, "mode", modestr);
         JAddNumberToObject(req, "seconds", seconds);
+
+        // Note that since we use cmd and not req a true return value from
+        // NoteRequest means only that the cmd was sent without error.
         success = NoteRequest(req);
     }
 
