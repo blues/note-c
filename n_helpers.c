@@ -1053,9 +1053,9 @@ bool NoteGetStatusST(char *statusBuf, int statusBufLen, JTIME *bootTime, bool *r
   @param  payload An optional binary payload to keep in memory while the host sleeps.
   @param  seconds The duration to sleep.
   @param  modes Optional list of additional `card.attn` modes.
-  @returns boolean. `true` if cmd was sent. The Notecard does not reply to
-           `cmd` so a `true` return value does not guarantee that the sleep
-           request was received and processed by the Notecard.
+  @returns boolean. `true` if the cmd is sent without error. The Notecard
+           does not reply to `cmd` so a `true` return value does not guarantee
+           that the sleep request was received and processed by the Notecard.
 */
 /**************************************************************************/
 bool NotePayloadSaveAndSleep(NotePayloadDesc *desc, uint32_t seconds, const char *modes)
