@@ -17,56 +17,57 @@
 
 // Override-able statics
 static char *n_agent = (char *) "note-c";
-static char *n_os_name = NULL;
-static char *n_os_platform = NULL;
-static char *n_os_family = NULL;
-static char *n_os_version = NULL;
+static int n_cpu_cores = 0;
 static int n_cpu_mem = 0;
 static int n_cpu_mhz = 0;
-static int n_cpu_cores = 0;
 static char *n_cpu_vendor = NULL;
+static char *n_os_family = NULL;
+static char *n_os_name = NULL;
+static char *n_os_platform = NULL;
+static char *n_os_version = NULL;
 
-static char *n_cpu_name = NULL;
 #if defined(ARDUINO_ARCH_ARC32)
-n_cpu_name = (char *) "arc32";
+static char *n_cpu_name = (char *) "arc32";
 #elif defined(ARDUINO_ARCH_AVR)
-n_cpu_name = (char *) "avr";
+static char *n_cpu_name = (char *) "avr";
 #elif defined(ARDUINO_ARCH_ESP32)
-n_cpu_name = (char *) "esp32";
+static char *n_cpu_name = (char *) "esp32";
 #elif defined(ARDUINO_ARCH_ESP8266)
-n_cpu_name = (char *) "esp8266";
+static char *n_cpu_name = (char *) "esp8266";
 #elif defined(ARDUINO_ARCH_MEGAAVR)
-n_cpu_name = (char *) "megaavr";
+static char *n_cpu_name = (char *) "megaavr";
 #elif defined(ARDUINO_ARCH_NRF52840)
-n_cpu_name = (char *) "nrf52840";
+static char *n_cpu_name = (char *) "nrf52840";
 #elif defined(ARDUINO_ARCH_NRF52)
-n_cpu_name = (char *) "nrf52";
+static char *n_cpu_name = (char *) "nrf52";
 #elif defined(ARDUINO_ARCH_NRF51)
-n_cpu_name = (char *) "nrf51";
+static char *n_cpu_name = (char *) "nrf51";
 #elif defined(ARDUINO_ARCH_PIC32)
-n_cpu_name = (char *) "pic32";
+static char *n_cpu_name = (char *) "pic32";
 #elif defined(ARDUINO_ARCH_SAMD)
-n_cpu_name = (char *) "samd";
+static char *n_cpu_name = (char *) "samd";
 #elif defined(ARDUINO_ARCH_SAM)
-n_cpu_name = (char *) "sam";
+static char *n_cpu_name = (char *) "sam";
 #elif defined(ARDUINO_ARCH_SPRESENSE)
-n_cpu_name = (char *) "spresence";
+static char *n_cpu_name = (char *) "spresence";
 #elif defined(ARDUINO_ARCH_STM32F0)
-n_cpu_name = (char *) "stm32f0";
+static char *n_cpu_name = (char *) "stm32f0";
 #elif defined(ARDUINO_ARCH_STM32F1)
-n_cpu_name = (char *) "stm32f1";
+static char *n_cpu_name = (char *) "stm32f1";
 #elif defined(ARDUINO_ARCH_STM32F4)
-n_cpu_name = (char *) "stm32f4";
+static char *n_cpu_name = (char *) "stm32f4";
 #elif defined(ARDUINO_ARCH_STM32G0)
-n_cpu_name = (char *) "stm32g0";
+static char *n_cpu_name = (char *) "stm32g0";
 #elif defined(ARDUINO_SWAN_R5)
-n_cpu_name = (char *) "swan_r5";
+static char *n_cpu_name = (char *) "swan_r5";
 #elif defined(ARDUINO_ARCH_STM32L4)
-n_cpu_name = (char *) "stm32l4";
+static char *n_cpu_name = (char *) "stm32l4";
 #elif defined(ARDUINO_ARCH_STM32U5)
-n_cpu_name = (char *) "stm32u5";
+static char *n_cpu_name = (char *) "stm32u5";
 #elif defined(ARDUINO_ARCH_STM32)
-n_cpu_name = (char *) "stm32";
+static char *n_cpu_name = (char *) "stm32";
+#else
+static char *n_cpu_name = NULL;
 #endif
 
 /**************************************************************************/
@@ -133,30 +134,32 @@ __attribute__((weak)) J *NoteUserAgent()
     JAddStringToObject(ua, "compiler", compiler);
     JAddStringToObject(ua, "req_interface", NoteActiveInterface());
 
+    // Add CPU Details
+    if (n_cpu_cores != 0) {
+        JAddNumberToObject(ua, "cpu_cores", n_cpu_cores);
+    }
     if (n_cpu_mem != 0) {
         JAddNumberToObject(ua, "cpu_mem", n_cpu_mem);
     }
     if (n_cpu_mhz != 0) {
         JAddNumberToObject(ua, "cpu_mhz", n_cpu_mhz);
     }
-    if (n_cpu_cores != 0) {
-        JAddNumberToObject(ua, "cpu_cores", n_cpu_cores);
+    if (n_cpu_name != NULL) {
+        JAddStringToObject(ua, "cpu_name", n_cpu_name);
     }
     if (n_cpu_vendor != NULL) {
         JAddStringToObject(ua, "cpu_vendor", n_cpu_vendor);
     }
-    if (n_cpu_name != NULL) {
-        JAddStringToObject(ua, "cpu_name", n_cpu_name);
-    }
 
+    // Add Operating System Details
+    if (n_os_family != NULL) {
+        JAddStringToObject(ua, "os_family", n_os_family);
+    }
     if (n_os_name != NULL) {
         JAddStringToObject(ua, "os_name", n_os_name);
     }
     if (n_os_platform != NULL) {
         JAddStringToObject(ua, "os_platform", n_os_platform);
-    }
-    if (n_os_family != NULL) {
-        JAddStringToObject(ua, "os_family", n_os_family);
     }
     if (n_os_version != NULL) {
         JAddStringToObject(ua, "os_version", n_os_version);
@@ -186,9 +189,9 @@ void NoteSetUserAgent(char *agent)
 /**************************************************************************/
 void NoteSetUserAgentOS(char *os_name, char *os_platform, char *os_family, char *os_version)
 {
+    n_os_family = os_family;
     n_os_name = os_name;
     n_os_platform = os_platform;
-    n_os_family = os_family;
     n_os_version = os_version;
 }
 
@@ -199,11 +202,11 @@ void NoteSetUserAgentOS(char *os_name, char *os_platform, char *os_family, char 
 /**************************************************************************/
 void NoteSetUserAgentCPU(int cpu_mem, int cpu_mhz, int cpu_cores, char *cpu_vendor, char *cpu_name)
 {
+    n_cpu_cores = cpu_cores;
     n_cpu_mem = cpu_mem;
     n_cpu_mhz = cpu_mhz;
-    n_cpu_cores = cpu_cores;
-    n_cpu_vendor = cpu_vendor;
     n_cpu_name = cpu_name;
+    n_cpu_vendor = cpu_vendor;
 }
 
 #endif
