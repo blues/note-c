@@ -6,8 +6,37 @@
 # Launch development environment (mount source root as /note-c/)
 # $ docker run --rm --volume $(pwd)/../../../:/note-c/ --workdir /note-c/ note_c_run_unit_tests
 
+# Global Argument(s)
+ARG DEBIAN_FRONTEND="noninteractive"
+ARG UID=1000
+ARG USER="blues"
+
 # POSIX compatible (Linux/Unix) base image.
 FROM debian:stable-slim
+
+# Import Global Argument(s)
+ARG DEBIAN_FRONTEND
+ARG UID
+ARG USER
+
+# Local Argument(s)
+
+# Create Non-Root User
+RUN ["dash", "-c", "\
+    addgroup \
+     --gid ${UID} \
+     \"${USER}\" \
+ && adduser \
+     --disabled-password \
+     --gecos \"\" \
+     --ingroup \"${USER}\" \
+     --uid ${UID} \
+     \"${USER}\" \
+ && usermod \
+     --append \
+     --groups \"dialout,plugdev\" \
+     \"${USER}\" \
+"]
 
 # Install whatever dependencies we can via apt-get.
 RUN ["dash", "-c", "\
