@@ -73,13 +73,13 @@
 // originates from the Notecard, which synchronizes the time from both the cell network and GPS.
 typedef unsigned long int JTIME;
 
-// If we're building the tests, STATIC is defined to nothing. This allows the
-// tests to access the static functions in note-c. Among other things, this
+// If we're building the tests, NOTE_C_STATIC is defined to nothing. This allows
+// the tests to access the static functions in note-c. Among other things, this
 // let's us mock these normally static functions.
-#ifdef TEST
-#define STATIC
+#ifdef NOTE_C_TEST
+#define NOTE_C_STATIC
 #else
-#define STATIC static
+#define NOTE_C_STATIC static
 #endif
 
 // C-callable functions
@@ -338,7 +338,7 @@ bool NotePayloadGetSegment(NotePayloadDesc *desc, const char segtype[NP_SEGTYPE_
 bool NoteTemplate(const char *notefileID, J *templateBody);
 
 // Make these normally static functions externally visible if building tests.
-#ifdef TEST
+#ifdef NOTE_C_TEST
 bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs);
 void setTime(JTIME seconds);
 #endif

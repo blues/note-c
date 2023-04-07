@@ -66,7 +66,7 @@ if(BUILD_TESTS)
 
     target_compile_definitions(
         note_c
-        PUBLIC TEST
+        PUBLIC NOTE_C_TEST
     )
 
     # If we don't weaken the functions we're mocking in the tests, the linker

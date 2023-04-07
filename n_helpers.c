@@ -68,8 +68,8 @@ static short normalYearDaysByMonth[] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 
 static const char *daynames[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 // Forwards
-STATIC bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs);
-STATIC int ytodays(int year);
+NOTE_C_STATIC bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs);
+NOTE_C_STATIC int ytodays(int year);
 
 //**************************************************************************/
 /*!
@@ -127,7 +127,7 @@ void NoteTimeRefreshMins(uint32_t mins)
   @param   seconds The UNIX Epoch time.
 */
 /**************************************************************************/
-STATIC void setTime(JTIME seconds)
+NOTE_C_STATIC void setTime(JTIME seconds)
 {
     timeBaseSec = seconds;
     timeBaseSetAtMs = _GetMs();
@@ -444,7 +444,7 @@ bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint
 }
 
 // Figure out how many days at start of the year
-STATIC int ytodays(int year)
+NOTE_C_STATIC int ytodays(int year)
 {
     int days = 0;
     if (0 < year) {
@@ -1621,7 +1621,7 @@ bool NoteSetContact(char *nameBuf, char *orgBuf, char *roleBuf, char *emailBuf)
 // A simple suppression timer based on a millisecond system clock.  This clock is reset to 0
 // after boot and every wake.  This returns true if the specified interval has elapsed, in seconds,
 // and it updates the timer if it expires so that we will go another period.
-STATIC bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs)
+NOTE_C_STATIC bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs)
 {
     bool expired = false;
 
