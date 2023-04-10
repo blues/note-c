@@ -418,6 +418,95 @@ void NoteDebug(const char *line)
 #endif
 }
 
+static uint8_t maxLogLevel = NOTE_C_DEBUG_W_LEVEL_DEFAULT_MAX;
+
+//**************************************************************************/
+/*!
+  @brief        Write to the debug stream, prepending the message with the file
+                and line number where this function was called. If the level is
+                above the maxLogLevel, the message will be dropped.
+  @param level  The log level of the message. See the NOTE_C_LOG_LEVEL_* macros
+                in note.h for possible values.
+  @param file   The file where this function was called. This is typically set
+                to __FILE__, which the NOTE_C_LOG_* macros will do
+                automatically. See note.h.
+  @param line   The line number where this function was called. This is
+                typically set to __LINE__, which the NOTE_C_LOG_* macros will do
+                automatically. See note.h.
+  @param format The debug message, as a printf-style format string.
+  @param ...    Zero or more values to interpolate into the format string.
+*/
+/**************************************************************************/
+void NoteDebugWithLevel(uint8_t level, const char *file, int line,
+                        const char *format, ...)
+{
+#ifndef NOTE_NODEBUG
+
+    if (level > maxLogLevel) {
+        return;
+    }
+
+    char msg[NOTE_C_DEBUG_W_LEVEL_MAX_BYTES];
+    int remaining = (int)sizeof(msg);
+    const char *levelStr = "";
+
+    switch (level) {
+    case NOTE_C_LOG_LEVEL_ERROR:
+        levelStr = "ERROR";
+        break;
+    case NOTE_C_LOG_LEVEL_WARN:
+        levelStr = "WARN";
+        break;
+    case NOTE_C_LOG_LEVEL_INFO:
+        levelStr = "INFO";
+        break;
+    case NOTE_C_LOG_LEVEL_DEBUG:
+        levelStr = "DEBUG";
+        break;
+    default:
+        return;
+    }
+
+    char *idx = msg;
+    int written = snprintf(idx, remaining, "%s:%d: (%s) ", file, line,
+                           levelStr);
+    if (written < 0 || written >= remaining) {
+        return;
+    }
+    idx += written;
+    remaining -= written;
+
+    va_list args;
+    va_start(args, format);
+    written = vsnprintf(idx, remaining, format, args);
+    va_end(args);
+    if (written < 0 || written >= remaining) {
+        return;
+    }
+    idx += written;
+    remaining -= written;
+
+    written = snprintf(idx, remaining, c_newline);
+    if (written < 0 || written >= remaining) {
+        return;
+    }
+
+    NoteDebug(msg);
+
+#endif // !NOTE_NODEBUG
+}
+
+//**************************************************************************/
+/*!
+  @brief       Set the maximum log level for NoteDebugWithLevel.
+  @param level The new maximum log level.
+*/
+/**************************************************************************/
+void NoteSetMaxLogLevel(uint8_t level)
+{
+    maxLogLevel = level;
+}
+
 //**************************************************************************/
 /*!
   @brief  Get the current milliseconds value from the platform-specific

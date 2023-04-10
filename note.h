@@ -169,6 +169,33 @@ void NoteDebug(const char *message);
 void NoteDebugln(const char *message);
 void NoteDebugIntln(const char *message, int n);
 void NoteDebugf(const char *format, ...);
+
+#define NOTE_C_LOG_LEVEL_ERROR  0
+#define NOTE_C_LOG_LEVEL_WARN   1
+#define NOTE_C_LOG_LEVEL_INFO   2
+#define NOTE_C_LOG_LEVEL_DEBUG  3
+
+void NoteDebugWithLevel(uint8_t level, const char *file, int line,
+                        const char *format, ...);
+void NoteSetMaxLogLevel(uint8_t level);
+
+#define NOTE_C_LOG_WARN(...) NoteDebugWithLevel(NOTE_C_LOG_LEVEL_WARN, \
+    __FILE__, __LINE__, __VA_ARGS__)
+#define NOTE_C_LOG_ERROR(...) NoteDebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, \
+    __FILE__, __LINE__, __VA_ARGS__)
+#define NOTE_C_LOG_INFO(...) NoteDebugWithLevel(NOTE_C_LOG_LEVEL_INFO, \
+    __FILE__, __LINE__, __VA_ARGS__)
+#define NOTE_C_LOG_DEBUG(...) NoteDebugWithLevel(NOTE_C_LOG_LEVEL_DEBUG, \
+    __FILE__, __LINE__, __VA_ARGS__)
+
+#ifndef NOTE_C_DEBUG_W_LEVEL_DEFAULT_MAX
+#define NOTE_C_DEBUG_W_LEVEL_DEFAULT_MAX NOTE_C_LOG_LEVEL_ERROR
+#endif
+
+#ifndef NOTE_C_DEBUG_W_LEVEL_MAX_BYTES
+#define NOTE_C_DEBUG_W_LEVEL_MAX_BYTES 256
+#endif
+
 void *NoteMalloc(size_t size);
 void NoteFree(void *);
 long unsigned int NoteGetMs(void);
