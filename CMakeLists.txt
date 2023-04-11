@@ -68,6 +68,10 @@ if(BUILD_TESTS)
         note_c
         PUBLIC NOTE_C_TEST
     )
+    target_include_directories(
+        note_c
+        PRIVATE ${CMAKE_CURRENT_LIST_DIR}/test/include
+    )
 
     # If we don't weaken the functions we're mocking in the tests, the linker
     # will complain about multiple function definitions: the mocked one and the

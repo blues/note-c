@@ -16,6 +16,12 @@
 #include <stdarg.h>
 #include "n_lib.h"
 
+#ifdef NOTE_C_TEST
+#include "test_static.h"
+#else
+#define NOTE_C_STATIC static
+#endif
+
 // When interfacing with the Notecard, it is generally encouraged that the JSON object manipulation and
 // calls to the note-arduino library are done directly at point of need.  However, there are cases in which
 // it's convenient to have a wrapper.  The most common reason is when it's best to have a suppression timer
