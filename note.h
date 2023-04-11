@@ -166,25 +166,31 @@ void NoteDebugf(const char *format, ...);
 #define NOTE_C_LOG_LEVEL_INFO   2
 #define NOTE_C_LOG_LEVEL_DEBUG  3
 
-void NoteDebugWithLevel(uint8_t level, const char *file, int line,
-                        const char *format, ...);
-void NoteSetMaxLogLevel(uint8_t level);
+void NoteDebugWithLevel(uint8_t level, const char *msg);
 
-#define NOTE_C_LOG_WARN(...) NoteDebugWithLevel(NOTE_C_LOG_LEVEL_WARN, \
-    __FILE__, __LINE__, __VA_ARGS__)
-#define NOTE_C_LOG_ERROR(...) NoteDebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, \
-    __FILE__, __LINE__, __VA_ARGS__)
-#define NOTE_C_LOG_INFO(...) NoteDebugWithLevel(NOTE_C_LOG_LEVEL_INFO, \
-    __FILE__, __LINE__, __VA_ARGS__)
-#define NOTE_C_LOG_DEBUG(...) NoteDebugWithLevel(NOTE_C_LOG_LEVEL_DEBUG, \
-    __FILE__, __LINE__, __VA_ARGS__)
+#define _ITOA(x) #x
+#define ITOA(x) _ITOA(x)
+#define NOTE_C_LOG_ERROR(msg) do { \
+  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, __FILE__ ":" ITOA(__LINE__) \
+    " (ERROR) "); NoteDebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, msg); \
+} while (0);
+#define NOTE_C_LOG_WARN(msg) do { \
+  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_WARN, __FILE__ ":" ITOA(__LINE__) \
+    " (WARN) "); NoteDebugWithLevel(NOTE_C_LOG_LEVEL_WARN, msg); \
+} while (0);
+#define NOTE_C_LOG_INFO(msg) do { \
+  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_INFO, __FILE__ ":" ITOA(__LINE__) \
+    " (INFO) "); NoteDebugWithLevel(NOTE_C_LOG_LEVEL_INFO, msg); \
+} while (0);
+#define NOTE_C_LOG_DEBUG(msg) do { \
+  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_DEBUG, __FILE__ ":" ITOA(__LINE__) \
+    " (DEBUG) "); NoteDebugWithLevel(NOTE_C_LOG_LEVEL_DEBUG, msg); \
+} while (0);
 
-#ifndef NOTE_C_DEBUG_W_LEVEL_DEFAULT_MAX
-#define NOTE_C_DEBUG_W_LEVEL_DEFAULT_MAX NOTE_C_LOG_LEVEL_ERROR
-#endif
-
-#ifndef NOTE_C_DEBUG_W_LEVEL_MAX_BYTES
-#define NOTE_C_DEBUG_W_LEVEL_MAX_BYTES 256
+// The max log level for NoteDebugWithLevel is only configurable at
+// compile-time, via NOTE_C_LOG_LEVEL_MAX.
+#ifndef NOTE_C_LOG_LEVEL_MAX
+#define NOTE_C_LOG_LEVEL_MAX NOTE_C_LOG_LEVEL_ERROR
 #endif
 
 void *NoteMalloc(size_t size);
