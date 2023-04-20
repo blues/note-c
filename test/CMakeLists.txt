@@ -148,6 +148,8 @@ if(NOTE_C_COVERAGE)
     add_custom_target(
         coverage
         COMMAND mkdir -p coverage
+        # Zero out the coverage counters from any previous runs.
+        COMMAND lcov --zerocounters --directory ${NOTE_C_SRC_DIR}
         COMMAND ${CMAKE_CTEST_COMMAND}
         WORKING_DIRECTORY ${CMAKE_CURENT_BINARY_DIR}
     )
