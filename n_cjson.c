@@ -63,7 +63,9 @@
 
 // For Note, disable dependencies
 #undef ENABLE_LOCALES
-#define MINIMIZE_CLIB_DEPENDENCIES      1       // Use tiny but non-robust versions of conversions
+#ifndef CJSON_NO_CLIB
+#define CJSON_NO_CLIB      1       // Use tiny but non-robust versions of conversions
+#endif
 
 #include "n_lib.h"
 
@@ -264,7 +266,7 @@ loop_end:
     number_c_string[i] = '\0';
 
     /* some platforms may not have locale support */
-#if !MINIMIZE_CLIB_DEPENDENCIES
+#if !CJSON_NO_CLIB
     number = strtod((const char*)number_c_string, (char**)&after_end);
 #else
     number = JAtoN((const char*)number_c_string, (char**)&after_end);
@@ -412,7 +414,7 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
         strcpy(nbuf, "null");
         length = strlen(nbuf);
     } else {
-#if !MINIMIZE_CLIB_DEPENDENCIES
+#if !CJSON_NO_CLIB
         JNUMBER test;
         /* Try 15 decimal places of precision to avoid nonsignificant nonzero digits */
         length = sprintf((char*)number_buffer, "%1.15g", d);
