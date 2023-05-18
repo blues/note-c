@@ -597,3 +597,27 @@ int JGetItemType(J *item)
     }
     return JTYPE_NOT_PRESENT;
 }
+
+// Coalesce to the base types
+int JBaseItemType(int type)
+{
+    switch (type) {
+    case JTYPE_BOOL_TRUE:
+        return JTYPE_BOOL;
+    case JTYPE_BOOL_FALSE:
+        return JTYPE_BOOL;
+    case JTYPE_NUMBER_ZERO:
+        return JTYPE_NUMBER;
+    case JTYPE_STRING_BLANK:
+        return JTYPE_STRING;
+    case JTYPE_STRING_ZERO:
+        return JTYPE_STRING;
+    case JTYPE_STRING_NUMBER:
+        return JTYPE_STRING;
+    case JTYPE_STRING_BOOL_TRUE:
+        return JTYPE_STRING;
+    case JTYPE_STRING_BOOL_FALSE:
+        return JTYPE_STRING;
+    }
+    return type;
+}

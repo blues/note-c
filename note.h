@@ -256,6 +256,7 @@ const char *JType(J *item);
 #define JTYPE_ARRAY				13
 int JGetType(J *rsp, const char *field);
 int JGetItemType(J *item);
+int JBaseItemType(int type);
 #define JGetObjectItemName(j) (j->string)
 
 // Helper functions for apps that wish to limit their C library dependencies
