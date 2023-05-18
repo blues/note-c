@@ -529,11 +529,16 @@ const char *JType(J *item)
 /**************************************************************************/
 int JGetType(J *rsp, const char *field)
 {
-    const char *v;
     if (rsp == NULL || field == NULL) {
         return JTYPE_NOT_PRESENT;
     }
-    J *item = JGetObjectItem(rsp, field);
+    return JGetItemType(JGetObjectItem(rsp, field));
+}
+
+// Get the
+int JGetItemType(J *item)
+{
+    const char *v;
     if (item == NULL) {
         return JTYPE_NOT_PRESENT;
     }
@@ -557,7 +562,11 @@ int JGetType(J *rsp, const char *field)
         }
         int vlen = strlen(v);
         char *endstr;
+#if !CJSON_NO_CLIB
+        JNUMBER value = strtod(v, &endstr);
+#else
         JNUMBER value = JAtoN(v, &endstr);
+#endif
         if (endstr[0] == 0) {
             if (value == 0) {
                 return JTYPE_STRING_ZERO;
