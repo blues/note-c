@@ -2,5 +2,11 @@ name: 'Run Unit Tests'
 author: 'Hayden Roche'
 description: 'Run unit tests inside Docker container.'
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: "composite"
+  steps:
+    - name: Build container
+      shell: bash
+      run: docker buildx build . --file .github/actions/run_unit_tests/Dockerfile --build-arg BASE_IMAGE=${{ env.BASE_IMAGE }} --tag note_c_run_unit_tests
+    - name: Test
+      shell: bash
+      run: docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ note_c_run_unit_tests
