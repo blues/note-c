@@ -71,6 +71,6 @@ RUN ["dash", "-c", "\
  && tar xf v3.2.1.tar.gz \
  && cd Catch2-3.2.1 \
  && cmake -DCATCH_INSTALL_DOCS=0 -B build/ \
- && cmake --build build/ --target install \
- && rm -rf Catch2-3.2.1  v3.2.1.tar.gz \
+ && cmake --build build/ --target install -- -j \
+ && rm -rf Catch2-3.2.1 v3.2.1.tar.gz \
 "]

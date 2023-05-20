@@ -7,108 +7,108 @@ on:
     branches: [ master ]
 
 jobs:
-  # ping
-  check_ci_dockerfile_changed:
-    runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.filter.outputs.backend }}
+  # check_ci_dockerfile_changed:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     changed: ${{ steps.filter.outputs.changed }}
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Check if ci.Dockerfile changed
-        uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          base: 'master'
-          filters: |
-            changed:
-              - '.github/workflows/ci.Dockerfile'
+  #     - name: Check if ci.Dockerfile changed
+  #       uses: dorny/paths-filter@v2
+  #       id: filter
+  #       with:
+  #         base: 'master'
+  #         filters: |
+  #           changed:
+  #             - '.github/workflows/ci.Dockerfile'
 
   run_unit_tests:
     runs-on: ubuntu-latest
     permissions:
-      packages: read
-    needs: check_ci_dockerfile_changed
+      contents: read
+      packages: write
+    # needs: check_ci_dockerfile_changed
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Check if ci.Dockerfile changed
-        uses: dorny/paths-filter@v2
-        id: filter
-        with:
-          base: 'master'
-          filters: |
-            ci_dockerfile:
-              - .github/workflows/ci.Dockerfile
-
-      - name: Rebuild base image if ci.Dockerfile changed
-        if: ${{ needs.check_ci_dockerfile_changed.outputs.changed == 'true' }}
-        run: |
-          docker build . --file .github/workflows/ci.Dockerfile --tag note_c_ci:temp
-          echo "BASE_IMAGE=note_c_ci:temp" >> $GITHUB_ENV
-
-      - name: Use registry base image if ci.Dockerfile did not change
-        if: ${{ needs.check_ci_dockerfile_changed.outputs.changed != 'true' }}
-        run: |
-          echo "BASE_IMAGE=ghcr.io/blues/note_c_ci:latest" >> $GITHUB_ENV
+      # - name: Rebuild base image if ci.Dockerfile changed
+      #   if: ${{ needs.check_ci_dockerfile_changed.outputs.changed == 'true' }}
+      #   run: |
+      #     docker build . --file .github/workflows/ci.Dockerfile --tag note_c_ci:temp
+      #     echo "BASE_IMAGE=note_c_ci:temp" >> $GITHUB_ENV
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.HAYDEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run unit tests
-        uses: ./.github/actions/run_unit_tests
-
-      - name: Coveralls Action Bug Workaround
-        id: coveralls_bug_workaround
-        run: sudo sed -i 's/github\/workspace/home\/runner\/work\/note-c\/note-c/g' ./build/test/coverage/lcov.info
-
-      - name: Publish test coverage
-        id: publish_coverage
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.HAYDEN }}
-          path-to-lcov: ./build/test/coverage/lcov.info
-
-  run_astyle:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Install astyle
-        run: sudo apt-get install -y astyle
-
-      - name: Check formatting
-        run: ./scripts/run_astyle.sh
-
-  publish_ci_image:
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-    needs: check_ci_dockerfile_changed
-    # Only publish the image if this is a push event and ci.Dockerfile changed.
-    if: ${{ github.event_name == 'push' && needs.check_ci_dockerfile_changed.outputs.changed == 'true' }}
-
-    steps:
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.HAYDEN }}
-
-      - name: Publish CI image if ci.Dockerfile changed
+      - name: Push image to registry
         uses: docker/build-push-action@v4
         with:
           push: true
           file: ./.github/workflows/ci.Dockerfile
           tags: ghcr.io/blues/note_c_ci:latest
+
+      - name: Pull Docker image (test)
+        run: docker pull ghcr.io/blues/note_c_ci:latest
+
+      # - name: Use registry base image if ci.Dockerfile did not change
+      #   # if: ${{ needs.check_ci_dockerfile_changed.outputs.changed != 'true' }}
+      #   run: |
+      #     echo "BASE_IMAGE=ghcr.io/blues/note_c_ci:latest" >> $GITHUB_ENV
+
+      # - name: Run unit tests
+      #   uses: ./.github/actions/run_unit_tests
+
+      # - name: Coveralls Action Bug Workaround
+      #   id: coveralls_bug_workaround
+      #   run: sudo sed -i 's/github\/workspace/home\/runner\/work\/note-c\/note-c/g' ./build/test/coverage/lcov.info
+
+      # - name: Publish test coverage
+      #   id: publish_coverage
+      #   uses: coverallsapp/github-action@master
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     path-to-lcov: ./build/test/coverage/lcov.info
+
+  # run_astyle:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v3
+
+  #     - name: Install astyle
+  #       run: sudo apt-get install -y astyle
+
+  #     - name: Check formatting
+  #       run: ./scripts/run_astyle.sh
+
+  # publish_ci_image:
+  #   runs-on: ubuntu-latest
+  #   needs: check_ci_dockerfile_changed
+
+  #   # Only publish the image if this is a push event and ci.Dockerfile changed.
+  #   if: ${{ github.event_name == 'push' && needs.check_ci_dockerfile_changed.outputs.changed == 'true' }}
+
+  #   steps:
+  #     - name: Login to GitHub Container Registry
+  #       uses: docker/login-action@v2
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+
+  #     - name: Push image to registry
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         push: true
+  #         file: ./.github/workflows/ci.Dockerfile
+  #         tags: ghcr.io/blues/note_c_ci:latest
