@@ -1035,7 +1035,7 @@ N_CJSON_PUBLIC(char *) JPrintUnformattedOmitEmpty(const J *item)
 
 N_CJSON_PUBLIC(char *) JPrintBuffered(const J *item, int prebuffer, Jbool fmt)
 {
-    printbuffer p = { 0, 0, 0, 0, 0, 0 };
+    printbuffer p = { 0, 0, 0, 0, 0, 0, 0 };
 
     if (item == NULL) {
         return (char *)"";
