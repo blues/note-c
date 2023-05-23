@@ -1065,7 +1065,7 @@ N_CJSON_PUBLIC(char *) JPrintBuffered(const J *item, int prebuffer, Jbool fmt)
 
 N_CJSON_PUBLIC(Jbool) JPrintPreallocated(J *item, char *buf, const int len, const Jbool fmt)
 {
-    printbuffer p = { 0, 0, 0, 0, 0, 0 };
+    printbuffer p = { 0, 0, 0, 0, 0, 0, 0 };
 
     if (item == NULL) {
         return false;
