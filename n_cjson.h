@@ -163,6 +163,8 @@ N_CJSON_PUBLIC(J *) JParseWithOpts(const char *value, const char **return_parse_
 N_CJSON_PUBLIC(char *) JPrint(const J *item);
 /* Render a J entity to text for transfer/storage without any formatting. */
 N_CJSON_PUBLIC(char *) JPrintUnformatted(const J *item);
+/* Render a J entity to text for transfer/storage without any formatting and without fields that are false, 0, or "". */
+N_CJSON_PUBLIC(char *) JPrintUnformattedOmitEmpty(const J *item);
 /* Render a J entity to text using a buffered strategy. prebuffer is a guess at the final size. guessing well reduces reallocation. fmt=0 gives unformatted, =1 gives formatted */
 N_CJSON_PUBLIC(char *) JPrintBuffered(const J *item, int prebuffer, Jbool fmt);
 /* Render a J entity to text using a buffer already allocated in memory with given length. Returns 1 on success and 0 on failure. */
