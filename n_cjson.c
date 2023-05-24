@@ -1456,7 +1456,12 @@ static Jbool print_object(const J * const item, printbuffer * const output_buffe
     while (current_item) {
         if (output_buffer->format) {
             size_t i;
-            output_pointer = ensure(output_buffer, output_buffer->depth);
+#if (PRINT_TAB_CHARS == 0)
+            int needed = output_buffer->depth;
+#else
+            int needed = output_buffer->depth * PRINT_TAB_CHARS;
+#endif
+            output_pointer = ensure(output_buffer, needed);
             if (output_pointer == NULL) {
                 return false;
             }
@@ -1528,7 +1533,13 @@ static Jbool print_object(const J * const item, printbuffer * const output_buffe
         current_item = current_item->next;
     }
 
-    output_pointer = ensure(output_buffer, output_buffer->format ? (output_buffer->depth + 1) : 2);
+#if (PRINT_TAB_CHARS == 0)
+    int needed = output_buffer->format ? (output_buffer->depth - 1) : 0;
+#else
+    int needed = output_buffer->format ? ((output_buffer->depth - 1) * PRINT_TAB_CHARS) : 0;
+#endif
+    needed += 2; // }\0
+    output_pointer = ensure(output_buffer, needed);
     if (output_pointer == NULL) {
         return false;
     }
