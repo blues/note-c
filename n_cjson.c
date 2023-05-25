@@ -1428,6 +1428,22 @@ fail:
     return false;
 }
 
+/* See if there is another non-omitted item looking forward */
+static bool last_non_omitted_object(J * item, printbuffer * const output_buffer)
+{
+    if (!output_buffer->omitempty) {
+        return (item->next == 0);
+    }
+    while (item->next != 0) {
+        item = item->next;
+        int type = JGetItemType(item);
+        if (type != JTYPE_BOOL_FALSE && type != JTYPE_NUMBER_ZERO && type != JTYPE_STRING_BLANK) {
+            return false;
+        }
+    }
+    return true;
+}
+
 /* Render an object to text. */
 static Jbool print_object(const J * const item, printbuffer * const output_buffer)
 {
@@ -1485,8 +1501,10 @@ static Jbool print_object(const J * const item, printbuffer * const output_buffe
             omit =(type == JTYPE_BOOL_FALSE || type == JTYPE_NUMBER_ZERO || type == JTYPE_STRING_BLANK);
         }
 
-        /* print key */
+        /* print item only if not omitted */
         if (!omit) {
+
+            /* print key */
             if (!print_string_ptr((unsigned char*)current_item->string, output_buffer)) {
                 return false;
             }
@@ -1514,12 +1532,13 @@ static Jbool print_object(const J * const item, printbuffer * const output_buffe
             update_offset(output_buffer);
 
             /* print comma if not last */
-            length = (size_t) ((output_buffer->format ? 1 : 0) + (current_item->next ? 1 : 0));
+            bool more_fields_coming = !last_non_omitted_object(current_item, output_buffer);
+            length = (size_t) ((output_buffer->format ? 1 : 0) + (more_fields_coming ? 1 : 0));
             output_pointer = ensure(output_buffer, length + 1);
             if (output_pointer == NULL) {
                 return false;
             }
-            if (current_item->next) {
+            if (more_fields_coming) {
                 *output_pointer++ = ',';
             }
 
