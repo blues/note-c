@@ -224,6 +224,7 @@ void JCheck(void);
 bool JIsPresent(J *rsp, const char *field);
 char *JGetString(J *rsp, const char *field);
 JNUMBER JGetNumber(J *rsp, const char *field);
+J *JGetArray(J *rsp, const char *field);
 J *JGetObject(J *rsp, const char *field);
 long int JGetInt(J *rsp, const char *field);
 bool JGetBool(J *rsp, const char *field);
