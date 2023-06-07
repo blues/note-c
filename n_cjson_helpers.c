@@ -60,6 +60,29 @@ char *JGetString(J *rsp, const char *field)
 
 //**************************************************************************/
 /*!
+    @brief  Return an array from the specified JSON object.
+    @param   rsp The JSON response object.
+    @param   field The field to return.
+    @returns The array found, or NULL, if not present.
+*/
+/**************************************************************************/
+J *JGetArray(J *rsp, const char *field)
+{
+    if (rsp == NULL) {
+        return NULL;
+    }
+    J *item = JGetObjectItem(rsp, field);
+    if (item == NULL) {
+        return NULL;
+    }
+    if (!JIsArray(item)) {
+        return NULL;
+    }
+    return item;
+}
+
+//**************************************************************************/
+/*!
     @brief  Return an object from the specified JSON object.
     @param   rsp The JSON response object.
     @param   field The field to return.
