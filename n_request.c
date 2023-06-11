@@ -584,7 +584,7 @@ void NoteErrorClean(char *begin)
 #ifndef NOTE_LOWMEM
 /**************************************************************************/
 /*!
-  @brief  atoh - Convert a string to hex
+  @brief  n_atoh - Convert a string to hex
   @param   p
   The character data to convert
   @param   maxlen
@@ -592,7 +592,7 @@ void NoteErrorClean(char *begin)
   @returns The number as converted from hex
 */
 /**************************************************************************/
-uint64_t atoh(char *p, int maxlen)
+uint64_t n_atoh(char *p, int maxlen)
 {
     uint64_t n = 0;
     char *ep = p+maxlen;
@@ -689,10 +689,10 @@ char *crcAdd(char *json, uint16_t seqno)
     newJson[newJsonLen++] = '"';							// +5
     newJson[newJsonLen++] = ':';							// +6
     newJson[newJsonLen++] = '"';							// +7
-    htoa16(seqno, (uint8_t *) &newJson[newJsonLen]);
+    n_htoa16(seqno, (uint8_t *) &newJson[newJsonLen]);
     newJsonLen += 4;										// +11
     newJson[newJsonLen++] = ':';							// +12
-    htoa32(crc32(json, jsonLen), &newJson[newJsonLen]);
+    n_htoa32(crc32(json, jsonLen), &newJson[newJsonLen]);
     newJsonLen += 8;										// +20
     newJson[newJsonLen++] = '"';							// +21
     newJson[newJsonLen++] = '}';							// +22 == CRC_FIELD_LENGTH
@@ -726,8 +726,8 @@ bool crcError(char *json, uint16_t shouldBeSeqno)
         return false;
     }
     char *p = &json[fieldOffset + CRC_FIELD_NAME_OFFSET + (sizeof(CRC_FIELD_NAME_TEST)-1)];
-    uint16_t actualSeqno = (uint16_t) atoh(p, 4);
-    uint32_t actualCrc32 = (uint32_t) atoh(p+5, 8);
+    uint16_t actualSeqno = (uint16_t) n_atoh(p, 4);
+    uint32_t actualCrc32 = (uint32_t) n_atoh(p+5, 8);
     json[fieldOffset++] = '}';
     json[fieldOffset] = '\0';
     uint32_t shouldBeCrc32 = crc32(json, fieldOffset);

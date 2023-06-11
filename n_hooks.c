@@ -477,7 +477,7 @@ void NoteDelayMs(uint32_t ms)
   @param   the buffer to return it into
 */
 /**************************************************************************/
-void htoa32(uint32_t n, char *p)
+void n_htoa32(uint32_t n, char *p)
 {
     int i;
     for (i=0; i<8; i++) {
@@ -510,7 +510,7 @@ void *malloc_show(size_t len)
     if (p == NULL) {
         hookDebugOutput("FAIL");
     } else {
-        htoa32((uint32_t)p, str);
+        n_htoa32((uint32_t)p, str);
         hookDebugOutput(str);
     }
     return p;
@@ -546,7 +546,7 @@ void NoteFree(void *p)
     if (hookFree != NULL) {
 #if NOTE_SHOW_MALLOC
         char str[16];
-        htoa32((uint32_t)p, str);
+        n_htoa32((uint32_t)p, str);
         hookDebugOutput("free");
         hookDebugOutput(str);
 #endif
