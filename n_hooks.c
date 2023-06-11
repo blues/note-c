@@ -469,14 +469,14 @@ void NoteDelayMs(uint32_t ms)
     }
 }
 
-#if NOTE_SHOW_MALLOC
+#if NOTE_SHOW_MALLOC || (!NOTE_LOWMEM)
 //**************************************************************************/
 /*!
-  @brief  If set for low-memory platforms, show a malloc call.
-  @param   len the number of bytes of memory allocated by the last call.
+  @brief  Convert number to a hex string
+  @param   the number
+  @param   the buffer to return it into
 */
 /**************************************************************************/
-void htoa32(uint32_t n, char *p);
 void htoa32(uint32_t n, char *p)
 {
     int i;
@@ -491,6 +491,15 @@ void htoa32(uint32_t n, char *p)
     }
     *p = '\0';
 }
+#endif
+
+#if NOTE_SHOW_MALLOC
+//**************************************************************************/
+/*!
+  @brief  If set for low-memory platforms, show a malloc call.
+  @param   len the number of bytes of memory allocated by the last call.
+*/
+/**************************************************************************/
 void *malloc_show(size_t len)
 {
     char str[16];
