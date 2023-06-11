@@ -401,7 +401,7 @@ J *NoteTransaction(J *req)
 #ifndef NOTE_LOWMEM
 
         // If no retry possibility, break out
-        if (!lastRequestCrcAdded || lastRequestRetries >= lastRequestRetriesAllowed) {
+        if (noResponseExpected || !lastRequestCrcAdded || lastRequestRetries >= lastRequestRetriesAllowed) {
             break;
         }
 
