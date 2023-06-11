@@ -674,7 +674,7 @@ char *crcAdd(char *json, uint16_t seqno)
     if (jsonLen < 2 || json[jsonLen-1] != '}') {
         return NULL;
     }
-    char *newJson = (char *) _Malloc(jsonLen+CRC_FIELD_LENGTH);
+    char *newJson = (char *) _Malloc(jsonLen+CRC_FIELD_LENGTH+1);
     if (newJson == NULL) {
         return NULL;
     }
