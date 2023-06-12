@@ -13,6 +13,12 @@
 
 #include "n_lib.h"
 
+#ifdef NOTE_C_TEST
+#include "test_static.h"
+#else
+#define NOTE_C_STATIC static
+#endif
+
 // For flow tracing
 static int suppressShowTransactions = 0;
 
@@ -22,8 +28,7 @@ static bool resetRequired = true;
 // CRC data
 #ifndef NOTE_LOWMEM
 static uint16_t lastRequestSeqno = 0;
-static bool lastRequestCrcAdded = false;
-static uint16_t lastRequestRetries;
+static uint16_t lastRequestRetries = 0;
 static uint16_t lastRequestRetriesAllowed = 10;
 #define CRC_FIELD_LENGTH		22	// ,"crc":"SSSS:CCCCCCCC"
 #define	CRC_FIELD_NAME_OFFSET	1
@@ -367,14 +372,16 @@ J *NoteTransaction(J *req)
     // as part of the CRC data so that two identical requests occurring within the
     // modulus of seqno never are mistaken as being the same request being retried.
 #ifndef NOTE_LOWMEM
-    lastRequestCrcAdded = false;
     if (!noResponseExpected) {
         char *newJson = crcAdd(json, lastRequestSeqno);
         if (newJson != NULL) {
             JFree(json);
             json = newJson;
-            lastRequestCrcAdded = true;
-            lastRequestRetries = 0;
+        } else {
+            J *rsp = errDoc(ERRSTR("failed to add CRC",c_bad));
+            _UnlockNote();
+            _TransactionStop();
+            return rsp;
         }
     }
 #endif
@@ -382,9 +389,13 @@ J *NoteTransaction(J *req)
     // If we're performing retries, this is where we come back to
     const char *errStr;
     char *responseJSON = NULL;
+    lastRequestRetries = 0;
     while (true) {
+        // If no retry possibility, break out
+        if (lastRequestRetries > lastRequestRetriesAllowed) {
+            break;
+        }
 
-        // Bump the number of retries performed for this specific transaction
         // Trace
         if (suppressShowTransactions == 0) {
             _Debugln(json);
@@ -393,18 +404,12 @@ J *NoteTransaction(J *req)
         // Perform the transaction
         if (noResponseExpected) {
             errStr = _Transaction(json, NULL);
+            break;
         } else {
             errStr = _Transaction(json, &responseJSON);
         }
 
-        // CRC processing
 #ifndef NOTE_LOWMEM
-
-        // If no retry possibility, break out
-        if (noResponseExpected || !lastRequestCrcAdded || lastRequestRetries >= lastRequestRetriesAllowed) {
-            break;
-        }
-
         // If there's an I/O error on the transaction, retry
         if (errStr != NULL) {
             resetRequired = !_Reset();
@@ -418,6 +423,7 @@ J *NoteTransaction(J *req)
         // that the CRC is stripped from the responseJSON as a side-effect of this method.
         if (crcError(responseJSON, lastRequestSeqno)) {
             _Free(responseJSON);
+            errStr = "crc error {io}";
             lastRequestRetries++;
             _Debugln("retrying CRC error on notecard response detected by host");
             _DelayMs(500);
@@ -438,13 +444,13 @@ J *NoteTransaction(J *req)
         JDelete(rsp);
         if (isIoError) {
             _Free(responseJSON);
+            errStr = "notecard i/o error {io}";
             lastRequestRetries++;
             _Debugln("retrying I/O error detected by notecard");
             _DelayMs(500);
             continue;
         }
-
-#endif	// CRC Processing
+#endif // !NOTE_LOWMEM
 
         // Transaction completed
         break;
@@ -659,18 +665,19 @@ int32_t crc32(const void* data, size_t length)
   @returns new JSON with crc added, else NULL if failure
 */
 /**************************************************************************/
-char *crcAdd(char *json, uint16_t seqno)
+NOTE_C_STATIC char *crcAdd(char *json, uint16_t seqno)
 {
 
     // Allocate a block the size of the input json plus the size of
     // the field to be added.  Note that the input JSON ends in '"}' and
     // this will be replaced with a combination of 4 hex digits of the
-    // seqno plus 4 hex digits of the CRC32, and the '}' will be
-    // transformed into ',"crc":"SSSSCCCCCCCC"}' where SSSS is the
+    // seqno plus 8 hex digits of the CRC32, and the '}' will be
+    // transformed into ',"crc":"SSSS:CCCCCCCC"}' where SSSS is the
     // seqno and CCCCCCCC is the crc32.  Note that the comma is
     // replaced with a space if the input json doesn't contain
     // any fields, so that we always return compliant JSON.
     size_t jsonLen = strlen(json);
+    // Minimum JSON is "{}" and must end with a closing "}".
     if (jsonLen < 2 || json[jsonLen-1] != '}') {
         return NULL;
     }
@@ -708,16 +715,19 @@ char *crcAdd(char *json, uint16_t seqno)
   @param   json
   The JSON transaction for which the CRC should be checked.  Note
   that if a CRC field is not present in the JSON, it is considered
-  as a valid transaction because old notecards do not have the code
+  a valid transaction because old Notecards do not have the code
   with which to calculate and piggyback a CRC field.  Note that the
   CRC is stripped from the input JSON regardless of whether or not
   there was an error.
-  @returns nothing
+  @param  shouldBeSeqno
+  The expected sequence number.
+  @returns True if there's an error and false otherwise.
 */
 /**************************************************************************/
-bool crcError(char *json, uint16_t shouldBeSeqno)
+NOTE_C_STATIC bool crcError(char *json, uint16_t shouldBeSeqno)
 {
     size_t jsonLen = strlen(json);
+    // Minimum valid JSON is "{}" (2 bytes) and must end with a closing "}".
     if (jsonLen < CRC_FIELD_LENGTH+2 || json[jsonLen-1] != '}') {
         return false;
     }

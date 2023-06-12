@@ -137,6 +137,8 @@ add_test(NoteGetTemperature_test)
 add_test(NoteGetContact_test)
 add_test(NoteSetContact_test)
 add_test(NoteDebugSyncStatus_test)
+add_test(crcAdd_test)
+add_test(crcError_test)
 
 if(NOTE_C_COVERAGE)
     find_program(LCOV lcov REQUIRED)
