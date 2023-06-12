@@ -39,6 +39,7 @@
 
 // In case they're not yet defined
 #include <float.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -140,19 +141,28 @@ void NoteSetFnI2C(uint32_t i2caddr, uint32_t i2cmax, i2cResetFn resetfn, i2cTran
 void NoteSetFnDisabled(void);
 void NoteSetI2CAddress(uint32_t i2caddress);
 
-// The Notecard, whose default I2C address is below, uses a serial-to-i2c protocol whose "byte count"
-// must fit into a single byte and which must not include a 2-byte header field.  This is why the
-// maximum that can be transmitted by note-c in a single I2C I/O is 255 - 2 = 253 bytes.
+// The Notecard, whose default I2C address is below, uses a serial-to-i2c
+// protocol whose "byte count" must fit into a single byte and which must not
+// include a 2-byte header field.  This is why the maximum that can be
+// transmitted by note-c in a single I2C I/O is 255 - 2 = 253 bytes.
 #define NOTE_I2C_ADDR_DEFAULT	0x17
-#ifndef NOTE_I2C_MAX_MAX
-#define NOTE_I2C_MAX_MAX		253
+
+// Serial-to-i2c protocol header size in bytes
+#ifndef NOTE_I2C_HEADER_SIZE
+#define NOTE_I2C_HEADER_SIZE 2
 #endif
 
-// In ARDUINO implementations, which to date is the largest use of this library, the Wire package
-// is implemented in a broad variety of ways by different vendors.  The default implementation
-// has a mere 32-byte static I2C buffer, which means that the maximum to be transmitted in a
-// single I/O (given our 2-byte serial-to-i2c protocol header) is 30 bytes.  However, if we know
-// the specific platform (such as STM32DUINO) we can relax this restriction
+// Maximum bytes capable of being transmitted in a single read/write operation
+#ifndef NOTE_I2C_MAX_MAX
+#define NOTE_I2C_MAX_MAX (UCHAR_MAX - NOTE_I2C_HEADER_SIZE)
+#endif
+
+// In ARDUINO implementations, which to date is the largest use of this library,
+// the Wire package is implemented in a broad variety of ways by different
+// vendors.  The default implementation has a mere 32-byte static I2C buffer,
+// which means that the maximum to be transmitted in a single I/O (given our
+// 2-byte serial-to-i2c protocol header) is 30 bytes.  However, if we know
+// the specific platform (such as STM32DUINO) we can relax this restriction.
 #if defined(NOTE_I2C_MAX_DEFAULT)
 // user is overriding it at compile time
 #elif defined(ARDUINO_ARCH_STM32)
