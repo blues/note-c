@@ -151,7 +151,7 @@ if(NOTE_C_COVERAGE)
         COMMAND mkdir -p coverage
         # Zero out the coverage counters from any previous runs.
         COMMAND lcov --zerocounters --directory ${NOTE_C_SRC_DIR}
-        COMMAND ${CMAKE_CTEST_COMMAND}
+        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
         WORKING_DIRECTORY ${CMAKE_CURENT_BINARY_DIR}
     )
     # These files are third party code that we aren't interested in testing

@@ -103,7 +103,10 @@ TEST_CASE("NoteTransaction")
 
         J *resp = NoteTransaction(req);
 
-        CHECK(NoteJSONTransaction_fake.call_count == 1);
+        // Ensure the mock is called at least once
+        // Here the error causes multiple invocations by retries
+        CHECK(NoteJSONTransaction_fake.call_count >= 1);
+
         // Ensure there's an error in the response.
         CHECK(resp != NULL);
         CHECK(NoteResponseError(resp));
