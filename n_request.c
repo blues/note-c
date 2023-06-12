@@ -28,11 +28,10 @@ static bool resetRequired = true;
 // CRC data
 #ifndef NOTE_LOWMEM
 static uint16_t lastRequestSeqno = 0;
-static uint16_t lastRequestRetries = 0;
-static uint16_t lastRequestRetriesAllowed = 10;
 #define CRC_FIELD_LENGTH		22	// ,"crc":"SSSS:CCCCCCCC"
 #define	CRC_FIELD_NAME_OFFSET	1
 #define	CRC_FIELD_NAME_TEST		"\"crc\":\""
+#define REQUEST_RETRIES_ALLOWED 10
 int32_t crc32(const void* data, size_t length);
 char *crcAdd(char *json, uint16_t seqno);
 bool crcError(char *json, uint16_t shouldBeSeqno);
@@ -372,42 +371,42 @@ J *NoteTransaction(J *req)
     // as part of the CRC data so that two identical requests occurring within the
     // modulus of seqno never are mistaken as being the same request being retried.
 #ifndef NOTE_LOWMEM
+    uint8_t lastRequestRetries = 0;
+    bool lastRequestCrcAdded = false;
     if (!noResponseExpected) {
         char *newJson = crcAdd(json, lastRequestSeqno);
         if (newJson != NULL) {
             JFree(json);
             json = newJson;
-        } else {
-            J *rsp = errDoc(ERRSTR("failed to add CRC",c_bad));
-            _UnlockNote();
-            _TransactionStop();
-            return rsp;
+            lastRequestCrcAdded = true;
         }
     }
-#endif
+#endif // !NOTE_LOWMEM
 
     // If we're performing retries, this is where we come back to
     const char *errStr;
     char *responseJSON = NULL;
-    lastRequestRetries = 0;
     while (true) {
+
+#ifndef NOTE_LOWMEM
         // If no retry possibility, break out
-        if (lastRequestRetries > lastRequestRetriesAllowed) {
+        if (lastRequestRetries > REQUEST_RETRIES_ALLOWED) {
             break;
         }
+#endif // !NOTE_LOWMEM
+
 
         // Trace
         if (suppressShowTransactions == 0) {
             _Debugln(json);
         }
 
-        // Perform the transaction
+         // Perform the transaction
         if (noResponseExpected) {
             errStr = _Transaction(json, NULL);
             break;
-        } else {
-            errStr = _Transaction(json, &responseJSON);
         }
+        errStr = _Transaction(json, &responseJSON);
 
 #ifndef NOTE_LOWMEM
         // If there's an I/O error on the transaction, retry
@@ -419,9 +418,10 @@ J *NoteTransaction(J *req)
             continue;
         }
 
-        // Examine the response JSON to see if it's got the CRC, and retry if so.  Note
-        // that the CRC is stripped from the responseJSON as a side-effect of this method.
-        if (crcError(responseJSON, lastRequestSeqno)) {
+        // If we sent a CRC in the request, examine the response JSON to see if
+        // it has a CRC error.  Note that the CRC is stripped from the
+        // responseJSON as a side-effect of this method.
+        if (lastRequestCrcAdded && crcError(responseJSON, lastRequestSeqno)) {
             _Free(responseJSON);
             errStr = "crc error {io}";
             lastRequestRetries++;
@@ -430,9 +430,9 @@ J *NoteTransaction(J *req)
             continue;
         }
 
-        // There's a possibility that we got back a response that has an I/O error.  In order
-        // to determine this, we'll need to unmarshal it.  As such, do this first by brute
-        // force and then 'correctly'.
+        // There's a possibility that we got back a response that has an I/O
+        // error.  In order to determine this, we'll need to unmarshal it.  As
+        // such, do this first by brute force and then 'correctly'.
         if (strstr((char *)responseJSON, c_ioerr) == NULL) {
             break;
         }
@@ -454,7 +454,6 @@ J *NoteTransaction(J *req)
 
         // Transaction completed
         break;
-
     }
 
     // Bump the request sequence number now that we've processed this request, success or error
