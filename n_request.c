@@ -401,7 +401,7 @@ J *NoteTransaction(J *req)
             _Debugln(json);
         }
 
-         // Perform the transaction
+        // Perform the transaction
         if (noResponseExpected) {
             errStr = _Transaction(json, NULL);
             break;
