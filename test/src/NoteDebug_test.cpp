@@ -122,4 +122,4 @@ TEST_CASE("NoteDebug")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

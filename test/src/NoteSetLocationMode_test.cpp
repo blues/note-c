@@ -75,4 +75,4 @@ TEST_CASE("NoteSetLocationMode")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

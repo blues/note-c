@@ -71,4 +71,4 @@ TEST_CASE("JIsExactString")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

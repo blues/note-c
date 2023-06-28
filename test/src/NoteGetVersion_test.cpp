@@ -64,4 +64,4 @@ TEST_CASE("NoteGetVersion")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

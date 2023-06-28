@@ -142,4 +142,4 @@ TEST_CASE("NotePayload")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

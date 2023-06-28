@@ -114,4 +114,4 @@ TEST_CASE("NoteSetFnSerial")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

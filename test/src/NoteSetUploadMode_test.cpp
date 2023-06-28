@@ -77,4 +77,4 @@ TEST_CASE("NoteSetUploadMode")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

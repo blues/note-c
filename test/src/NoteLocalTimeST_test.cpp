@@ -97,4 +97,4 @@ TEST_CASE("NoteLocalTimeST")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

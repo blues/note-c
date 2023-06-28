@@ -64,4 +64,4 @@ TEST_CASE("NoteRequestResponse")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

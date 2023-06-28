@@ -46,4 +46,4 @@ TEST_CASE("JNumberValue")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

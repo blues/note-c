@@ -66,4 +66,4 @@ TEST_CASE("NoteIsConnected")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

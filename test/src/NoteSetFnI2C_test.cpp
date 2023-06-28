@@ -116,4 +116,4 @@ TEST_CASE("NoteSetFnI2C")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

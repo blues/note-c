@@ -53,4 +53,4 @@ TEST_CASE("NoteNewRequest")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

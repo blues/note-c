@@ -69,4 +69,4 @@ TEST_CASE("NoteGetLocation")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST
