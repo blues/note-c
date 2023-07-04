@@ -64,4 +64,4 @@ TEST_CASE("NoteSetEnvDefault")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

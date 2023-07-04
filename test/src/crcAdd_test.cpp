@@ -68,4 +68,4 @@ TEST_CASE("crcAdd")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

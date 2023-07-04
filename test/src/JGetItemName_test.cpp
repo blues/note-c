@@ -47,4 +47,4 @@ TEST_CASE("JGetItemName")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

@@ -64,4 +64,4 @@ TEST_CASE("JType")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

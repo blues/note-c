@@ -78,4 +78,4 @@ TEST_CASE("NoteGetTemperature")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

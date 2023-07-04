@@ -82,4 +82,4 @@ TEST_CASE("NoteFactoryReset")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

@@ -72,4 +72,4 @@ TEST_CASE("NoteSetSerialNumber")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

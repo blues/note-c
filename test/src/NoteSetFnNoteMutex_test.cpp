@@ -55,4 +55,4 @@ TEST_CASE("NoteSetFnNoteMutex")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

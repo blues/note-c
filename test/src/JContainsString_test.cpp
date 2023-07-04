@@ -68,4 +68,4 @@ TEST_CASE("JContainsString")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

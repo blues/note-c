@@ -72,4 +72,4 @@ TEST_CASE("NoteSetContact")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

@@ -60,4 +60,4 @@ TEST_CASE("NoteTransactionHooks")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

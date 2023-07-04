@@ -225,4 +225,4 @@ TEST_CASE("i2cNoteTransaction")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

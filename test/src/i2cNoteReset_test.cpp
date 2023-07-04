@@ -97,4 +97,4 @@ TEST_CASE("i2cNoteReset")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

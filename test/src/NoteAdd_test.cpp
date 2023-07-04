@@ -72,4 +72,4 @@ TEST_CASE("NoteAdd")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

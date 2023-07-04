@@ -78,4 +78,4 @@ TEST_CASE("NoteGetVoltage")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

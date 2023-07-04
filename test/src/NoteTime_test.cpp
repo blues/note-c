@@ -102,4 +102,4 @@ TEST_CASE("NoteTime")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

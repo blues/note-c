@@ -53,4 +53,4 @@ TEST_CASE("JGetArray")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

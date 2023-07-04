@@ -95,4 +95,4 @@ TEST_CASE("NoteGetStatus")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

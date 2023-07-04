@@ -85,4 +85,4 @@ TEST_CASE("crcError")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

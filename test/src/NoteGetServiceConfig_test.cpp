@@ -96,4 +96,4 @@ TEST_CASE("NoteGetServiceConfig")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

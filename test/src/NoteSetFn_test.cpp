@@ -90,4 +90,4 @@ TEST_CASE("NoteSetFn")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

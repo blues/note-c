@@ -65,4 +65,4 @@ TEST_CASE("NoteTemplate")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

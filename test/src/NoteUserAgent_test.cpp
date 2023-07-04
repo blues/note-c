@@ -93,4 +93,4 @@ TEST_CASE("NoteUserAgent")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

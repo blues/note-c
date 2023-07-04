@@ -167,4 +167,4 @@ TEST_CASE("NoteDebugSyncStatus")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

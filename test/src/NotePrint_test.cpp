@@ -83,4 +83,4 @@ TEST_CASE("NotePrint")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

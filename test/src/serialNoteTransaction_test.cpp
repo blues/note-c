@@ -252,4 +252,4 @@ TEST_CASE("serialNoteTransaction")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

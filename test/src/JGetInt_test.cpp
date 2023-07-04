@@ -53,4 +53,4 @@ TEST_CASE("JGetInt")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

@@ -132,4 +132,4 @@ TEST_CASE("serialNoteReset")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST

@@ -76,4 +76,4 @@ TEST_CASE("NoteLocationValid")
 
 }
 
-#endif // TEST
+#endif // NOTE_C_TEST
