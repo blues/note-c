@@ -57,7 +57,8 @@ static bool cardConnected = false;
 // Status suppression timer
 static uint32_t statusTimer = 0;
 
-// Turbo communications mode, for special use cases and well-tested hardware
+// DEPRECATED. Turbo communications mode, for special use cases and well-tested
+// hardware.
 bool cardTurboIO = false;
 
 // Service config-related suppression timer and cache
@@ -1921,14 +1922,9 @@ bool NotePayloadFindSegment(NotePayloadDesc *desc, const char segtype[NP_SEGTYPE
     return false;
 }
 
-//**************************************************************************/
-/*!
-  @brief  Enable or disable turbo I/O mode, for special use cases and
-          very well tested hardware designs.
-  @returns  nothing
-*/
-/**************************************************************************/
 void NoteTurboIO(bool enable)
 {
-    cardTurboIO = enable;
+    (void)enable;
+
+    NOTE_C_LOG_WARN("NoteTurboIO is deprecated and has no effect.");
 }
