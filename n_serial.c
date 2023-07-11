@@ -13,32 +13,39 @@
 
 #include "n_lib.h"
 
-// Turbo I/O mode
-extern bool cardTurboIO;
-
 /**************************************************************************/
 /*!
-    @brief  Given a JSON string, perform an Serial transaction with the Notecard.
-    @param   json
-               A c-string containing the JSON request object.
-    @param   jsonResponse
-               An out parameter c-string buffer that will contain the JSON
-               response from the Notercard.
+  @brief  Given a JSON string, perform an Serial transaction with the Notecard.
+  @param   request
+            A c-string containing the JSON request object.
+  @param   response
+            An out parameter c-string buffer that will contain the JSON
+            response from the Notercard.
+  @param   allocate
+            allocate a new buffer to append `\r\n` or send an additional
+            serial request for the newline characters.
+  @param   delay respect delay standard transmission delays
   @returns a c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialNoteTransaction(char *json, char **jsonResponse)
+const char *serialNoteTransaction(const char *request, char **response, bool allocate, bool delay)
 {
+    uint8_t *transmitBuf;
+    size_t jsonLen = strlen(request);
 
-    // Append newline to the transaction
-    int jsonLen = strlen(json);
-    uint8_t *transmitBuf = (uint8_t *) _Malloc(jsonLen+c_newline_len);
-    if (transmitBuf == NULL) {
-        return ERRSTR("insufficient memory",c_mem);
+    if (allocate) {
+        // Append newline to the transaction
+        transmitBuf = (uint8_t *) _Malloc(jsonLen+c_newline_len);
+        if (transmitBuf == NULL) {
+            return ERRSTR("insufficient memory",c_mem);
+        }
+        memcpy(transmitBuf, request, jsonLen);
+        memcpy(&transmitBuf[jsonLen], c_newline, c_newline_len);
+        jsonLen += c_newline_len;
     }
-    memcpy(transmitBuf, json, jsonLen);
-    memcpy(&transmitBuf[jsonLen], c_newline, c_newline_len);
-    jsonLen += c_newline_len;
+    else {
+        transmitBuf = (uint8_t *)request;
+    }
 
     // Transmit the request in segments so as not to overwhelm the notecard's interrupt buffers
     uint32_t segOff = 0;
@@ -54,16 +61,21 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
         if (segLeft == 0) {
             break;
         }
-        if (!cardTurboIO) {
+        if (delay) {
             _DelayMs(CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS);
         }
     }
 
     // Free the transmit buffer
-    _Free(transmitBuf);
+    if (allocate) {
+        _Free(transmitBuf);
+    }
+    else {
+        _SerialTransmit((uint8_t *)"\r\n", 2, true);
+    }
 
     // If no reply expected, we're done
-    if (jsonResponse == NULL) {
+    if (response == NULL) {
         return NULL;
     }
 
@@ -79,7 +91,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
 #endif
             return ERRSTR("transaction timeout {io}",c_iotimeout);
         }
-        if (!cardTurboIO) {
+        if (delay) {
             _DelayMs(10);
         }
     }
@@ -111,7 +123,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
                 _Free(jsonbuf);
                 return ERRSTR("transaction incomplete {io}",c_iotimeout);
             }
-            if (!cardTurboIO) {
+            if (delay) {
                 _DelayMs(1);
             }
             continue;
@@ -156,7 +168,7 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
     jsonbuf[jsonbufLen] = '\0';
 
     // Return it
-    *jsonResponse = jsonbuf;
+    *response = jsonbuf;
     return NULL;
 
 }

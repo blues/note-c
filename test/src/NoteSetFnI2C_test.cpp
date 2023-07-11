@@ -20,7 +20,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, i2cNoteReset)
-FAKE_VALUE_FUNC(const char *, i2cNoteTransaction, char *, char **)
+FAKE_VALUE_FUNC(const char *, i2cNoteTransaction, const char *, char **, bool, bool)
 
 namespace
 {
@@ -76,7 +76,7 @@ TEST_CASE("NoteSetFnI2C")
     CHECK(NoteHardReset());
     CHECK(i2cNoteReset_fake.call_count == 1);
 
-    CHECK(NoteJSONTransaction(req, &resp) == NULL);
+    CHECK(NoteJSONTransaction(req, &resp, true, true) == NULL);
     CHECK(i2cNoteTransaction_fake.call_count == 1);
 
     CHECK(NoteI2CAddress() == i2cAddr);
@@ -107,7 +107,7 @@ TEST_CASE("NoteSetFnI2C")
     CHECK(NoteHardReset());
     CHECK(i2cNoteReset_fake.call_count == 1);
 
-    CHECK(NoteJSONTransaction(req, &resp) != NULL);
+    CHECK(NoteJSONTransaction(req, &resp, true, true) != NULL);
     CHECK(i2cNoteTransaction_fake.call_count == 1);
 
     CHECK(NoteI2CAddress() == NOTE_I2C_ADDR_DEFAULT);
