@@ -20,7 +20,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, serialNoteReset)
-FAKE_VALUE_FUNC(const char *, serialNoteTransaction, char *, char **)
+FAKE_VALUE_FUNC(const char *, serialNoteTransaction, const char *, char **, bool, bool)
 
 namespace
 {
@@ -84,7 +84,7 @@ TEST_CASE("NoteSetFnSerial")
     CHECK(NoteHardReset());
     CHECK(serialNoteReset_fake.call_count == 1);
 
-    CHECK(NoteJSONTransaction(req, &resp) == NULL);
+    CHECK(NoteJSONTransaction(req, &resp, true, true) == NULL);
     CHECK(serialNoteTransaction_fake.call_count == 1);
 
     // Unset the callbacks and ensure they aren't called again.
@@ -108,7 +108,7 @@ TEST_CASE("NoteSetFnSerial")
     CHECK(NoteHardReset());
     CHECK(serialNoteReset_fake.call_count == 1);
 
-    CHECK(NoteJSONTransaction(req, &resp) != NULL);
+    CHECK(NoteJSONTransaction(req, &resp, true, true) != NULL);
     CHECK(serialNoteTransaction_fake.call_count == 1);
 }
 

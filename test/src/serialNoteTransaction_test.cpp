@@ -85,7 +85,7 @@ TEST_CASE("serialNoteTransaction")
     SECTION("Transmit buffer allocation fails") {
         NoteMalloc_fake.return_val = NULL;
 
-        CHECK(serialNoteTransaction(noteAddReq, NULL) != NULL);
+        CHECK(serialNoteTransaction(noteAddReq, NULL, true, true) != NULL);
         CHECK(NoteMalloc_fake.call_count == 1);
     }
 
@@ -103,7 +103,7 @@ TEST_CASE("serialNoteTransaction")
             memset(request, 1, reqLen);
             request[reqLen] = '\0';
 
-            CHECK(serialNoteTransaction(request, NULL) == NULL);
+            CHECK(serialNoteTransaction(request, NULL, true, true) == NULL);
             // The request length is less than
             // CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN, so it should all be sent in
             // one call to NoteSerialTransmit.
@@ -119,7 +119,7 @@ TEST_CASE("serialNoteTransaction")
             memset(request, 1, reqLen);
             request[reqLen] = '\0';
 
-            CHECK(serialNoteTransaction(request, NULL) == NULL);
+            CHECK(serialNoteTransaction(request, NULL, true, true) == NULL);
             // The request is 1 byte greater than
             // CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN, so it should require two
             // calls to NoteSerialTransmit.
@@ -143,7 +143,7 @@ TEST_CASE("serialNoteTransaction")
             SET_RETURN_SEQ(NoteMalloc, mallocReturnVals, 2);
             const char* err;
 
-            CHECK((err = serialNoteTransaction(noteAddReq, &resp)) != NULL);
+            CHECK((err = serialNoteTransaction(noteAddReq, &resp, true, true)) != NULL);
             CHECK(NoteSerialTransmit_fake.call_count == 1);
             CHECK(NoteSerialReceive_fake.call_count == 0);
             CHECK(NoteMalloc_fake.call_count == 2);
@@ -154,7 +154,7 @@ TEST_CASE("serialNoteTransaction")
             NoteMalloc_fake.custom_fake = malloc;
             NoteSerialReceive_fake.return_val = 0;
 
-            CHECK(serialNoteTransaction(noteAddReq, &resp) != NULL);
+            CHECK(serialNoteTransaction(noteAddReq, &resp, true, true) != NULL);
             CHECK(NoteSerialTransmit_fake.call_count == 1);
             CHECK(NoteSerialReceive_fake.call_count == 1);
         }
@@ -184,7 +184,7 @@ TEST_CASE("serialNoteTransaction")
             SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 3);
             const char* err;
 
-            CHECK((err = serialNoteTransaction(noteAddReq, &resp)) != NULL);
+            CHECK((err = serialNoteTransaction(noteAddReq, &resp, true, true)) != NULL);
             // Make sure we actually timed out by checking the error message.
             CHECK(strstr(err, "timeout") != NULL);
             CHECK(NoteSerialTransmit_fake.call_count == 1);
@@ -197,7 +197,7 @@ TEST_CASE("serialNoteTransaction")
                 NoteMalloc_fake.custom_fake = malloc;
                 NoteSerialReceive_fake.return_val = '\n';
 
-                CHECK(serialNoteTransaction(noteAddReq, &resp) == NULL);
+                CHECK(serialNoteTransaction(noteAddReq, &resp, true, true) == NULL);
                 CHECK(NoteSerialReceive_fake.call_count == 1);
             }
 
@@ -206,7 +206,7 @@ TEST_CASE("serialNoteTransaction")
                 NoteMalloc_fake.custom_fake = malloc;
                 NoteSerialReceive_fake.custom_fake = NoteSerialReceiveMultiChunk;
 
-                CHECK(serialNoteTransaction(noteAddReq, &resp) == NULL);
+                CHECK(serialNoteTransaction(noteAddReq, &resp, true, true) == NULL);
                 CHECK(NoteSerialReceive_fake.call_count == SERIAL_MULTI_CHUNK_RECV_BYTES);
             }
 
@@ -227,7 +227,7 @@ TEST_CASE("serialNoteTransaction")
             void *(*mallocFns[])(size_t) = {malloc, malloc, MallocNull};
             SET_CUSTOM_FAKE_SEQ(NoteMalloc, mallocFns, 3);
 
-            CHECK(serialNoteTransaction(noteAddReq, &resp) != NULL);
+            CHECK(serialNoteTransaction(noteAddReq, &resp, true, true) != NULL);
         }
 
         SECTION("Partial response timeout") {
@@ -241,7 +241,7 @@ TEST_CASE("serialNoteTransaction")
             SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 3);
             const char *err;
 
-            CHECK((err = serialNoteTransaction(noteAddReq, &resp)) != NULL);
+            CHECK((err = serialNoteTransaction(noteAddReq, &resp, true, true)) != NULL);
             // Make sure we hit the partial response error.
             CHECK(strstr(err, "incomplete") != NULL);
         }

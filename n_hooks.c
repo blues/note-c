@@ -174,7 +174,7 @@ i2cReceiveFn hookI2CReceive = NULL;
 
 // Internal hooks
 typedef bool (*nNoteResetFn) (void);
-typedef const char * (*nTransactionFn) (char *, char **);
+typedef const char * (*nTransactionFn) (const char *, char **, bool, bool);
 static nNoteResetFn notecardReset = NULL;
 static nTransactionFn notecardTransaction = NULL;
 
@@ -821,16 +821,19 @@ bool NoteHardReset()
 /*!
   @brief  Perform a JSON request to the Notecard using the currently-set
   platform hook.
-  @param   json the JSON request.
-  @param   jsonResponse (out) A buffer with the JSON response.
+  @param   request the JSON request.
+  @param   response (out) A buffer with the JSON response.
+  @param   allocate allocate a new buffer to append `\r\n` or send an additional
+                    serial request for the newline characters.
+  @param   delay respect delay standard transmission delays
   @returns NULL if successful, or an error string if the transaction failed
   or the hook has not been set.
 */
 /**************************************************************************/
-const char *NoteJSONTransaction(char *json, char **jsonResponse)
+const char *NoteJSONTransaction(const char *request, char **response, bool allocate, bool delay)
 {
     if (notecardTransaction == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";
     }
-    return notecardTransaction(json, jsonResponse);
+    return notecardTransaction(request, response, allocate, delay);
 }
