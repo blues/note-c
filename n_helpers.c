@@ -125,7 +125,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
         JAddIntToObject(req, "cobs", cobs);
 
         // Ensure the transaction doesn't return an error.
-        J *rsp = NoteRequestAndResponse(req);
+        J *rsp = NoteRequestResponse(req);
         if NoteResponseError(rsp) {
             JDelete(rsp);
             return ERRSTR("failed to initialize binary transaction", c_err);
@@ -165,6 +165,8 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
   @returns  NULL on success, else an error string pointer.
   @note  Buffers are encoded in place, the buffer _MUST_ be larger than the data
          to be encoded, and original contents of the buffer will be modified.
+         You may use `cobsEncodedLength()` to calculate the required size for
+         the buffer pointed to by the `dst` parameter.
 */
 /**************************************************************************/
 const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, bool append)
@@ -227,7 +229,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     }
 
     // Immediately send the COBS binary.
-    const char *errstr = _Transaction((char *)data, NULL, false, false);
+    const char *errstr = _RawTransaction((char *)data, NULL, false);
 
     // Release Notecard Mutex
     _UnlockNote();

@@ -57,6 +57,11 @@ uint32_t cobsDecode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst)
   @param  dst Pointer to the buffer for the encoded data
 
   @return the length of the encoded data
+
+  @note You may use `cobsEncodedLength()` to calculate the required size for
+        the buffer pointed to by the `dst` parameter.
+
+  @see cobsEncodedLength()
  */
 /**************************************************************************/
 uint32_t cobsEncode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst)
