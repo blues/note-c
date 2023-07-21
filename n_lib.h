@@ -77,9 +77,9 @@ extern "C" {
 #endif
 
 // Transactions
-const char *i2cNoteTransaction(const char *request, char **response, bool allocate, bool delay);
+const char *i2cNoteTransaction(const char *request, char **response);
 bool i2cNoteReset(void);
-const char *serialNoteTransaction(const char *request, char **response, bool allocate, bool delay);
+const char *serialNoteTransaction(const char *request, char **response);
 bool serialNoteReset(void);
 
 // Hooks
@@ -96,7 +96,7 @@ bool NoteI2CReset(uint16_t DevAddress);
 const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
 const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 bool NoteHardReset(void);
-const char *NoteJSONTransaction(const char *request, char **response, bool allocate, bool delay);
+const char *NoteJSONTransaction(const char *request, char **response);
 bool NoteIsDebugOutputActive(void);
 
 // Utilities

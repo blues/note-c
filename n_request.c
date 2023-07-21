@@ -404,10 +404,10 @@ J *NoteTransaction(J *req)
 
         // Perform the transaction
         if (noResponseExpected) {
-            errStr = _Transaction(json, NULL, true, !cardTurboIO);
+            errStr = _Transaction(json, NULL);
             break;
         }
-        errStr = _Transaction(json, &responseJSON, true, !cardTurboIO);
+        errStr = _Transaction(json, &responseJSON);
 
 #ifndef NOTE_LOWMEM
         // If there's an I/O error on the transaction, retry

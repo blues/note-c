@@ -39,30 +39,16 @@ static void _DelayIO()
   @param   response
             An out parameter c-string buffer that will contain the JSON
             response from the Notercard.
-  @param   allocate
-            allocate a new buffer to append `\r\n` or send an additional
-            serial request for the newline characters.
-  @param   delay respect delay standard transmission delays
   @returns a c-string with an error, or `NULL` if no error occurred.
 */
 /**************************************************************************/
-const char *i2cNoteTransaction(const char *request, char **response, bool allocate, bool delay)
+const char *i2cNoteTransaction(const char *request, char **response)
 {
-    uint8_t *transmitBuf;
     size_t jsonLen = strlen(request);
 
-    if (allocate) {
-        // Append newline to the transaction
-        transmitBuf = (uint8_t *) _Malloc(jsonLen+c_newline_len);
-        if (transmitBuf == NULL) {
-            return ERRSTR("insufficient memory",c_mem);
-        }
-        memcpy(transmitBuf, request, jsonLen);
-        transmitBuf[jsonLen++] = '\n';
-    }
-    else {
-        transmitBuf = (uint8_t *)request;
-    }
+    // Swap NULL terminator ('\0') with newline during transmission ('\n')
+    uint8_t *transmitBuf = (uint8_t *)request;
+    transmitBuf[jsonLen] = '\n';
 
     // Lock over the entire transaction
     _LockI2C();
@@ -96,22 +82,17 @@ const char *i2cNoteTransaction(const char *request, char **response, bool alloca
         sentInSegment += chunkLen;
         if (sentInSegment > CARD_REQUEST_I2C_SEGMENT_MAX_LEN) {
             sentInSegment = 0;
-            if (delay) {
+            if (!cardTurboIO) {
                 _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
             }
         }
-        if (delay) {
+        if (!cardTurboIO) {
             _DelayMs(CARD_REQUEST_I2C_CHUNK_DELAY_MS);
         }
     }
 
-    // Free the transmit buffer
-    if (allocate) {
-        _Free(transmitBuf);
-    }
-    else {
-        _I2CTransmit(_I2CAddress(), (uint8_t *)"\n", 1);
-    }
+    // Restore the transmit buffer
+    transmitBuf[jsonLen] = '\0';
 
     // If no reply expected, we're done
     if (response == NULL) {
@@ -213,7 +194,7 @@ const char *i2cNoteTransaction(const char *request, char **response, bool alloca
         }
 
         // Delay, simply waiting for the Note to process the request
-        if (delay) {
+        if (!cardTurboIO) {
             _DelayMs(50);
         }
 

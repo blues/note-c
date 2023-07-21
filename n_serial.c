@@ -21,24 +21,18 @@
   @param   response
             An out parameter c-string buffer that will contain the JSON
             response from the Notercard.
-  @param   allocate
-            allocate a new buffer to append `\r\n` or send an additional
-            serial request for the newline characters.
-  @param   delay respect delay standard transmission delays
   @returns a c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialNoteTransaction(const char *request, char **response, bool allocate, bool delay)
+const char *serialNoteTransaction(const char *request, char **response)
 {
     uint8_t *transmitBuf;
     size_t jsonLen = strlen(request);
 
-    if (allocate) {
-        // Append newline to the transaction
-        transmitBuf = (uint8_t *) _Malloc(jsonLen+c_newline_len);
-        if (transmitBuf == NULL) {
-            return ERRSTR("insufficient memory",c_mem);
-        }
+    // Append newline to the transaction
+    transmitBuf = (uint8_t *) _Malloc(jsonLen+c_newline_len);
+    bool allocated = (transmitBuf != NULL);
+    if (allocated) {
         memcpy(transmitBuf, request, jsonLen);
         memcpy(&transmitBuf[jsonLen], c_newline, c_newline_len);
         jsonLen += c_newline_len;
@@ -61,13 +55,13 @@ const char *serialNoteTransaction(const char *request, char **response, bool all
         if (segLeft == 0) {
             break;
         }
-        if (delay) {
+        if (!cardTurboIO) {
             _DelayMs(CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS);
         }
     }
 
     // Free the transmit buffer
-    if (allocate) {
+    if (allocated) {
         _Free(transmitBuf);
     }
     else {
@@ -91,7 +85,7 @@ const char *serialNoteTransaction(const char *request, char **response, bool all
 #endif
             return ERRSTR("transaction timeout {io}",c_iotimeout);
         }
-        if (delay) {
+        if (!cardTurboIO) {
             _DelayMs(10);
         }
     }
@@ -123,7 +117,7 @@ const char *serialNoteTransaction(const char *request, char **response, bool all
                 _Free(jsonbuf);
                 return ERRSTR("transaction incomplete {io}",c_iotimeout);
             }
-            if (delay) {
+            if (!cardTurboIO) {
                 _DelayMs(1);
             }
             continue;
