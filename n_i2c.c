@@ -42,32 +42,33 @@ static void _DelayIO()
   @returns a c-string with an error, or `NULL` if no error occurred.
 */
 /**************************************************************************/
-const char *i2cNoteTransaction(const char *request, char **response)
+const char *i2cNoteTransaction(char *request, char **response)
 {
-    size_t jsonLen = strlen(request);
+    const size_t nullIndex = strlen(request);
+    uint8_t *transmitBuf = (uint8_t *)request;
+    size_t transmitLen = (strlen(request) + 1);
 
     // Swap NULL terminator ('\0') with newline during transmission ('\n')
-    uint8_t *transmitBuf = (uint8_t *)request;
-    transmitBuf[jsonLen] = '\n';
+    transmitBuf[nullIndex] = '\n';
 
     // Lock over the entire transaction
     _LockI2C();
 
-    // Transmit the request in chunks, but also in segments so as not to overwhelm the notecard's interrupt buffers
+    // Transmit the request in chunks, but also in segments so as not to
+    // overwhelm the notecard's interrupt buffers
     const char *estr;
     uint8_t *chunk = transmitBuf;
     uint16_t sentInSegment = 0;
-    while (jsonLen > 0) {
+    while (transmitLen > 0) {
         // Constrain chunkLen to fit into 16 bits (_I2CTransmit takes the buffer
         // size as a uint16_t).
-        uint16_t chunkLen = (jsonLen > 0xFFFF) ? 0xFFFF : jsonLen;
+        uint16_t chunkLen = (transmitLen > 0xFFFF) ? 0xFFFF : transmitLen;
         // Constrain chunkLen to be <= _I2CMax().
         chunkLen = (chunkLen > _I2CMax()) ? _I2CMax() : chunkLen;
 
         _DelayIO();
         estr = _I2CTransmit(_I2CAddress(), chunk, chunkLen);
         if (estr != NULL) {
-            _Free(transmitBuf);
             _I2CReset(_I2CAddress());
 #ifdef ERRDBG
             _Debug("i2c transmit: ");
@@ -78,7 +79,7 @@ const char *i2cNoteTransaction(const char *request, char **response)
             return estr;
         }
         chunk += chunkLen;
-        jsonLen -= chunkLen;
+        transmitLen -= chunkLen;
         sentInSegment += chunkLen;
         if (sentInSegment > CARD_REQUEST_I2C_SEGMENT_MAX_LEN) {
             sentInSegment = 0;
@@ -92,7 +93,7 @@ const char *i2cNoteTransaction(const char *request, char **response)
     }
 
     // Restore the transmit buffer
-    transmitBuf[jsonLen] = '\0';
+    transmitBuf[nullIndex] = '\0';
 
     // If no reply expected, we're done
     if (response == NULL) {
@@ -100,9 +101,9 @@ const char *i2cNoteTransaction(const char *request, char **response)
         return NULL;
     }
 
-    // Dynamically grow the buffer as we read.  Note that we always put the +1 in the alloc
-    // so we can be assured that it can be null-terminated, which must be the case because
-    // our json parser requires a null-terminated string.
+    // Dynamically grow the buffer as we read. Note that we always put the +1 in
+    // the alloc so we can be assured that it can be null-terminated, which must
+    // be the case because our json parser requires a null-terminated string.
     size_t growlen = ALLOC_CHUNK;
     size_t jsonbufAllocLen = growlen;
     uint8_t *jsonbuf = (uint8_t *) _Malloc(jsonbufAllocLen+1);
@@ -114,8 +115,9 @@ const char *i2cNoteTransaction(const char *request, char **response)
         return ERRSTR("insufficient memory",c_mem);
     }
 
-    // Loop, building a reply buffer out of received chunks.  We'll build the reply in the same
-    // buffer we used to transmit, and will grow it as necessary.
+    // Loop, building a reply buffer out of received chunks. We'll build the
+    // reply in the same buffer we used to transmit, and will grow it as
+    // necessary.
     bool receivedNewline = false;
     size_t jsonbufLen = 0;
     uint16_t chunkLen = 0;
@@ -160,9 +162,10 @@ const char *i2cNoteTransaction(const char *request, char **response)
         // We've now received the chunk
         jsonbufLen += chunkLen;
 
-        // If the last byte of the chunk is \n, chances are that we're done.  However, just so
-        // that we pull everything pending from the module, we only exit when we've received
-        // a newline AND there's nothing left available from the module.
+        // If the last byte of the chunk is \n, chances are that we're done.
+        // However, just so that we pull everything pending from the module, we
+        // only exit when we've received a newline AND there's nothing left
+        // available from the module.
         if (jsonbufLen > 0 && jsonbuf[jsonbufLen-1] == '\n') {
             receivedNewline = true;
         }
@@ -173,7 +176,7 @@ const char *i2cNoteTransaction(const char *request, char **response)
         // Constrain chunkLen to be <= _I2CMax().
         chunkLen = (chunkLen > _I2CMax()) ? _I2CMax() : chunkLen;
 
-        // If there's something available on the notecard for us to receive, do it
+        // If there's something available on the Notecard for us to receive, do it
         if (chunkLen > 0) {
             continue;
         }
@@ -229,9 +232,10 @@ bool i2cNoteReset()
         return false;
     }
 
-    // Synchronize by guaranteeing not only that I2C works, but that after we send \n that we drain
-    // the remainder of any pending partial reply from a previously-aborted session.
-    // If we get a failure on transmitting the \n, it means that the notecard isn't even present.
+    // Synchronize by guaranteeing not only that I2C works, but that after we
+    // send \n that we drain the remainder of any pending partial reply from a
+    // previously-aborted session. If we get a failure on transmitting the \n,
+    // it means that the notecard isn't even present.
     _DelayIO();
     const char *transmitErr = _I2CTransmit(_I2CAddress(), (uint8_t *)"\n", 1);
     if (!cardTurboIO) {
