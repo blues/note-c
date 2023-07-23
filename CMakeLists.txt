@@ -27,7 +27,6 @@ target_sources(
         ${NOTE_C_SRC_DIR}/n_b64.c
         ${NOTE_C_SRC_DIR}/n_cjson.c
         ${NOTE_C_SRC_DIR}/n_cjson_helpers.c
-        ${NOTE_C_SRC_DIR}/n_cobs.c
         ${NOTE_C_SRC_DIR}/n_const.c
         ${NOTE_C_SRC_DIR}/n_ftoa.c
         ${NOTE_C_SRC_DIR}/n_helpers.c

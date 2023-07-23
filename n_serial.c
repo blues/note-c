@@ -24,26 +24,15 @@
   @returns a c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialNoteTransaction(const char *request, char **response)
+const char *serialNoteTransaction(char *request, char **response)
 {
-    uint8_t *transmitBuf;
-    size_t jsonLen = strlen(request);
+    uint8_t *transmitBuf = (uint8_t *)request;
+    size_t requestLen = strlen(request);
 
-    // Append newline to the transaction
-    transmitBuf = (uint8_t *) _Malloc(jsonLen+c_newline_len);
-    bool allocated = (transmitBuf != NULL);
-    if (allocated) {
-        memcpy(transmitBuf, request, jsonLen);
-        memcpy(&transmitBuf[jsonLen], c_newline, c_newline_len);
-        jsonLen += c_newline_len;
-    }
-    else {
-        transmitBuf = (uint8_t *)request;
-    }
-
-    // Transmit the request in segments so as not to overwhelm the notecard's interrupt buffers
+    // Transmit the request in segments so as not to overwhelm the Notecard's
+    // interrupt buffers
     uint32_t segOff = 0;
-    uint32_t segLeft = jsonLen;
+    uint32_t segLeft = requestLen;
     while (true) {
         size_t segLen = segLeft;
         if (segLen > CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN) {
@@ -60,23 +49,18 @@ const char *serialNoteTransaction(const char *request, char **response)
         }
     }
 
-    // Free the transmit buffer
-    if (allocated) {
-        _Free(transmitBuf);
-    }
-    else {
-        _SerialTransmit((uint8_t *)"\r\n", 2, true);
-    }
+    // Append newline to the transaction
+    _SerialTransmit((uint8_t *)"\r\n", 2, true);
 
     // If no reply expected, we're done
     if (response == NULL) {
         return NULL;
     }
 
-    // Wait for something to become available, processing timeout errors up-front
-    // because the json parse operation immediately following is subject to the
-    // serial port timeout. We'd like more flexibility in max timeout and ultimately
-    // in our error handling.
+    // Wait for something to become available, processing timeout errors
+    // up-front because the json parse operation immediately following is
+    // subject to the serial port timeout. We'd like more flexibility in max
+    // timeout and ultimately in our error handling.
     uint32_t startMs;
     for (startMs = _GetMs(); !_SerialAvailable(); ) {
         if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
@@ -90,9 +74,9 @@ const char *serialNoteTransaction(const char *request, char **response)
         }
     }
 
-    // Allocate a buffer for input, noting that we always put the +1 in the alloc so we can be assured
-    // that it can be null-terminated.  This must be the case because json parsing requires a
-    // null-terminated string.
+    // Allocate a buffer for input, noting that we always put the +1 in the
+    // alloc so we can be assured that it can be null-terminated. This must be
+    // the case because json parsing requires a null-terminated string.
     int jsonbufAllocLen = ALLOC_CHUNK;
     char *jsonbuf = (char *) _Malloc(jsonbufAllocLen+1);
     if (jsonbuf == NULL) {
@@ -164,7 +148,6 @@ const char *serialNoteTransaction(const char *request, char **response)
     // Return it
     *response = jsonbuf;
     return NULL;
-
 }
 
 //**************************************************************************/
@@ -177,7 +160,8 @@ const char *serialNoteTransaction(const char *request, char **response)
 bool serialNoteReset()
 {
 
-    // Initialize, or re-initialize.  Because we've observed Arduino serial driver flakiness,
+    // Initialize, or re-initialize, because we've observed Arduino serial
+    // driver flakiness.
     _DelayMs(250);
     if (!_SerialReset()) {
         return false;

@@ -174,7 +174,7 @@ i2cReceiveFn hookI2CReceive = NULL;
 
 // Internal hooks
 typedef bool (*nNoteResetFn) (void);
-typedef const char * (*nTransactionFn) (const char *, char **);
+typedef const char * (*nTransactionFn) (char *, char **);
 static nNoteResetFn notecardReset = NULL;
 static nTransactionFn notecardTransaction = NULL;
 
@@ -827,7 +827,7 @@ bool NoteHardReset()
   or the hook has not been set.
 */
 /**************************************************************************/
-const char *NoteJSONTransaction(const char *request, char **response)
+const char *NoteJSONTransaction(char *request, char **response)
 {
     if (notecardTransaction == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";

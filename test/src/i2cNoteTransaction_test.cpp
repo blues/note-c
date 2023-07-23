@@ -69,13 +69,6 @@ TEST_CASE("i2cNoteTransaction")
 
     char noteAddReq[] = "{\"req\": \"note.add\"}";
 
-    SECTION("Transmit buffer allocation fails") {
-        NoteMalloc_fake.return_val = NULL;
-
-        CHECK(i2cNoteTransaction(noteAddReq, NULL) != NULL);
-        CHECK(NoteMalloc_fake.call_count == 1);
-    }
-
     SECTION("No response expected") {
         NoteMalloc_fake.custom_fake = malloc;
         NoteI2CTransmit_fake.return_val = NULL;
@@ -134,15 +127,26 @@ TEST_CASE("i2cNoteTransaction")
         char* resp = NULL;
 
         SECTION("Response buffer allocation fails") {
-            uint8_t *transmitBuf = (uint8_t *)malloc(strlen(noteAddReq) + 1);
-            REQUIRE(transmitBuf != NULL);
-            void* mallocReturnVals[] = {transmitBuf, NULL};
-            SET_RETURN_SEQ(NoteMalloc, mallocReturnVals, 2);
+            // Arrange
+            NoteMalloc_fake.return_val = NULL;
 
-            CHECK(i2cNoteTransaction(noteAddReq, &resp) != NULL);
-            CHECK(NoteI2CTransmit_fake.call_count == 1);
-            CHECK(NoteI2CReceive_fake.call_count == 0);
-            CHECK(NoteMalloc_fake.call_count == 2);
+            SECTION("Bytes are not received from the Notecard") {
+                // Action
+                i2cNoteTransaction(noteAddReq, &resp);
+
+                // Assert
+                REQUIRE(NoteMalloc_fake.call_count > 0);
+                CHECK(NoteI2CReceive_fake.call_count == 0);
+            }
+
+            SECTION("An error message is returned") {
+                // Action
+                const char *err = i2cNoteTransaction(noteAddReq, &resp);
+
+                // Assert
+                REQUIRE(NoteMalloc_fake.call_count > 0);
+                CHECK(err != NULL);
+            }
         }
 
         SECTION("NoteI2CReceive fails") {
@@ -201,8 +205,6 @@ TEST_CASE("i2cNoteTransaction")
                 const uint32_t numRecvCalls = 1 + (I2C_MULTI_CHUNK_RECV_BYTES +
                                                    (NoteI2CMax() - 1)) / NoteI2CMax();
                 CHECK(NoteI2CReceive_fake.call_count == numRecvCalls);
-                // 1 malloc for rx buffer, 1 for tx buffer, 1 to grow tx buffer.
-                CHECK(NoteMalloc_fake.call_count == 3);
             }
 
             // The response should be all 1s followed by a newline.

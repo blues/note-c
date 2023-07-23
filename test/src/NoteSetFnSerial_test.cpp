@@ -20,7 +20,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, serialNoteReset)
-FAKE_VALUE_FUNC(const char *, serialNoteTransaction, const char *, char **)
+FAKE_VALUE_FUNC(const char *, serialNoteTransaction, char *, char **)
 
 namespace
 {

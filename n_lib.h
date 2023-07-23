@@ -77,9 +77,9 @@ extern "C" {
 #endif
 
 // Transactions
-const char *i2cNoteTransaction(const char *request, char **response);
+const char *i2cNoteTransaction(char *request, char **response);
 bool i2cNoteReset(void);
-const char *serialNoteTransaction(const char *request, char **response);
+const char *serialNoteTransaction(char *request, char **response);
 bool serialNoteReset(void);
 
 // Hooks
@@ -96,19 +96,13 @@ bool NoteI2CReset(uint16_t DevAddress);
 const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
 const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 bool NoteHardReset(void);
-const char *NoteJSONTransaction(const char *request, char **response);
+const char *NoteJSONTransaction(char *request, char **response);
 bool NoteIsDebugOutputActive(void);
 
 // Utilities
 void n_htoa32(uint32_t n, char *p);
 void n_htoa16(uint16_t n, unsigned char *p);
 uint64_t n_atoh(char *p, int maxlen);
-
-// COBS Helpers
-uint32_t cobsDecode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst);
-uint32_t cobsEncode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst);
-uint32_t cobsEncodedLength(const uint8_t *ptr, uint32_t length);
-uint32_t cobsGuaranteedFit(uint32_t bufLen);
 
 // Turbo I/O mode
 extern bool cardTurboIO;
