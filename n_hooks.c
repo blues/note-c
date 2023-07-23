@@ -175,8 +175,10 @@ i2cReceiveFn hookI2CReceive = NULL;
 // Internal hooks
 typedef bool (*nNoteResetFn) (void);
 typedef const char * (*nTransactionFn) (char *, char **);
+typedef const char * (*nTransmitFn) (uint8_t *, size_t, bool);
 static nNoteResetFn notecardReset = NULL;
 static nTransactionFn notecardTransaction = NULL;
+static nTransmitFn notecardRawTransmit = NULL;
 
 //**************************************************************************/
 /*!
@@ -328,6 +330,7 @@ void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn transmitfn, serialA
 
     notecardReset = serialNoteReset;
     notecardTransaction = serialNoteTransaction;
+    notecardRawTransmit = serialRawTransmit;
 }
 
 //**************************************************************************/
@@ -355,6 +358,7 @@ void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn, i2cT
 
     notecardReset = i2cNoteReset;
     notecardTransaction = i2cNoteTransaction;
+    notecardRawTransmit = i2cRawTransmit;
 }
 
 //**************************************************************************/
@@ -369,6 +373,7 @@ void NoteSetFnDisabled()
 
     notecardReset = NULL;
     notecardTransaction = NULL;
+    notecardRawTransmit = NULL;
 
 }
 
@@ -833,4 +838,22 @@ const char *NoteJSONTransaction(char *request, char **response)
         return "i2c or serial interface must be selected";
     }
     return notecardTransaction(request, response);
+}
+
+/**************************************************************************/
+/*!
+  @brief  Transmit bytes over to the Notecard using the currently-set
+  platform hook.
+  @param   buffer A buffer of bytes to transmit.
+  @param   size The count of bytes in the buffer to send
+  @param   delay Respect delay standard transmission delays.
+  @returns  A c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
+const char *NoteRawTransmit(uint8_t *buffer, size_t size, bool delay)
+{
+    if (notecardRawTransmit == NULL || hookActiveInterface == interfaceNone) {
+        return "i2c or serial interface must be selected";
+    }
+    return notecardRawTransmit(buffer, size, delay);
 }

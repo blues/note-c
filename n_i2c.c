@@ -45,55 +45,20 @@ static void _DelayIO()
 const char *i2cNoteTransaction(char *request, char **response)
 {
     const size_t nullIndex = strlen(request);
-    uint8_t *transmitBuf = (uint8_t *)request;
-    size_t transmitLen = (strlen(request) + 1);
+    const size_t requestLen = (strlen(request) + 1);
 
     // Swap NULL terminator ('\0') with newline during transmission ('\n')
-    transmitBuf[nullIndex] = '\n';
+    request[nullIndex] = '\n';
 
     // Lock over the entire transaction
     _LockI2C();
 
-    // Transmit the request in chunks, but also in segments so as not to
-    // overwhelm the notecard's interrupt buffers
-    const char *estr;
-    uint8_t *chunk = transmitBuf;
-    uint16_t sentInSegment = 0;
-    while (transmitLen > 0) {
-        // Constrain chunkLen to fit into 16 bits (_I2CTransmit takes the buffer
-        // size as a uint16_t).
-        uint16_t chunkLen = (transmitLen > 0xFFFF) ? 0xFFFF : transmitLen;
-        // Constrain chunkLen to be <= _I2CMax().
-        chunkLen = (chunkLen > _I2CMax()) ? _I2CMax() : chunkLen;
-
-        _DelayIO();
-        estr = _I2CTransmit(_I2CAddress(), chunk, chunkLen);
-        if (estr != NULL) {
-            _I2CReset(_I2CAddress());
-#ifdef ERRDBG
-            _Debug("i2c transmit: ");
-            _Debug(estr);
-            _Debug("\n");
-#endif
-            _UnlockI2C();
-            return estr;
-        }
-        chunk += chunkLen;
-        transmitLen -= chunkLen;
-        sentInSegment += chunkLen;
-        if (sentInSegment > CARD_REQUEST_I2C_SEGMENT_MAX_LEN) {
-            sentInSegment = 0;
-            if (!cardTurboIO) {
-                _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
-            }
-        }
-        if (!cardTurboIO) {
-            _DelayMs(CARD_REQUEST_I2C_CHUNK_DELAY_MS);
-        }
+    const char *err = i2cRawTransmit((uint8_t *)request, requestLen, true);
+    request[nullIndex] = '\0';  // Restore the transmit buffer
+    if (err) {
+        _UnlockI2C();
+        return err;
     }
-
-    // Restore the transmit buffer
-    transmitBuf[nullIndex] = '\0';
 
     // If no reply expected, we're done
     if (response == NULL) {
@@ -293,4 +258,58 @@ bool i2cNoteReset()
 
     // Done
     return notecardReady;
+}
+
+/**************************************************************************/
+/*!
+  @brief  Transmit bytes over I2C to the Notecard.
+  @param   buffer
+            A buffer of bytes to transmit.
+  @param   size
+            The count of bytes in the buffer to send
+  @param   delay
+            Respect delay standard transmission delays.
+  @returns  A c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
+const char *i2cRawTransmit(uint8_t *buffer, size_t size, bool delay)
+{
+    // Transmit the request in chunks, but also in segments so as not to
+    // overwhelm the notecard's interrupt buffers
+    const char *estr;
+    uint8_t *chunk = buffer;
+    uint16_t sentInSegment = 0;
+    while (size > 0) {
+        // Constrain chunkLen to fit into 16 bits (_I2CTransmit takes the buffer
+        // size as a uint16_t).
+        uint16_t chunkLen = (size > 0xFFFF) ? 0xFFFF : size;
+        // Constrain chunkLen to be <= _I2CMax().
+        chunkLen = (chunkLen > _I2CMax()) ? _I2CMax() : chunkLen;
+
+        _DelayIO();
+        estr = _I2CTransmit(_I2CAddress(), chunk, chunkLen);
+        if (estr != NULL) {
+            _I2CReset(_I2CAddress());
+#ifdef ERRDBG
+            _Debug("i2c transmit: ");
+            _Debug(estr);
+            _Debug("\n");
+#endif
+            return estr;
+        }
+        chunk += chunkLen;
+        size -= chunkLen;
+        sentInSegment += chunkLen;
+        if (sentInSegment > CARD_REQUEST_I2C_SEGMENT_MAX_LEN) {
+            sentInSegment = 0;
+            if (delay) {
+                _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
+            }
+        }
+        if (delay) {
+            _DelayMs(CARD_REQUEST_I2C_CHUNK_DELAY_MS);
+        }
+    }
+
+    return NULL;
 }

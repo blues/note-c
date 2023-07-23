@@ -26,27 +26,9 @@
 /**************************************************************************/
 const char *serialNoteTransaction(char *request, char **response)
 {
-    uint8_t *transmitBuf = (uint8_t *)request;
-    size_t requestLen = strlen(request);
-
-    // Transmit the request in segments so as not to overwhelm the Notecard's
-    // interrupt buffers
-    uint32_t segOff = 0;
-    uint32_t segLeft = requestLen;
-    while (true) {
-        size_t segLen = segLeft;
-        if (segLen > CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN) {
-            segLen = CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN;
-        }
-        _SerialTransmit(&transmitBuf[segOff], segLen, false);
-        segOff += segLen;
-        segLeft -= segLen;
-        if (segLeft == 0) {
-            break;
-        }
-        if (!cardTurboIO) {
-            _DelayMs(CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS);
-        }
+    const char *err = serialRawTransmit((uint8_t *)request, strlen(request), true);
+    if (err) {
+        _Debug(err);
     }
 
     // Append newline to the transaction
@@ -212,4 +194,42 @@ bool serialNoteReset()
 
     // Done
     return notecardReady;
+}
+
+/**************************************************************************/
+/*!
+  @brief  Transmit bytes over Serial to the Notecard.
+  @param   buffer
+            A buffer of bytes to transmit.
+  @param   size
+            The count of bytes in the buffer to send
+  @param   delay
+            Respect delay standard transmission delays.
+  @returns  A c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
+const char *serialRawTransmit(uint8_t *buffer, size_t size, bool delay)
+{
+    // Transmit the request in segments so as not to overwhelm the Notecard's
+    // interrupt buffers
+    uint32_t segOff = 0;
+    uint32_t segLeft = size;
+
+    while (true) {
+        size_t segLen = segLeft;
+        if (segLen > CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN) {
+            segLen = CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN;
+        }
+        _SerialTransmit(&buffer[segOff], segLen, false);
+        segOff += segLen;
+        segLeft -= segLen;
+        if (segLeft == 0) {
+            break;
+        }
+        if (delay) {
+            _DelayMs(CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS);
+        }
+    }
+
+    return NULL;
 }
