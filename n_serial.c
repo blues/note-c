@@ -50,7 +50,7 @@ const char *serialNoteTransaction(char *request, char **response)
     }
 
     // Append newline to the transaction
-    _SerialTransmit((uint8_t *)"\r\n", 2, true);
+    _SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
 
     // If no reply expected, we're done
     if (response == NULL) {
