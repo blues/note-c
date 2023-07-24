@@ -135,16 +135,6 @@ TEST_CASE("serialNoteTransaction")
             }
         }
 
-        SECTION("NoteSerialReceive fails") {
-            NoteSerialAvailable_fake.return_val = true;
-            NoteMalloc_fake.custom_fake = malloc;
-            NoteSerialReceive_fake.return_val = 0;
-
-            const char *err = serialNoteTransaction(noteAddReq, &resp);
-            REQUIRE(NoteSerialReceive_fake.call_count == 1);
-            CHECK(err != NULL);
-        }
-
         SECTION("Force timeout before receive") {
             NoteSerialAvailable_fake.return_val = false;
             NoteMalloc_fake.custom_fake = malloc;
@@ -211,8 +201,8 @@ TEST_CASE("serialNoteTransaction")
         SECTION("Growing response buffer fails") {
             NoteSerialAvailable_fake.return_val = true;
             NoteSerialReceive_fake.custom_fake = NoteSerialReceiveMultiChunk;
-            void *(*mallocFns[])(size_t) = {malloc, malloc, MallocNull};
-            SET_CUSTOM_FAKE_SEQ(NoteMalloc, mallocFns, 3);
+            void *(*mallocFns[])(size_t) = {malloc, MallocNull};
+            SET_CUSTOM_FAKE_SEQ(NoteMalloc, mallocFns, 2);
 
             CHECK(serialNoteTransaction(noteAddReq, &resp) != NULL);
         }

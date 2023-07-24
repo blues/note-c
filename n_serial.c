@@ -43,8 +43,7 @@ const char *serialNoteTransaction(char *request, char **response)
     // up-front because the json parse operation immediately following is
     // subject to the serial port timeout. We'd like more flexibility in max
     // timeout and ultimately in our error handling.
-    uint32_t startMs;
-    for (startMs = _GetMs(); !_SerialAvailable(); ) {
+    for (const uint32_t startMs = _GetMs(); !_SerialAvailable(); ) {
         if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
 #ifdef ERRDBG
             _Debug("reply to request didn't arrive from module in time\n");
@@ -59,7 +58,7 @@ const char *serialNoteTransaction(char *request, char **response)
     // Allocate a buffer for input, noting that we always put the +1 in the
     // alloc so we can be assured that it can be null-terminated. This must be
     // the case because json parsing requires a null-terminated string.
-    int jsonbufAllocLen = ALLOC_CHUNK;
+    size_t jsonbufAllocLen = ALLOC_CHUNK;
     char *jsonbuf = (char *) _Malloc(jsonbufAllocLen+1);
     if (jsonbuf == NULL) {
 #ifdef ERRDBG
@@ -67,49 +66,21 @@ const char *serialNoteTransaction(char *request, char **response)
 #endif
         return ERRSTR("insufficient memory",c_mem);
     }
-    int jsonbufLen = 0;
-    char ch = 0;
-    startMs = _GetMs();
-    while (ch != '\n') {
-        if (!_SerialAvailable()) {
-            ch = 0;
-            if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
-#ifdef ERRDBG
-                jsonbuf[jsonbufLen] = '\0';
-                _Debug("received only partial reply after timeout:\n");
-                _Debug(jsonbuf);
-                _Debug("\n");
-#endif
-                _Free(jsonbuf);
-                return ERRSTR("transaction incomplete {io}",c_iotimeout);
-            }
-            if (!cardTurboIO) {
-                _DelayMs(1);
-            }
-            continue;
-        }
-        ch = _SerialReceive();
 
-        // Because serial I/O can be error-prone, catch common bad data early
-        //
-        // UTF-8 can contain any value from 0-255 and each character can be
-        // up to 4 bytes long. We should not see any \0's though.
-        // In multi-byte encoding, the 2nd/3rd/4th bytes are always non-zero
-        //
-        // See https://en.wikipedia.org/wiki/UTF-8#Encoding
-        //
-        if (ch == 0) {
-#ifdef ERRDBG
-            _Debug("invalid data received on serial port from notecard\n");
-#endif
-            _Free(jsonbuf);
-            return ERRSTR("serial communications error {io}",c_iotimeout);
-        }
+    size_t jsonbufLen = 0;
+    for (size_t overflow = true ; overflow ;) {
+        size_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        jsonbuf[jsonbufLen++] = ch;
-        if (jsonbufLen >= jsonbufAllocLen) {
-            jsonbufAllocLen += ALLOC_CHUNK;
+        const char *err = serialRawReceive((uint8_t *)&jsonbuf[jsonbufLen], &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &overflow);
+        if (err) {
+            _Free(jsonbuf);
+            return err;
+        }
+        jsonbufLen += jsonbufAvailLen;
+
+        if (overflow) {
+            jsonbufAllocLen += overflow;
             char *jsonbufNew = (char *) _Malloc(jsonbufAllocLen+1);
             if (jsonbufNew == NULL) {
 #ifdef ERRDBG
@@ -164,8 +135,7 @@ bool serialNoteReset()
         // Drain all serial for 500ms
         bool somethingFound = false;
         bool nonControlCharFound = false;
-        uint32_t startMs = _GetMs();
-        while (_GetMs() - startMs < 500) {
+        for (const size_t startMs = _GetMs() ; _GetMs() - startMs < 500 ;) {
             while (_SerialAvailable()) {
                 somethingFound = true;
                 if (_SerialReceive() >= ' ') {
@@ -198,11 +168,76 @@ bool serialNoteReset()
 
 /**************************************************************************/
 /*!
+  @brief  Receive bytes over Serial to the Notecard.
+  @param   buffer
+            A buffer to receive bytes into.
+  @param   size (in/out)
+            - (in) The size of the buffer in bytes.
+            - (out) The length of the received data in bytes.
+  @param   delay
+            Respect delay standard transmission delays.
+  @param   timeoutMs
+            The maximum amount of time, in milliseconds, to wait for serial data
+            to arrive. Passing zero (0) disables the timeout.
+  @param   overflow (out)
+            The overflow amount in bytes.
+  @returns  A c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
+const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, size_t *overflow)
+{
+    // Check for special case(s)
+    if (!timeoutMs) {
+        timeoutMs = (size_t)-1;
+    }
+
+    size_t received = 0;
+    *overflow = (received >= *size);
+    const size_t startMs = _GetMs();
+    for (bool eop = false ; !(*overflow) && !eop ;) {
+        while (!_SerialAvailable()) {
+            if (_GetMs() - startMs >= timeoutMs) {
+                *size = received;
+                buffer[received] = '\0';
+#ifdef ERRDBG
+                _Debug("received only partial reply after timeout:\n");
+                _Debug((char *)buffer);
+                _Debug("^^ partial buffer contents ^^\n");
+#endif
+                return ERRSTR("transaction incomplete {io}",c_iotimeout);
+            }
+            if (delay) {
+                _DelayMs(1);
+            }
+        }
+        char ch = _SerialReceive();
+
+        // Place into the buffer
+        buffer[received++] = ch;
+
+        // Look for end-of-packet marker
+        eop = (ch == '\n');
+
+        // Check overflow condition
+        *overflow = ((received >= *size) && !eop);
+        if (*overflow) {
+            *overflow = ALLOC_CHUNK;
+            break;
+        }
+    }
+
+    // Return it
+    *size = received;
+    return NULL;
+}
+
+/**************************************************************************/
+/*!
   @brief  Transmit bytes over Serial to the Notecard.
   @param   buffer
             A buffer of bytes to transmit.
   @param   size
-            The count of bytes in the buffer to send
+            The count of bytes in the buffer to send.
   @param   delay
             Respect delay standard transmission delays.
   @returns  A c-string with an error, or `NULL` if no error ocurred.

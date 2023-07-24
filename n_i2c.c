@@ -69,8 +69,7 @@ const char *i2cNoteTransaction(char *request, char **response)
     // Dynamically grow the buffer as we read. Note that we always put the +1 in
     // the alloc so we can be assured that it can be null-terminated, which must
     // be the case because our json parser requires a null-terminated string.
-    size_t growlen = ALLOC_CHUNK;
-    size_t jsonbufAllocLen = growlen;
+    size_t jsonbufAllocLen = ALLOC_CHUNK;
     uint8_t *jsonbuf = (uint8_t *) _Malloc(jsonbufAllocLen+1);
     if (jsonbuf == NULL) {
 #ifdef ERRDBG
@@ -80,21 +79,27 @@ const char *i2cNoteTransaction(char *request, char **response)
         return ERRSTR("insufficient memory",c_mem);
     }
 
-    // Loop, building a reply buffer out of received chunks. We'll build the
-    // reply in the same buffer we used to transmit, and will grow it as
-    // necessary.
-    bool receivedNewline = false;
     size_t jsonbufLen = 0;
-    uint16_t chunkLen = 0;
-    uint32_t startMs = _GetMs();
-    while (true) {
+    for (size_t overflow = true ; overflow ;) {
+        size_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
-        // Grow the buffer as necessary to read this next chunk
-        if (jsonbufLen + chunkLen > jsonbufAllocLen) {
-            if (chunkLen > growlen) {
-                jsonbufAllocLen += chunkLen;
+        // Append into the json buffer
+        const char *err = i2cRawReceive((uint8_t *)&jsonbuf[jsonbufLen], &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &overflow);
+        if (err) {
+            _Free(jsonbuf);
+#ifdef ERRDBG
+            _Debug("i2c receive error\n");
+#endif
+            _UnlockI2C();
+            return err;
+        }
+        jsonbufLen += jsonbufAvailLen;
+
+        if (overflow) {
+            if (overflow > ALLOC_CHUNK) {
+                jsonbufAllocLen += overflow;
             } else {
-                jsonbufAllocLen += growlen;
+                jsonbufAllocLen += ALLOC_CHUNK;
             }
             uint8_t *jsonbufNew = (uint8_t *) _Malloc(jsonbufAllocLen+1);
             if (jsonbufNew == NULL) {
@@ -109,63 +114,6 @@ const char *i2cNoteTransaction(char *request, char **response)
             _Free(jsonbuf);
             jsonbuf = jsonbufNew;
         }
-
-        // Read the chunk
-        uint32_t available;
-        _DelayIO();
-        const char *err = _I2CReceive(_I2CAddress(), &jsonbuf[jsonbufLen],
-                                      chunkLen, &available);
-        if (err != NULL) {
-            _Free(jsonbuf);
-#ifdef ERRDBG
-            _Debug("i2c receive error\n");
-#endif
-            _UnlockI2C();
-            return err;
-        }
-
-        // We've now received the chunk
-        jsonbufLen += chunkLen;
-
-        // If the last byte of the chunk is \n, chances are that we're done.
-        // However, just so that we pull everything pending from the module, we
-        // only exit when we've received a newline AND there's nothing left
-        // available from the module.
-        if (jsonbufLen > 0 && jsonbuf[jsonbufLen-1] == '\n') {
-            receivedNewline = true;
-        }
-
-        // Constrain chunkLen to fit into 16 bits (_I2CReceive takes the buffer
-        // size as a uint16_t).
-        chunkLen = (available > 0xFFFF) ? 0xFFFF : available;
-        // Constrain chunkLen to be <= _I2CMax().
-        chunkLen = (chunkLen > _I2CMax()) ? _I2CMax() : chunkLen;
-
-        // If there's something available on the Notecard for us to receive, do it
-        if (chunkLen > 0) {
-            continue;
-        }
-
-        // If there's nothing available AND we've received a newline, we're done
-        if (receivedNewline) {
-            break;
-        }
-
-        // If we've timed out and nothing's available, exit
-        if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
-            _Free(jsonbuf);
-#ifdef ERRDBG
-            _Debug("reply to request didn't arrive from module in time\n");
-#endif
-            _UnlockI2C();
-            return ERRSTR("request or response was lost {io}",c_iotimeout);
-        }
-
-        // Delay, simply waiting for the Note to process the request
-        if (!cardTurboIO) {
-            _DelayMs(50);
-        }
-
     }
 
     // Done with the bus
@@ -258,6 +206,110 @@ bool i2cNoteReset()
 
     // Done
     return notecardReady;
+}
+
+/**************************************************************************/
+/*!
+  @brief  Receive bytes over I2C to the Notecard.
+  @param   buffer
+            A buffer to receive bytes into.
+  @param   size (in/out)
+            - (in) The size of the buffer in bytes.
+            - (out) The length of the received data in bytes.
+  @param   delay
+            Respect delay standard transmission delays.
+  @param   timeoutMs
+            The maximum amount of time, in milliseconds, to wait for serial data
+            to arrive. Passing zero (0) disables the timeout.
+  @param   overflow (out)
+            The contents did not fit inside the provided buffer.
+  @returns  A c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
+const char *i2cRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, size_t *overflow)
+{
+    // Check for special case
+    if (!timeoutMs) {
+        timeoutMs = (size_t)-1;
+    }
+
+    if (delay) {
+        _DelayIO();
+    }
+
+    // Load buffer with chunked I2C values
+    uint32_t available;
+    size_t received = 0;
+    uint16_t requested = 0;
+    *overflow = (received >= *size);
+    const size_t startMs = _GetMs();
+
+    for (bool eop = false ; !(*overflow) ;) {
+        // Read a chunk of data from I2C
+        // The first read will request zero bytes to query the amount of data
+        // available to receive from the Notecard.
+        const char *err = _I2CReceive(_I2CAddress(), &buffer[received], requested, &available);
+        if (err) {
+#ifdef ERRDBG
+            _Debug(err);
+#endif
+            return err;
+        }
+
+        // Add requested bytes to received total
+        received += requested;
+
+        // Request all available bytes, up to the maximum request size
+        requested = (available > 0xFFFF) ? 0xFFFF : available;
+        requested = (requested > _I2CMax()) ? _I2CMax() : requested;
+
+        // Look for end-of-packet marker
+        if (received > 0 && !eop) {
+            eop = (buffer[received-1] == '\n');
+        }
+
+        // Check overflow condition
+        *overflow = ((received + requested) >= *size);
+        if (*overflow) {
+            *overflow = available; // `available` should optimize allocation
+            // *overflow = requested;
+        }
+
+        // If the last byte of the chunk is `\n`, then we have received a
+        // complete message. However, to ensure we pull everything pending from
+        // the Notecard, we will only exit when we've received a newline AND
+        // there's no more bytes available from the Notecard.
+
+        // If there's something available on the Notecard for us to receive, do it
+        if (available > 0) {
+            continue;
+        }
+
+        // If there's nothing available AND we've received a newline, we're done
+        if (eop) {
+            break;
+        }
+
+        // Exit on timeout
+        if (_GetMs() - startMs >= timeoutMs) {
+            *size = received;
+            buffer[received] = '\0';
+#ifdef ERRDBG
+            _Debug("received only partial reply after timeout:\n");
+            _Debug((char *)buffer);
+            _Debug("^^ partial buffer contents ^^\n");
+#endif
+            return ERRSTR("transaction incomplete {io}",c_iotimeout);
+        }
+
+        // Delay, simply waiting for the Note to process the request
+        if (delay) {
+            _DelayMs(50);
+        }
+    }
+
+    *size = received;
+    return NULL;
 }
 
 /**************************************************************************/

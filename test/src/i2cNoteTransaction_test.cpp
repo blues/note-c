@@ -185,26 +185,27 @@ TEST_CASE("i2cNoteTransaction")
             CHECK(NoteI2CTransmit_fake.call_count == 1);
             CHECK(NoteI2CReceive_fake.call_count == 1);
         }
-
         SECTION("Check response") {
             SECTION("One receipt") {
                 NoteMalloc_fake.custom_fake = malloc;
                 NoteI2CReceive_fake.custom_fake = NoteI2CReceiveOne;
 
-                CHECK(i2cNoteTransaction(noteAddReq, &resp) == NULL);
-                CHECK(NoteI2CReceive_fake.call_count == 2);
+                const char *err = i2cNoteTransaction(noteAddReq, &resp);
+                REQUIRE(NoteI2CReceive_fake.call_count == 2);
+                CHECK(err == NULL);
             }
 
             SECTION("Multiple chunks") {
                 NoteMalloc_fake.custom_fake = malloc;
                 NoteI2CReceive_fake.custom_fake = NoteI2CReceiveMultiChunk;
 
-                CHECK(i2cNoteTransaction(noteAddReq, &resp) == NULL);
+                const char *err = i2cNoteTransaction(noteAddReq, &resp);
                 // 1 call to get available data to read, plus however many I2C
                 // transactions it takes to read that data.
                 const uint32_t numRecvCalls = 1 + (I2C_MULTI_CHUNK_RECV_BYTES +
                                                    (NoteI2CMax() - 1)) / NoteI2CMax();
                 CHECK(NoteI2CReceive_fake.call_count == numRecvCalls);
+                CHECK(err == NULL);
             }
 
             // The response should be all 1s followed by a newline.
@@ -217,7 +218,6 @@ TEST_CASE("i2cNoteTransaction")
                 }
             }
         }
-
         CHECK(NoteLockI2C_fake.call_count == 1);
         CHECK(NoteUnlockI2C_fake.call_count == 1);
 
