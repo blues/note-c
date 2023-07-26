@@ -118,6 +118,9 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
         return ERRSTR("insufficient buffer size", c_err);
     }
 
+    // Claim Notecard Mutex
+    _LockNote();
+
     // Issue `card.binary.get` and capture `"status"` from response
     char status[NOTE_MD5_HASH_STRING_SIZE] = {0};
     J *req = NoteNewRequest("card.binary.get");
@@ -136,10 +139,24 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
         JDelete(rsp);
     }
 
-    // `NoteReceiveBytes()` of the COBS encoded bytes either in a single IO of
+    // `NoteReceiveBytes()` of the COBS encoded bytes either in a single I/O of
     // `cobsLen`, OR receive until newline and verify that you received
     // `cobsLen` bytes, depending upon platform API
-    (void)buffer;
+    size_t overflow;
+    const char *errstr = _RawReceive(buffer, bufLen, false, 60000, &overflow);
+
+    // Release Notecard Mutex
+    _UnlockNote();
+
+    // Ensure transaction was successful
+    if (errstr) {
+        return ERRSTR(errstr, c_err);
+    }
+
+    // Check buffer overflow condition
+    if (overflow) {
+        return ERRSTR("unexpected data available", c_err);
+    }
 
     // Decode it in-place which is safe because decoding shrinks
     const size_t decLen = cobsDecode(buffer,bufLen,'\n',buffer);
