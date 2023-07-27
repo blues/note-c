@@ -315,6 +315,8 @@ void NoteMD5HashString(unsigned char *data, unsigned long len, char *strbuf, uns
 void NoteMD5HashToString(unsigned char *hash, char *strbuf, unsigned long buflen);
 
 // High-level helper functions that are both useful and serve to show developers how to call the API
+const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen);
+const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, bool append);
 uint32_t NoteSetSTSecs(uint32_t secs);
 bool NoteTimeValid(void);
 bool NoteTimeValidST(void);

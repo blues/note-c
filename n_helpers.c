@@ -11,8 +11,10 @@
  *
  */
 
-#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 
 #include "n_lib.h"
@@ -220,12 +222,13 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
 
     // Encode COBS data
     uint32_t encLen = cobsEncodedLength(data,dataLen);
-    if (encLen > bufLen) {
+    if ((encLen + 1) > bufLen) {
         return ERRSTR("buffer too small for encoding", c_mem);
     }
     const size_t data_shift = (bufLen - dataLen);
     memmove(data + data_shift, data, dataLen);
     encLen = cobsEncode(data + data_shift, dataLen, '\n', data);
+    data[encLen] = '\n';
 
     // Claim Notecard Mutex
     _LockNote();
@@ -246,7 +249,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     }
 
     // Immediately send the COBS binary.
-    const char *errstr = _RawTransmit(data, encLen, false);
+    const char *errstr = _RawTransmit(data, (encLen + 1), false);
 
     // Release Notecard Mutex
     _UnlockNote();
