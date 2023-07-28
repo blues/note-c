@@ -81,9 +81,9 @@ const char *i2cNoteTransaction(char *request, char **response);
 bool i2cNoteReset(void);
 const char *serialNoteTransaction(char *request, char **response);
 bool serialNoteReset(void);
-const char *i2cRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, size_t *overflow);
+const char *i2cRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
 const char *i2cRawTransmit(uint8_t *buffer, size_t size, bool delay);
-const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, size_t *overflow);
+const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
 const char *serialRawTransmit(uint8_t *buffer, size_t size, bool delay);
 
 // Hooks
@@ -101,7 +101,7 @@ const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size
 const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 bool NoteHardReset(void);
 const char *NoteJSONTransaction(char *request, char **response);
-const char *NoteRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, size_t *overflow);
+const char *NoteRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
 const char *NoteRawTransmit(uint8_t *buffer, size_t size, bool delay);
 bool NoteIsDebugOutputActive(void);
 

@@ -94,7 +94,7 @@ uint32_t cobsEncode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst)
   @param  length Length of the data to encode
 
   @return the length required for encoded data
-  @note  The computed length includes the NULL terminator
+  @note  The computed length does not include the EOP (end-of-packet) marker
  */
 /**************************************************************************/
 uint32_t cobsEncodedLength(const uint8_t *ptr, uint32_t length)
@@ -125,7 +125,7 @@ uint32_t cobsEncodedLength(const uint8_t *ptr, uint32_t length)
 
   @return the length of unencoded data
   @note The computation may leave additional space at the end, including one
-        byte for a NULL terminator.
+        byte for the EOP (end-of-packet) marker.
  */
 /**************************************************************************/
 uint32_t cobsGuaranteedFit(uint32_t bufLen)

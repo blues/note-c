@@ -15,7 +15,7 @@
 
 /**************************************************************************/
 /*!
-  @brief  Given a JSON string, perform an Serial transaction with the Notecard.
+  @brief  Given a JSON string, perform a serial transaction with the Notecard.
   @param   request
             A c-string containing the JSON request object.
   @param   response
@@ -68,19 +68,19 @@ const char *serialNoteTransaction(char *request, char **response)
     }
 
     size_t jsonbufLen = 0;
-    for (size_t overflow = true ; overflow ;) {
+    for (uint32_t available = 1 ; available ;) {
         size_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        const char *err = serialRawReceive((uint8_t *)&jsonbuf[jsonbufLen], &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &overflow);
+        const char *err = serialRawReceive((uint8_t *)&jsonbuf[jsonbufLen], &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
         if (err) {
             _Free(jsonbuf);
             return err;
         }
         jsonbufLen += jsonbufAvailLen;
 
-        if (overflow) {
-            jsonbufAllocLen += overflow;
+        if (available) {
+            jsonbufAllocLen += available;
             char *jsonbufNew = (char *) _Malloc(jsonbufAllocLen+1);
             if (jsonbufNew == NULL) {
 #ifdef ERRDBG
@@ -168,7 +168,7 @@ bool serialNoteReset()
 
 /**************************************************************************/
 /*!
-  @brief  Receive bytes over Serial to the Notecard.
+  @brief  Receive bytes over Serial from the Notecard.
   @param   buffer
             A buffer to receive bytes into.
   @param   size (in/out)
@@ -179,32 +179,29 @@ bool serialNoteReset()
   @param   timeoutMs
             The maximum amount of time, in milliseconds, to wait for serial data
             to arrive. Passing zero (0) disables the timeout.
-  @param   overflow (out)
-            The overflow amount in bytes.
+  @param   available (out)
+            The amount of bytes unable to fit into the provided buffer.
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, size_t *overflow)
+const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
 {
-    // Check for special case(s)
-    if (!timeoutMs) {
-        timeoutMs = (size_t)-1;
-    }
-
     size_t received = 0;
-    *overflow = (received >= *size);
+    bool overflow = (received >= *size);
     const size_t startMs = _GetMs();
-    for (bool eop = false ; !(*overflow) && !eop ;) {
+    for (bool eop = false ; !overflow && !eop ;) {
         while (!_SerialAvailable()) {
-            if (_GetMs() - startMs >= timeoutMs) {
-                *size = received;
+            if (timeoutMs && (_GetMs() - startMs >= timeoutMs)) {
                 buffer[received] = '\0';
+                *size = received;
 #ifdef ERRDBG
-                _Debug("received only partial reply after timeout:\n");
-                _Debug((char *)buffer);
-                _Debug("^^ partial buffer contents ^^\n");
+                if (received) {
+                    _Debug("received only partial reply after timeout:\n");
+                    _Debug((char *)buffer);
+                    _Debug("\n^^ partial buffer contents ^^\n");
+                }
 #endif
-                return ERRSTR("transaction incomplete {io}",c_iotimeout);
+                return ERRSTR("timeout: transaction incomplete {io}",c_iotimeout);
             }
             if (delay) {
                 _DelayMs(1);
@@ -219,10 +216,19 @@ const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t t
         eop = (ch == '\n');
 
         // Check overflow condition
-        *overflow = ((received >= *size) && !eop);
-        if (*overflow) {
-            *overflow = ALLOC_CHUNK;
+        overflow = ((received >= *size) && !eop);
+        if (overflow) {
+            // `SerialAvailable()` returns the number of bytes sitting in the
+            // serial ring buffer of a given device. The value returned will be
+            // inconsistent across platforms and will often not reflect the
+            // total number of bytes available from the Notecard. When more
+            // bytes are available than we have buffer to accommodate (i.e.
+            // overflow), then we request the caller allocate blocks of size
+            // `ALLOC_CHUNK` to reduce heap fragmentation.
+            *available = ALLOC_CHUNK;
             break;
+        } else {
+            *available = 0;
         }
     }
 
@@ -233,7 +239,7 @@ const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t t
 
 /**************************************************************************/
 /*!
-  @brief  Transmit bytes over Serial to the Notecard.
+  @brief  Transmit bytes over serial to the Notecard.
   @param   buffer
             A buffer of bytes to transmit.
   @param   size

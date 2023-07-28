@@ -80,11 +80,11 @@ const char *i2cNoteTransaction(char *request, char **response)
     }
 
     size_t jsonbufLen = 0;
-    for (size_t overflow = true ; overflow ;) {
+    for (uint32_t available = 1 ; available ;) {
         size_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        const char *err = i2cRawReceive((uint8_t *)&jsonbuf[jsonbufLen], &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &overflow);
+        const char *err = i2cRawReceive((uint8_t *)&jsonbuf[jsonbufLen], &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
         if (err) {
             _Free(jsonbuf);
 #ifdef ERRDBG
@@ -95,9 +95,9 @@ const char *i2cNoteTransaction(char *request, char **response)
         }
         jsonbufLen += jsonbufAvailLen;
 
-        if (overflow) {
-            if (overflow > ALLOC_CHUNK) {
-                jsonbufAllocLen += overflow;
+        if (available) {
+            if (available > ALLOC_CHUNK) {
+                jsonbufAllocLen += available;
             } else {
                 jsonbufAllocLen += ALLOC_CHUNK;
             }
@@ -210,45 +210,39 @@ bool i2cNoteReset()
 
 /**************************************************************************/
 /*!
-  @brief  Receive bytes over I2C to the Notecard.
+  @brief  Receive bytes over I2C from the Notecard.
   @param   buffer
             A buffer to receive bytes into.
   @param   size (in/out)
             - (in) The size of the buffer in bytes.
             - (out) The length of the received data in bytes.
   @param   delay
-            Respect delay standard transmission delays.
+            Respect standard processing delays.
   @param   timeoutMs
             The maximum amount of time, in milliseconds, to wait for serial data
             to arrive. Passing zero (0) disables the timeout.
-  @param   overflow (out)
-            The contents did not fit inside the provided buffer.
+  @param   available (out)
+            The amount of bytes unable to fit into the provided buffer.
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *i2cRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, size_t *overflow)
+const char *i2cRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
 {
-    // Check for special case
-    if (!timeoutMs) {
-        timeoutMs = (size_t)-1;
-    }
-
     if (delay) {
         _DelayIO();
     }
 
     // Load buffer with chunked I2C values
-    uint32_t available;
     size_t received = 0;
     uint16_t requested = 0;
-    *overflow = (received >= *size);
+    bool overflow = (received >= *size);
     const size_t startMs = _GetMs();
 
-    for (bool eop = false ; !(*overflow) ;) {
+    for (bool eop = false ; !overflow ; overflow = ((received + requested) >= *size)) {
         // Read a chunk of data from I2C
         // The first read will request zero bytes to query the amount of data
         // available to receive from the Notecard.
-        const char *err = _I2CReceive(_I2CAddress(), &buffer[received], requested, &available);
+        const char *err = _I2CReceive(_I2CAddress(), &buffer[received], requested, available);
         if (err) {
 #ifdef ERRDBG
             _Debug(err);
@@ -260,7 +254,7 @@ const char *i2cRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t time
         received += requested;
 
         // Request all available bytes, up to the maximum request size
-        requested = (available > 0xFFFF) ? 0xFFFF : available;
+        requested = (*available > 0xFFFF) ? 0xFFFF : *available;
         requested = (requested > _I2CMax()) ? _I2CMax() : requested;
 
         // Look for end-of-packet marker
@@ -268,20 +262,14 @@ const char *i2cRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t time
             eop = (buffer[received-1] == '\n');
         }
 
-        // Check overflow condition
-        *overflow = ((received + requested) >= *size);
-        if (*overflow) {
-            *overflow = available; // `available` should optimize allocation
-            // *overflow = requested;
-        }
-
         // If the last byte of the chunk is `\n`, then we have received a
-        // complete message. However, to ensure we pull everything pending from
-        // the Notecard, we will only exit when we've received a newline AND
-        // there's no more bytes available from the Notecard.
+        // complete message. However, everything pending from the Notecard must
+        // be pulled. This loop will only exit when a newline is received AND
+        // there are no more bytes available from the Notecard, OR if the buffer
+        // is full and cannot receive more bytes (i.e. overflow condition).
 
         // If there's something available on the Notecard for us to receive, do it
-        if (available > 0) {
+        if (*available > 0) {
             continue;
         }
 
@@ -291,15 +279,21 @@ const char *i2cRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t time
         }
 
         // Exit on timeout
-        if (_GetMs() - startMs >= timeoutMs) {
+        if (timeoutMs && (_GetMs() - startMs >= timeoutMs)) {
+            if (*size > received) {
+                buffer[received] = '\0';
+            } else {
+                buffer[(received - 1)] = '\0';
+            }
             *size = received;
-            buffer[received] = '\0';
 #ifdef ERRDBG
-            _Debug("received only partial reply after timeout:\n");
-            _Debug((char *)buffer);
-            _Debug("^^ partial buffer contents ^^\n");
+            if (received) {
+                _Debug("received only partial reply after timeout:\n");
+                _Debug((char *)buffer);
+                _Debug("\n^^ partial buffer contents ^^\n");
+            }
 #endif
-            return ERRSTR("transaction incomplete {io}",c_iotimeout);
+            return ERRSTR("timeout: transaction incomplete {io}",c_iotimeout);
         }
 
         // Delay, simply waiting for the Note to process the request
@@ -320,7 +314,7 @@ const char *i2cRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t time
   @param   size
             The count of bytes in the buffer to send
   @param   delay
-            Respect delay standard transmission delays.
+            Respect standard processing delays.
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/

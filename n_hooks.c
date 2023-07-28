@@ -175,7 +175,7 @@ i2cReceiveFn hookI2CReceive = NULL;
 // Internal hooks
 typedef bool (*nNoteResetFn) (void);
 typedef const char * (*nTransactionFn) (char *, char **);
-typedef const char * (*nReceiveFn) (uint8_t *, size_t *, bool, size_t, size_t *);
+typedef const char * (*nReceiveFn) (uint8_t *, size_t *, bool, size_t, uint32_t *);
 typedef const char * (*nTransmitFn) (uint8_t *, size_t, bool);
 static nNoteResetFn notecardReset = NULL;
 static nTransactionFn notecardTransaction = NULL;
@@ -853,19 +853,20 @@ const char *NoteJSONTransaction(char *request, char **response)
   @param   size (in/out)
             - (in) The size of the buffer in bytes.
             - (out) The length of the received data in bytes.
-  @param   delay Respect delay standard transmission delays.
-  @param   timeoutMs The maximum amount of time, in milliseconds, to wait for
-            serial data to arrive. Passing zero (0) disables the timeout.
-  @param   overflow (out) The contents did not fit inside the provided buffer.
+  @param   delay Respect standard processing delays.
+  @param   timeoutMs The maximum amount of time, in milliseconds, to wait
+            for data to arrive. Passing zero (0) disables the timeout.
+  @param   available (out) The amount of bytes unable to fit into the
+            provided buffer.
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *NoteRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, size_t *overflow)
+const char *NoteRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
 {
     if (notecardRawReceive == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";
     }
-    return notecardRawReceive(buffer, size, delay, timeoutMs, overflow);
+    return notecardRawReceive(buffer, size, delay, timeoutMs, available);
 }
 
 /**************************************************************************/
@@ -874,7 +875,7 @@ const char *NoteRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t tim
   platform hook.
   @param   buffer A buffer of bytes to transmit.
   @param   size The count of bytes in the buffer to send
-  @param   delay Respect delay standard transmission delays.
+  @param   delay Respect standard processing delays.
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
