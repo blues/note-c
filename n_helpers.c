@@ -150,8 +150,8 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
     }
 
     // Read raw bytes from the active interface into a predefined buffer
-    uint32_t available;
-    const char *err = _RawReceive(buffer, &bufLen, false, 60000, &available);
+    uint32_t available = 0;
+    const char *err = _ChunkedReceive(buffer, &bufLen, false, 60000, &available);
 
     // Release Notecard Mutex
     _UnlockNote();
@@ -274,7 +274,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     }
 
     // Immediately send the COBS binary.
-    const char *err = _RawTransmit(data, (encLen + 1), false);
+    const char *err = _ChunkedTransmit(data, (encLen + 1), false);
 
     // Release Notecard Mutex
     _UnlockNote();

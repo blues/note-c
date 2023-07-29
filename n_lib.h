@@ -81,10 +81,10 @@ const char *i2cNoteTransaction(char *request, char **response);
 bool i2cNoteReset(void);
 const char *serialNoteTransaction(char *request, char **response);
 bool serialNoteReset(void);
-const char *i2cRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
-const char *i2cRawTransmit(uint8_t *buffer, size_t size, bool delay);
-const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
-const char *serialRawTransmit(uint8_t *buffer, size_t size, bool delay);
+const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
+const char *i2cChunkedTransmit(uint8_t *buffer, size_t size, bool delay);
+const char *serialChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
+const char *serialChunkedTransmit(uint8_t *buffer, size_t size, bool delay);
 
 // Hooks
 void NoteLockNote(void);
@@ -101,8 +101,8 @@ const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size
 const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 bool NoteHardReset(void);
 const char *NoteJSONTransaction(char *request, char **response);
-const char *NoteRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
-const char *NoteRawTransmit(uint8_t *buffer, size_t size, bool delay);
+const char *NoteChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
+const char *NoteChunkedTransmit(uint8_t *buffer, size_t size, bool delay);
 bool NoteIsDebugOutputActive(void);
 
 // Utilities
@@ -175,8 +175,8 @@ extern const char *c_ioerr;
 #define _I2CReceive NoteI2CReceive
 #define _Reset NoteHardReset
 #define _Transaction NoteJSONTransaction
-#define _RawReceive NoteRawReceive
-#define _RawTransmit NoteRawTransmit
+#define _ChunkedReceive NoteChunkedReceive
+#define _ChunkedTransmit NoteChunkedTransmit
 #define _Malloc NoteMalloc
 #define _Free NoteFree
 #define _GetMs NoteGetMs

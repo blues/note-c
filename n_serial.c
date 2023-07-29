@@ -26,7 +26,7 @@
 /**************************************************************************/
 const char *serialNoteTransaction(char *request, char **response)
 {
-    const char *err = serialRawTransmit((uint8_t *)request, strlen(request), true);
+    const char *err = serialChunkedTransmit((uint8_t *)request, strlen(request), true);
     if (err) {
         _Debug(err);
     }
@@ -58,8 +58,9 @@ const char *serialNoteTransaction(char *request, char **response)
     // Allocate a buffer for input, noting that we always put the +1 in the
     // alloc so we can be assured that it can be null-terminated. This must be
     // the case because json parsing requires a null-terminated string.
+    uint32_t available = 0;
     size_t jsonbufAllocLen = ALLOC_CHUNK;
-    char *jsonbuf = (char *) _Malloc(jsonbufAllocLen+1);
+    uint8_t *jsonbuf = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
     if (jsonbuf == NULL) {
 #ifdef ERRDBG
         _Debug("transaction: jsonbuf malloc failed\n");
@@ -67,39 +68,49 @@ const char *serialNoteTransaction(char *request, char **response)
         return ERRSTR("insufficient memory",c_mem);
     }
 
+    // Receive the Notecard response
     size_t jsonbufLen = 0;
-    for (uint32_t available = 1 ; available ;) {
+    do {
         size_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        const char *err = serialRawReceive((uint8_t *)&jsonbuf[jsonbufLen], &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
+        const char *err = serialChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
         if (err) {
             _Free(jsonbuf);
+#ifdef ERRDBG
+            _Debug("error occured during receive\n");
+#endif
             return err;
         }
         jsonbufLen += jsonbufAvailLen;
 
         if (available) {
-            jsonbufAllocLen += available;
-            char *jsonbufNew = (char *) _Malloc(jsonbufAllocLen+1);
+            // When more bytes are available than we have buffer to accommodate
+            // (i.e. overflow), then we allocate blocks of size `ALLOC_CHUNK` to
+            // reduce heap fragmentation.
+            // NOTE: We always put the +1 in the allocation so we can be assured
+            // that it can be null-terminated, because the json parser requires
+            // a null-terminated string.
+            jsonbufAllocLen += (ALLOC_CHUNK * ((available / ALLOC_CHUNK) + ((available % ALLOC_CHUNK) > 0)));
+            uint8_t *jsonbufNew = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
             if (jsonbufNew == NULL) {
 #ifdef ERRDBG
-                _Debug("transaction: jsonbuf malloc grow failed\n");
+                _Debug("transaction: jsonbuf grow malloc failed\n");
 #endif
                 _Free(jsonbuf);
-                return ERRSTR("insufficient memory",c_mem);
+                return ERRSTR("insufficient memory", c_mem);
             }
             memcpy(jsonbufNew, jsonbuf, jsonbufLen);
             _Free(jsonbuf);
             jsonbuf = jsonbufNew;
         }
-    }
+    } while (available);
 
     // Null-terminate it, using the +1 space that we'd allocated in the buffer
     jsonbuf[jsonbufLen] = '\0';
 
     // Return it
-    *response = jsonbuf;
+    *response = (char *)jsonbuf;
     return NULL;
 }
 
@@ -175,7 +186,7 @@ bool serialNoteReset()
             - (in) The size of the buffer in bytes.
             - (out) The length of the received data in bytes.
   @param   delay
-            Respect delay standard transmission delays.
+            Respect standard processing delays.
   @param   timeoutMs
             The maximum amount of time, in milliseconds, to wait for serial data
             to arrive. Passing zero (0) disables the timeout.
@@ -184,7 +195,7 @@ bool serialNoteReset()
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
+const char *serialChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
 {
     size_t received = 0;
     bool overflow = (received >= *size);
@@ -218,14 +229,7 @@ const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t t
         // Check overflow condition
         overflow = ((received >= *size) && !eop);
         if (overflow) {
-            // `SerialAvailable()` returns the number of bytes sitting in the
-            // serial ring buffer of a given device. The value returned will be
-            // inconsistent across platforms and will often not reflect the
-            // total number of bytes available from the Notecard. When more
-            // bytes are available than we have buffer to accommodate (i.e.
-            // overflow), then we request the caller allocate blocks of size
-            // `ALLOC_CHUNK` to reduce heap fragmentation.
-            *available = ALLOC_CHUNK;
+            *available = _SerialAvailable();
             break;
         } else {
             *available = 0;
@@ -245,11 +249,11 @@ const char *serialRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t t
   @param   size
             The count of bytes in the buffer to send.
   @param   delay
-            Respect delay standard transmission delays.
+            Respect standard processing delays.
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialRawTransmit(uint8_t *buffer, size_t size, bool delay)
+const char *serialChunkedTransmit(uint8_t *buffer, size_t size, bool delay)
 {
     // Transmit the request in segments so as not to overwhelm the Notecard's
     // interrupt buffers

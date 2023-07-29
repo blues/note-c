@@ -129,33 +129,28 @@ TEST_CASE("i2cNoteTransaction")
         SECTION("Response buffer allocation fails") {
             // Arrange
             NoteMalloc_fake.return_val = NULL;
-
-            SECTION("Bytes are not received from the Notecard") {
-                // Action
-                i2cNoteTransaction(noteAddReq, &resp);
-
-                // Assert
-                REQUIRE(NoteMalloc_fake.call_count > 0);
-                CHECK(NoteI2CReceive_fake.call_count == 0);
-            }
+            NoteI2CReceive_fake.custom_fake = NoteI2CReceiveOne;
 
             SECTION("An error message is returned") {
                 // Action
                 const char *err = i2cNoteTransaction(noteAddReq, &resp);
 
                 // Assert
+                REQUIRE(NoteI2CReceive_fake.call_count > 0);
                 REQUIRE(NoteMalloc_fake.call_count > 0);
                 CHECK(err != NULL);
             }
         }
 
-        SECTION("NoteI2CReceive fails") {
+        SECTION("NoteI2CReceive returns an error when it fails") {
             NoteMalloc_fake.custom_fake = malloc;
             NoteI2CReceive_fake.return_val = "an error";
 
-            CHECK(i2cNoteTransaction(noteAddReq, &resp) != NULL);
-            CHECK(NoteI2CTransmit_fake.call_count == 1);
-            CHECK(NoteI2CReceive_fake.call_count == 1);
+            const char *err = i2cNoteTransaction(noteAddReq, &resp);
+
+            REQUIRE(NoteI2CTransmit_fake.call_count == 1);
+            REQUIRE(NoteI2CReceive_fake.call_count == 1);
+            CHECK(err != NULL);
         }
 
         SECTION("Force timeout") {
@@ -181,10 +176,12 @@ TEST_CASE("i2cNoteTransaction")
 
             SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 2);
 
-            CHECK(i2cNoteTransaction(noteAddReq, &resp) != NULL);
-            CHECK(NoteI2CTransmit_fake.call_count == 1);
-            CHECK(NoteI2CReceive_fake.call_count == 1);
+            const char *err = i2cNoteTransaction(noteAddReq, &resp);
+            REQUIRE(NoteI2CTransmit_fake.call_count == 1);
+            REQUIRE(NoteI2CReceive_fake.call_count == 2);
+            CHECK(err != NULL);
         }
+
         SECTION("Check response") {
             SECTION("One receipt") {
                 NoteMalloc_fake.custom_fake = malloc;

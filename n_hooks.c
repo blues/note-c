@@ -179,8 +179,8 @@ typedef const char * (*nReceiveFn) (uint8_t *, size_t *, bool, size_t, uint32_t 
 typedef const char * (*nTransmitFn) (uint8_t *, size_t, bool);
 static nNoteResetFn notecardReset = NULL;
 static nTransactionFn notecardTransaction = NULL;
-static nReceiveFn notecardRawReceive = NULL;
-static nTransmitFn notecardRawTransmit = NULL;
+static nReceiveFn notecardChunkedReceive = NULL;
+static nTransmitFn notecardChunkedTransmit = NULL;
 
 //**************************************************************************/
 /*!
@@ -332,8 +332,8 @@ void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn transmitfn, serialA
 
     notecardReset = serialNoteReset;
     notecardTransaction = serialNoteTransaction;
-    notecardRawReceive = serialRawReceive;
-    notecardRawTransmit = serialRawTransmit;
+    notecardChunkedReceive = serialChunkedReceive;
+    notecardChunkedTransmit = serialChunkedTransmit;
 }
 
 //**************************************************************************/
@@ -361,8 +361,8 @@ void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn, i2cT
 
     notecardReset = i2cNoteReset;
     notecardTransaction = i2cNoteTransaction;
-    notecardRawReceive = i2cRawReceive;
-    notecardRawTransmit = i2cRawTransmit;
+    notecardChunkedReceive = i2cChunkedReceive;
+    notecardChunkedTransmit = i2cChunkedTransmit;
 }
 
 //**************************************************************************/
@@ -377,8 +377,8 @@ void NoteSetFnDisabled()
 
     notecardReset = NULL;
     notecardTransaction = NULL;
-    notecardRawReceive = NULL;
-    notecardRawTransmit = NULL;
+    notecardChunkedReceive = NULL;
+    notecardChunkedTransmit = NULL;
 
 }
 
@@ -856,17 +856,19 @@ const char *NoteJSONTransaction(char *request, char **response)
   @param   delay Respect standard processing delays.
   @param   timeoutMs The maximum amount of time, in milliseconds, to wait
             for data to arrive. Passing zero (0) disables the timeout.
-  @param   available (out) The amount of bytes unable to fit into the
-            provided buffer.
+  @param   available (in/out)
+            - (in) The amount of bytes to request. Sending zero (0) will
+                   initiate a priming query when using the I2C interface.
+            - (out) The amount of bytes unable to fit into the provided buffer.
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *NoteRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
+const char *NoteChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
 {
-    if (notecardRawReceive == NULL || hookActiveInterface == interfaceNone) {
+    if (notecardChunkedReceive == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";
     }
-    return notecardRawReceive(buffer, size, delay, timeoutMs, available);
+    return notecardChunkedReceive(buffer, size, delay, timeoutMs, available);
 }
 
 /**************************************************************************/
@@ -879,10 +881,10 @@ const char *NoteRawReceive(uint8_t *buffer, size_t *size, bool delay, size_t tim
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *NoteRawTransmit(uint8_t *buffer, size_t size, bool delay)
+const char *NoteChunkedTransmit(uint8_t *buffer, size_t size, bool delay)
 {
-    if (notecardRawTransmit == NULL || hookActiveInterface == interfaceNone) {
+    if (notecardChunkedTransmit == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";
     }
-    return notecardRawTransmit(buffer, size, delay);
+    return notecardChunkedTransmit(buffer, size, delay);
 }
