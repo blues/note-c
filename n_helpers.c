@@ -143,8 +143,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
         // Examine "status" from the response to evaluate the MD5 checksum.
         strlcpy(status, JGetString(rsp,"status"), NOTE_MD5_HASH_STRING_SIZE);
         JDelete(rsp);
-    }
-    else {
+    } else {
         _UnlockNote();
         return ERRSTR("unable to allocate request", c_mem);
     }
@@ -267,8 +266,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
             _UnlockNote();
             return ERRSTR("failed to initialize binary transaction", c_err);
         }
-    }
-    else {
+    } else {
         _UnlockNote();
         return ERRSTR("unable to allocate request", c_mem);
     }

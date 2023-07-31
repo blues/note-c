@@ -41,7 +41,8 @@ static void _DelayIO(void)
              I2C read request can be issued.
 */
 /**************************************************************************/
-static const char * _I2cNoteQueryLength(uint32_t * available) {
+static const char * _I2cNoteQueryLength(uint32_t * available)
+{
     uint8_t dummy_buffer = 0;
     const char *err = _I2CReceive(_I2CAddress(), &dummy_buffer, 0, available);
     if (err) {
@@ -108,9 +109,9 @@ const char *i2cNoteTransaction(char *request, char **response)
     if (jsonbufAllocLen) {
         jsonbuf = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
         if (jsonbuf == NULL) {
-    #ifdef ERRDBG
+#ifdef ERRDBG
             _Debug("transaction: jsonbuf malloc failed\n");
-    #endif
+#endif
             _UnlockI2C();
             return ERRSTR("insufficient memory",c_mem);
         }
@@ -329,8 +330,7 @@ const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t 
             if (buffer) {
                 if (*size > received) {
                     buffer[received] = '\0';
-                }
-                else {
+                } else {
                     buffer[(received - 1)] = '\0';
                 }
             }
