@@ -88,7 +88,7 @@ NOTE_C_STATIC int ytodays(int year);
 /*!
   @brief  Receive a large binary object from the Notecard's binary buffer
   @param  buffer A buffer to hold the binary object
-  @param  bufLen The total length of the binary object
+  @param  bufLen The total length of the provided buffer
   @returns  NULL on success, else an error string pointer.
   @note  Buffers are decoded in place. The original contents of the buffer
          will be modified.
@@ -188,6 +188,20 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
 
     // Return `NULL` if success, else error string pointer
     return NULL;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Calculate the size of buffer required to support any binary
+          transaction.
+  @param  dataLen The total length of the binary object.
+  @returns  The buffer size in bytes.
+  @note  The size considers the fully encoded length and the NULL terminator.
+*/
+/**************************************************************************/
+size_t NoteBinaryRequiredBuffer(size_t dataLen)
+{
+    return (cobsEncodedMaxLength(dataLen) + 1);
 }
 
 //**************************************************************************/

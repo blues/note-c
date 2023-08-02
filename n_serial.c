@@ -29,6 +29,7 @@ const char *serialNoteTransaction(char *request, char **response)
     const char *err = serialChunkedTransmit((uint8_t *)request, strlen(request), true);
     if (err) {
         _Debug(err);
+        return err;
     }
 
     // Append newline to the transaction

@@ -114,6 +114,7 @@ uint64_t n_atoh(char *p, int maxlen);
 uint32_t cobsDecode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst);
 uint32_t cobsEncode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst);
 uint32_t cobsEncodedLength(const uint8_t *ptr, uint32_t length);
+uint32_t cobsEncodedMaxLength(uint32_t length);
 uint32_t cobsGuaranteedFit(uint32_t bufLen);
 
 // Turbo I/O mode

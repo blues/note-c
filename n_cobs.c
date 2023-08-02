@@ -118,6 +118,26 @@ uint32_t cobsEncodedLength(const uint8_t *ptr, uint32_t length)
 
 //**************************************************************************/
 /*!
+  @brief  Compute the max encoding length for a given length of unencoded data
+
+  @param  length Length of the data to encode
+
+  @return The max length required to encode the data
+  @note  Since the contents of the buffer are unknown, then we must assume
+          that the entire buffer has no end-of-packet markers. This would
+          require the injection of overhead bytes (as opposed to the
+          replacement of end-of-packet markers with overhead bytes) at
+          intervals of 255, thus producing the worst case scenario.
+ */
+/**************************************************************************/
+uint32_t cobsEncodedMaxLength(uint32_t length)
+{
+    const uint32_t overheadBytes = ((length / 254) + ((length % 254) > 0));
+    return (length + overheadBytes);
+}
+
+//**************************************************************************/
+/*!
   @brief Compute the maximum length of unencoded data that can fit into a
   buffer of specified length.
 
