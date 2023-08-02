@@ -99,6 +99,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
     if (!rsp) {
+        _Debug("unable to issue binary request");
         return ERRSTR("unable to issue binary request", c_err);
     }
 
@@ -116,9 +117,11 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
     const size_t cobs = JGetInt(rsp,"cobs");
     JDelete(rsp);
     if (!cobs) {
+        _Debug("no data on notecard");
         return ERRSTR("no data on notecard", c_err);
     }
     if (cobs > bufLen) {
+        _Debug("insufficient buffer size");
         return ERRSTR("insufficient buffer size", c_err);
     }
 
@@ -135,6 +138,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
         J *rsp = NoteRequestResponse(req);
         if (NoteResponseError(rsp)) {
             _Debug(JGetString(rsp,"err"));
+            _Debug("failed to initialize binary transaction");
             JDelete(rsp);
             _UnlockNote();
             return ERRSTR("failed to initialize binary transaction", c_err);
@@ -144,6 +148,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
         strlcpy(status, JGetString(rsp,"status"), NOTE_MD5_HASH_STRING_SIZE);
         JDelete(rsp);
     } else {
+        _Debug("unable to allocate request");
         _UnlockNote();
         return ERRSTR("unable to allocate request", c_mem);
     }
@@ -162,6 +167,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
 
     // Check buffer overflow condition
     if (available) {
+        _Debug("unexpected data available");
         return ERRSTR("unexpected data available", c_err);
     }
 
@@ -176,6 +182,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
     char hashString[NOTE_MD5_HASH_STRING_SIZE] = {0};
     NoteMD5HashString(buffer, decLen, hashString, NOTE_MD5_HASH_STRING_SIZE);
     if (strncmp(hashString, status, NOTE_MD5_HASH_STRING_SIZE)) {
+        _Debug("computed MD5 does not match received MD5");
         return ERRSTR("computed MD5 does not match received MD5", c_err);
     }
 
@@ -203,6 +210,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
     if (!rsp) {
+        _Debug("unable to issue binary request");
         return ERRSTR("unable to issue binary request", c_err);
     }
 
@@ -221,12 +229,14 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     const size_t max = JGetInt(rsp,"max");
     JDelete(rsp);
     if (!max) {
-        return ERRSTR("unexpected response", c_err);
+        _Debug("unexpected response: max is zero or not present");
+        return ERRSTR("unexpected response: max is zero or not present", c_err);
     }
 
     // When `append` is not specified, the entire buffer is available
     const size_t remaining = (append ? (max - len) : max);
     if (dataLen > remaining) {
+        _Debug("buffer size exceeds available memory");
         return ERRSTR("buffer size exceeds available memory", c_mem);
     }
 
@@ -236,6 +246,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     //       end of transmission.
     uint32_t encLen = cobsEncodedLength(data,dataLen);
     if ((encLen + 1) > bufLen) {
+        _Debug("buffer too small for encoding");
         return ERRSTR("buffer too small for encoding", c_mem);
     }
 
@@ -263,10 +274,12 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
 
         // Ensure the transaction doesn't return an error.
         if (!NoteRequest(req)) {
+            _Debug("failed to initialize binary transaction");
             _UnlockNote();
             return ERRSTR("failed to initialize binary transaction", c_err);
         }
     } else {
+        _Debug("unable to allocate request");
         _UnlockNote();
         return ERRSTR("unable to allocate request", c_mem);
     }
@@ -285,6 +298,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     // Issue a `"card.binary"` request.
     rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
     if (!rsp) {
+        _Debug("unable to validate request");
         return ERRSTR("unable to validate request", c_err);
     }
 
@@ -292,6 +306,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     // to confirm the binary was received
     if (NoteResponseError(rsp)) {
         _Debug(JGetString(rsp,"err"));
+        _Debug("binary data invalid");
         JDelete(rsp);
         // input buffer is no longer valid
         return ERRSTR("binary data invalid", c_bad);
