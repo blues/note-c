@@ -15,7 +15,7 @@
 
 // Forwards
 static void _DelayIO(void);
-static const char * _I2cNoteQueryLength(uint32_t * available);
+static const char * _I2cNoteQueryLength(uint32_t * available, size_t timeoutMs);
 
 /**************************************************************************/
 /*!
@@ -41,15 +41,27 @@ static void _DelayIO(void)
              I2C read request can be issued.
 */
 /**************************************************************************/
-static const char * _I2cNoteQueryLength(uint32_t * available)
+static const char * _I2cNoteQueryLength(uint32_t * available, size_t timeoutMs)
 {
     uint8_t dummy_buffer = 0;
-    const char *err = _I2CReceive(_I2CAddress(), &dummy_buffer, 0, available);
-    if (err) {
+
+    for (const size_t startMs = _GetMs() ; !(*available) ; _DelayMs(50)) {
+        // Send a dummy I2C transaction to prime the Notecard
+        const char *err = _I2CReceive(_I2CAddress(), &dummy_buffer, 0, available);
+        if (err) {
 #ifdef ERRDBG
-        _Debug(err);
+            _Debug(err);
 #endif
-        return err;
+            return err;
+        }
+
+        // If we've timed out, return an error
+        if (timeoutMs && _GetMs() - startMs >= timeoutMs) {
+#ifdef ERRDBG
+            _Debug("timeout: no response from Notecard {io}\n");
+#endif
+            return ERRSTR("timeout: no response from Notecard {io}\n", c_iotimeout);
+        }
     }
     return NULL;
 }
@@ -96,7 +108,7 @@ const char *i2cNoteTransaction(char *request, char **response)
     // alloc so we can be assured that it can be null-terminated. This must be
     // the case because json parsing requires a null-terminated string.
     uint32_t available = 0;
-    err = _I2cNoteQueryLength(&available);
+    err = _I2cNoteQueryLength(&available, 5000);
     if (err) {
 #ifdef ERRDBG
         _Debug("failed to query Notecard\n");
@@ -113,7 +125,7 @@ const char *i2cNoteTransaction(char *request, char **response)
             _Debug("transaction: jsonbuf malloc failed\n");
 #endif
             _UnlockI2C();
-            return ERRSTR("insufficient memory",c_mem);
+            return ERRSTR("insufficient memory\n", c_mem);
         }
     }
 
@@ -153,7 +165,7 @@ const char *i2cNoteTransaction(char *request, char **response)
                     _Free(jsonbuf);
                 }
                 _UnlockI2C();
-                return ERRSTR("insufficient memory", c_mem);
+                return ERRSTR("insufficient memory\n", c_mem);
             }
             if (jsonbuf) {
                 memcpy(jsonbufNew, jsonbuf, jsonbufLen);
@@ -342,7 +354,7 @@ const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t 
                 _Debug("\n^^ partial buffer contents ^^\n");
             }
 #endif
-            return ERRSTR("timeout: transaction incomplete {io}",c_iotimeout);
+            return ERRSTR("timeout: transaction incomplete {io}\n", c_iotimeout);
         }
 
         // Delay, simply waiting for the Note to process the request
