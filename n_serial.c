@@ -184,7 +184,10 @@ bool serialNoteReset()
     for (retries=0; retries<10; retries++) {
 
         // Send a newline to the module to clean out request/response processing
-        _SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
+        // NOTE: This MUST always be `\n` and not `\r\n`, because there are some
+        //       versions of the Notecard firmware will not respond to `\r\n`
+        //       after communicating over I2C.
+        _SerialTransmit((uint8_t *)"\n", 1, true);
 
         // Drain all serial for 500ms
         bool somethingFound = false;
