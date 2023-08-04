@@ -355,6 +355,7 @@ const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t 
 #ifdef ERRDBG
             if (received) {
                 _Debug("received only partial reply before timeout\n");
+            }
 #endif
             return ERRSTR("timeout: transaction incomplete {io}\n", c_iotimeout);
         }
