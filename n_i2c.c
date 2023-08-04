@@ -114,7 +114,7 @@ const char *i2cNoteTransaction(char *request, char **response)
     // alloc so we can be assured that it can be null-terminated. This must be
     // the case because json parsing requires a null-terminated string.
     uint32_t available = 0;
-    err = i2cNoteQueryLength(&available, 5000);
+    err = i2cNoteQueryLength(&available, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000));
     if (err) {
 #ifdef ERRDBG
         _Debug("failed to query Notecard\n");
