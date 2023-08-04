@@ -303,10 +303,11 @@ const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t 
     bool overflow = false;
     const size_t startMs = _GetMs();
 
+    // Request all available bytes, up to the maximum request size
+    requested = (*available > 0xFFFF) ? 0xFFFF : *available;
+    requested = (requested > _I2CMax()) ? _I2CMax() : requested;
+
     for (bool eop = false ; !overflow ; overflow = ((received + requested) >= *size)) {
-        // Request all available bytes, up to the maximum request size
-        requested = (*available > 0xFFFF) ? 0xFFFF : *available;
-        requested = (requested > _I2CMax()) ? _I2CMax() : requested;
 
         // Read a chunk of data from I2C
         // The first read will request zero bytes to query the amount of data
@@ -321,6 +322,10 @@ const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t 
 
         // Add requested bytes to received total
         received += requested;
+
+        // Request all available bytes, up to the maximum request size
+        requested = (*available > 0xFFFF) ? 0xFFFF : *available;
+        requested = (requested > _I2CMax()) ? _I2CMax() : requested;
 
         // Look for end-of-packet marker
         if (received > 0 && !eop) {
