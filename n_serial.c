@@ -204,13 +204,10 @@ const char *serialChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size
     for (bool eop = false ; !overflow && !eop ;) {
         while (!_SerialAvailable()) {
             if (timeoutMs && (_GetMs() - startMs >= timeoutMs)) {
-                buffer[received] = '\0';
                 *size = received;
 #ifdef ERRDBG
                 if (received) {
-                    _Debug("received only partial reply after timeout:\n");
-                    _Debug((char *)buffer);
-                    _Debug("\n^^ partial buffer contents ^^\n");
+                    _Debug("received only partial reply before timeout\n");
                 }
 #endif
                 return ERRSTR("timeout: transaction incomplete {io}",c_iotimeout);

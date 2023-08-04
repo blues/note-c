@@ -314,6 +314,7 @@ const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t 
         // available to receive from the Notecard.
         const char *err = _I2CReceive(_I2CAddress(), (buffer + received), requested, available);
         if (err) {
+            *size = received;
 #ifdef ERRDBG
             _Debug(err);
 #endif
@@ -350,20 +351,10 @@ const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t 
 
         // Exit on timeout
         if (timeoutMs && (_GetMs() - startMs >= timeoutMs)) {
-            if (buffer) {
-                if (*size > received) {
-                    buffer[received] = '\0';
-                } else {
-                    buffer[(received - 1)] = '\0';
-                }
-            }
             *size = received;
 #ifdef ERRDBG
             if (received) {
-                _Debug("received only partial reply after timeout:\n");
-                _Debug((char *)buffer);
-                _Debug("\n^^ partial buffer contents ^^\n");
-            }
+                _Debug("received only partial reply before timeout\n");
 #endif
             return ERRSTR("timeout: transaction incomplete {io}\n", c_iotimeout);
         }
