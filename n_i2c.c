@@ -13,9 +13,15 @@
 
 #include "n_lib.h"
 
+#ifdef NOTE_C_TEST
+#include "test_static.h"
+#else
+#define NOTE_C_STATIC static
+#endif
+
 // Forwards
-static void _DelayIO(void);
-static const char * _I2cNoteQueryLength(uint32_t * available, size_t timeoutMs);
+NOTE_C_STATIC void delayIO(void);
+NOTE_C_STATIC const char * i2cNoteQueryLength(uint32_t * available, size_t timeoutMs);
 
 /**************************************************************************/
 /*!
@@ -25,7 +31,7 @@ static const char * _I2cNoteQueryLength(uint32_t * available, size_t timeoutMs);
   empirically based on a number of commercial devices.
 */
 /**************************************************************************/
-static void _DelayIO(void)
+NOTE_C_STATIC void delayIO(void)
 {
     if (!cardTurboIO) {
         _DelayMs(6);
@@ -41,7 +47,7 @@ static void _DelayIO(void)
              I2C read request can be issued.
 */
 /**************************************************************************/
-static const char * _I2cNoteQueryLength(uint32_t * available, size_t timeoutMs)
+NOTE_C_STATIC const char * i2cNoteQueryLength(uint32_t * available, size_t timeoutMs)
 {
     uint8_t dummy_buffer = 0;
 
@@ -102,13 +108,13 @@ const char *i2cNoteTransaction(char *request, char **response)
         return NULL;
     }
 
-    _DelayIO();
+    delayIO();
 
     // Allocate a buffer for input, noting that we always put the +1 in the
     // alloc so we can be assured that it can be null-terminated. This must be
     // the case because json parsing requires a null-terminated string.
     uint32_t available = 0;
-    err = _I2cNoteQueryLength(&available, 5000);
+    err = i2cNoteQueryLength(&available, 5000);
     if (err) {
 #ifdef ERRDBG
         _Debug("failed to query Notecard\n");
@@ -210,7 +216,7 @@ bool i2cNoteReset()
     // send \n that we drain the remainder of any pending partial reply from a
     // previously-aborted session. If we get a failure on transmitting the \n,
     // it means that the notecard isn't even present.
-    _DelayIO();
+    delayIO();
     const char *transmitErr = _I2CTransmit(_I2CAddress(), (uint8_t *)"\n", 1);
     if (!cardTurboIO) {
         _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
@@ -230,7 +236,7 @@ bool i2cNoteReset()
             uint8_t buffer[128];
             chunkLen = (chunkLen > sizeof(buffer)) ? sizeof(buffer) : chunkLen;
             chunkLen = (chunkLen > _I2CMax()) ? _I2CMax() : chunkLen;
-            _DelayIO();
+            delayIO();
             const char *err = _I2CReceive(_I2CAddress(), buffer, chunkLen, &available);
             if (err) {
                 break;
@@ -393,7 +399,7 @@ const char *i2cChunkedTransmit(uint8_t *buffer, size_t size, bool delay)
         // Constrain chunkLen to be <= _I2CMax().
         chunkLen = (chunkLen > _I2CMax()) ? _I2CMax() : chunkLen;
 
-        _DelayIO();
+        delayIO();
         estr = _I2CTransmit(_I2CAddress(), chunk, chunkLen);
         if (estr != NULL) {
             _I2CReset(_I2CAddress());
