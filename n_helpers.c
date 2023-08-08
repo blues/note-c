@@ -108,12 +108,14 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
     if (NoteResponseError(rsp)) {
         const char *err = JGetString(rsp,"err");
         if (strstr(err, "unknown")) {
-            NOTE_C_LOG_ERROR("feature not implemented\n");
             JDelete(rsp);
+            NOTE_C_LOG_ERROR("feature not implemented\n");
             return ERRSTR("feature not implemented\n", c_bad);
         }
         NOTE_C_LOG_ERROR(err);
+        NOTE_C_LOG_ERROR("\n");
         JDelete(rsp);
+        NOTE_C_LOG_ERROR("unexpected error received during handshake\n");
         return ERRSTR("unexpected error received during handshake\n", c_bad);
     }
 
@@ -143,8 +145,9 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
         J *rsp = NoteRequestResponse(req);
         if (NoteResponseError(rsp)) {
             NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
-            NOTE_C_LOG_ERROR("failed to initialize binary transaction\n");
+            NOTE_C_LOG_ERROR("\n");
             JDelete(rsp);
+            NOTE_C_LOG_ERROR("failed to initialize binary transaction\n");
             _UnlockNote();
             return ERRSTR("failed to initialize binary transaction\n", c_err);
         }
@@ -229,8 +232,9 @@ const char * NoteBinaryReset (void)
         J *rsp = NoteRequestResponse(req);
         if (NoteResponseError(rsp)) {
             NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
-            NOTE_C_LOG_ERROR("failed to reset binary buffer\n");
+            NOTE_C_LOG_ERROR("\n");
             JDelete(rsp);
+            NOTE_C_LOG_ERROR("failed to reset binary buffer\n");
             return ERRSTR("failed to reset binary buffer\n", c_err);
         }
     } else {
@@ -270,12 +274,14 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     if (NoteResponseError(rsp)) {
         const char *err = JGetString(rsp,"err");
         if (strstr(err, "unknown")) {
-            NOTE_C_LOG_ERROR("feature not implemented\n");
             JDelete(rsp);
+            NOTE_C_LOG_ERROR("feature not implemented\n");
             return ERRSTR("feature not implemented\n", c_bad);
         }
         NOTE_C_LOG_ERROR(err);
+        NOTE_C_LOG_ERROR("\n");
         JDelete(rsp);
+        NOTE_C_LOG_ERROR("unexpected error received during handshake\n");
         return ERRSTR("unexpected error received during handshake\n", c_bad);
     }
 
@@ -362,9 +368,10 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     // to confirm the binary was received
     if (NoteResponseError(rsp)) {
         NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
-        NOTE_C_LOG_ERROR("binary data invalid\n");
+        NOTE_C_LOG_ERROR("\n");
         JDelete(rsp);
         // input buffer is no longer valid
+        NOTE_C_LOG_ERROR("binary data invalid\n");
         return ERRSTR("binary data invalid\n", c_bad);
     }
     JDelete(rsp);
