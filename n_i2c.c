@@ -307,7 +307,7 @@ const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t 
     requested = (*available > 0xFFFF) ? 0xFFFF : *available;
     requested = (requested > _I2CMax()) ? _I2CMax() : requested;
 
-    for (bool eop = false ; !overflow ; overflow = ((received + requested) >= *size)) {
+    for (bool eop = false ; !overflow ; overflow = ((received + requested) > *size)) {
 
         // Read a chunk of data from I2C
         // The first read will request zero bytes to query the amount of data
