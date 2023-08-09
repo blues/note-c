@@ -227,6 +227,7 @@ const char *serialChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size
         // Check overflow condition
         overflow = ((received >= *size) && !eop);
         if (overflow) {
+            _DelayMs(1); // allow for more data to arrive
             *available = _SerialAvailable();
             break;
         } else {
