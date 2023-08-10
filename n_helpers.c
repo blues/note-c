@@ -179,6 +179,11 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
         return ERRSTR("unexpected data available\n", c_err);
     }
 
+    // _ChunkedReceive returns the raw bytes that came off the wire, which
+    // includes a terminating newline that ends the packet. This newline isn't
+    // part of the binary payload, so we decrement the length by 1 to remove it.
+    --bufLen;
+
     // Decode it in-place, which is safe because decoding shrinks
     const size_t decLen = cobsDecode(buffer, bufLen, '\n', buffer);
 
