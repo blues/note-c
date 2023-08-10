@@ -227,8 +227,13 @@ const char *serialChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size
         // Check overflow condition
         overflow = ((received >= *size) && !eop);
         if (overflow) {
-            _DelayMs(1); // allow for more data to arrive
-            *available = _SerialAvailable();
+            // We haven't received a newline, so we're not done with this
+            // packet. If the newline never comes, for whatever reason, when
+            // this function is called again, we'll timeout. We don't just
+            // use _SerialAvailable to set *available here because we're
+            // typically reading faster than the serial buffer fills, and so
+            // _SerialAvailable may return 0.
+            *available = 1;
             break;
         } else {
             *available = 0;

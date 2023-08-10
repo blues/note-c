@@ -89,40 +89,23 @@ NOTE_C_STATIC int ytodays(int year);
   @brief  Receive a large binary object from the Notecard's binary buffer
   @param  buffer A buffer to hold the binary object
   @param  bufLen The total length of the provided buffer
+  @param  dataLen An out parameter to hold the length of the decoded data in the
+                  output buffer.
   @returns  NULL on success, else an error string pointer.
   @note  Buffers are decoded in place. The original contents of the buffer
          will be modified.
+  @note  To determine the necessary size for the buffer, use
+         NoteBinaryRequiredRxBuffer.
 */
 /**************************************************************************/
-const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
+const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
+    size_t * dataLen)
 {
-    // Issue a "card.binary" request.
-    J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
-    if (!rsp) {
-        NOTE_C_LOG_ERROR("unable to issue binary request\n");
-        return ERRSTR("unable to issue binary request\n", c_err);
+    size_t cobs = 0;
+    const char *err = NoteBinaryRequiredRxBuffer(&cobs);
+    if (err) {
+        return err;
     }
-
-    // Ensure the transaction doesn't return an error
-    // and confirm the binary feature is available
-    if (NoteResponseError(rsp)) {
-        const char *err = JGetString(rsp,"err");
-        if (strstr(err, "unknown")) {
-            JDelete(rsp);
-            NOTE_C_LOG_ERROR("feature not implemented\n");
-            return ERRSTR("feature not implemented\n", c_bad);
-        }
-        NOTE_C_LOG_ERROR(err);
-        NOTE_C_LOG_ERROR("\n");
-        JDelete(rsp);
-        NOTE_C_LOG_ERROR("unexpected error received during handshake\n");
-        return ERRSTR("unexpected error received during handshake\n", c_bad);
-    }
-
-    // Examine "cobs" from the response to evaluate the space
-    // required to hold the COBS encoded data on the Notecard.
-    const size_t cobs = JGetInt(rsp,"cobs");
-    JDelete(rsp);
     if (!cobs) {
         NOTE_C_LOG_ERROR("no data on notecard\n");
         return ERRSTR("no data on notecard\n", c_err);
@@ -163,7 +146,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
 
     // Read raw bytes from the active interface into a predefined buffer
     uint32_t available = 0;
-    const char *err = _ChunkedReceive(buffer, &bufLen, false, 60000, &available);
+    err = _ChunkedReceive(buffer, &bufLen, false, 60000, &available);
 
     // Release Notecard Mutex
     _UnlockNote();
@@ -186,9 +169,12 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
 
     // Decode it in-place, which is safe because decoding shrinks
     const size_t decLen = cobsDecode(buffer, bufLen, '\n', buffer);
+    // Return the decoded length in the dataLen out parameter.
+    *dataLen = decLen;
 
     // Put a hard marker at the end of the decoded portion of the buffer. This
-    // enables easier human reasoning when interrogating the buffer.
+    // enables easier human reasoning when interrogating the buffer, if the
+    // buffer holds a string.
     buffer[decLen] = '\0';
 
     // Verify MD5
@@ -205,14 +191,57 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen)
 
 //**************************************************************************/
 /*!
-  @brief  Calculate the size of buffer required to support any binary
-          transaction.
-  @param  dataLen The total length of the binary object.
-  @returns  The buffer size in bytes.
-  @note  The size considers the fully encoded length and the NULL terminator.
+  @brief  Get the required buffer size to receive the binary object stored on
+          the Notecard.
+  @param  size Out parameter to hold the required size.
+  @returns An error string on error and NULL on success.
 */
 /**************************************************************************/
-size_t NoteBinaryRequiredBuffer(size_t dataLen)
+const char * NoteBinaryRequiredRxBuffer(size_t *size)
+{
+    // Issue a "card.binary" request.
+    J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
+    if (!rsp) {
+        NOTE_C_LOG_ERROR("unable to issue binary request\n");
+        return ERRSTR("unable to issue binary request\n", c_err);
+    }
+
+    // Ensure the transaction doesn't return an error and confirm the binary
+    // feature is available.
+    if (NoteResponseError(rsp)) {
+        const char *err = JGetString(rsp, "err");
+        if (NoteErrorContains(err, "unknown")) {
+            JDelete(rsp);
+            NOTE_C_LOG_ERROR("feature not implemented\n");
+            return ERRSTR("feature not implemented\n", c_bad);
+        }
+        NOTE_C_LOG_ERROR(err);
+        NOTE_C_LOG_ERROR("\n");
+        JDelete(rsp);
+        NOTE_C_LOG_ERROR("unexpected error received during handshake\n");
+        return ERRSTR("unexpected error received during handshake\n", c_bad);
+    }
+
+    // Examine "cobs" from the response to evaluate the space required to hold
+    // the COBS-encoded data received from the Notecard.
+    *size = JGetInt(rsp, "cobs");
+    JDelete(rsp);
+
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Given the length of a binary payload, calculate the buffer size needed
+          to COBS-encode that payload in-place in the buffer, plus an additional
+          byte for an end-of-packet character (i.e. a newline). Because COBS
+          encoding adds some overhead, this size will be larger than the length
+          of the payload.
+  @param  dataLen The length of the binary payload.
+  @returns  The required buffer size in bytes.
+*/
+/**************************************************************************/
+size_t NoteBinaryRequiredTxBuffer(size_t dataLen)
 {
     return (cobsEncodedMaxLength(dataLen) + 1);
 }
@@ -227,7 +256,7 @@ size_t NoteBinaryRequiredBuffer(size_t dataLen)
          or transmitted with the append parameter set to `false`.
 */
 /**************************************************************************/
-const char * NoteBinaryReset (void)
+const char * NoteBinaryReset(void)
 {
     J *req = NoteNewRequest("card.binary");
     if (req) {
@@ -261,7 +290,7 @@ const char * NoteBinaryReset (void)
   @returns  NULL on success, else an error string pointer.
   @note  Buffers are encoded in place, the buffer _MUST_ be larger than the data
          to be encoded. The original contents of the buffer will be modified.
-  @note  You may use `NoteBinaryRequiredBuffer()` to calculate the required size
+  @note  You may use `NoteBinaryRequiredTxBuffer()` to calculate the required size
          for the buffer pointed to by the `data` parameter.
 */
 /**************************************************************************/
@@ -278,7 +307,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     // and confirm the binary feature is available
     if (NoteResponseError(rsp)) {
         const char *err = JGetString(rsp,"err");
-        if (strstr(err, "unknown")) {
+        if (NoteErrorContains(err, "unknown")) {
             JDelete(rsp);
             NOTE_C_LOG_ERROR("feature not implemented\n");
             return ERRSTR("feature not implemented\n", c_bad);
@@ -345,11 +374,16 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
             if (!NoteRequest(req)) {
                 NOTE_C_LOG_ERROR("failed to initialize binary transaction\n");
                 _UnlockNote();
+                // On errors, we restore the caller's input buffer by COBS
+                // decoding it. The caller is then able to retry transmission
+                // with their original pointer to this buffer.
+                cobsDecode(data, encLen, '\n', data);
                 return ERRSTR("failed to initialize binary transaction\n", c_err);
             }
         } else {
             NOTE_C_LOG_ERROR("unable to allocate request\n");
             _UnlockNote();
+            cobsDecode(data, encLen, '\n', data);
             return ERRSTR("unable to allocate request\n", c_mem);
         }
 
@@ -361,6 +395,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
 
         // Ensure transaction was successful
         if (err) {
+            cobsDecode(data, encLen, '\n', data);
             return ERRSTR(err, c_err);
         }
 
@@ -368,6 +403,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
         rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
         if (!rsp) {
             NOTE_C_LOG_ERROR("unable to validate request\n");
+            cobsDecode(data, encLen, '\n', data);
             return ERRSTR("unable to validate request\n", c_err);
         }
 
@@ -384,10 +420,12 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
                     continue;
                 }
                 NOTE_C_LOG_ERROR("binary data invalid\n");
+                cobsDecode(data, encLen, '\n', data);
                 return ERRSTR("binary data invalid\n", c_bad);
             } else {
                 JDelete(rsp);
                 NOTE_C_LOG_ERROR("unexpected error received during confirmation\n");
+                cobsDecode(data, encLen, '\n', data);
                 return ERRSTR("unexpected error received during confirmation\n", c_bad);
             }
         }
