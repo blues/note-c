@@ -16,6 +16,7 @@ bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs);
 void setTime(JTIME seconds);
 char *crcAdd(char *json, uint16_t seqno);
 bool crcError(char *json, uint16_t shouldBeSeqno);
+const char * i2cNoteQueryLength(uint32_t * available, size_t timeoutMs);
 
 #ifdef __cplusplus
 }

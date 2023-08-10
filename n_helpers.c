@@ -106,9 +106,6 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
     if (err) {
         return err;
     }
-    // If NoteBinaryRequiredRxBuffer indicates only 1 byte is required, that
-    // 1 byte is just the newline the Notecard sends to indicate the end of
-    // binary data, so there's no binary data to receive.
     if (!requiredRxBufLen) {
         NOTE_C_LOG_ERROR("no data on notecard\n");
         return ERRSTR("no data on notecard\n", c_err);
@@ -234,7 +231,7 @@ const char * NoteBinaryRequiredRxBuffer(size_t *size)
         *size = 0;
     }
     else {
-        // Otherwise, the required length is cobs + 1 for the binary data plus
+        // Otherwise, the required length is cobs + 1: the binary data plus
         // 1 byte for the terminating newline.
         *size = cobs + 1;
     }

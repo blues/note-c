@@ -20,7 +20,7 @@
             A c-string containing the JSON request object.
   @param   response
             An out parameter c-string buffer that will contain the JSON
-            response from the Notercard.
+            response from the Notercard. If NULL, no response will be captured.
   @returns a c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
