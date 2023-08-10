@@ -322,59 +322,73 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     encLen = cobsEncode(data + dataShift, dataLen, '\n', data);
     data[encLen] = '\n';
 
-    // Claim Notecard Mutex
-    _LockNote();
+    const size_t NOTE_C_BINARY_RETRIES = 3;
+    for (size_t i = 0 ; i < NOTE_C_BINARY_RETRIES ; ++i) {
+        // Claim Notecard Mutex
+        _LockNote();
 
-    // Issue a "card.binary.put"
-    J *req = NoteNewRequest("card.binary.put");
-    if (req) {
-        JAddIntToObject(req, "cobs", encLen);
-        if (append) {
-            JAddBoolToObject(req, "append", true);
-        }
-        JAddStringToObject(req, "status", hashString);
+        // Issue a "card.binary.put"
+        J *req = NoteNewRequest("card.binary.put");
+        if (req) {
+            JAddIntToObject(req, "cobs", encLen);
+            if (append) {
+                JAddBoolToObject(req, "append", true);
+            }
+            JAddStringToObject(req, "status", hashString);
 
-        // Ensure the transaction doesn't return an error.
-        if (!NoteRequest(req)) {
-            NOTE_C_LOG_ERROR("failed to initialize binary transaction\n");
+            // Ensure the transaction doesn't return an error.
+            if (!NoteRequest(req)) {
+                NOTE_C_LOG_ERROR("failed to initialize binary transaction\n");
+                _UnlockNote();
+                return ERRSTR("failed to initialize binary transaction\n", c_err);
+            }
+        } else {
+            NOTE_C_LOG_ERROR("unable to allocate request\n");
             _UnlockNote();
-            return ERRSTR("failed to initialize binary transaction\n", c_err);
+            return ERRSTR("unable to allocate request\n", c_mem);
         }
-    } else {
-        NOTE_C_LOG_ERROR("unable to allocate request\n");
+
+        // Immediately send the COBS binary.
+        const char *err = _ChunkedTransmit(data, (encLen + 1), false);
+
+        // Release Notecard Mutex
         _UnlockNote();
-        return ERRSTR("unable to allocate request\n", c_mem);
-    }
 
-    // Immediately send the COBS binary.
-    const char *err = _ChunkedTransmit(data, (encLen + 1), false);
+        // Ensure transaction was successful
+        if (err) {
+            return ERRSTR(err, c_err);
+        }
 
-    // Release Notecard Mutex
-    _UnlockNote();
+        // Issue a `"card.binary"` request.
+        rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
+        if (!rsp) {
+            NOTE_C_LOG_ERROR("unable to validate request\n");
+            return ERRSTR("unable to validate request\n", c_err);
+        }
 
-    // Ensure transaction was successful
-    if (err) {
-        return ERRSTR(err, c_err);
-    }
-
-    // Issue a `"card.binary"` request.
-    rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
-    if (!rsp) {
-        NOTE_C_LOG_ERROR("unable to validate request\n");
-        return ERRSTR("unable to validate request\n", c_err);
-    }
-
-    // Ensure the transaction doesn't return an error
-    // to confirm the binary was received
-    if (NoteResponseError(rsp)) {
-        NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
-        NOTE_C_LOG_ERROR("\n");
+        // Ensure the transaction doesn't return an error
+        // to confirm the binary was received
+        if (NoteResponseError(rsp)) {
+            const char *err = JGetString(rsp, "err");
+            NOTE_C_LOG_ERROR(err);
+            NOTE_C_LOG_ERROR("\n");
+            if (NoteErrorContains(err, c_badbinerr)) {
+                JDelete(rsp);
+                if ( i < (NOTE_C_BINARY_RETRIES - 1) ) {
+                    NOTE_C_LOG_ERROR("retrying...\n");
+                    continue;
+                }
+                NOTE_C_LOG_ERROR("binary data invalid\n");
+                return ERRSTR("binary data invalid\n", c_bad);
+            } else {
+                JDelete(rsp);
+                NOTE_C_LOG_ERROR("unexpected error received during confirmation\n");
+                return ERRSTR("unexpected error received during confirmation\n", c_bad);
+            }
+        }
         JDelete(rsp);
-        // input buffer is no longer valid
-        NOTE_C_LOG_ERROR("binary data invalid\n");
-        return ERRSTR("binary data invalid\n", c_bad);
+        break;
     }
-    JDelete(rsp);
 
     // Return `NULL` on success
     return NULL;

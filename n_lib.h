@@ -160,6 +160,8 @@ extern const char *c_iobad;
 extern const char *c_ioerr;
 #define c_ioerr_len 4
 
+extern const char *c_badbinerr;
+#define c_badbinerr_len 9
 
 // Readability wrappers.  Anything starting with _ is simply calling the wrapper
 // function.
