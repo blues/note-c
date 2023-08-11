@@ -210,11 +210,6 @@ const char * NoteBinaryRequiredRxBuffer(size_t *size)
     // feature is available.
     if (NoteResponseError(rsp)) {
         const char *err = JGetString(rsp, "err");
-        if (NoteErrorContains(err, "unknown")) {
-            JDelete(rsp);
-            NOTE_C_LOG_ERROR("feature not implemented\n");
-            return ERRSTR("feature not implemented\n", c_bad);
-        }
         NOTE_C_LOG_ERROR(err);
         NOTE_C_LOG_ERROR("\n");
         JDelete(rsp);
@@ -307,11 +302,6 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     // and confirm the binary feature is available
     if (NoteResponseError(rsp)) {
         const char *err = JGetString(rsp,"err");
-        if (NoteErrorContains(err, "unknown")) {
-            JDelete(rsp);
-            NOTE_C_LOG_ERROR("feature not implemented\n");
-            return ERRSTR("feature not implemented\n", c_bad);
-        }
         NOTE_C_LOG_ERROR(err);
         NOTE_C_LOG_ERROR("\n");
         JDelete(rsp);
