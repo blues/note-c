@@ -101,16 +101,19 @@ NOTE_C_STATIC int ytodays(int year);
 const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
     size_t * dataLen)
 {
-    size_t cobs = 0;
-    const char *err = NoteBinaryRequiredRxBuffer(&cobs);
+    size_t requiredRxBufLen = 0;
+    const char *err = NoteBinaryRequiredRxBuffer(&requiredRxBufLen);
     if (err) {
         return err;
     }
-    if (!cobs) {
+    // If NoteBinaryRequiredRxBuffer indicates only 1 byte is required, that
+    // 1 byte is just the newline the Notecard sends to indicate the end of
+    // binary data, so there's no binary data to receive.
+    if (!requiredRxBufLen) {
         NOTE_C_LOG_ERROR("no data on notecard\n");
         return ERRSTR("no data on notecard\n", c_err);
     }
-    if (cobs > bufLen) {
+    if (requiredRxBufLen > bufLen) {
         NOTE_C_LOG_ERROR("insufficient buffer size\n");
         return ERRSTR("insufficient buffer size\n", c_err);
     }
@@ -122,7 +125,10 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
     char status[NOTE_MD5_HASH_STRING_SIZE] = {0};
     J *req = NoteNewRequest("card.binary.get");
     if (req) {
-        JAddIntToObject(req, "cobs", cobs);
+        // This field must exactly match the number of binary bytes the Notecard
+        // will send. This doesn't include the terminating newline, hence the
+        // -1.
+        JAddIntToObject(req, "cobs", requiredRxBufLen - 1);
 
         // Ensure the transaction doesn't return an error.
         J *rsp = NoteRequestResponse(req);
@@ -192,7 +198,8 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
 //**************************************************************************/
 /*!
   @brief  Get the required buffer size to receive the binary object stored on
-          the Notecard.
+          the Notecard. If there's no data to stored on the Notecard, *size will
+          be 0.
   @param  size Out parameter to hold the required size.
   @returns An error string on error and NULL on success.
 */
@@ -219,8 +226,18 @@ const char * NoteBinaryRequiredRxBuffer(size_t *size)
 
     // Examine "cobs" from the response to evaluate the space required to hold
     // the COBS-encoded data received from the Notecard.
-    *size = JGetInt(rsp, "cobs");
+    long int cobs = JGetInt(rsp, "cobs");
     JDelete(rsp);
+    if (!cobs) {
+        // If cobs is 0, the required buffer length is 0 because there's nothing
+        // to receive.
+        *size = 0;
+    }
+    else {
+        // Otherwise, the required length is cobs + 1 for the binary data plus
+        // 1 byte for the terminating newline.
+        *size = cobs + 1;
+    }
 
     return NULL;
 }
