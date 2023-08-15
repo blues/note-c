@@ -315,11 +315,14 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     // and confirm the binary feature is available
     if (NoteResponseError(rsp)) {
         const char *err = JGetString(rsp,"err");
-        NOTE_C_LOG_ERROR(err);
-        NOTE_C_LOG_ERROR("\n");
-        JDelete(rsp);
-        NOTE_C_LOG_ERROR("unexpected error received during handshake\n");
-        return ERRSTR("unexpected error received during handshake\n", c_bad);
+        // Swallow `{bad-bin}` errors, because we intend to overwrite the data.
+        if (!NoteErrorContains(err, c_badbinerr)) {
+            NOTE_C_LOG_ERROR(err);
+            NOTE_C_LOG_ERROR("\n");
+            JDelete(rsp);
+            NOTE_C_LOG_ERROR("unexpected error received during handshake\n");
+            return ERRSTR("unexpected error received during handshake\n", c_bad);
+        }
     }
 
     // Examine "length" and "max" from the response to evaluate the unencoded
