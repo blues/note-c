@@ -61,7 +61,7 @@ const char *serialChunkedTransmitAppend(uint8_t *buf, size_t len, bool)
 }
 
 const char *serialChunkedReceiveNothing(uint8_t *, size_t *size, bool, size_t,
-    uint32_t *available)
+                                        uint32_t *available)
 {
     *size = 0;
     *available = 0;
@@ -70,7 +70,7 @@ const char *serialChunkedReceiveNothing(uint8_t *, size_t *size, bool, size_t,
 }
 
 const char *serialChunkedReceiveOneAndDone(uint8_t *buf, size_t *size, bool,
-    size_t, uint32_t *available)
+        size_t, uint32_t *available)
 {
     *buf = '\n';
     *size = 1;
@@ -84,7 +84,7 @@ const char *serialChunkedReceiveOneAndDone(uint8_t *buf, size_t *size, bool,
 size_t serialChunkedReceiveMultipleLeft = SERIAL_CHUNKED_RECEIVE_MULTIPLE_SIZE;
 
 const char *serialChunkedReceiveMultiple(uint8_t *buf, size_t *size, bool,
-    size_t, uint32_t *available)
+        size_t, uint32_t *available)
 {
     memset(buf, 1, *size);
     serialChunkedReceiveMultipleLeft -= *size;
@@ -319,7 +319,7 @@ SCENARIO("serialNoteTransaction")
 
                     char expectedRsp[SERIAL_CHUNKED_RECEIVE_MULTIPLE_SIZE + 1];
                     memset(expectedRsp, 1,
-                        SERIAL_CHUNKED_RECEIVE_MULTIPLE_SIZE);
+                           SERIAL_CHUNKED_RECEIVE_MULTIPLE_SIZE);
                     expectedRsp[SERIAL_CHUNKED_RECEIVE_MULTIPLE_SIZE] = '\0';
                     AND_THEN("The response is exactly what was received by "
                              "serialChunkedReceive") {

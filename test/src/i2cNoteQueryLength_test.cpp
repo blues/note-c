@@ -32,7 +32,7 @@ namespace
 // Nothing available at the start, then something becomes available.
 
 const char * NoteI2CReceiveNotAvailable(uint16_t, uint8_t *, uint16_t,
-    uint32_t *available)
+                                        uint32_t *available)
 {
     *available = 0;
 
@@ -44,7 +44,7 @@ enum {
 };
 
 const char * NoteI2CReceiveAvailable(uint16_t, uint8_t *, uint16_t,
-    uint32_t *available)
+                                     uint32_t *available)
 {
     *available = NUM_BYTES_AVAILABLE;
 
@@ -125,11 +125,11 @@ SCENARIO("i2cNoteQueryLength")
     GIVEN("Bytes aren't available to read at first, but then become "
           "available") {
         const char * (*customI2CReciveFakes[])
-            (uint16_t, uint8_t *, uint16_t, uint32_t *available) = {
-                NoteI2CReceiveNotAvailable,
-                NoteI2CReceiveNotAvailable,
-                NoteI2CReceiveAvailable
-            };
+        (uint16_t, uint8_t *, uint16_t, uint32_t *available) = {
+            NoteI2CReceiveNotAvailable,
+            NoteI2CReceiveNotAvailable,
+            NoteI2CReceiveAvailable
+        };
         SET_CUSTOM_FAKE_SEQ(NoteI2CReceive, customI2CReciveFakes, 3);
 
         WHEN("i2cNoteQueryLength is called") {

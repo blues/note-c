@@ -44,8 +44,7 @@ SCENARIO("NoteBinaryTransmit")
 
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    NoteNewRequest_fake.custom_fake = [](const char *) -> J *
-    {
+    NoteNewRequest_fake.custom_fake = [](const char *) -> J * {
         return JCreateObject();
     };
 
@@ -53,8 +52,7 @@ SCENARIO("NoteBinaryTransmit")
           "and max parameters indicates a problem") {
 
         AND_GIVEN("The response is NULL") {
-            NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-            {
+            NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
                 JDelete(req);
 
                 return NULL;
@@ -62,7 +60,7 @@ SCENARIO("NoteBinaryTransmit")
 
             WHEN("NoteBinaryTransmit is called") {
                 const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                    false);
+                                                     false);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -71,8 +69,7 @@ SCENARIO("NoteBinaryTransmit")
         }
 
         AND_GIVEN("The response has a generic error") {
-            NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-            {
+            NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
                 JDelete(req);
                 J *rsp = JCreateObject();
                 JAddStringToObject(rsp, "err", "some error");
@@ -82,7 +79,7 @@ SCENARIO("NoteBinaryTransmit")
 
             WHEN("NoteBinaryTransmit is called") {
                 const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                    false);
+                                                     false);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -91,8 +88,7 @@ SCENARIO("NoteBinaryTransmit")
         }
 
         AND_GIVEN("The max parameter is 0") {
-            NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-            {
+            NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
                 JDelete(req);
                 J *rsp = JCreateObject();
                 JAddIntToObject(rsp, "max", 0);
@@ -102,7 +98,7 @@ SCENARIO("NoteBinaryTransmit")
 
             WHEN("NoteBinaryTransmit is called") {
                 const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                    false);
+                                                     false);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -111,11 +107,10 @@ SCENARIO("NoteBinaryTransmit")
         }
 
         AND_GIVEN("The remaining space implied by max and length is too small "
-            "to hold the caller's data") {
+                  "to hold the caller's data") {
 
             AND_GIVEN("The length parameter is 0") {
-                NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-                {
+                NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
                     JDelete(req);
                     J *rsp = JCreateObject();
                     JAddIntToObject(rsp, "length", 0);
@@ -126,7 +121,7 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                        false);
+                                                         false);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
@@ -135,10 +130,9 @@ SCENARIO("NoteBinaryTransmit")
             }
 
             AND_GIVEN("The length parameter is non-zero and the buffer is being"
-                " appended to existing data") {
+                      " appended to existing data") {
                 size_t currLen = dataLen;
-                NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-                {
+                NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
                     JDelete(req);
                     J *rsp = JCreateObject();
                     JAddIntToObject(rsp, "length", dataLen);
@@ -149,7 +143,7 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                        true);
+                                                         true);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
@@ -160,9 +154,8 @@ SCENARIO("NoteBinaryTransmit")
     }
 
     GIVEN("The encoded length is exactly the same size as the "
-        "buffer, leaving no room for the terminating newline") {
-        NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-        {
+          "buffer, leaving no room for the terminating newline") {
+        NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
             JAddIntToObject(rsp, "length", 0);
@@ -174,7 +167,7 @@ SCENARIO("NoteBinaryTransmit")
 
         WHEN("NoteBinaryTransmit is called") {
             const char *err = NoteBinaryTransmit(buf, dataLen,
-                newBufLen, false);
+                                                 newBufLen, false);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -183,8 +176,7 @@ SCENARIO("NoteBinaryTransmit")
     }
 
     GIVEN("The initial card.binary response is ok") {
-        auto cardBinaryRspInitial = [](J *req) -> J *
-        {
+        auto cardBinaryRspInitial = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
             JAddIntToObject(rsp, "length", 0);
@@ -203,7 +195,7 @@ SCENARIO("NoteBinaryTransmit")
 
             WHEN("NoteBinaryTransmit is called") {
                 const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                    false);
+                                                     false);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -216,8 +208,7 @@ SCENARIO("NoteBinaryTransmit")
         }
 
         AND_GIVEN("The card.binary.put request fails") {
-            NoteRequest_fake.custom_fake = [](J *req) -> bool
-            {
+            NoteRequest_fake.custom_fake = [](J *req) -> bool {
                 JDelete(req);
 
                 return false;
@@ -225,7 +216,7 @@ SCENARIO("NoteBinaryTransmit")
 
             WHEN("NoteBinaryTransmit is called") {
                 const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                    false);
+                                                     false);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -238,8 +229,7 @@ SCENARIO("NoteBinaryTransmit")
         }
 
         AND_GIVEN("NoteChunkedTransmit fails") {
-            NoteRequest_fake.custom_fake = [](J *req) -> bool
-            {
+            NoteRequest_fake.custom_fake = [](J *req) -> bool {
                 JDelete(req);
 
                 return true;
@@ -248,7 +238,7 @@ SCENARIO("NoteBinaryTransmit")
 
             WHEN("NoteBinaryTransmit is called") {
                 const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                    false);
+                                                     false);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -261,17 +251,15 @@ SCENARIO("NoteBinaryTransmit")
         }
 
         AND_GIVEN("The response to the card.binary request after the "
-            "transmission indicates a problem") {
-            NoteRequest_fake.custom_fake = [](J *req) -> bool
-            {
+                  "transmission indicates a problem") {
+            NoteRequest_fake.custom_fake = [](J *req) -> bool {
                 JDelete(req);
 
                 return true;
             };
             NoteChunkedTransmit_fake.return_val = NULL;
 
-            auto initial = [](J *req) -> J *
-            {
+            auto initial = [](J *req) -> J * {
                 JDelete(req);
                 J *rsp = JCreateObject();
                 JAddIntToObject(rsp, "length", 0);
@@ -279,16 +267,14 @@ SCENARIO("NoteBinaryTransmit")
 
                 return rsp;
             };
-            J *(*reqRespFakeSequence[])(J *) =
-            {
+            J *(*reqRespFakeSequence[])(J *) = {
                 initial,
                 NULL
             };
             SET_CUSTOM_FAKE_SEQ(NoteRequestResponse, reqRespFakeSequence, 2);
 
             AND_GIVEN("The response is NULL") {
-                reqRespFakeSequence[1] = [](J *req) -> J *
-                {
+                reqRespFakeSequence[1] = [](J *req) -> J * {
                     JDelete(req);
 
                     return NULL;
@@ -296,22 +282,21 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                        false);
+                                                         false);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
                     }
 
                     THEN("The input buffer contains the original, unencoded "
-                        "data") {
+                         "data") {
                         CHECK(memcmp(buf, originalData, dataLen) == 0);
                     }
                 }
             }
 
             AND_GIVEN("The response has a generic error") {
-                reqRespFakeSequence[1] = [](J *req) -> J *
-                {
+                reqRespFakeSequence[1] = [](J *req) -> J * {
                     JDelete(req);
                     J *rsp = JCreateObject();
                     JAddStringToObject(rsp, "err", "some error");
@@ -321,23 +306,22 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                        false);
+                                                         false);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
                     }
 
                     THEN("The input buffer contains the original, unencoded "
-                        "data") {
+                         "data") {
                         CHECK(memcmp(buf, originalData, dataLen) == 0);
                     }
                 }
             }
 
             AND_GIVEN("The response has repeated {bad-bin} errors until retries"
-                " are exhausted") {
-                reqRespFakeSequence[1] = [](J *req) -> J *
-                {
+                      " are exhausted") {
+                reqRespFakeSequence[1] = [](J *req) -> J * {
                     JDelete(req);
                     J *rsp = JCreateObject();
                     JAddStringToObject(rsp, "err", c_badbinerr);
@@ -347,47 +331,44 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                        false);
+                                                         false);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
                     }
 
                     THEN("The input buffer contains the original, unencoded "
-                        "data") {
+                         "data") {
                         CHECK(memcmp(buf, originalData, dataLen) == 0);
                     }
                 }
             }
 
             AND_GIVEN("The response has a {bad-bin} error but a subsequent "
-                "response is ok") {
-                auto badBin = [](J *req) -> J *
-                {
+                      "response is ok") {
+                auto badBin = [](J *req) -> J * {
                     JDelete(req);
                     J *rsp = JCreateObject();
                     JAddStringToObject(rsp, "err", c_badbinerr);
 
                     return rsp;
                 };
-                auto ok = [](J *req) -> J *
-                {
+                auto ok = [](J *req) -> J * {
                     JDelete(req);
 
                     return JCreateObject();
                 };
-                J *(*reqRespFakeSequenceSuccess[])(J *) =
-                {
+                J *(*reqRespFakeSequenceSuccess[])(J *) = {
                     cardBinaryRspInitial,
                     badBin,
                     ok
                 };
                 SET_CUSTOM_FAKE_SEQ(NoteRequestResponse,
-                    reqRespFakeSequenceSuccess, 3);
+                                    reqRespFakeSequenceSuccess, 3);
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                        false);
+                                                         false);
 
                     THEN("No error is returned") {
                         CHECK(err == NULL);

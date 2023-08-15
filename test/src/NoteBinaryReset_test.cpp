@@ -32,12 +32,10 @@ SCENARIO("NoteBinaryReset")
 
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    NoteNewRequest_fake.custom_fake = [](const char *req) -> J *
-    {
+    NoteNewRequest_fake.custom_fake = [](const char *req) -> J * {
         return JCreateObject();
     };
-    NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-    {
+    NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
         return JCreateObject();
     };
 
@@ -55,8 +53,7 @@ SCENARIO("NoteBinaryReset")
     }
 
     GIVEN("The response to the card.binary request has an error") {
-        NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-        {
+        NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
             JAddStringToObject(rsp, "err", "some error");

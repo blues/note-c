@@ -35,8 +35,7 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
     size_t size = 1;
 
     GIVEN("The card.binary request fails") {
-        NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-        {
+        NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
 
             return NULL;
@@ -52,8 +51,7 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
     }
 
     GIVEN("The response to the card.binary request has an error") {
-        NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-        {
+        NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
             JAddStringToObject(rsp, "err", "some error");
@@ -71,9 +69,8 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
     }
 
     GIVEN("The response to the card.binary request indicates there's nothing to"
-        " read") {
-        NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-        {
+          " read") {
+        NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
             JAddIntToObject(rsp, "cobs", 0);
@@ -95,9 +92,8 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
     }
 
     GIVEN("The response to the card.binary request indicates there's data "
-        "to read") {
-        NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-        {
+          "to read") {
+        NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
             JAddIntToObject(rsp, "cobs", cobsLen);
@@ -113,7 +109,7 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
             }
 
             THEN("The size out parameter is the size in the card.binary "
-                "response, plus 1 for the trailing newline") {
+                 "response, plus 1 for the trailing newline") {
                 CHECK(size == cobsLen + 1);
             }
         }

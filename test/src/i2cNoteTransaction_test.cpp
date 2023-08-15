@@ -25,8 +25,8 @@ FAKE_VOID_FUNC(NoteLockI2C)
 FAKE_VOID_FUNC(NoteUnlockI2C)
 FAKE_VALUE_FUNC(const char *, i2cChunkedTransmit, uint8_t *, size_t, bool)
 FAKE_VALUE_FUNC(const char *, i2cNoteQueryLength, uint32_t *, size_t)
-FAKE_VALUE_FUNC(const char *, i2cChunkedReceive, uint8_t *, size_t *, bool, 
-    size_t , uint32_t *)
+FAKE_VALUE_FUNC(const char *, i2cChunkedReceive, uint8_t *, size_t *, bool,
+                size_t, uint32_t *)
 
 namespace
 {
@@ -89,8 +89,7 @@ TEST_CASE("i2cNoteTransaction")
     GIVEN("i2cNoteQueryLength reports bytes are available to read from the"
           " Notecard") {
         i2cNoteQueryLength_fake.custom_fake = [](uint32_t * available,
-            size_t) -> const char*
-        {
+        size_t) -> const char* {
             *available = ALLOC_CHUNK;
 
             return NULL;
@@ -124,12 +123,11 @@ TEST_CASE("i2cNoteTransaction")
         }
 
         AND_GIVEN("A single chunk is required to read the full response from "
-            "the Notecard") {
+                  "the Notecard") {
             // Write out the number of bytes reported available on the prior
             // call to i2cNoteQueryLength and report no more bytes available.
             i2cChunkedReceive_fake.custom_fake = [](uint8_t *buf, size_t *size, bool, size_t,
-                uint32_t *available) -> const char*
-            {
+            uint32_t *available) -> const char* {
                 memset(buf, 'a', *available - 1);
                 buf[*available - 1] = '\n';
                 *size = *available;
@@ -166,13 +164,12 @@ TEST_CASE("i2cNoteTransaction")
         }
 
         AND_GIVEN("Multiple chunks are required to read the full response from "
-            "the Notecard") {
+                  "the Notecard") {
             // On the first call to i2cChunkedReceive, a string of a's is
             // written to the output buffer, and the Notecard reports that there
             // are still ALLOC_CHUNK bytes to read.
             auto firstChunk = [](uint8_t *buf, size_t *size, bool, size_t,
-                uint32_t *available) -> const char*
-            {
+            uint32_t *available) -> const char* {
                 memset(buf, 'a', *available);
                 *size = *available;
                 *available = ALLOC_CHUNK;
@@ -183,8 +180,7 @@ TEST_CASE("i2cNoteTransaction")
             // out, which is a string of a's terminated with a newline.
             // available is set to 0, indicating there's nothing left to read.
             auto secondChunk = [](uint8_t *buf, size_t *size, bool, size_t,
-                uint32_t *available) -> const char*
-            {
+            uint32_t *available) -> const char* {
                 memset(buf, 'a', *available - 1);
                 buf[*available - 1] = '\n';
                 *size = *available;
@@ -193,8 +189,7 @@ TEST_CASE("i2cNoteTransaction")
                 return NULL;
             };
             const char *(*recvFakeSequence[])(uint8_t *, size_t *, bool,
-                size_t, uint32_t *) =
-            {
+                                              size_t, uint32_t *) = {
                 firstChunk,
                 secondChunk
             };
@@ -231,17 +226,14 @@ TEST_CASE("i2cNoteTransaction")
                 NoteMalloc_fake.custom_fake = NULL;
                 // The first allocation that sets up the initial response buffer
                 // is ok.
-                auto normalMalloc = [](size_t size) -> void *
-                {
+                auto normalMalloc = [](size_t size) -> void * {
                     return malloc(size);
                 };
                 // The second one used to grow the response buffer fails.
-                auto failMalloc = [](size_t size) -> void *
-                {
+                auto failMalloc = [](size_t size) -> void * {
                     return NULL;
                 };
-                void *(*mallocFakeSequence[])(size_t) =
-                {
+                void *(*mallocFakeSequence[])(size_t) = {
                     normalMalloc,
                     failMalloc
                 };

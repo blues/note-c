@@ -23,7 +23,7 @@ FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
 FAKE_VALUE_FUNC(const char *, NoteBinaryRequiredRxBuffer, size_t *)
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 FAKE_VALUE_FUNC(const char *, NoteChunkedReceive, uint8_t *, size_t *, bool,
-    size_t, uint32_t *)
+                size_t, uint32_t *)
 FAKE_VOID_FUNC(NoteLockNote)
 FAKE_VOID_FUNC(NoteUnlockNote)
 
@@ -56,33 +56,29 @@ SCENARIO("NoteBinaryReceive")
 
     // These fakes are the default. Tests below may override them to exercise
     // different scenarios.
-    NoteNewRequest_fake.custom_fake = [](const char *req) -> J*
-    {
+    NoteNewRequest_fake.custom_fake = [](const char *req) -> J* {
         return JCreateObject();
     };
     NoteBinaryRequiredRxBuffer_fake.custom_fake = [](size_t *size)
-        -> const char *
-    {
+    -> const char * {
         *size = bufLen;
 
         return NULL;
     };
-    NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-    {
+    NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
         JDelete(req);
         J *rsp = JCreateObject();
         char hash[NOTE_MD5_HASH_STRING_SIZE] = {0};
         NoteMD5HashString((unsigned char *)rawMsg, rawMsgLen, hash,
-            NOTE_MD5_HASH_STRING_SIZE);
+                          NOTE_MD5_HASH_STRING_SIZE);
         JAddStringToObject(rsp, "status", hash);
 
         return rsp;
     };
 
     GIVEN("NoteBinaryRequiredRxBuffer fails") {
-         NoteBinaryRequiredRxBuffer_fake.custom_fake = [](size_t *size)
-            -> const char *
-        {
+        NoteBinaryRequiredRxBuffer_fake.custom_fake = [](size_t *size)
+        -> const char * {
             *size = 0;
 
             return NULL;
@@ -112,8 +108,7 @@ SCENARIO("NoteBinaryReceive")
 
     GIVEN("The receive buffer isn't big enough") {
         NoteBinaryRequiredRxBuffer_fake.custom_fake = [](size_t *size)
-            -> const char *
-        {
+        -> const char * {
             *size = bufLen + 1;
 
             return NULL;
@@ -142,8 +137,7 @@ SCENARIO("NoteBinaryReceive")
     }
 
     GIVEN("The response to the card.binary.get request has an error") {
-        NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-        {
+        NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
             JAddStringToObject(rsp, "err", "some error");
@@ -173,10 +167,9 @@ SCENARIO("NoteBinaryReceive")
     }
 
     GIVEN("NoteChunkedReceive indicates there's unexpectedly more data "
-        "available") {
+          "available") {
         NoteChunkedReceive_fake.custom_fake = [](uint8_t *, size_t *, bool,
-            size_t, uint32_t *available) -> const char*
-        {
+        size_t, uint32_t *available) -> const char* {
             *available = 1;
 
             return NULL;
@@ -193,11 +186,10 @@ SCENARIO("NoteBinaryReceive")
 
     GIVEN("The binary payload is received") {
         NoteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, size_t *size,
-            bool, size_t, uint32_t *available) -> const char*
-        {
+        bool, size_t, uint32_t *available) -> const char* {
             uint32_t encodedMaxLen = cobsEncodedMaxLength(rawMsgLen);
             uint32_t encodedLen = cobsEncode((uint8_t *)rawMsg, rawMsgLen, '\n',
-                buffer);
+                                             buffer);
 
             buffer[encodedLen] = '\n';
             *size = encodedLen + 1;
@@ -207,8 +199,7 @@ SCENARIO("NoteBinaryReceive")
         };
 
         AND_GIVEN("The computed MD5 hash doesn't match the status field") {
-            NoteRequestResponse_fake.custom_fake = [](J *req) -> J *
-            {
+            NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
                 JDelete(req);
                 J *rsp = JCreateObject();
                 JAddStringToObject(rsp, "status", "garbage");
@@ -234,12 +225,12 @@ SCENARIO("NoteBinaryReceive")
                 }
 
                 THEN("The length of the payload is returned in the dataLen out"
-                    " parameter") {
+                     " parameter") {
                     CHECK(dataLen == rawMsgLen);
                 }
 
                 THEN("The decoded payload is as expected, with no trailing "
-                    "newline") {
+                     "newline") {
                     CHECK(memcmp(buf, rawMsg, dataLen) == 0);
                 }
             }

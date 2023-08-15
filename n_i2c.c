@@ -48,7 +48,7 @@ NOTE_C_STATIC void delayIO(void)
 */
 /**************************************************************************/
 NOTE_C_STATIC const char * i2cNoteQueryLength(uint32_t * available,
-    size_t timeoutMs)
+        size_t timeoutMs)
 {
     uint8_t dummy_buffer = 0;
 

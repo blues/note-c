@@ -99,7 +99,7 @@ NOTE_C_STATIC int ytodays(int year);
 */
 /**************************************************************************/
 const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
-    size_t * dataLen)
+                               size_t * dataLen)
 {
     size_t requiredRxBufLen = 0;
     const char *err = NoteBinaryRequiredRxBuffer(&requiredRxBufLen);
@@ -229,8 +229,7 @@ const char * NoteBinaryRequiredRxBuffer(size_t *size)
         // If cobs is 0, the required buffer length is 0 because there's nothing
         // to receive.
         *size = 0;
-    }
-    else {
+    } else {
         // Otherwise, the required length is cobs + 1: the binary data plus
         // 1 byte for the terminating newline.
         *size = cobs + 1;

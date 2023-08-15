@@ -30,7 +30,7 @@ namespace
 {
 
 const char *NoteI2CReceiveInfinite(uint16_t, uint8_t *buf, uint16_t size,
-    uint32_t *available)
+                                   uint32_t *available)
 {
     memset(buf, 'a', size);
     *available = NOTE_I2C_MAX_DEFAULT;
@@ -54,13 +54,13 @@ SCENARIO("i2cChunkedReceive")
         size_t zeroSize = 0;
 
         AND_GIVEN("NoteI2CReceive reports that here are bytes available from "
-            "the Notecard") {
+                  "the Notecard") {
             NoteI2CReceive_fake.custom_fake = NoteI2CReceiveInfinite;
 
             WHEN("i2cChunkedReceive is called") {
                 uint32_t originalAvailable = available;
                 const char *err = i2cChunkedReceive(buf, &zeroSize, true,
-                    timeoutMs, &available);
+                                                    timeoutMs, &available);
 
                 THEN("No error is returned") {
                     CHECK(err == NULL);
@@ -71,7 +71,7 @@ SCENARIO("i2cChunkedReceive")
                 }
 
                 THEN("available is exactly the number of bytes reported "
-                    "available by NoteI2CReceive") {
+                     "available by NoteI2CReceive") {
                     CHECK(available == NOTE_I2C_MAX_DEFAULT);
                 }
             }
@@ -85,7 +85,7 @@ SCENARIO("i2cChunkedReceive")
 
         WHEN("i2cChunkedReceive is called") {
             const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
-                &available);
+                                                &available);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -100,7 +100,7 @@ SCENARIO("i2cChunkedReceive")
 
         WHEN("i2cChunkedReceive is called") {
             const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
-                &available);
+                                                &available);
 
             THEN("No error is returned") {
                 CHECK(err == NULL);
@@ -131,17 +131,18 @@ SCENARIO("i2cChunkedReceive")
         size_t size = sizeof(buf);
 
         NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *buf,
-            uint16_t size, uint32_t *available) -> const char*
-        {
+        uint16_t size, uint32_t *available) -> const char* {
             // If NoteI2CReceive is called with size 0, the caller is querying
             // the Notecard for how many bytes are available. Here, we report
             // back that there are NOTE_I2C_MAX_DEFAULT * 2 bytes available.
-            if (size == 0) {
+            if (size == 0)
+            {
                 *available = NOTE_I2C_MAX_DEFAULT * 2;
             }
             // If the user has requested all the available bytes, return a
             // sequence of a's with a newline at the end.
-            else if (*available == size) {
+            else if (*available == size)
+            {
                 memset(buf, 'a', size - 1);
                 buf[size - 1] = '\n';
                 *available = 0;
@@ -149,7 +150,8 @@ SCENARIO("i2cChunkedReceive")
             // If the user has requested less than the available bytes, just
             // return as many a's as they requested, and deduct that amount
             // from what's available.
-            else {
+            else
+            {
                 memset(buf, 'a', size);
                 *available -= size;
             }
@@ -165,7 +167,7 @@ SCENARIO("i2cChunkedReceive")
 
             WHEN("i2cChunkedReceive is called") {
                 const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
-                    &available);
+                                                    &available);
 
                 THEN("No error is returned") {
                     CHECK(err == NULL);
@@ -197,7 +199,7 @@ SCENARIO("i2cChunkedReceive")
 
             WHEN("i2cChunkedReceive is called") {
                 const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
-                    &available);
+                                                    &available);
 
                 THEN("No error is returned") {
                     CHECK(err == NULL);
@@ -233,8 +235,7 @@ SCENARIO("i2cChunkedReceive")
         // On the first call, NoteI2CReceive reports back that
         // NOTE_I2C_MAX_DEFAULT are available to read.
         auto bytesAvailable = [](uint16_t, uint8_t *buf, uint16_t size,
-            uint32_t *available) -> const char*
-        {
+        uint32_t *available) -> const char* {
             *available = NOTE_I2C_MAX_DEFAULT;
 
             return NULL;
@@ -243,8 +244,7 @@ SCENARIO("i2cChunkedReceive")
         // output buffer followed by a newline. We report back that
         // NOTE_I2C_MAX_DEFAULT bytes are still available to read.
         auto fullPacketButMoreAvailable = [](uint16_t, uint8_t *buf,
-            uint16_t size, uint32_t *available) -> const char*
-        {
+        uint16_t size, uint32_t *available) -> const char* {
             *available = NOTE_I2C_MAX_DEFAULT;
             memset(buf, 'a', size - 1);
             buf[size - 1] = '\n';
@@ -254,16 +254,14 @@ SCENARIO("i2cChunkedReceive")
         // On the final call, NOTE_I2C_MAX_DEFAULT a's are written to the
         // output buffer, and we report back that 0 bytes are available to read.
         auto excessData = [](uint16_t, uint8_t *buf, uint16_t size,
-            uint32_t *available) -> const char*
-        {
+        uint32_t *available) -> const char* {
             memset(buf, 'a', size);
             *available -= size;
 
             return NULL;
         };
         const char *(*recvFakeSequence[])(uint16_t, uint8_t *, uint16_t,
-            uint32_t *) =
-        {
+                                          uint32_t *) = {
             bytesAvailable,
             fullPacketButMoreAvailable,
             excessData
@@ -272,7 +270,7 @@ SCENARIO("i2cChunkedReceive")
 
         WHEN("i2cChunkedReceive is called") {
             const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
-                &available);
+                                                &available);
 
             THEN("No error is returned") {
                 CHECK(err == NULL);
@@ -293,7 +291,7 @@ SCENARIO("i2cChunkedReceive")
                 memset(expectedBuf, 'a', NOTE_I2C_MAX_DEFAULT - 1);
                 expectedBuf[NOTE_I2C_MAX_DEFAULT - 1] = '\n';
                 memset(expectedBuf + NOTE_I2C_MAX_DEFAULT, 'a',
-                    NOTE_I2C_MAX_DEFAULT);
+                       NOTE_I2C_MAX_DEFAULT);
 
                 CHECK(memcmp(buf, expectedBuf, sizeof(expectedBuf)) == 0);
             }
@@ -302,8 +300,7 @@ SCENARIO("i2cChunkedReceive")
 
     GIVEN("There's nothing to read from the Notecard") {
         NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *buf,
-            uint16_t size, uint32_t *available) -> const char*
-        {
+        uint16_t size, uint32_t *available) -> const char* {
             *available = 0;
 
             return NULL;
@@ -313,7 +310,7 @@ SCENARIO("i2cChunkedReceive")
 
         WHEN("i2cChunkedReceive is called") {
             const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
-                &available);
+                                                &available);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -358,8 +355,7 @@ SCENARIO("i2cChunkedReceive")
         // First, NoteI2CReceive will report that NOTE_I2C_MAX_DEFAULT bytes are
         // available to read.
         auto bytesAvailable = [](uint16_t, uint8_t *buf, uint16_t size,
-            uint32_t *available) -> const char*
-        {
+        uint32_t *available) -> const char* {
             *available = NOTE_I2C_MAX_DEFAULT;
 
             return NULL;
@@ -368,8 +364,7 @@ SCENARIO("i2cChunkedReceive")
         // newline), and available will be set to 0 to indicate there's nothing
         // left to read.
         auto partialPacket = [](uint16_t, uint8_t *buf, uint16_t size,
-            uint32_t *available) -> const char*
-        {
+        uint32_t *available) -> const char* {
             memset(buf, 'a', size);
             *available = 0;
 
@@ -379,15 +374,13 @@ SCENARIO("i2cChunkedReceive")
         // nothing else. This will eventually lead to a timeout in
         // i2cChunkedReceive because it's still waiting for the newline.
         auto nothingAvailable = [](uint16_t, uint8_t *buf, uint16_t size,
-            uint32_t *available) -> const char*
-        {
+        uint32_t *available) -> const char* {
             *available = 0;
 
             return NULL;
         };
         const char *(*recvFakeSequence[])(uint16_t, uint8_t *, uint16_t,
-            uint32_t *) =
-        {
+                                          uint32_t *) = {
             bytesAvailable,
             partialPacket,
             nothingAvailable
@@ -399,7 +392,7 @@ SCENARIO("i2cChunkedReceive")
 
         WHEN("i2cChunkedReceive is called") {
             const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
-                &available);
+                                                &available);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
