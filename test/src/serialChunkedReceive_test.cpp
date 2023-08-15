@@ -48,10 +48,6 @@ SCENARIO("serialChunkedReceive")
 
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    const char *str = "{\"connected\":true,\"max\":130554,\"status\":\"b001c6b058287e3a795587eec8179c25\",\"length\":102400,\"cobs\":102483,\"crc\":\"009D:743567D0\"}\r\n";
-
-    J *json = JParse(str);
-
     NoteGetMs_fake.custom_fake = NoteGetMsIncrement;
     uint8_t buf[] = {0xDE, 0xAD, 0xBE, 0xEF, 0x00};
     size_t size = sizeof(buf);
