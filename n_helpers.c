@@ -107,12 +107,12 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
         return err;
     }
     if (!requiredRxBufLen) {
-        NOTE_C_LOG_ERROR("no data on notecard\n");
-        return ERRSTR("no data on notecard\n", c_err);
+        NOTE_C_LOG_ERROR("no data on notecard");
+        return ERRSTR("no data on notecard", c_err);
     }
     if (requiredRxBufLen > bufLen) {
-        NOTE_C_LOG_ERROR("insufficient buffer size\n");
-        return ERRSTR("insufficient buffer size\n", c_err);
+        NOTE_C_LOG_ERROR("insufficient buffer size");
+        return ERRSTR("insufficient buffer size", c_err);
     }
 
     // Claim Notecard Mutex
@@ -131,20 +131,19 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
         J *rsp = NoteRequestResponse(req);
         if (NoteResponseError(rsp)) {
             NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
-            NOTE_C_LOG_ERROR("\n");
             JDelete(rsp);
-            NOTE_C_LOG_ERROR("failed to initialize binary transaction\n");
+            NOTE_C_LOG_ERROR("failed to initialize binary transaction");
             _UnlockNote();
-            return ERRSTR("failed to initialize binary transaction\n", c_err);
+            return ERRSTR("failed to initialize binary transaction", c_err);
         }
 
         // Examine "status" from the response to evaluate the MD5 checksum.
         strlcpy(status, JGetString(rsp,"status"), NOTE_MD5_HASH_STRING_SIZE);
         JDelete(rsp);
     } else {
-        NOTE_C_LOG_ERROR("unable to allocate request\n");
+        NOTE_C_LOG_ERROR("unable to allocate request");
         _UnlockNote();
-        return ERRSTR("unable to allocate request\n", c_mem);
+        return ERRSTR("unable to allocate request", c_mem);
     }
 
     // Read raw bytes from the active interface into a predefined buffer
@@ -161,8 +160,8 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
 
     // Check buffer overflow condition
     if (available) {
-        NOTE_C_LOG_ERROR("unexpected data available\n");
-        return ERRSTR("unexpected data available\n", c_err);
+        NOTE_C_LOG_ERROR("unexpected data available");
+        return ERRSTR("unexpected data available", c_err);
     }
 
     // _ChunkedReceive returns the raw bytes that came off the wire, which
@@ -184,8 +183,8 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
     char hashString[NOTE_MD5_HASH_STRING_SIZE] = {0};
     NoteMD5HashString(buffer, decLen, hashString, NOTE_MD5_HASH_STRING_SIZE);
     if (strncmp(hashString, status, NOTE_MD5_HASH_STRING_SIZE)) {
-        NOTE_C_LOG_ERROR("computed MD5 does not match received MD5\n");
-        return ERRSTR("computed MD5 does not match received MD5\n", c_err);
+        NOTE_C_LOG_ERROR("computed MD5 does not match received MD5");
+        return ERRSTR("computed MD5 does not match received MD5", c_err);
     }
 
     // Return `NULL` if success, else error string pointer
@@ -206,8 +205,8 @@ const char * NoteBinaryRequiredRxBuffer(size_t *size)
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
     if (!rsp) {
-        NOTE_C_LOG_ERROR("unable to issue binary request\n");
-        return ERRSTR("unable to issue binary request\n", c_err);
+        NOTE_C_LOG_ERROR("unable to issue binary request");
+        return ERRSTR("unable to issue binary request", c_err);
     }
 
     // Ensure the transaction doesn't return an error and confirm the binary
@@ -215,10 +214,9 @@ const char * NoteBinaryRequiredRxBuffer(size_t *size)
     if (NoteResponseError(rsp)) {
         const char *err = JGetString(rsp, "err");
         NOTE_C_LOG_ERROR(err);
-        NOTE_C_LOG_ERROR("\n");
         JDelete(rsp);
-        NOTE_C_LOG_ERROR("unexpected error received during handshake\n");
-        return ERRSTR("unexpected error received during handshake\n", c_bad);
+        NOTE_C_LOG_ERROR("unexpected error received during handshake");
+        return ERRSTR("unexpected error received during handshake", c_bad);
     }
 
     // Examine "cobs" from the response to evaluate the space required to hold
@@ -274,14 +272,13 @@ const char * NoteBinaryReset(void)
         J *rsp = NoteRequestResponse(req);
         if (NoteResponseError(rsp)) {
             NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
-            NOTE_C_LOG_ERROR("\n");
             JDelete(rsp);
-            NOTE_C_LOG_ERROR("failed to reset binary buffer\n");
-            return ERRSTR("failed to reset binary buffer\n", c_err);
+            NOTE_C_LOG_ERROR("failed to reset binary buffer");
+            return ERRSTR("failed to reset binary buffer", c_err);
         }
     } else {
-        NOTE_C_LOG_ERROR("unable to allocate request\n");
-        return ERRSTR("unable to allocate request\n", c_mem);
+        NOTE_C_LOG_ERROR("unable to allocate request");
+        return ERRSTR("unable to allocate request", c_mem);
     }
 
     return NULL;
@@ -307,8 +304,8 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
     if (!rsp) {
-        NOTE_C_LOG_ERROR("unable to issue binary request\n");
-        return ERRSTR("unable to issue binary request\n", c_err);
+        NOTE_C_LOG_ERROR("unable to issue binary request");
+        return ERRSTR("unable to issue binary request", c_err);
     }
 
     // Ensure the transaction doesn't return an error
@@ -318,10 +315,9 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
         // Swallow `{bad-bin}` errors, because we intend to overwrite the data.
         if (!NoteErrorContains(err, c_badbinerr)) {
             NOTE_C_LOG_ERROR(err);
-            NOTE_C_LOG_ERROR("\n");
             JDelete(rsp);
-            NOTE_C_LOG_ERROR("unexpected error received during handshake\n");
-            return ERRSTR("unexpected error received during handshake\n", c_bad);
+            NOTE_C_LOG_ERROR("unexpected error received during handshake");
+            return ERRSTR("unexpected error received during handshake", c_bad);
         }
     }
 
@@ -331,15 +327,15 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     const size_t max = JGetInt(rsp,"max");
     JDelete(rsp);
     if (!max) {
-        NOTE_C_LOG_ERROR("unexpected response: max is zero or not present\n");
-        return ERRSTR("unexpected response: max is zero or not present\n", c_err);
+        NOTE_C_LOG_ERROR("unexpected response: max is zero or not present");
+        return ERRSTR("unexpected response: max is zero or not present", c_err);
     }
 
     // When `append` is not specified, the entire buffer is available
     const size_t remaining = (append ? (max - len) : max);
     if (dataLen > remaining) {
-        NOTE_C_LOG_ERROR("buffer size exceeds available memory\n");
-        return ERRSTR("buffer size exceeds available memory\n", c_mem);
+        NOTE_C_LOG_ERROR("buffer size exceeds available memory");
+        return ERRSTR("buffer size exceeds available memory", c_mem);
     }
 
     // Confirm buffer is large enough to in place encode as COBS
@@ -348,8 +344,8 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
     //       end of transmission.
     uint32_t encLen = cobsEncodedLength(data,dataLen);
     if ((encLen + 1) > bufLen) {
-        NOTE_C_LOG_ERROR("buffer too small for encoding\n");
-        return ERRSTR("buffer too small for encoding\n", c_mem);
+        NOTE_C_LOG_ERROR("buffer too small for encoding");
+        return ERRSTR("buffer too small for encoding", c_mem);
     }
 
     // Calculate MD5
@@ -378,19 +374,19 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
 
             // Ensure the transaction doesn't return an error.
             if (!NoteRequest(req)) {
-                NOTE_C_LOG_ERROR("failed to initialize binary transaction\n");
+                NOTE_C_LOG_ERROR("failed to initialize binary transaction");
                 _UnlockNote();
                 // On errors, we restore the caller's input buffer by COBS
                 // decoding it. The caller is then able to retry transmission
                 // with their original pointer to this buffer.
                 cobsDecode(data, encLen, '\n', data);
-                return ERRSTR("failed to initialize binary transaction\n", c_err);
+                return ERRSTR("failed to initialize binary transaction", c_err);
             }
         } else {
-            NOTE_C_LOG_ERROR("unable to allocate request\n");
+            NOTE_C_LOG_ERROR("unable to allocate request");
             _UnlockNote();
             cobsDecode(data, encLen, '\n', data);
-            return ERRSTR("unable to allocate request\n", c_mem);
+            return ERRSTR("unable to allocate request", c_mem);
         }
 
         // Immediately send the COBS binary.
@@ -408,9 +404,9 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
         // Issue a `"card.binary"` request.
         rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
         if (!rsp) {
-            NOTE_C_LOG_ERROR("unable to validate request\n");
+            NOTE_C_LOG_ERROR("unable to validate request");
             cobsDecode(data, encLen, '\n', data);
-            return ERRSTR("unable to validate request\n", c_err);
+            return ERRSTR("unable to validate request", c_err);
         }
 
         // Ensure the transaction doesn't return an error
@@ -418,21 +414,20 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
         if (NoteResponseError(rsp)) {
             const char *err = JGetString(rsp, "err");
             NOTE_C_LOG_ERROR(err);
-            NOTE_C_LOG_ERROR("\n");
             if (NoteErrorContains(err, c_badbinerr)) {
                 JDelete(rsp);
                 if ( i < (NOTE_C_BINARY_RETRIES - 1) ) {
-                    NOTE_C_LOG_ERROR("retrying...\n");
+                    NOTE_C_LOG_WARN("retrying binary transmission...");
                     continue;
                 }
-                NOTE_C_LOG_ERROR("binary data invalid\n");
+                NOTE_C_LOG_ERROR("binary data invalid");
                 cobsDecode(data, encLen, '\n', data);
-                return ERRSTR("binary data invalid\n", c_bad);
+                return ERRSTR("binary data invalid", c_bad);
             } else {
                 JDelete(rsp);
-                NOTE_C_LOG_ERROR("unexpected error received during confirmation\n");
+                NOTE_C_LOG_ERROR("unexpected error received during confirmation");
                 cobsDecode(data, encLen, '\n', data);
-                return ERRSTR("unexpected error received during confirmation\n", c_bad);
+                return ERRSTR("unexpected error received during confirmation", c_bad);
             }
         }
         JDelete(rsp);
@@ -1463,12 +1458,12 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes)
     bool success = false;
 
     // Trace
-    _Debug("ABOUT TO SLEEP\n");
+    NOTE_C_LOG_INFO("ABOUT TO SLEEP\n");
 
     // Use a Command rather than a Request so that the Notecard doesn't try to
     // send a response back to us (host), which would cause a communications
     // error on the Notecard end.
-    _Debug("requesting sleep\n");
+    NOTE_C_LOG_INFO("requesting sleep\n");
     J *req = NoteNewCommand("card.attn");
     if (req != NULL) {
         // Add the base64 item in a wonderful way that doesn't strdup the
@@ -1494,7 +1489,7 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes)
     }
 
     // Trace
-    _Debug("DIDN'T SLEEP\n");
+    NOTE_C_LOG_ERROR("DIDN'T SLEEP\n");
 
     // Done
     return success;
@@ -1593,7 +1588,7 @@ bool NotePayloadRetrieveAfterSleep(NotePayloadDesc *desc)
     desc->length = actualLen;
 
     // State restored
-    _Debug("AWAKENED SUCCESSFULLY\n");
+    NOTE_C_LOG_INFO("AWAKENED SUCCESSFULLY\n");
     NoteDeleteResponse(rsp);
     return true;
 }
@@ -1624,7 +1619,7 @@ bool NoteFactoryReset(bool deleteConfigSettings)
 
     // Wait for serial to stabilize after it reboots
     _DelayMs(5000);
-    _Debug("CARD RESTORED\n");
+    NOTE_C_LOG_INFO("CARD RESTORED\n");
 
     // Reset the Notecard
     while (!NoteReset()) {
