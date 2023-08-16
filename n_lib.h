@@ -13,7 +13,9 @@
 
 #pragma once
 
+#include <stdint.h>
 #include <string.h>
+
 #include "note.h"
 
 // C-callable functions
@@ -75,10 +77,14 @@ extern "C" {
 #endif
 
 // Transactions
-const char *i2cNoteTransaction(char *json, char **jsonResponse);
+const char *i2cNoteTransaction(char *request, char **response);
 bool i2cNoteReset(void);
-const char *serialNoteTransaction(char *json, char **jsonResponse);
+const char *serialNoteTransaction(char *request, char **response);
 bool serialNoteReset(void);
+const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
+const char *i2cChunkedTransmit(uint8_t *buffer, size_t size, bool delay);
+const char *serialChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
+const char *serialChunkedTransmit(uint8_t *buffer, size_t size, bool delay);
 
 // Hooks
 void NoteLockNote(void);
@@ -94,13 +100,25 @@ bool NoteI2CReset(uint16_t DevAddress);
 const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
 const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 bool NoteHardReset(void);
-const char *NoteJSONTransaction(char *json, char **jsonResponse);
+const char *NoteJSONTransaction(char *request, char **response);
+const char *NoteChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available);
+const char *NoteChunkedTransmit(uint8_t *buffer, size_t size, bool delay);
 bool NoteIsDebugOutputActive(void);
 
 // Utilities
 void n_htoa32(uint32_t n, char *p);
 void n_htoa16(uint16_t n, unsigned char *p);
 uint64_t n_atoh(char *p, int maxlen);
+
+// COBS Helpers
+uint32_t cobsDecode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst);
+uint32_t cobsEncode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst);
+uint32_t cobsEncodedLength(const uint8_t *ptr, uint32_t length);
+uint32_t cobsEncodedMaxLength(uint32_t length);
+uint32_t cobsGuaranteedFit(uint32_t bufLen);
+
+// Turbo I/O mode
+extern bool cardTurboIO;
 
 // Constants, a global optimization to save static string memory
 extern const char *c_null;
@@ -142,6 +160,8 @@ extern const char *c_iobad;
 extern const char *c_ioerr;
 #define c_ioerr_len 4
 
+extern const char *c_badbinerr;
+#define c_badbinerr_len 9
 
 // Readability wrappers.  Anything starting with _ is simply calling the wrapper
 // function.
@@ -158,6 +178,8 @@ extern const char *c_ioerr;
 #define _I2CReceive NoteI2CReceive
 #define _Reset NoteHardReset
 #define _Transaction NoteJSONTransaction
+#define _ChunkedReceive NoteChunkedReceive
+#define _ChunkedTransmit NoteChunkedTransmit
 #define _Malloc NoteMalloc
 #define _Free NoteFree
 #define _GetMs NoteGetMs

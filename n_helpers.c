@@ -11,9 +11,12 @@
  *
  */
 
-#include <stdlib.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
+
 #include "n_lib.h"
 
 #ifdef NOTE_C_TEST
@@ -22,13 +25,15 @@
 #define NOTE_C_STATIC static
 #endif
 
-// When interfacing with the Notecard, it is generally encouraged that the JSON object manipulation and
-// calls to the note-arduino library are done directly at point of need.  However, there are cases in which
-// it's convenient to have a wrapper.  The most common reason is when it's best to have a suppression timer
-// on the actual call to the Notecard so as not to assault the I2C bus or UART on a continuing basis - the most
-// common examples of this being "card.time" and any other Notecard state that needs to be polled for an app,
-// such as the device location, its voltage level, and so on.  This file contains this kind of wrapper,
-// just implemented here as a convenience to all developers.
+// When interfacing with the Notecard, it is generally encouraged that the JSON
+// object manipulation and calls to the note-arduino library are done directly
+// at point of need. However, there are cases in which it's convenient to have a
+// wrapper. The most common reason is when it's best to have a suppression timer
+// on the actual call to the Notecard so as not to assault the I2C bus or UART
+// on a continuing basis - the most common examples of this being "card.time"
+// and any other Notecard state that needs to be polled for an app, such as the
+// device location, its voltage level, and so on.  This file contains this kind
+// of wrapper, just implemented here as a convenience to all developers.
 
 // Time-related suppression timer and cache
 static uint32_t timeBaseSetAtMs = 0;
@@ -75,8 +80,363 @@ static short normalYearDaysByMonth[] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 
 static const char *daynames[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
 // Forwards
+NOTE_C_STATIC void setTime(JTIME seconds);
 NOTE_C_STATIC bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs);
 NOTE_C_STATIC int ytodays(int year);
+
+//**************************************************************************/
+/*!
+  @brief  Receive a large binary object from the Notecard's binary buffer
+  @param  buffer A buffer to hold the binary object
+  @param  bufLen The total length of the provided buffer
+  @param  dataLen An out parameter to hold the length of the decoded data in the
+                  output buffer.
+  @returns  NULL on success, else an error string pointer.
+  @note  Buffers are decoded in place. The original contents of the buffer
+         will be modified.
+  @note  To determine the necessary size for the buffer, use
+         NoteBinaryRequiredRxBuffer.
+*/
+/**************************************************************************/
+const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
+                               size_t * dataLen)
+{
+    size_t requiredRxBufLen = 0;
+    const char *err = NoteBinaryRequiredRxBuffer(&requiredRxBufLen);
+    if (err) {
+        return err;
+    }
+    if (!requiredRxBufLen) {
+        NOTE_C_LOG_ERROR("no data on notecard");
+        return ERRSTR("no data on notecard", c_err);
+    }
+    if (requiredRxBufLen > bufLen) {
+        NOTE_C_LOG_ERROR("insufficient buffer size");
+        return ERRSTR("insufficient buffer size", c_err);
+    }
+
+    // Claim Notecard Mutex
+    _LockNote();
+
+    // Issue `card.binary.get` and capture `"status"` from response
+    char status[NOTE_MD5_HASH_STRING_SIZE] = {0};
+    J *req = NoteNewRequest("card.binary.get");
+    if (req) {
+        // This field must exactly match the number of binary bytes the Notecard
+        // will send. This doesn't include the terminating newline, hence the
+        // -1.
+        JAddIntToObject(req, "cobs", requiredRxBufLen - 1);
+
+        // Ensure the transaction doesn't return an error.
+        J *rsp = NoteRequestResponse(req);
+        if (NoteResponseError(rsp)) {
+            NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
+            JDelete(rsp);
+            NOTE_C_LOG_ERROR("failed to initialize binary transaction");
+            _UnlockNote();
+            return ERRSTR("failed to initialize binary transaction", c_err);
+        }
+
+        // Examine "status" from the response to evaluate the MD5 checksum.
+        strlcpy(status, JGetString(rsp,"status"), NOTE_MD5_HASH_STRING_SIZE);
+        JDelete(rsp);
+    } else {
+        NOTE_C_LOG_ERROR("unable to allocate request");
+        _UnlockNote();
+        return ERRSTR("unable to allocate request", c_mem);
+    }
+
+    // Read raw bytes from the active interface into a predefined buffer
+    uint32_t available = 0;
+    err = _ChunkedReceive(buffer, &bufLen, false, 60000, &available);
+
+    // Release Notecard Mutex
+    _UnlockNote();
+
+    // Ensure transaction was successful
+    if (err) {
+        return ERRSTR(err, c_err);
+    }
+
+    // Check buffer overflow condition
+    if (available) {
+        NOTE_C_LOG_ERROR("unexpected data available");
+        return ERRSTR("unexpected data available", c_err);
+    }
+
+    // _ChunkedReceive returns the raw bytes that came off the wire, which
+    // includes a terminating newline that ends the packet. This newline isn't
+    // part of the binary payload, so we decrement the length by 1 to remove it.
+    --bufLen;
+
+    // Decode it in-place, which is safe because decoding shrinks
+    const size_t decLen = cobsDecode(buffer, bufLen, '\n', buffer);
+    // Return the decoded length in the dataLen out parameter.
+    *dataLen = decLen;
+
+    // Put a hard marker at the end of the decoded portion of the buffer. This
+    // enables easier human reasoning when interrogating the buffer, if the
+    // buffer holds a string.
+    buffer[decLen] = '\0';
+
+    // Verify MD5
+    char hashString[NOTE_MD5_HASH_STRING_SIZE] = {0};
+    NoteMD5HashString(buffer, decLen, hashString, NOTE_MD5_HASH_STRING_SIZE);
+    if (strncmp(hashString, status, NOTE_MD5_HASH_STRING_SIZE)) {
+        NOTE_C_LOG_ERROR("computed MD5 does not match received MD5");
+        return ERRSTR("computed MD5 does not match received MD5", c_err);
+    }
+
+    // Return `NULL` if success, else error string pointer
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Get the required buffer size to receive the binary object stored on
+          the Notecard. If there's no data to stored on the Notecard, *size will
+          be 0.
+  @param  size Out parameter to hold the required size.
+  @returns An error string on error and NULL on success.
+*/
+/**************************************************************************/
+const char * NoteBinaryRequiredRxBuffer(size_t *size)
+{
+    // Issue a "card.binary" request.
+    J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
+    if (!rsp) {
+        NOTE_C_LOG_ERROR("unable to issue binary request");
+        return ERRSTR("unable to issue binary request", c_err);
+    }
+
+    // Ensure the transaction doesn't return an error and confirm the binary
+    // feature is available.
+    if (NoteResponseError(rsp)) {
+        const char *err = JGetString(rsp, "err");
+        NOTE_C_LOG_ERROR(err);
+        JDelete(rsp);
+        NOTE_C_LOG_ERROR("unexpected error received during handshake");
+        return ERRSTR("unexpected error received during handshake", c_bad);
+    }
+
+    // Examine "cobs" from the response to evaluate the space required to hold
+    // the COBS-encoded data received from the Notecard.
+    long int cobs = JGetInt(rsp, "cobs");
+    JDelete(rsp);
+    if (!cobs) {
+        // If cobs is 0, the required buffer length is 0 because there's nothing
+        // to receive.
+        *size = 0;
+    } else {
+        // Otherwise, the required length is cobs + 1: the binary data plus
+        // 1 byte for the terminating newline.
+        *size = cobs + 1;
+    }
+
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Given the length of a binary payload, calculate the buffer size needed
+          to COBS-encode that payload in-place in the buffer, plus an additional
+          byte for an end-of-packet character (i.e. a newline). Because COBS
+          encoding adds some overhead, this size will be larger than the length
+          of the payload.
+  @param  dataLen The length of the binary payload.
+  @returns  The required buffer size in bytes.
+*/
+/**************************************************************************/
+size_t NoteBinaryRequiredTxBuffer(size_t dataLen)
+{
+    return (cobsEncodedMaxLength(dataLen) + 1);
+}
+
+//**************************************************************************/
+/*!
+  @brief  Reset the Notecard's binary buffer
+  @returns  NULL on success, else an error string pointer.
+  @note  This operation is not necessary during typical use, but is useful
+         when the Notecard's binary buffer is in an unknown state. The buffer
+         will be automatically reset when a binary object is either received,
+         or transmitted with the append parameter set to `false`.
+*/
+/**************************************************************************/
+const char * NoteBinaryReset(void)
+{
+    J *req = NoteNewRequest("card.binary");
+    if (req) {
+        JAddBoolToObject(req, "delete", true);
+
+        // Ensure the transaction doesn't return an error.
+        J *rsp = NoteRequestResponse(req);
+        if (NoteResponseError(rsp)) {
+            NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
+            JDelete(rsp);
+            NOTE_C_LOG_ERROR("failed to reset binary buffer");
+            return ERRSTR("failed to reset binary buffer", c_err);
+        }
+    } else {
+        NOTE_C_LOG_ERROR("unable to allocate request");
+        return ERRSTR("unable to allocate request", c_mem);
+    }
+
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Transmit a large binary object to the Notecard's binary buffer
+  @param  data  A buffer with data to encode in place
+  @param  dataLen  The length of the data in the buffer
+  @param  bufLen  The total length of the buffer
+  @param  append  The `data` buffer should be appended to the binary data
+                  already residing on the Notecard.
+  @returns  NULL on success, else an error string pointer.
+  @note  Buffers are encoded in place, the buffer _MUST_ be larger than the data
+         to be encoded. The original contents of the buffer will be modified.
+  @note  You may use `NoteBinaryRequiredTxBuffer()` to calculate the required size
+         for the buffer pointed to by the `data` parameter.
+*/
+/**************************************************************************/
+const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, bool append)
+{
+    // Issue a "card.binary" request.
+    J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
+    if (!rsp) {
+        NOTE_C_LOG_ERROR("unable to issue binary request");
+        return ERRSTR("unable to issue binary request", c_err);
+    }
+
+    // Ensure the transaction doesn't return an error
+    // and confirm the binary feature is available
+    if (NoteResponseError(rsp)) {
+        const char *err = JGetString(rsp,"err");
+        // Swallow `{bad-bin}` errors, because we intend to overwrite the data.
+        if (!NoteErrorContains(err, c_badbinerr)) {
+            NOTE_C_LOG_ERROR(err);
+            JDelete(rsp);
+            NOTE_C_LOG_ERROR("unexpected error received during handshake");
+            return ERRSTR("unexpected error received during handshake", c_bad);
+        }
+    }
+
+    // Examine "length" and "max" from the response to evaluate the unencoded
+    // space available to "card.binary.put" on the Notecard.
+    const size_t len = JGetInt(rsp,"length");
+    const size_t max = JGetInt(rsp,"max");
+    JDelete(rsp);
+    if (!max) {
+        NOTE_C_LOG_ERROR("unexpected response: max is zero or not present");
+        return ERRSTR("unexpected response: max is zero or not present", c_err);
+    }
+
+    // When `append` is not specified, the entire buffer is available
+    const size_t remaining = (append ? (max - len) : max);
+    if (dataLen > remaining) {
+        NOTE_C_LOG_ERROR("buffer size exceeds available memory");
+        return ERRSTR("buffer size exceeds available memory", c_mem);
+    }
+
+    // Confirm buffer is large enough to in place encode as COBS
+    // NOTE: We need one additional byte beyond the encoded length to add a
+    //       newline character to the end of the buffer. This indicates the
+    //       end of transmission.
+    uint32_t encLen = cobsEncodedLength(data,dataLen);
+    if ((encLen + 1) > bufLen) {
+        NOTE_C_LOG_ERROR("buffer too small for encoding");
+        return ERRSTR("buffer too small for encoding", c_mem);
+    }
+
+    // Calculate MD5
+    char hashString[NOTE_MD5_HASH_STRING_SIZE] = {0};
+    NoteMD5HashString(data, dataLen, hashString, NOTE_MD5_HASH_STRING_SIZE);
+
+    // Encode COBS data
+    const size_t dataShift = (bufLen - dataLen);
+    memmove(data + dataShift, data, dataLen);
+    encLen = cobsEncode(data + dataShift, dataLen, '\n', data);
+    data[encLen] = '\n';
+
+    const size_t NOTE_C_BINARY_RETRIES = 3;
+    for (size_t i = 0 ; i < NOTE_C_BINARY_RETRIES ; ++i) {
+        // Claim Notecard Mutex
+        _LockNote();
+
+        // Issue a "card.binary.put"
+        J *req = NoteNewRequest("card.binary.put");
+        if (req) {
+            JAddIntToObject(req, "cobs", encLen);
+            if (append) {
+                JAddBoolToObject(req, "append", true);
+            }
+            JAddStringToObject(req, "status", hashString);
+
+            // Ensure the transaction doesn't return an error.
+            if (!NoteRequest(req)) {
+                NOTE_C_LOG_ERROR("failed to initialize binary transaction");
+                _UnlockNote();
+                // On errors, we restore the caller's input buffer by COBS
+                // decoding it. The caller is then able to retry transmission
+                // with their original pointer to this buffer.
+                cobsDecode(data, encLen, '\n', data);
+                return ERRSTR("failed to initialize binary transaction", c_err);
+            }
+        } else {
+            NOTE_C_LOG_ERROR("unable to allocate request");
+            _UnlockNote();
+            cobsDecode(data, encLen, '\n', data);
+            return ERRSTR("unable to allocate request", c_mem);
+        }
+
+        // Immediately send the COBS binary.
+        const char *err = _ChunkedTransmit(data, (encLen + 1), false);
+
+        // Release Notecard Mutex
+        _UnlockNote();
+
+        // Ensure transaction was successful
+        if (err) {
+            cobsDecode(data, encLen, '\n', data);
+            return ERRSTR(err, c_err);
+        }
+
+        // Issue a `"card.binary"` request.
+        rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
+        if (!rsp) {
+            NOTE_C_LOG_ERROR("unable to validate request");
+            cobsDecode(data, encLen, '\n', data);
+            return ERRSTR("unable to validate request", c_err);
+        }
+
+        // Ensure the transaction doesn't return an error
+        // to confirm the binary was received
+        if (NoteResponseError(rsp)) {
+            const char *err = JGetString(rsp, "err");
+            NOTE_C_LOG_ERROR(err);
+            if (NoteErrorContains(err, c_badbinerr)) {
+                JDelete(rsp);
+                if ( i < (NOTE_C_BINARY_RETRIES - 1) ) {
+                    NOTE_C_LOG_WARN("retrying binary transmission...");
+                    continue;
+                }
+                NOTE_C_LOG_ERROR("binary data invalid");
+                cobsDecode(data, encLen, '\n', data);
+                return ERRSTR("binary data invalid", c_bad);
+            } else {
+                JDelete(rsp);
+                NOTE_C_LOG_ERROR("unexpected error received during confirmation");
+                cobsDecode(data, encLen, '\n', data);
+                return ERRSTR("unexpected error received during confirmation", c_bad);
+            }
+        }
+        JDelete(rsp);
+        break;
+    }
+
+    // Return `NULL` on success
+    return NULL;
+}
 
 //**************************************************************************/
 /*!
@@ -143,7 +503,7 @@ NOTE_C_STATIC void setTime(JTIME seconds)
 //**************************************************************************/
 /*!
   @brief  Set the time from a source that is NOT the Notecard
-  @param   seconds The UNIX Epoch time, or 0 to set back to automatic Notecard time
+  @param   seconds The UNIX Epoch time, or 0 for automatic Notecard time
   @param   offset The local time zone offset, in minutes, to adjust UTC
   @param   zone The optional local time zone name (3 character c-string). Note
                 that this isn't used in any time calculations. To compute
@@ -234,8 +594,9 @@ JTIME NoteTimeST()
         timeTimer = 0;
     }
 
-    // If we haven't yet fetched the time, or if we still need the timezone, do so with a suppression
-    // timer so that we don't hammer the module before it's had a chance to connect to the network to fetch time.
+    // If we haven't yet fetched the time, or if we still need the timezone, do
+    // so with a suppression timer so that we don't hammer the module before
+    // it's had a chance to connect to the network to fetch time.
     if (!timeBaseSetManually && (timeTimer == 0 || timeBaseSec == 0 || zoneStillUnavailable || zoneForceRefresh)) {
         if (timerExpiredSecs(&timeTimer, suppressionTimerSecs)) {
 
@@ -276,7 +637,8 @@ JTIME NoteTimeST()
         }
     }
 
-    // Adjust the base time by the number of seconds that have elapsed since the base.
+    // Adjust the base time by the number of seconds that have elapsed since
+    // the base.
     JTIME adjustedTime = timeBaseSec + (int32_t) (((int64_t) nowMs - (int64_t) timeBaseSetAtMs) / 1000);
 
     // Done
@@ -344,7 +706,13 @@ bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneO
 //**************************************************************************/
 /*!
   @brief  Return local time info, if known. Returns true if valid.
-  @param   year, month, day, hour, minute, second - pointers to where to return time/date
+  @param   year (out) pointer to return year value
+  @param   month (out) pointer to return month value
+  @param   day (out) pointer to return day value
+  @param   hour (out) pointer to return hour value
+  @param   minute (out) pointer to return minute value
+  @param   second (out) pointer to return seconds value
+  @param   weekday (out) pointer to return weekday string
   @param   retZone (in-out) if NULL, local time will be returned in UTC, else returns pointer to zone string
   @returns boolean indicating if either the zone or DST have changed since last call
   @note    only call this if time is valid
@@ -1090,14 +1458,16 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes)
     bool success = false;
 
     // Trace
-    _Debug("ABOUT TO SLEEP\n");
+    NOTE_C_LOG_INFO("ABOUT TO SLEEP\n");
 
-    // Use a Command rather than a Request so that the Notecard doesn't try to send
-    // a response back to us, which would cause a communications error on that end.
-    _Debug("requesting sleep\n");
+    // Use a Command rather than a Request so that the Notecard doesn't try to
+    // send a response back to us (host), which would cause a communications
+    // error on the Notecard end.
+    NOTE_C_LOG_INFO("requesting sleep\n");
     J *req = NoteNewCommand("card.attn");
     if (req != NULL) {
-        // Add the base64 item in a wonderful way that doesn't strdup the huge string
+        // Add the base64 item in a wonderful way that doesn't strdup the
+        // huge string
         if (stateb64 != NULL) {
             J *stringReferenceItem = JCreateStringReference(stateb64);
             if (stringReferenceItem != NULL) {
@@ -1119,7 +1489,7 @@ bool NoteSleep(char *stateb64, uint32_t seconds, const char *modes)
     }
 
     // Trace
-    _Debug("DIDN'T SLEEP\n");
+    NOTE_C_LOG_ERROR("DIDN'T SLEEP\n");
 
     // Done
     return success;
@@ -1201,8 +1571,9 @@ bool NotePayloadRetrieveAfterSleep(NotePayloadDesc *desc)
         return false;
     }
 
-    // Allocate a buffer for the payload.  (We can't decode in-place because we can't
-    // risk overwriting memory if the actual payload is even slightly different.)
+    // Allocate a buffer for the payload. (We can't decode in-place because we
+    // can't risk overwriting memory if the actual payload is even slightly
+    // different.)
     uint32_t allocLen = JB64DecodeLen(payload);
     uint8_t *p = (uint8_t *) _Malloc(allocLen);
     if (p == NULL) {
@@ -1217,7 +1588,7 @@ bool NotePayloadRetrieveAfterSleep(NotePayloadDesc *desc)
     desc->length = actualLen;
 
     // State restored
-    _Debug("AWAKENED SUCCESSFULLY\n");
+    NOTE_C_LOG_INFO("AWAKENED SUCCESSFULLY\n");
     NoteDeleteResponse(rsp);
     return true;
 }
@@ -1248,7 +1619,7 @@ bool NoteFactoryReset(bool deleteConfigSettings)
 
     // Wait for serial to stabilize after it reboots
     _DelayMs(5000);
-    _Debug("CARD RESTORED\n");
+    NOTE_C_LOG_INFO("CARD RESTORED\n");
 
     // Reset the Notecard
     while (!NoteReset()) {
@@ -1625,9 +1996,10 @@ bool NoteSetContact(char *nameBuf, char *orgBuf, char *roleBuf, char *emailBuf)
     return NoteRequest(req);
 }
 
-// A simple suppression timer based on a millisecond system clock.  This clock is reset to 0
-// after boot and every wake.  This returns true if the specified interval has elapsed, in seconds,
-// and it updates the timer if it expires so that we will go another period.
+// A simple suppression timer based on a millisecond system clock. This clock is
+// reset to 0 after boot and every wake. This returns true if the specified
+// interval has elapsed, in seconds, and it updates the timer if it expires so
+// that we will go another period.
 NOTE_C_STATIC bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs)
 {
     bool expired = false;
@@ -1680,10 +2052,11 @@ bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel)
     NoteResumeTransactionDebug();
     if (rsp != NULL) {
 
-        // If an error is returned, this means that no response is pending.  Note
-        // that it's expected that this might return either a "note does not exist"
-        // error if there are no pending inbound notes, or a "file does not exist" error
-        // if the inbound queue hasn't yet been created on the service.
+        // If an error is returned, this means that no response is pending. Note
+        // that it's expected that this might return either a "note does not
+        // exist" error if there are no pending inbound notes, or a "file does
+        // not exist" error if the inbound queue hasn't yet been created on the
+        // service.
         if (NoteResponseError(rsp)) {
             // Only stop polling quickly if we don't receive anything
             lastCommStatusPollMs = _GetMs();
@@ -1712,9 +2085,9 @@ bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel)
 
 }
 
-// A general purpose, super nonperformant, but accurate way of figuring out how much memory
-// is available, while exercising the allocator to ensure that it competently deals with
-// adjacent block coalescing on free.
+// A general purpose, super nonperformant, but accurate way of figuring out how
+// much memory is available, while exercising the allocator to ensure that it
+// competently deals with adjacent block coalescing on free.
 typedef struct objHeader_s {
     struct objHeader_s *prev;
     int length;

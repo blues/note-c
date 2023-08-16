@@ -13,66 +13,38 @@
 
 #include "n_lib.h"
 
-// Turbo I/O mode
-extern bool cardTurboIO;
-
 /**************************************************************************/
 /*!
-    @brief  Given a JSON string, perform an Serial transaction with the Notecard.
-    @param   json
-               A c-string containing the JSON request object.
-    @param   jsonResponse
-               An out parameter c-string buffer that will contain the JSON
-               response from the Notercard.
+  @brief  Given a JSON string, perform a serial transaction with the Notecard.
+  @param   request
+            A c-string containing the JSON request object.
+  @param   response
+            An out parameter c-string buffer that will contain the JSON
+            response from the Notercard. If NULL, no response will be captured.
   @returns a c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialNoteTransaction(char *json, char **jsonResponse)
+const char *serialNoteTransaction(char *request, char **response)
 {
+    const char *err = serialChunkedTransmit((uint8_t *)request, strlen(request), true);
+    if (err) {
+        _Debug(err);
+        return err;
+    }
 
     // Append newline to the transaction
-    int jsonLen = strlen(json);
-    uint8_t *transmitBuf = (uint8_t *) _Malloc(jsonLen+c_newline_len);
-    if (transmitBuf == NULL) {
-        return ERRSTR("insufficient memory",c_mem);
-    }
-    memcpy(transmitBuf, json, jsonLen);
-    memcpy(&transmitBuf[jsonLen], c_newline, c_newline_len);
-    jsonLen += c_newline_len;
-
-    // Transmit the request in segments so as not to overwhelm the notecard's interrupt buffers
-    uint32_t segOff = 0;
-    uint32_t segLeft = jsonLen;
-    while (true) {
-        size_t segLen = segLeft;
-        if (segLen > CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN) {
-            segLen = CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN;
-        }
-        _SerialTransmit(&transmitBuf[segOff], segLen, false);
-        segOff += segLen;
-        segLeft -= segLen;
-        if (segLeft == 0) {
-            break;
-        }
-        if (!cardTurboIO) {
-            _DelayMs(CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS);
-        }
-    }
-
-    // Free the transmit buffer
-    _Free(transmitBuf);
+    _SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
 
     // If no reply expected, we're done
-    if (jsonResponse == NULL) {
+    if (response == NULL) {
         return NULL;
     }
 
-    // Wait for something to become available, processing timeout errors up-front
-    // because the json parse operation immediately following is subject to the
-    // serial port timeout. We'd like more flexibility in max timeout and ultimately
-    // in our error handling.
-    uint32_t startMs;
-    for (startMs = _GetMs(); !_SerialAvailable(); ) {
+    // Wait for something to become available, processing timeout errors
+    // up-front because the json parse operation immediately following is
+    // subject to the serial port timeout. We'd like more flexibility in max
+    // timeout and ultimately in our error handling.
+    for (const uint32_t startMs = _GetMs(); !_SerialAvailable(); ) {
         if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
 #ifdef ERRDBG
             _Debug("reply to request didn't arrive from module in time\n");
@@ -84,81 +56,63 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
         }
     }
 
-    // Allocate a buffer for input, noting that we always put the +1 in the alloc so we can be assured
-    // that it can be null-terminated.  This must be the case because json parsing requires a
-    // null-terminated string.
-    int jsonbufAllocLen = ALLOC_CHUNK;
-    char *jsonbuf = (char *) _Malloc(jsonbufAllocLen+1);
+    // Allocate a buffer for input, noting that we always put the +1 in the
+    // alloc so we can be assured that it can be null-terminated. This must be
+    // the case because json parsing requires a null-terminated string.
+    uint32_t available = 0;
+    size_t jsonbufAllocLen = ALLOC_CHUNK;
+    uint8_t *jsonbuf = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
     if (jsonbuf == NULL) {
 #ifdef ERRDBG
         _Debug("transaction: jsonbuf malloc failed\n");
 #endif
         return ERRSTR("insufficient memory",c_mem);
     }
-    int jsonbufLen = 0;
-    char ch = 0;
-    startMs = _GetMs();
-    while (ch != '\n') {
-        if (!_SerialAvailable()) {
-            ch = 0;
-            if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
-#ifdef ERRDBG
-                jsonbuf[jsonbufLen] = '\0';
-                _Debug("received only partial reply after timeout:\n");
-                _Debug(jsonbuf);
-                _Debug("\n");
-#endif
-                _Free(jsonbuf);
-                return ERRSTR("transaction incomplete {io}",c_iotimeout);
-            }
-            if (!cardTurboIO) {
-                _DelayMs(1);
-            }
-            continue;
-        }
-        ch = _SerialReceive();
 
-        // Because serial I/O can be error-prone, catch common bad data early
-        //
-        // UTF-8 can contain any value from 0-255 and each character can be
-        // up to 4 bytes long. We should not see any \0's though.
-        // In multi-byte encoding, the 2nd/3rd/4th bytes are always non-zero
-        //
-        // See https://en.wikipedia.org/wiki/UTF-8#Encoding
-        //
-        if (ch == 0) {
-#ifdef ERRDBG
-            _Debug("invalid data received on serial port from notecard\n");
-#endif
-            _Free(jsonbuf);
-            return ERRSTR("serial communications error {io}",c_iotimeout);
-        }
+    // Receive the Notecard response
+    size_t jsonbufLen = 0;
+    do {
+        size_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        jsonbuf[jsonbufLen++] = ch;
-        if (jsonbufLen >= jsonbufAllocLen) {
-            jsonbufAllocLen += ALLOC_CHUNK;
-            char *jsonbufNew = (char *) _Malloc(jsonbufAllocLen+1);
+        const char *err = serialChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
+        if (err) {
+            _Free(jsonbuf);
+#ifdef ERRDBG
+            _Debug("error occured during receive\n");
+#endif
+            return err;
+        }
+        jsonbufLen += jsonbufAvailLen;
+
+        if (available) {
+            // When more bytes are available than we have buffer to accommodate
+            // (i.e. overflow), then we allocate blocks of size `ALLOC_CHUNK` to
+            // reduce heap fragmentation.
+            // NOTE: We always put the +1 in the allocation so we can be assured
+            // that it can be null-terminated, because the json parser requires
+            // a null-terminated string.
+            jsonbufAllocLen += (ALLOC_CHUNK * ((available / ALLOC_CHUNK) + ((available % ALLOC_CHUNK) > 0)));
+            uint8_t *jsonbufNew = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
             if (jsonbufNew == NULL) {
 #ifdef ERRDBG
-                _Debug("transaction: jsonbuf malloc grow failed\n");
+                _Debug("transaction: jsonbuf grow malloc failed\n");
 #endif
                 _Free(jsonbuf);
-                return ERRSTR("insufficient memory",c_mem);
+                return ERRSTR("insufficient memory", c_mem);
             }
             memcpy(jsonbufNew, jsonbuf, jsonbufLen);
             _Free(jsonbuf);
             jsonbuf = jsonbufNew;
         }
-    }
+    } while (available);
 
     // Null-terminate it, using the +1 space that we'd allocated in the buffer
     jsonbuf[jsonbufLen] = '\0';
 
     // Return it
-    *jsonResponse = jsonbuf;
+    *response = (char *)jsonbuf;
     return NULL;
-
 }
 
 //**************************************************************************/
@@ -171,7 +125,8 @@ const char *serialNoteTransaction(char *json, char **jsonResponse)
 bool serialNoteReset()
 {
 
-    // Initialize, or re-initialize.  Because we've observed Arduino serial driver flakiness,
+    // Initialize, or re-initialize, because we've observed Arduino serial
+    // driver flakiness.
     _DelayMs(250);
     if (!_SerialReset()) {
         return false;
@@ -192,8 +147,7 @@ bool serialNoteReset()
         // Drain all serial for 500ms
         bool somethingFound = false;
         bool nonControlCharFound = false;
-        uint32_t startMs = _GetMs();
-        while (_GetMs() - startMs < 500) {
+        for (const size_t startMs = _GetMs() ; _GetMs() - startMs < 500 ;) {
             while (_SerialAvailable()) {
                 somethingFound = true;
                 if (_SerialReceive() >= ' ') {
@@ -222,4 +176,109 @@ bool serialNoteReset()
 
     // Done
     return notecardReady;
+}
+
+/**************************************************************************/
+/*!
+  @brief  Receive bytes over Serial from the Notecard.
+  @param   buffer
+            A buffer to receive bytes into.
+  @param   size (in/out)
+            - (in) The size of the buffer in bytes.
+            - (out) The length of the received data in bytes.
+  @param   delay
+            Respect standard processing delays.
+  @param   timeoutMs
+            The maximum amount of time, in milliseconds, to wait for serial data
+            to arrive. Passing zero (0) disables the timeout.
+  @param   available (out)
+            The amount of bytes unable to fit into the provided buffer.
+  @returns  A c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
+const char *serialChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
+{
+    size_t received = 0;
+    bool overflow = (received >= *size);
+    const size_t startMs = _GetMs();
+    for (bool eop = false ; !overflow && !eop ;) {
+        while (!_SerialAvailable()) {
+            if (timeoutMs && (_GetMs() - startMs >= timeoutMs)) {
+                *size = received;
+#ifdef ERRDBG
+                if (received) {
+                    _Debug("received only partial reply before timeout\n");
+                }
+#endif
+                return ERRSTR("timeout: transaction incomplete {io}",c_iotimeout);
+            }
+            if (delay) {
+                _DelayMs(1);
+            }
+        }
+        char ch = _SerialReceive();
+
+        // Place into the buffer
+        buffer[received++] = ch;
+
+        // Look for end-of-packet marker
+        eop = (ch == '\n');
+
+        // Check overflow condition
+        overflow = ((received >= *size) && !eop);
+        if (overflow) {
+            // We haven't received a newline, so we're not done with this
+            // packet. If the newline never comes, for whatever reason, when
+            // this function is called again, we'll timeout. We don't just
+            // use _SerialAvailable to set *available here because we're
+            // typically reading faster than the serial buffer fills, and so
+            // _SerialAvailable may return 0.
+            *available = 1;
+            break;
+        } else {
+            *available = 0;
+        }
+    }
+
+    // Return it
+    *size = received;
+    return NULL;
+}
+
+/**************************************************************************/
+/*!
+  @brief  Transmit bytes over serial to the Notecard.
+  @param   buffer
+            A buffer of bytes to transmit.
+  @param   size
+            The count of bytes in the buffer to send.
+  @param   delay
+            Respect standard processing delays.
+  @returns  A c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
+const char *serialChunkedTransmit(uint8_t *buffer, size_t size, bool delay)
+{
+    // Transmit the request in segments so as not to overwhelm the Notecard's
+    // interrupt buffers
+    uint32_t segOff = 0;
+    uint32_t segLeft = size;
+
+    while (true) {
+        size_t segLen = segLeft;
+        if (segLen > CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN) {
+            segLen = CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN;
+        }
+        _SerialTransmit(&buffer[segOff], segLen, false);
+        segOff += segLen;
+        segLeft -= segLen;
+        if (segLeft == 0) {
+            break;
+        }
+        if (delay) {
+            _DelayMs(CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS);
+        }
+    }
+
+    return NULL;
 }

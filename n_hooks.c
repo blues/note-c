@@ -175,8 +175,12 @@ i2cReceiveFn hookI2CReceive = NULL;
 // Internal hooks
 typedef bool (*nNoteResetFn) (void);
 typedef const char * (*nTransactionFn) (char *, char **);
+typedef const char * (*nReceiveFn) (uint8_t *, size_t *, bool, size_t, uint32_t *);
+typedef const char * (*nTransmitFn) (uint8_t *, size_t, bool);
 static nNoteResetFn notecardReset = NULL;
 static nTransactionFn notecardTransaction = NULL;
+static nReceiveFn notecardChunkedReceive = NULL;
+static nTransmitFn notecardChunkedTransmit = NULL;
 
 //**************************************************************************/
 /*!
@@ -328,6 +332,8 @@ void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn transmitfn, serialA
 
     notecardReset = serialNoteReset;
     notecardTransaction = serialNoteTransaction;
+    notecardChunkedReceive = serialChunkedReceive;
+    notecardChunkedTransmit = serialChunkedTransmit;
 }
 
 //**************************************************************************/
@@ -355,6 +361,8 @@ void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn, i2cT
 
     notecardReset = i2cNoteReset;
     notecardTransaction = i2cNoteTransaction;
+    notecardChunkedReceive = i2cChunkedReceive;
+    notecardChunkedTransmit = i2cChunkedTransmit;
 }
 
 //**************************************************************************/
@@ -369,6 +377,8 @@ void NoteSetFnDisabled()
 
     notecardReset = NULL;
     notecardTransaction = NULL;
+    notecardChunkedReceive = NULL;
+    notecardChunkedTransmit = NULL;
 
 }
 
@@ -821,16 +831,60 @@ bool NoteHardReset()
 /*!
   @brief  Perform a JSON request to the Notecard using the currently-set
   platform hook.
-  @param   json the JSON request.
-  @param   jsonResponse (out) A buffer with the JSON response.
+  @param   request the JSON request.
+  @param   response (out) A buffer with the JSON response.
   @returns NULL if successful, or an error string if the transaction failed
   or the hook has not been set.
 */
 /**************************************************************************/
-const char *NoteJSONTransaction(char *json, char **jsonResponse)
+const char *NoteJSONTransaction(char *request, char **response)
 {
     if (notecardTransaction == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";
     }
-    return notecardTransaction(json, jsonResponse);
+    return notecardTransaction(request, response);
+}
+
+/**************************************************************************/
+/*!
+  @brief  Receive bytes over from the Notecard using the currently-set
+  platform hook.
+  @param   buffer A buffer to receive bytes into.
+  @param   size (in/out)
+            - (in) The size of the buffer in bytes.
+            - (out) The length of the received data in bytes.
+  @param   delay Respect standard processing delays.
+  @param   timeoutMs The maximum amount of time, in milliseconds, to wait
+            for data to arrive. Passing zero (0) disables the timeout.
+  @param   available (in/out)
+            - (in) The amount of bytes to request. Sending zero (0) will
+                   initiate a priming query when using the I2C interface.
+            - (out) The amount of bytes unable to fit into the provided buffer.
+  @returns  A c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
+const char *NoteChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
+{
+    if (notecardChunkedReceive == NULL || hookActiveInterface == interfaceNone) {
+        return "i2c or serial interface must be selected";
+    }
+    return notecardChunkedReceive(buffer, size, delay, timeoutMs, available);
+}
+
+/**************************************************************************/
+/*!
+  @brief  Transmit bytes over to the Notecard using the currently-set
+  platform hook.
+  @param   buffer A buffer of bytes to transmit.
+  @param   size The count of bytes in the buffer to send
+  @param   delay Respect standard processing delays.
+  @returns  A c-string with an error, or `NULL` if no error ocurred.
+*/
+/**************************************************************************/
+const char *NoteChunkedTransmit(uint8_t *buffer, size_t size, bool delay)
+{
+    if (notecardChunkedTransmit == NULL || hookActiveInterface == interfaceNone) {
+        return "i2c or serial interface must be selected";
+    }
+    return notecardChunkedTransmit(buffer, size, delay);
 }
