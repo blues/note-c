@@ -453,6 +453,20 @@ void NoteDebugWithLevel(uint8_t level, const char *msg)
 
 //**************************************************************************/
 /*!
+  @brief       Same as NoteDebugWithLevel, but add a newline at the end.
+  @param level The log level of the message. See the NOTE_C_LOG_LEVEL_* macros
+               in note.h for possible values.
+  @param msg   The debug message.
+*/
+/**************************************************************************/
+void NoteDebugWithLevelLn(uint8_t level, const char *msg)
+{
+    NoteDebugWithLevel(level, msg);
+    NoteDebugWithLevel(level, c_newline);
+}
+
+//**************************************************************************/
+/*!
   @brief  Get the current milliseconds value from the platform-specific
   hook.
   @returns  The current milliseconds value.
