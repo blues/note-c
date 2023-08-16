@@ -31,7 +31,7 @@ static uint16_t lastRequestSeqno = 0;
 #define CRC_FIELD_LENGTH		22	// ,"crc":"SSSS:CCCCCCCC"
 #define	CRC_FIELD_NAME_OFFSET	1
 #define	CRC_FIELD_NAME_TEST		"\"crc\":\""
-#define REQUEST_RETRIES_ALLOWED 10
+#define REQUEST_RETRIES_ALLOWED 5
 NOTE_C_STATIC int32_t crc32(const void* data, size_t length);
 NOTE_C_STATIC char *crcAdd(char *json, uint16_t seqno);
 NOTE_C_STATIC bool crcError(char *json, uint16_t shouldBeSeqno);
