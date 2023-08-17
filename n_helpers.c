@@ -259,7 +259,7 @@ size_t NoteBinaryRequiredTxBuffer(size_t dataLen)
   @note  This operation is not necessary during typical use, but is useful
          when the Notecard's binary buffer is in an unknown state. The buffer
          will be automatically reset when a binary object is either received,
-         or transmitted with the append parameter set to `false`.
+         or transmitted with the offset parameter set to zero (0).
 */
 /**************************************************************************/
 const char * NoteBinaryReset(void)
@@ -290,8 +290,10 @@ const char * NoteBinaryReset(void)
   @param  data  A buffer with data to encode in place
   @param  dataLen  The length of the data in the buffer
   @param  bufLen  The total length of the buffer
-  @param  append  The `data` buffer should be appended to the binary data
-                  already residing on the Notecard.
+  @param  offset  The offset where the `data` buffer should be appended to the
+                  unencoded binary data already residing on the Notecard. This
+                  does not provide random access, but rather ensures alignment
+                  between the callers expectation and Notecard.
   @returns  NULL on success, else an error string pointer.
   @note  Buffers are encoded in place, the buffer _MUST_ be larger than the data
          to be encoded. The original contents of the buffer will be modified.
@@ -299,7 +301,7 @@ const char * NoteBinaryReset(void)
          for the buffer pointed to by the `data` parameter.
 */
 /**************************************************************************/
-const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, bool append)
+const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, size_t offset)
 {
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
@@ -331,8 +333,16 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
         return ERRSTR("unexpected response: max is zero or not present", c_err);
     }
 
-    // When `append` is not specified, the entire buffer is available
-    const size_t remaining = (append ? (max - len) : max);
+    // Validate the index provided by the caller, against the `length` value
+    // returned from the Notecard to ensure the caller and Notecard agree on
+    // how much data is residing on the Notecard.
+    if (offset != len) {
+        NOTE_C_LOG_ERROR("notecard data length is misaligned with offset");
+        return ERRSTR("notecard data length is misaligned with offset", c_mem);
+    }
+
+    // When `offset` is zero, the entire buffer is available
+    const size_t remaining = (offset ? (max - len) : max);
     if (dataLen > remaining) {
         NOTE_C_LOG_ERROR("buffer size exceeds available memory");
         return ERRSTR("buffer size exceeds available memory", c_mem);
@@ -367,8 +377,8 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, b
         J *req = NoteNewRequest("card.binary.put");
         if (req) {
             JAddIntToObject(req, "cobs", encLen);
-            if (append) {
-                JAddBoolToObject(req, "append", true);
+            if (offset) {
+                JAddIntToObject(req, "offset", offset);
             }
             JAddStringToObject(req, "status", hashString);
 

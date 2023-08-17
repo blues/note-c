@@ -323,7 +323,7 @@ const char * NoteBinaryRequiredRxBuffer(size_t * size);
 size_t NoteBinaryRequiredTxBuffer(size_t dataLen);
 const char * NoteBinaryReset(void);
 const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen,
-                                bool append);
+                                size_t offset);
 uint32_t NoteSetSTSecs(uint32_t secs);
 bool NoteTimeValid(void);
 bool NoteTimeValidST(void);
