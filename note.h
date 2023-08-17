@@ -324,6 +324,12 @@ size_t NoteBinaryRequiredTxBuffer(size_t dataLen);
 const char * NoteBinaryReset(void);
 const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen,
                                 size_t offset);
+const char *NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
+                             uint8_t *outBuf, uint32_t *outLen);
+const char *NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
+                             uint8_t *outBuf, uint32_t *outLen);
+uint32_t NoteBinaryEncodedLength(const uint8_t *buf, uint32_t len);
+uint32_t NoteBinaryEncodedMaxLength(uint32_t len);
 uint32_t NoteSetSTSecs(uint32_t secs);
 bool NoteTimeValid(void);
 bool NoteTimeValidST(void);

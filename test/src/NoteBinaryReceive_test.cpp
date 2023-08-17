@@ -187,12 +187,11 @@ SCENARIO("NoteBinaryReceive")
     GIVEN("The binary payload is received") {
         NoteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, size_t *size,
         bool, size_t, uint32_t *available) -> const char* {
-            uint32_t encodedMaxLen = cobsEncodedMaxLength(rawMsgLen);
-            uint32_t encodedLen = cobsEncode((uint8_t *)rawMsg, rawMsgLen, '\n',
-                                             buffer);
+            uint32_t outLen = *size;
+            NoteBinaryEncode((uint8_t *)rawMsg, rawMsgLen, buffer, &outLen);
 
-            buffer[encodedLen] = '\n';
-            *size = encodedLen + 1;
+            buffer[outLen] = '\n';
+            *size = outLen + 1;
             *available = 0;
 
             return NULL;
