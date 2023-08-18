@@ -59,8 +59,7 @@ SCENARIO("NoteBinaryTransmit")
             };
 
             WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                     false);
+                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -78,8 +77,7 @@ SCENARIO("NoteBinaryTransmit")
             };
 
             WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                     false);
+                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -97,8 +95,27 @@ SCENARIO("NoteBinaryTransmit")
             };
 
             WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                     false);
+                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
+
+                THEN("An error is returned") {
+                    CHECK(err != NULL);
+                }
+            }
+        }
+
+        AND_GIVEN("The offset doesn't match the length returned by the "
+                  "Notecard") {
+            NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
+                JDelete(req);
+                J *rsp = JCreateObject();
+                JAddIntToObject(rsp, "length", dataLen);
+                JAddIntToObject(rsp, "max", dataLen * 2);
+
+                return rsp;
+            };
+
+            WHEN("NoteBinaryTransmit is called") {
+                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -121,7 +138,7 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                         false);
+                                                         0);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
@@ -143,7 +160,7 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                         true);
+                                                         dataLen);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
@@ -166,8 +183,7 @@ SCENARIO("NoteBinaryTransmit")
         uint32_t newBufLen = cobsEncodedLength(buf, dataLen);
 
         WHEN("NoteBinaryTransmit is called") {
-            const char *err = NoteBinaryTransmit(buf, dataLen,
-                                                 newBufLen, false);
+            const char *err = NoteBinaryTransmit(buf, dataLen, newBufLen, 0);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -194,8 +210,7 @@ SCENARIO("NoteBinaryTransmit")
             SET_RETURN_SEQ(NoteNewRequest, noteNewReqRetSequence, 2);
 
             WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                     false);
+                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -215,8 +230,7 @@ SCENARIO("NoteBinaryTransmit")
             };
 
             WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                     false);
+                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -237,8 +251,7 @@ SCENARIO("NoteBinaryTransmit")
             NoteChunkedTransmit_fake.return_val = "some error";
 
             WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                     false);
+                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -282,7 +295,7 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                         false);
+                                                         0);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
@@ -306,7 +319,7 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                         false);
+                                                         0);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
@@ -331,7 +344,7 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                         false);
+                                                         0);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
@@ -368,7 +381,7 @@ SCENARIO("NoteBinaryTransmit")
 
                 WHEN("NoteBinaryTransmit is called") {
                     const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
-                                                         false);
+                                                         0);
 
                     THEN("No error is returned") {
                         CHECK(err == NULL);
