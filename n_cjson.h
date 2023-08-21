@@ -175,6 +175,7 @@ N_CJSON_PUBLIC(void) JDelete(J *c);
 
 /* Returns the number of items in an array (or object). */
 N_CJSON_PUBLIC(int) JGetArraySize(const J *array);
+#define	JGetObjectItems JGetArraySize
 /* Retrieve item number "index" from array "array". Returns NULL if unsuccessful. */
 N_CJSON_PUBLIC(J *) JGetArrayItem(const J *array, int index);
 /* Get item "string" from object. Case insensitive. */
