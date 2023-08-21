@@ -426,11 +426,13 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
             /* If not, print with 17 decimal places of precision */
             length = sprintf((char*)number_buffer, "%1.17g", d);
         }
-        while (length > 1 && number_buffer[length-1] == '0') {
-            number_buffer[--length] = '\0';
-        }
-        if (length > 1 && number_buffer[length-1] == '.') {
-            number_buffer[--length] = '\0';
+        if (strchr((char*)number_buffer, '.') != NULL) {
+            while (length > 1 && number_buffer[length-1] == '0') {
+                number_buffer[--length] = '\0';
+            }
+            if (length > 1 && number_buffer[length-1] == '.') {
+                number_buffer[--length] = '\0';
+            }
         }
 #else
         char *nbuf = (char *) number_buffer;
