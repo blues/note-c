@@ -180,7 +180,7 @@ SCENARIO("NoteBinaryTransmit")
 
             return rsp;
         };
-        uint32_t newBufLen = cobsEncodedLength(buf, dataLen);
+        uint32_t newBufLen = NoteBinaryEncodedLength(buf, dataLen);
 
         WHEN("NoteBinaryTransmit is called") {
             const char *err = NoteBinaryTransmit(buf, dataLen, newBufLen, 0);

@@ -84,6 +84,99 @@ NOTE_C_STATIC void setTime(JTIME seconds);
 NOTE_C_STATIC bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs);
 NOTE_C_STATIC int ytodays(int year);
 
+static const char BINARY_EOP = '\n';
+
+//**************************************************************************/
+/*!
+  @brief  Decode a binary payload received from the Notecard.
+  @param  inBuf The binary payload.
+  @param  inLen The length of the binary payload.
+  @param  outBuf The buffer to write the decoded payload to. This can be the
+                 same address as inBuf, allowing for in-place decoding.
+  @param  outLen On input, holds the length of outBuf. On output, holds the
+                 length of the decoded data.
+  @returns  NULL on success, else an error string pointer.
+*/
+/**************************************************************************/
+const char *NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
+                             uint8_t *outBuf, uint32_t *outLen)
+{
+    if (inBuf == NULL || outBuf == NULL || outLen == NULL) {
+        NOTE_C_LOG_ERROR("NULL parameter");
+        return ERRSTR("NULL parameter", c_err);
+    }
+
+    if (*outLen < cobsGuaranteedFit(inLen)) {
+        NOTE_C_LOG_ERROR("output buffer too small");
+        return ERRSTR("output buffer too small", c_err);
+    }
+
+    *outLen = cobsDecode((uint8_t *)inBuf, inLen, BINARY_EOP, outBuf);
+
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Binary encode a buffer to prepare it for transmission to the Notecard.
+  @param  inBuf The data to encode.
+  @param  inLen The length of the data to encode.
+  @param  outBuf The buffer to write the encoded data to. This can be the
+                 same address as inBuf, allowing for in-place encoding.
+  @param  outLen On input, holds the length of outBuf. On output, holds the
+                 length of the encoded data.
+  @returns  NULL on success, else an error string pointer.
+*/
+/**************************************************************************/
+const char *NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
+                             uint8_t *outBuf, uint32_t *outLen)
+{
+    if (inBuf == NULL || outBuf == NULL || outLen == NULL) {
+        NOTE_C_LOG_ERROR("NULL parameter");
+        return ERRSTR("NULL parameter", c_err);
+    }
+
+    if (*outLen < cobsEncodedMaxLength(inLen)) {
+        if (*outLen < cobsEncodedLength(inBuf, inLen)) {
+            NOTE_C_LOG_ERROR("output buffer too small");
+            return ERRSTR("output buffer too small", c_err);
+        }
+    }
+
+    *outLen = cobsEncode((uint8_t *)inBuf, inLen, BINARY_EOP, outBuf);
+
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Given an input buffer and its length, compute the exact number of
+          bytes required to binary encode that buffer.
+  @param  buf The buffer to encode.
+  @param  len The length of the buffer.
+  @note   This function iterates over the entire buffer to compute the result.
+          For a constant-time alternative, see NoteBinaryEncodedMaxLength.
+  @returns  The required buffer size to hold the encoded data.
+*/
+/**************************************************************************/
+uint32_t NoteBinaryEncodedLength(const uint8_t *buf, uint32_t len)
+{
+    return cobsEncodedLength(buf, len);
+}
+
+//**************************************************************************/
+/*!
+  @brief  Given an input buffer's length, compute the maximum output buffer size
+          needed to binary encode the input buffer.
+  @param  len The length of the input buffer.
+  @returns  The max required buffer size to hold the encoded data.
+*/
+/**************************************************************************/
+uint32_t NoteBinaryEncodedMaxLength(uint32_t len)
+{
+    return cobsEncodedMaxLength(len);
+}
+
 //**************************************************************************/
 /*!
   @brief  Receive a large binary object from the Notecard's binary buffer
@@ -169,8 +262,12 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
     // part of the binary payload, so we decrement the length by 1 to remove it.
     --bufLen;
 
+    uint32_t decLen = bufLen;
     // Decode it in-place, which is safe because decoding shrinks
-    const size_t decLen = cobsDecode(buffer, bufLen, '\n', buffer);
+    err = NoteBinaryDecode(buffer, bufLen, buffer, &decLen);
+    if (err) {
+        return err;
+    }
     // Return the decoded length in the dataLen out parameter.
     *dataLen = decLen;
 
@@ -249,7 +346,7 @@ const char * NoteBinaryRequiredRxBuffer(size_t *size)
 /**************************************************************************/
 size_t NoteBinaryRequiredTxBuffer(size_t dataLen)
 {
-    return (cobsEncodedMaxLength(dataLen) + 1);
+    return (NoteBinaryEncodedMaxLength(dataLen) + 1);
 }
 
 //**************************************************************************/
@@ -301,7 +398,8 @@ const char * NoteBinaryReset(void)
          for the buffer pointed to by the `data` parameter.
 */
 /**************************************************************************/
-const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, size_t offset)
+const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen,
+                                size_t offset)
 {
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
@@ -312,8 +410,9 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, s
 
     // Ensure the transaction doesn't return an error
     // and confirm the binary feature is available
+    const char *err = NULL;
     if (NoteResponseError(rsp)) {
-        const char *err = JGetString(rsp,"err");
+        err = JGetString(rsp, "err");
         // Swallow `{bad-bin}` errors, because we intend to overwrite the data.
         if (!NoteErrorContains(err, c_badbinerr)) {
             NOTE_C_LOG_ERROR(err);
@@ -348,24 +447,26 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, s
         return ERRSTR("buffer size exceeds available memory", c_mem);
     }
 
-    // Confirm buffer is large enough to in place encode as COBS
-    // NOTE: We need one additional byte beyond the encoded length to add a
-    //       newline character to the end of the buffer. This indicates the
-    //       end of transmission.
-    uint32_t encLen = cobsEncodedLength(data,dataLen);
-    if ((encLen + 1) > bufLen) {
-        NOTE_C_LOG_ERROR("buffer too small for encoding");
-        return ERRSTR("buffer too small for encoding", c_mem);
-    }
-
     // Calculate MD5
     char hashString[NOTE_MD5_HASH_STRING_SIZE] = {0};
     NoteMD5HashString(data, dataLen, hashString, NOTE_MD5_HASH_STRING_SIZE);
 
-    // Encode COBS data
+    // Shift the data to the end of the buffer. Next, we'll encode the data,
+    // outputting the encoded data to the front of the buffer.
     const size_t dataShift = (bufLen - dataLen);
     memmove(data + dataShift, data, dataLen);
-    encLen = cobsEncode(data + dataShift, dataLen, '\n', data);
+
+    // outLen holds the buffer size available for encoding. The -1 accounts for
+    // one byte of space we need to save for a newline to mark the end of the
+    // packet. When NoteBinaryEncode returns, outLen will hold the encoded
+    // length.
+    uint32_t encLen = bufLen - 1;
+    err = NoteBinaryEncode(data + dataShift, dataLen, data, &encLen);
+    if (err) {
+        return err;
+    }
+
+    // Append the \n, which marks the end of a packet.
     data[encLen] = '\n';
 
     const size_t NOTE_C_BINARY_RETRIES = 3;
@@ -389,13 +490,13 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, s
                 // On errors, we restore the caller's input buffer by COBS
                 // decoding it. The caller is then able to retry transmission
                 // with their original pointer to this buffer.
-                cobsDecode(data, encLen, '\n', data);
+                NoteBinaryDecode(data, encLen, data, (uint32_t *)&bufLen);
                 return ERRSTR("failed to initialize binary transaction", c_err);
             }
         } else {
             NOTE_C_LOG_ERROR("unable to allocate request");
             _UnlockNote();
-            cobsDecode(data, encLen, '\n', data);
+            NoteBinaryDecode(data, encLen, data, (uint32_t *)&bufLen);
             return ERRSTR("unable to allocate request", c_mem);
         }
 
@@ -407,7 +508,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, s
 
         // Ensure transaction was successful
         if (err) {
-            cobsDecode(data, encLen, '\n', data);
+            NoteBinaryDecode(data, encLen, data, (uint32_t *)&bufLen);
             return ERRSTR(err, c_err);
         }
 
@@ -415,7 +516,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, s
         rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
         if (!rsp) {
             NOTE_C_LOG_ERROR("unable to validate request");
-            cobsDecode(data, encLen, '\n', data);
+            NoteBinaryDecode(data, encLen, data, (uint32_t *)&bufLen);
             return ERRSTR("unable to validate request", c_err);
         }
 
@@ -431,13 +532,15 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen, s
                     continue;
                 }
                 NOTE_C_LOG_ERROR("binary data invalid");
-                cobsDecode(data, encLen, '\n', data);
+                NoteBinaryDecode(data, encLen, data, (uint32_t *)&bufLen);
                 return ERRSTR("binary data invalid", c_bad);
             } else {
                 JDelete(rsp);
-                NOTE_C_LOG_ERROR("unexpected error received during confirmation");
-                cobsDecode(data, encLen, '\n', data);
-                return ERRSTR("unexpected error received during confirmation", c_bad);
+                NOTE_C_LOG_ERROR("unexpected error received during "
+                                 "confirmation");
+                NoteBinaryDecode(data, encLen, data, (uint32_t *)&bufLen);
+                return ERRSTR("unexpected error received during confirmation",
+                              c_bad);
             }
         }
         JDelete(rsp);
