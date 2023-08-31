@@ -150,7 +150,11 @@ bool serialNoteReset()
         for (const size_t startMs = _GetMs() ; _GetMs() - startMs < 500 ;) {
             while (_SerialAvailable()) {
                 somethingFound = true;
-                if (_SerialReceive() >= ' ') {
+                // The Notecard responds to a bare \n with \r\n. If we get any
+                // other characters back, it means the host and Notecard aren't
+                // synced up yet, and we need to transmit \n again.
+                char ch = _SerialReceive();
+                if (ch != '\n' && ch != '\r') {
                     nonControlCharFound = true;
                 }
             }

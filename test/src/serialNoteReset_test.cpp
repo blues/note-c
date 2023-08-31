@@ -116,7 +116,7 @@ TEST_CASE("serialNoteReset")
 
     SECTION("NoteGetMs overflow") {
         NoteSerialReset_fake.return_val = true;
-        NoteSerialReceive_fake.return_val = ' ' - 1;
+        NoteSerialReceive_fake.return_val = '\n';
         bool serialAvailRetVals[] = {true, false};
         SET_RETURN_SEQ(NoteSerialAvailable, serialAvailRetVals, 2);
         long unsigned int getMsReturnVals[] = {
