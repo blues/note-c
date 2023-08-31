@@ -317,13 +317,14 @@ void NoteMD5HashToString(unsigned char *hash, char *strbuf, unsigned long buflen
 
 // High-level helper functions that are both useful and serve to show developers
 // how to call the API
-const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
-                               size_t * dataLen);
-const char * NoteBinaryRequiredRxBuffer(size_t * size);
-size_t NoteBinaryRequiredTxBuffer(size_t dataLen);
+#define NOTE_C_BINARY_RX_ALL 0
+const char * NoteBinaryReceive(uint8_t *buffer, size_t bufLen,
+                               size_t offset, size_t *dataLen);
+const char * NoteBinaryRequiredRxMaxBuffer(size_t *size);
+size_t NoteBinaryRequiredBuffer(size_t dataLen);
 const char * NoteBinaryReset(void);
-const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen,
-                                size_t offset);
+const char * NoteBinaryTransmit(uint8_t *data, size_t dataLen,
+                                size_t bufLen, size_t offset);
 const char *NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
                              uint8_t *outBuf, uint32_t *outLen);
 const char *NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,

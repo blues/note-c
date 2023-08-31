@@ -182,28 +182,33 @@ uint32_t NoteBinaryEncodedMaxLength(uint32_t len)
   @brief  Receive a large binary object from the Notecard's binary buffer
   @param  buffer A buffer to hold the binary object
   @param  bufLen The total length of the provided buffer
-  @param  dataLen An out parameter to hold the length of the decoded data in the
-                  output buffer.
+  @param  offset The offset to the unencoded binary data already residing on
+                 the Notecard
+  @param  dataLen [in/out] The length of the decoded data to fetch from the
+                  Notecard. If you wish to fetch the entire buffer from the
+                  given offset, set this value to `NOTE_C_BINARY_RX_ALL`. This
+                  parameter will return the bytes actually received from the
+                  Notecard, which is required when using `NOTE_C_BINARY_RX_ALL`.
   @returns  NULL on success, else an error string pointer.
-  @note  Buffers are decoded in place. The original contents of the buffer
-         will be modified.
+  @note  The buffer must be large enough to hold the encoded value of the
+         original contents at the requested offset and length.
   @note  To determine the necessary size for the buffer, use
-         NoteBinaryRequiredRxBuffer.
+         `NoteBinaryRequiredBuffer()`.
 */
 /**************************************************************************/
 const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
-                               size_t * dataLen)
+                               size_t offset, size_t * dataLen)
 {
-    size_t requiredRxBufLen = 0;
-    const char *err = NoteBinaryRequiredRxBuffer(&requiredRxBufLen);
-    if (err) {
-        return err;
+    // Validate parameter(s)
+    if (!buffer) {
+        NOTE_C_LOG_ERROR("NULL buffer");
+        return ERRSTR("NULL buffer", c_err);
     }
-    if (!requiredRxBufLen) {
-        NOTE_C_LOG_ERROR("no data on notecard");
-        return ERRSTR("no data on notecard", c_err);
+    if (!dataLen) {
+        NOTE_C_LOG_ERROR("dataLen cannot be NULL");
+        return ERRSTR("dataLen cannot be NULL", c_err);
     }
-    if (requiredRxBufLen > bufLen) {
+    if (bufLen < (NoteBinaryEncodedMaxLength(*dataLen) + sizeof('\n'))) {
         NOTE_C_LOG_ERROR("insufficient buffer size");
         return ERRSTR("insufficient buffer size", c_err);
     }
@@ -215,10 +220,8 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
     char status[NOTE_MD5_HASH_STRING_SIZE] = {0};
     J *req = NoteNewRequest("card.binary.get");
     if (req) {
-        // This field must exactly match the number of binary bytes the Notecard
-        // will send. This doesn't include the terminating newline, hence the
-        // -1.
-        JAddIntToObject(req, "cobs", requiredRxBufLen - 1);
+        JAddIntToObject(req, "offset", offset);
+        JAddIntToObject(req, "length", *dataLen);
 
         // Ensure the transaction doesn't return an error.
         J *rsp = NoteRequestResponse(req);
@@ -241,7 +244,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
 
     // Read raw bytes from the active interface into a predefined buffer
     uint32_t available = 0;
-    err = _ChunkedReceive(buffer, &bufLen, false, 60000, &available);
+    const char *err = _ChunkedReceive(buffer, &bufLen, false, 60000, &available);
 
     // Release Notecard Mutex
     _UnlockNote();
@@ -290,15 +293,38 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
 
 //**************************************************************************/
 /*!
-  @brief  Get the required buffer size to receive the binary object stored on
-          the Notecard. If there's no data to stored on the Notecard, *size will
-          be 0.
-  @param  size Out parameter to hold the required size.
+  @brief  Given the length of a binary payload, calculate the buffer size needed
+          to COBS-encode that payload in-place in the buffer, plus an additional
+          byte for an end-of-packet character (i.e. a newline). Because COBS
+          encoding adds some overhead, this size will be larger than the length
+          of the payload.
+  @param  dataLen The length of the binary payload.
+  @returns  The required buffer size in bytes.
+*/
+/**************************************************************************/
+size_t NoteBinaryRequiredBuffer(size_t dataLen)
+{
+    return (NoteBinaryEncodedMaxLength(dataLen) + 1);
+}
+
+//**************************************************************************/
+/*!
+  @brief  Get the required buffer size to receive the entire binary object
+          stored on the Notecard. If there's no data to stored on the Notecard,
+          *size will return 0.
+  @param  size [out] size required to hold the entire contents of the
+           Notecard's binary store.
   @returns An error string on error and NULL on success.
 */
 /**************************************************************************/
-const char * NoteBinaryRequiredRxBuffer(size_t *size)
+const char * NoteBinaryRequiredRxMaxBuffer(size_t *size)
 {
+    // Validate parameter(s)
+    if (!size) {
+        NOTE_C_LOG_ERROR("size cannot be NULL");
+        return ERRSTR("size cannot be NULL", c_err);
+    }
+
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
     if (!rsp) {
@@ -331,22 +357,6 @@ const char * NoteBinaryRequiredRxBuffer(size_t *size)
     }
 
     return NULL;
-}
-
-//**************************************************************************/
-/*!
-  @brief  Given the length of a binary payload, calculate the buffer size needed
-          to COBS-encode that payload in-place in the buffer, plus an additional
-          byte for an end-of-packet character (i.e. a newline). Because COBS
-          encoding adds some overhead, this size will be larger than the length
-          of the payload.
-  @param  dataLen The length of the binary payload.
-  @returns  The required buffer size in bytes.
-*/
-/**************************************************************************/
-size_t NoteBinaryRequiredTxBuffer(size_t dataLen)
-{
-    return (NoteBinaryEncodedMaxLength(dataLen) + 1);
 }
 
 //**************************************************************************/
@@ -390,17 +400,23 @@ const char * NoteBinaryReset(void)
   @param  offset  The offset where the `data` buffer should be appended to the
                   unencoded binary data already residing on the Notecard. This
                   does not provide random access, but rather ensures alignment
-                  between the callers expectation and Notecard.
+                  across sequential writes.
   @returns  NULL on success, else an error string pointer.
   @note  Buffers are encoded in place, the buffer _MUST_ be larger than the data
          to be encoded. The original contents of the buffer will be modified.
-  @note  You may use `NoteBinaryRequiredTxBuffer()` to calculate the required size
+  @note  You may use `NoteBinaryRequiredBuffer()` to calculate the required size
          for the buffer pointed to by the `data` parameter.
 */
 /**************************************************************************/
 const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen,
                                 size_t offset)
 {
+    // Validate parameter(s)
+    if (!dataLen) {
+        NOTE_C_LOG_ERROR("dataLen cannot be NULL");
+        return ERRSTR("dataLen cannot be NULL", c_err);
+    }
+
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
     if (!rsp) {
