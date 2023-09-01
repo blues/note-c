@@ -208,7 +208,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
         NOTE_C_LOG_ERROR("dataLen cannot be NULL");
         return ERRSTR("dataLen cannot be NULL", c_err);
     }
-    if (bufLen < (NoteBinaryEncodedMaxLength(*dataLen) + sizeof('\n'))) {
+    if (bufLen < NoteBinaryRequiredBuffer(*dataLen)) {
         NOTE_C_LOG_ERROR("insufficient buffer size");
         return ERRSTR("insufficient buffer size", c_err);
     }
