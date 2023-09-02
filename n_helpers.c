@@ -88,6 +88,48 @@ static const char BINARY_EOP = '\n';
 
 //**************************************************************************/
 /*!
+  @brief  Get the length of the data stored on the Notecard. If there's no data
+          stored on the Notecard, then `*len` will return 0.
+  @param  len [out] the length of the decoded contents of the Notecard's binary
+          data store.
+  @returns An error string on error and NULL on success.
+*/
+/**************************************************************************/
+const char * NoteBinaryDataLength(size_t *len)
+{
+    // Validate parameter(s)
+    if (!len) {
+        NOTE_C_LOG_ERROR("len cannot be NULL");
+        return ERRSTR("len cannot be NULL", c_err);
+    }
+
+    // Issue a "card.binary" request.
+    J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
+    if (!rsp) {
+        NOTE_C_LOG_ERROR("unable to issue binary request");
+        return ERRSTR("unable to issue binary request", c_err);
+    }
+
+    // Ensure the transaction doesn't return an error and confirm the binary
+    // feature is available.
+    if (NoteResponseError(rsp)) {
+        const char *err = JGetString(rsp, "err");
+        NOTE_C_LOG_ERROR(err);
+        JDelete(rsp);
+        NOTE_C_LOG_ERROR("unexpected error received during handshake");
+        return ERRSTR("unexpected error received during handshake", c_bad);
+    }
+
+    // Examine "length" from the response to evaluate the length of the decoded
+    // data residing on the Notecard.
+    *len = JGetInt(rsp, "length");
+    JDelete(rsp);
+
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
   @brief  Decode a binary payload received from the Notecard.
   @param  inBuf The binary payload.
   @param  inLen The length of the binary payload.
@@ -98,7 +140,7 @@ static const char BINARY_EOP = '\n';
   @returns  NULL on success, else an error string pointer.
 */
 /**************************************************************************/
-const char *NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
+const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
                              uint8_t *outBuf, uint32_t *outLen)
 {
     if (inBuf == NULL || outBuf == NULL || outLen == NULL) {
@@ -128,7 +170,7 @@ const char *NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
   @returns  NULL on success, else an error string pointer.
 */
 /**************************************************************************/
-const char *NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
+const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
                              uint8_t *outBuf, uint32_t *outLen)
 {
     if (inBuf == NULL || outBuf == NULL || outLen == NULL) {
@@ -310,10 +352,10 @@ size_t NoteBinaryRequiredBuffer(size_t dataLen)
 //**************************************************************************/
 /*!
   @brief  Get the required buffer size to receive the entire binary object
-          stored on the Notecard. If there's no data to stored on the Notecard,
-          *size will return 0.
-  @param  size [out] size required to hold the entire contents of the
-           Notecard's binary store.
+          stored on the Notecard. If there's no data stored on the Notecard,
+          then `*size` will return 0.
+  @param  size [out] the size required to hold the entire contents of the
+           Notecard's binary data store.
   @returns An error string on error and NULL on success.
 */
 /**************************************************************************/
@@ -343,7 +385,7 @@ const char * NoteBinaryRequiredRxMaxBuffer(size_t *size)
     }
 
     // Examine "cobs" from the response to evaluate the space required to hold
-    // the COBS-encoded data received from the Notecard.
+    // the COBS-encoded data to be received from the Notecard.
     long int cobs = JGetInt(rsp, "cobs");
     JDelete(rsp);
     if (!cobs) {

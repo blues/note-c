@@ -318,19 +318,20 @@ void NoteMD5HashToString(unsigned char *hash, char *strbuf, unsigned long buflen
 // High-level helper functions that are both useful and serve to show developers
 // how to call the API
 #define NOTE_C_BINARY_RX_ALL 0
-const char * NoteBinaryReceive(uint8_t *buffer, size_t bufLen,
-                               size_t offset, size_t *dataLen);
-const char * NoteBinaryRequiredRxMaxBuffer(size_t *size);
-size_t NoteBinaryRequiredBuffer(size_t dataLen);
-const char * NoteBinaryReset(void);
-const char * NoteBinaryTransmit(uint8_t *data, size_t dataLen,
-                                size_t bufLen, size_t offset);
-const char *NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
+const char * NoteBinaryDataLength(size_t *len);
+const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
                              uint8_t *outBuf, uint32_t *outLen);
-const char *NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
+const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
                              uint8_t *outBuf, uint32_t *outLen);
 uint32_t NoteBinaryEncodedLength(const uint8_t *buf, uint32_t len);
 uint32_t NoteBinaryEncodedMaxLength(uint32_t len);
+const char * NoteBinaryReceive(uint8_t *buffer, size_t bufLen,
+                               size_t offset, size_t *dataLen);
+size_t NoteBinaryRequiredBuffer(size_t dataLen);
+const char * NoteBinaryRequiredRxMaxBuffer(size_t *size);
+const char * NoteBinaryReset(void);
+const char * NoteBinaryTransmit(uint8_t *data, size_t dataLen,
+                                size_t bufLen, size_t offset);
 uint32_t NoteSetSTSecs(uint32_t secs);
 bool NoteTimeValid(void);
 bool NoteTimeValidST(void);
