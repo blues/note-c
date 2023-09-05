@@ -1,5 +1,5 @@
 /*!
- * @file NoteBinaryRequiredRxBuffer_test.cpp
+ * @file NoteBinaryRequiredRxMaxBuffer_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -26,7 +26,7 @@ const size_t cobsLen = 10;
 namespace
 {
 
-SCENARIO("NoteBinaryRequiredRxBuffer")
+SCENARIO("NoteBinaryRequiredRxMaxBuffer")
 {
     RESET_FAKE(NoteRequestResponse);
 
@@ -41,8 +41,8 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
             return NULL;
         };
 
-        WHEN("NoteBinaryRequiredRxBuffer is called") {
-            const char *err = NoteBinaryRequiredRxBuffer(&size);
+        WHEN("NoteBinaryRequiredRxMaxBuffer is called") {
+            const char *err = NoteBinaryRequiredRxMaxBuffer(&size);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -59,8 +59,8 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
             return rsp;
         };
 
-        WHEN("NoteBinaryRequiredRxBuffer is called") {
-            const char *err = NoteBinaryRequiredRxBuffer(&size);
+        WHEN("NoteBinaryRequiredRxMaxBuffer is called") {
+            const char *err = NoteBinaryRequiredRxMaxBuffer(&size);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -78,8 +78,8 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
             return rsp;
         };
 
-        WHEN("NoteBinaryRequiredRxBuffer is called") {
-            const char *err = NoteBinaryRequiredRxBuffer(&size);
+        WHEN("NoteBinaryRequiredRxMaxBuffer is called") {
+            const char *err = NoteBinaryRequiredRxMaxBuffer(&size);
 
             THEN("An error is not returned") {
                 CHECK(err == NULL);
@@ -101,8 +101,8 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
             return rsp;
         };
 
-        WHEN("NoteBinaryRequiredRxBuffer is called") {
-            const char *err = NoteBinaryRequiredRxBuffer(&size);
+        WHEN("NoteBinaryRequiredRxMaxBuffer is called") {
+            const char *err = NoteBinaryRequiredRxMaxBuffer(&size);
 
             THEN("An error is not returned") {
                 CHECK(err == NULL);

@@ -146,7 +146,7 @@ add_test(i2cChunkedReceive_test)
 add_test(i2cChunkedTransmit_test)
 add_test(NoteBinaryReceive_test)
 add_test(NoteBinaryTransmit_test)
-add_test(NoteBinaryRequiredRxBuffer_test)
+add_test(NoteBinaryRequiredRxMaxBuffer_test)
 add_test(NoteBinaryReset_test)
 
 if(NOTE_C_COVERAGE)
