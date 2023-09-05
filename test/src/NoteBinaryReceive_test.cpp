@@ -226,7 +226,6 @@ SCENARIO("NoteBinaryReceive")
                 }
             }
         }
-
     }
 }
 
