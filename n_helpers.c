@@ -141,7 +141,7 @@ const char * NoteBinaryDataLength(size_t *len)
 */
 /**************************************************************************/
 const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
-                             uint8_t *outBuf, uint32_t *outLen)
+                              uint8_t *outBuf, uint32_t *outLen)
 {
     if (inBuf == NULL || outBuf == NULL || outLen == NULL) {
         NOTE_C_LOG_ERROR("NULL parameter");
@@ -171,7 +171,7 @@ const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
 */
 /**************************************************************************/
 const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
-                             uint8_t *outBuf, uint32_t *outLen)
+                              uint8_t *outBuf, uint32_t *outLen)
 {
     if (inBuf == NULL || outBuf == NULL || outLen == NULL) {
         NOTE_C_LOG_ERROR("NULL parameter");
