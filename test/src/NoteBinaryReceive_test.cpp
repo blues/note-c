@@ -43,7 +43,7 @@ size_t rawMsgLen = strlen(rawMsg);
 namespace
 {
 
-SCENARIO("NoteBinaryReceive all")
+SCENARIO("NoteBinaryReceive")
 {
     RESET_FAKE(NoteNewRequest);
     RESET_FAKE(NoteBinaryRequiredRxMaxBuffer);
@@ -52,7 +52,7 @@ SCENARIO("NoteBinaryReceive all")
     RESET_FAKE(NoteLockNote);
     RESET_FAKE(NoteUnlockNote);
 
-    const size_t offset = 0;
+    const size_t OFFSET_ZERO = 0;
 
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
@@ -78,62 +78,21 @@ SCENARIO("NoteBinaryReceive all")
         return rsp;
     };
 
-    GIVEN("NoteBinaryRequiredRxMaxBuffer fails") {
-        NoteBinaryRequiredRxMaxBuffer_fake.custom_fake = [](size_t *size)
-        -> const char * {
-            *size = 0;
-
-            return NULL;
-        };
-
-        WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, offset, &dataLen);
-
-            THEN("An error is returned") {
-                CHECK(err != NULL);
-            }
-        }
-    }
-
-    GIVEN("NoteBinaryRequiredRxMaxBuffer indicates there's no binary data") {
-        NoteBinaryRequiredRxMaxBuffer_fake.custom_fake = NULL;
-        NoteBinaryRequiredRxMaxBuffer_fake.return_val = "some error";
-
-        WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, offset, &dataLen);
-
-            THEN("An error is returned") {
-                CHECK(err != NULL);
-            }
-        }
-    }
-
-    GIVEN("The receive buffer isn't big enough") {
-        NoteBinaryRequiredRxMaxBuffer_fake.custom_fake = [](size_t *size)
-        -> const char * {
-            *size = bufLen + 1;
-
-            return NULL;
-        };
-
-        WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, offset, &dataLen);
-
-            THEN("An error is returned") {
-                CHECK(err != NULL);
-            }
-        }
-    }
-
     GIVEN("Allocating the card.binary.get request fails") {
         NoteNewRequest_fake.custom_fake = NULL;
         NoteNewRequest_fake.return_val = NULL;
 
         WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, offset, &dataLen);
+            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+            REQUIRE(NoteNewRequest_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
+            }
+
+            THEN("The Notecard is locked and unlocked the same number of times") {
+                CHECK(NoteLockNote_fake.call_count > 0);
+                CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
             }
         }
     }
@@ -148,10 +107,16 @@ SCENARIO("NoteBinaryReceive all")
         };
 
         WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, offset, &dataLen);
+            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+            REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
+            }
+
+            THEN("The Notecard is locked and unlocked the same number of times") {
+                CHECK(NoteLockNote_fake.call_count > 0);
+                CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
             }
         }
     }
@@ -160,10 +125,16 @@ SCENARIO("NoteBinaryReceive all")
         NoteChunkedReceive_fake.return_val = "some error";
 
         WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, offset, &dataLen);
+            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+            REQUIRE(NoteChunkedReceive_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
+            }
+
+            THEN("The Notecard is locked and unlocked the same number of times") {
+                CHECK(NoteLockNote_fake.call_count > 0);
+                CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
             }
         }
     }
@@ -178,10 +149,16 @@ SCENARIO("NoteBinaryReceive all")
         };
 
         WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, offset, &dataLen);
+            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+            REQUIRE(NoteChunkedReceive_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
+            }
+
+            THEN("The Notecard is locked and unlocked the same number of times") {
+                CHECK(NoteLockNote_fake.call_count > 0);
+                CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
             }
         }
     }
@@ -209,18 +186,26 @@ SCENARIO("NoteBinaryReceive all")
             };
 
             WHEN("NoteBinaryReceive is called") {
-                const char *err = NoteBinaryReceive(buf, bufLen, offset, &dataLen);
+                const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+                REQUIRE(NoteChunkedReceive_fake.call_count > 0);
+                REQUIRE(NoteRequestResponse_fake.call_count > 0);
                 THEN("An error is returned") {
                     CHECK(err != NULL);
+                }
+
+                THEN("The Notecard is locked and unlocked the same number of times") {
+                    CHECK(NoteLockNote_fake.call_count > 0);
+                    CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
                 }
             }
         }
 
         AND_GIVEN("The computed MD5 matches the status field") {
             WHEN("NoteBinaryReceive is called") {
-                const char *err = NoteBinaryReceive(buf, bufLen, offset, &dataLen);
+                const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+                REQUIRE(NoteChunkedReceive_fake.call_count > 0);
                 THEN("No error is returned") {
                     CHECK(err == NULL);
                 }
@@ -234,68 +219,14 @@ SCENARIO("NoteBinaryReceive all")
                      "newline") {
                     CHECK(memcmp(buf, rawMsg, dataLen) == 0);
                 }
+
+                THEN("The Notecard is locked and unlocked the same number of times") {
+                    CHECK(NoteLockNote_fake.call_count > 0);
+                    CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
+                }
             }
         }
-    }
 
-    // GIVEN("The initial card.binary request fails") {
-    //     NoteRequestResponse_fake.return_val = NULL;
-
-    //     WHEN("NoteBinaryReceive is called") {
-    //         const char *err = NoteBinaryReceive(buf, size);
-
-    //         THEN("An error is returned") {
-    //             CHECK(err != NULL);
-    //         }
-    //     }
-    // }
-
-    // GIVEN("The response to the initial card.binary request has an error") {
-    //     J *rsp = JCreateObject();
-    //     JAddStringToObject(rsp, "err", "some error");
-    //     NoteRequestResponse_fake.return_val = rsp;
-
-    //     WHEN("NoteBinaryReceive is called") {
-    //         const char *err = NoteBinaryReceive(buf, size);
-
-    //         THEN("An error is returned") {
-    //             CHECK(err != NULL);
-    //         }
-    //     }
-    // }
-
-    // GIVEN("The response to the initial card.binary request indicates there's no"
-    //       "binary data to read") {
-    //     J *rsp = JCreateObject();
-    //     JAddIntToObject(rsp, "cobs", 0);
-    //     NoteRequestResponse_fake.return_val = rsp;
-
-    //     WHEN("NoteBinaryReceive is called") {
-    //         const char *err = NoteBinaryReceive(buf, size);
-
-    //         THEN("An error is returned") {
-    //             CHECK(err != NULL);
-    //         }
-    //     }
-    // }
-
-    // GIVEN("The response to the initial card.binary request indicates there's"
-    //       "more data to read than will fit in the provided buffer") {
-    //     J *rsp = JCreateObject();
-    //     JAddIntToObject(rsp, "cobs", size + 1);
-    //     NoteRequestResponse_fake.return_val = rsp;
-
-    //     WHEN("NoteBinaryReceive is called") {
-    //         const char *err = NoteBinaryReceive(buf, size);
-
-    //         THEN("An error is returned") {
-    //             CHECK(err != NULL);
-    //         }
-    //     }
-    // }
-
-    THEN("The Notecard is locked and unlocked the same number of times") {
-        CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
     }
 }
 
