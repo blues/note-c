@@ -89,11 +89,6 @@ SCENARIO("NoteBinaryReceive")
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
-
-            THEN("The Notecard is locked and unlocked the same number of times") {
-                CHECK(NoteLockNote_fake.call_count > 0);
-                CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
-            }
         }
     }
 
@@ -113,11 +108,6 @@ SCENARIO("NoteBinaryReceive")
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
-
-            THEN("The Notecard is locked and unlocked the same number of times") {
-                CHECK(NoteLockNote_fake.call_count > 0);
-                CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
-            }
         }
     }
 
@@ -130,11 +120,6 @@ SCENARIO("NoteBinaryReceive")
             REQUIRE(NoteChunkedReceive_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
-            }
-
-            THEN("The Notecard is locked and unlocked the same number of times") {
-                CHECK(NoteLockNote_fake.call_count > 0);
-                CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
             }
         }
     }
@@ -154,11 +139,6 @@ SCENARIO("NoteBinaryReceive")
             REQUIRE(NoteChunkedReceive_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
-            }
-
-            THEN("The Notecard is locked and unlocked the same number of times") {
-                CHECK(NoteLockNote_fake.call_count > 0);
-                CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
             }
         }
     }
@@ -193,11 +173,6 @@ SCENARIO("NoteBinaryReceive")
                 THEN("An error is returned") {
                     CHECK(err != NULL);
                 }
-
-                THEN("The Notecard is locked and unlocked the same number of times") {
-                    CHECK(NoteLockNote_fake.call_count > 0);
-                    CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
-                }
             }
         }
 
@@ -219,14 +194,11 @@ SCENARIO("NoteBinaryReceive")
                      "newline") {
                     CHECK(memcmp(buf, rawMsg, dataLen) == 0);
                 }
-
-                THEN("The Notecard is locked and unlocked the same number of times") {
-                    CHECK(NoteLockNote_fake.call_count > 0);
-                    CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
-                }
             }
         }
     }
+    CHECK(NoteLockNote_fake.call_count > 0);
+    CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
 }
 
 }

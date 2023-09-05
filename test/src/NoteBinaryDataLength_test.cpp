@@ -112,8 +112,8 @@ SCENARIO("NoteBinaryDataLength")
                 CHECK(err == NULL);
             }
 
-            THEN("The size out parameter is the size in the card.binary "
-                 "response, plus 1 for the trailing newline") {
+            THEN("The size out parameter is the length value in the "
+                 "card.binary response") {
                 CHECK(size == len);
             }
         }

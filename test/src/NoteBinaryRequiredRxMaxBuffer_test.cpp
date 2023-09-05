@@ -108,7 +108,7 @@ SCENARIO("NoteBinaryRequiredRxMaxBuffer")
                 CHECK(err == NULL);
             }
 
-            THEN("The size out parameter is the size in the card.binary "
+            THEN("The size out parameter is the cobs value in the card.binary "
                  "response, plus 1 for the trailing newline") {
                 CHECK(size == cobsLen + 1);
             }
