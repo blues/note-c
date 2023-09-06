@@ -180,7 +180,12 @@ SCENARIO("NoteBinaryTransmit")
 
             return rsp;
         };
-        uint32_t newBufLen = NoteBinaryEncodedLength(buf, dataLen);
+
+        // Discover the actual encoded length of the data
+        const size_t tempBufLen = NoteBinaryMaxEncodedLengthForDecodedLength(dataLen);
+        uint8_t *tempBuf = (uint8_t *)malloc(tempBufLen);
+        size_t newBufLen = tempBufLen;
+        REQUIRE(!NoteBinaryEncode(buf, dataLen, tempBuf, &newBufLen));
 
         WHEN("NoteBinaryTransmit is called") {
             const char *err = NoteBinaryTransmit(buf, dataLen, newBufLen, 0);

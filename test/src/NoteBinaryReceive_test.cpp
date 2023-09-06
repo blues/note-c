@@ -20,7 +20,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
-FAKE_VALUE_FUNC(const char *, NoteBinaryRequiredRxMaxBuffer, size_t *)
+FAKE_VALUE_FUNC(const char *, NoteBinaryDataEncodedLength, size_t *)
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 FAKE_VALUE_FUNC(const char *, NoteChunkedReceive, uint8_t *, size_t *, bool,
                 size_t, uint32_t *)
@@ -46,7 +46,7 @@ namespace
 SCENARIO("NoteBinaryReceive")
 {
     RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteBinaryRequiredRxMaxBuffer);
+    RESET_FAKE(NoteBinaryDataEncodedLength);
     RESET_FAKE(NoteRequestResponse);
     RESET_FAKE(NoteChunkedReceive);
     RESET_FAKE(NoteLockNote);
@@ -61,7 +61,7 @@ SCENARIO("NoteBinaryReceive")
     NoteNewRequest_fake.custom_fake = [](const char *req) -> J* {
         return JCreateObject();
     };
-    NoteBinaryRequiredRxMaxBuffer_fake.custom_fake = [](size_t *size)
+    NoteBinaryDataEncodedLength_fake.custom_fake = [](size_t *size)
     -> const char * {
         *size = bufLen;
 
@@ -146,7 +146,7 @@ SCENARIO("NoteBinaryReceive")
     GIVEN("The binary payload is received") {
         NoteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, size_t *size,
         bool, size_t, uint32_t *available) -> const char* {
-            uint32_t outLen = *size;
+            size_t outLen = *size;
             NoteBinaryEncode((uint8_t *)rawMsg, rawMsgLen, buffer, &outLen);
 
             buffer[outLen] = '\n';

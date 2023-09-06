@@ -1,5 +1,5 @@
 /*!
- * @file NoteBinaryDataLength_test.cpp
+ * @file NoteBinaryDataEncodedLength_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -21,12 +21,12 @@
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 
-const size_t len = 10;
+const size_t cobsLen = 10;
 
 namespace
 {
 
-SCENARIO("NoteBinaryDataLength")
+SCENARIO("NoteBinaryDataEncodedLength")
 {
     RESET_FAKE(NoteRequestResponse);
 
@@ -41,10 +41,9 @@ SCENARIO("NoteBinaryDataLength")
             return NULL;
         };
 
-        WHEN("NoteBinaryDataLength is called") {
-            const char *err = NoteBinaryDataLength(&size);
+        WHEN("NoteBinaryDataEncodedLength is called") {
+            const char *err = NoteBinaryDataEncodedLength(&size);
 
-            REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
@@ -60,10 +59,9 @@ SCENARIO("NoteBinaryDataLength")
             return rsp;
         };
 
-        WHEN("NoteBinaryDataLength is called") {
-            const char *err = NoteBinaryDataLength(&size);
+        WHEN("NoteBinaryDataEncodedLength is called") {
+            const char *err = NoteBinaryDataEncodedLength(&size);
 
-            REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
@@ -75,15 +73,14 @@ SCENARIO("NoteBinaryDataLength")
         NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
-            JAddIntToObject(rsp, "length", 0);
+            JAddIntToObject(rsp, "cobs", 0);
 
             return rsp;
         };
 
-        WHEN("NoteBinaryDataLength is called") {
-            const char *err = NoteBinaryDataLength(&size);
+        WHEN("NoteBinaryDataEncodedLength is called") {
+            const char *err = NoteBinaryDataEncodedLength(&size);
 
-            REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is not returned") {
                 CHECK(err == NULL);
             }
@@ -99,22 +96,21 @@ SCENARIO("NoteBinaryDataLength")
         NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
-            JAddIntToObject(rsp, "length", len);
+            JAddIntToObject(rsp, "cobs", cobsLen);
 
             return rsp;
         };
 
-        WHEN("NoteBinaryDataLength is called") {
-            const char *err = NoteBinaryDataLength(&size);
+        WHEN("NoteBinaryDataEncodedLength is called") {
+            const char *err = NoteBinaryDataEncodedLength(&size);
 
-            REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is not returned") {
                 CHECK(err == NULL);
             }
 
-            THEN("The size out parameter is the length value in the "
-                 "card.binary response") {
-                CHECK(size == len);
+            THEN("The size out parameter is the cobs value in the card.binary "
+                 "response, plus 1 for the trailing newline") {
+                CHECK(size == cobsLen + 1);
             }
         }
     }
