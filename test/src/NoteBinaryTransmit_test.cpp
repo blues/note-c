@@ -186,6 +186,7 @@ SCENARIO("NoteBinaryTransmit")
         uint8_t *tempBuf = (uint8_t *)malloc(tempBufLen);
         uint32_t newBufLen = tempBufLen;
         REQUIRE(!NoteBinaryEncode(buf, dataLen, tempBuf, &newBufLen));
+        free(tempBuf);
 
         WHEN("NoteBinaryTransmit is called") {
             const char *err = NoteBinaryTransmit(buf, dataLen, newBufLen, 0);
