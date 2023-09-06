@@ -175,8 +175,8 @@ i2cReceiveFn hookI2CReceive = NULL;
 // Internal hooks
 typedef bool (*nNoteResetFn) (void);
 typedef const char * (*nTransactionFn) (char *, char **);
-typedef const char * (*nReceiveFn) (uint8_t *, size_t *, bool, size_t, uint32_t *);
-typedef const char * (*nTransmitFn) (uint8_t *, size_t, bool);
+typedef const char * (*nReceiveFn) (uint8_t *, uint32_t *, bool, size_t, uint32_t *);
+typedef const char * (*nTransmitFn) (uint8_t *, uint32_t, bool);
 static nNoteResetFn notecardReset = NULL;
 static nTransactionFn notecardTransaction = NULL;
 static nReceiveFn notecardChunkedReceive = NULL;
@@ -877,7 +877,8 @@ const char *NoteJSONTransaction(char *request, char **response)
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *NoteChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
+const char *NoteChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay,
+                               size_t timeoutMs, uint32_t *available)
 {
     if (notecardChunkedReceive == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";
@@ -895,7 +896,7 @@ const char *NoteChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *NoteChunkedTransmit(uint8_t *buffer, size_t size, bool delay)
+const char *NoteChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay)
 {
     if (notecardChunkedTransmit == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";

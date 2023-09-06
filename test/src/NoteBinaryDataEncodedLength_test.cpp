@@ -21,7 +21,7 @@
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 
-const size_t cobsLen = 10;
+const uint32_t cobsLen = 10;
 
 namespace
 {
@@ -32,7 +32,7 @@ SCENARIO("NoteBinaryDataEncodedLength")
 
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    size_t size = 1;
+    uint32_t size = 1;
 
     GIVEN("The card.binary request fails") {
         NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {

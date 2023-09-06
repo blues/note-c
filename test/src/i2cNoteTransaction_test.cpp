@@ -23,9 +23,9 @@ DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
 FAKE_VOID_FUNC(NoteLockI2C)
 FAKE_VOID_FUNC(NoteUnlockI2C)
-FAKE_VALUE_FUNC(const char *, i2cChunkedTransmit, uint8_t *, size_t, bool)
+FAKE_VALUE_FUNC(const char *, i2cChunkedTransmit, uint8_t *, uint32_t, bool)
 FAKE_VALUE_FUNC(const char *, i2cNoteQueryLength, uint32_t *, size_t)
-FAKE_VALUE_FUNC(const char *, i2cChunkedReceive, uint8_t *, size_t *, bool,
+FAKE_VALUE_FUNC(const char *, i2cChunkedReceive, uint8_t *, uint32_t *, bool,
                 size_t, uint32_t *)
 
 namespace
@@ -126,7 +126,7 @@ TEST_CASE("i2cNoteTransaction")
                   "the Notecard") {
             // Write out the number of bytes reported available on the prior
             // call to i2cNoteQueryLength and report no more bytes available.
-            i2cChunkedReceive_fake.custom_fake = [](uint8_t *buf, size_t *size, bool, size_t,
+            i2cChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool, size_t,
             uint32_t *available) -> const char* {
                 memset(buf, 'a', *available - 1);
                 buf[*available - 1] = '\n';
@@ -168,7 +168,7 @@ TEST_CASE("i2cNoteTransaction")
             // On the first call to i2cChunkedReceive, a string of a's is
             // written to the output buffer, and the Notecard reports that there
             // are still ALLOC_CHUNK bytes to read.
-            auto firstChunk = [](uint8_t *buf, size_t *size, bool, size_t,
+            auto firstChunk = [](uint8_t *buf, uint32_t *size, bool, size_t,
             uint32_t *available) -> const char* {
                 memset(buf, 'a', *available);
                 *size = *available;
@@ -179,7 +179,7 @@ TEST_CASE("i2cNoteTransaction")
             // On the second call, the remaining ALLOC_CHUNK bytes are written
             // out, which is a string of a's terminated with a newline.
             // available is set to 0, indicating there's nothing left to read.
-            auto secondChunk = [](uint8_t *buf, size_t *size, bool, size_t,
+            auto secondChunk = [](uint8_t *buf, uint32_t *size, bool, size_t,
             uint32_t *available) -> const char* {
                 memset(buf, 'a', *available - 1);
                 buf[*available - 1] = '\n';
@@ -188,7 +188,7 @@ TEST_CASE("i2cNoteTransaction")
 
                 return NULL;
             };
-            const char *(*recvFakeSequence[])(uint8_t *, size_t *, bool,
+            const char *(*recvFakeSequence[])(uint8_t *, uint32_t *, bool,
                                               size_t, uint32_t *) = {
                 firstChunk,
                 secondChunk

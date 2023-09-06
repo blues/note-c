@@ -22,13 +22,13 @@ DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 FAKE_VALUE_FUNC(bool, NoteRequest, J *)
-FAKE_VALUE_FUNC(const char *, NoteChunkedTransmit, uint8_t *, size_t, bool)
+FAKE_VALUE_FUNC(const char *, NoteChunkedTransmit, uint8_t *, uint32_t, bool)
 FAKE_VOID_FUNC(NoteLockNote)
 FAKE_VOID_FUNC(NoteUnlockNote)
 
 uint8_t buf[32] = {0xDE, 0xAD, 0xBE, 0xEF};
-size_t dataLen = 4;
-size_t bufLen = sizeof(buf);
+uint32_t dataLen = 4;
+uint32_t bufLen = sizeof(buf);
 
 namespace
 {
@@ -182,9 +182,9 @@ SCENARIO("NoteBinaryTransmit")
         };
 
         // Discover the actual encoded length of the data
-        const size_t tempBufLen = NoteBinaryMaxEncodedLengthForDecodedLength(dataLen);
+        const uint32_t tempBufLen = NoteBinaryMaxEncodedLengthForDecodedLength(dataLen);
         uint8_t *tempBuf = (uint8_t *)malloc(tempBufLen);
-        size_t newBufLen = tempBufLen;
+        uint32_t newBufLen = tempBufLen;
         REQUIRE(!NoteBinaryEncode(buf, dataLen, tempBuf, &newBufLen));
 
         WHEN("NoteBinaryTransmit is called") {

@@ -51,7 +51,7 @@ SCENARIO("i2cChunkedReceive")
 
     GIVEN("0 is specified for the output buffer length") {
         uint8_t buf[] = {0xAB};
-        size_t zeroSize = 0;
+        uint32_t zeroSize = 0;
 
         AND_GIVEN("NoteI2CReceive reports that here are bytes available from "
                   "the Notecard") {
@@ -80,7 +80,7 @@ SCENARIO("i2cChunkedReceive")
 
     GIVEN("NoteI2CReceive returns an error") {
         uint8_t buf[] = {0xAB};
-        size_t size = sizeof(buf);
+        uint32_t size = sizeof(buf);
         NoteI2CReceive_fake.return_val = "some error";
 
         WHEN("i2cChunkedReceive is called") {
@@ -95,7 +95,7 @@ SCENARIO("i2cChunkedReceive")
 
     GIVEN("The output buffer is too small") {
         uint8_t buf[NOTE_I2C_MAX_DEFAULT] = {0};
-        size_t size = sizeof(buf);
+        uint32_t size = sizeof(buf);
         NoteI2CReceive_fake.custom_fake = NoteI2CReceiveInfinite;
 
         WHEN("i2cChunkedReceive is called") {
@@ -128,7 +128,7 @@ SCENARIO("i2cChunkedReceive")
 
     GIVEN("The output buffer is sufficiently large") {
         uint8_t buf[NOTE_I2C_MAX_DEFAULT * 3] = {0};
-        size_t size = sizeof(buf);
+        uint32_t size = sizeof(buf);
 
         NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *buf,
         uint16_t size, uint32_t *available) -> const char* {
@@ -229,7 +229,7 @@ SCENARIO("i2cChunkedReceive")
     GIVEN("End-of-packet (\\n) is received, but NoteI2CReceive indicates more "
           "is still available to read") {
         uint8_t buf[NOTE_I2C_MAX_DEFAULT * 3] = {0};
-        size_t size = sizeof(buf);
+        uint32_t size = sizeof(buf);
         size_t numBytesExpected = NOTE_I2C_MAX_DEFAULT * 2;
 
         // On the first call, NoteI2CReceive reports back that
@@ -306,7 +306,7 @@ SCENARIO("i2cChunkedReceive")
             return NULL;
         };
         uint8_t buf[NOTE_I2C_MAX_DEFAULT] = {0};
-        size_t size = sizeof(buf);
+        uint32_t size = sizeof(buf);
 
         WHEN("i2cChunkedReceive is called") {
             const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
@@ -388,7 +388,7 @@ SCENARIO("i2cChunkedReceive")
         SET_CUSTOM_FAKE_SEQ(NoteI2CReceive, recvFakeSequence, 3);
 
         uint8_t buf[NOTE_I2C_MAX_DEFAULT] = {0};
-        size_t size = sizeof(buf);
+        uint32_t size = sizeof(buf);
 
         WHEN("i2cChunkedReceive is called") {
             const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,

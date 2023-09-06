@@ -95,7 +95,7 @@ static const char BINARY_EOP = '\n';
   @returns An error string on error and NULL on success.
 */
 /**************************************************************************/
-const char * NoteBinaryDataDecodedLength(size_t *len)
+const char * NoteBinaryDataDecodedLength(uint32_t *len)
 {
     // Validate parameter(s)
     if (!len) {
@@ -138,7 +138,7 @@ const char * NoteBinaryDataDecodedLength(size_t *len)
   @returns An error string on error and NULL on success.
 */
 /**************************************************************************/
-const char * NoteBinaryDataEncodedLength(size_t *len)
+const char * NoteBinaryDataEncodedLength(uint32_t *len)
 {
     // Validate parameter(s)
     if (!len) {
@@ -192,8 +192,8 @@ const char * NoteBinaryDataEncodedLength(size_t *len)
   @returns  NULL on success, else an error string pointer.
 */
 /**************************************************************************/
-const char * NoteBinaryDecode(const uint8_t *inBuf, size_t inLen,
-                              uint8_t *outBuf, size_t *outLen)
+const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
+                              uint8_t *outBuf, uint32_t *outLen)
 {
     if (inBuf == NULL || outBuf == NULL || outLen == NULL) {
         NOTE_C_LOG_ERROR("NULL parameter");
@@ -222,8 +222,8 @@ const char * NoteBinaryDecode(const uint8_t *inBuf, size_t inLen,
   @returns  NULL on success, else an error string pointer.
 */
 /**************************************************************************/
-const char * NoteBinaryEncode(const uint8_t *inBuf, size_t inLen,
-                              uint8_t *outBuf, size_t *outLen)
+const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
+                              uint8_t *outBuf, uint32_t *outLen)
 {
     if (inBuf == NULL || outBuf == NULL || outLen == NULL) {
         NOTE_C_LOG_ERROR("NULL parameter");
@@ -292,8 +292,8 @@ uint32_t NoteBinaryMaxDecodedLengthForBufferSize(uint32_t size)
          if you wish to consume the entire buffer.
 */
 /**************************************************************************/
-const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
-                               size_t offset, size_t * dataLen)
+const char * NoteBinaryReceive(uint8_t * buffer, uint32_t bufLen,
+                               uint32_t offset, uint32_t * dataLen)
 {
     // Validate parameter(s)
     if (!buffer) {
@@ -361,7 +361,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, size_t bufLen,
     // part of the binary payload, so we decrement the length by 1 to remove it.
     --bufLen;
 
-    size_t decLen = bufLen;
+    uint32_t decLen = bufLen;
     // Decode it in-place, which is safe because decoding shrinks
     err = NoteBinaryDecode(buffer, bufLen, buffer, &decLen);
     if (err) {
@@ -436,8 +436,8 @@ const char * NoteBinaryReset(void)
          for the buffer pointed to by the `data` parameter.
 */
 /**************************************************************************/
-const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen,
-                                size_t offset)
+const char * NoteBinaryTransmit(uint8_t *data, uint32_t dataLen,
+                                uint32_t bufLen, uint32_t offset)
 {
     // Validate parameter(s)
     if (!dataLen) {
@@ -468,8 +468,8 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen,
 
     // Examine "length" and "max" from the response to evaluate the unencoded
     // space available to "card.binary.put" on the Notecard.
-    const size_t len = JGetInt(rsp,"length");
-    const size_t max = JGetInt(rsp,"max");
+    const long len = JGetInt(rsp,"length");
+    const long max = JGetInt(rsp,"max");
     JDelete(rsp);
     if (!max) {
         NOTE_C_LOG_ERROR("unexpected response: max is zero or not present");
@@ -485,7 +485,7 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen,
     }
 
     // When `offset` is zero, the entire buffer is available
-    const size_t remaining = (offset ? (max - len) : max);
+    const uint32_t remaining = (offset ? (max - len) : max);
     if (dataLen > remaining) {
         NOTE_C_LOG_ERROR("buffer size exceeds available memory");
         return ERRSTR("buffer size exceeds available memory", c_mem);
@@ -497,14 +497,14 @@ const char * NoteBinaryTransmit(uint8_t * data, size_t dataLen, size_t bufLen,
 
     // Shift the data to the end of the buffer. Next, we'll encode the data,
     // outputting the encoded data to the front of the buffer.
-    const size_t dataShift = (bufLen - dataLen);
+    const uint32_t dataShift = (bufLen - dataLen);
     memmove(data + dataShift, data, dataLen);
 
     // outLen holds the buffer size available for encoding. The -1 accounts for
     // one byte of space we need to save for a newline to mark the end of the
     // packet. When NoteBinaryEncode returns, outLen will hold the encoded
     // length.
-    size_t encLen = bufLen - 1;
+    uint32_t encLen = (bufLen - sizeof(char));
     err = NoteBinaryEncode(data + dataShift, dataLen, data, &encLen);
     if (err) {
         return err;

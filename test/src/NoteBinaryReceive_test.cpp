@@ -20,9 +20,9 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
-FAKE_VALUE_FUNC(const char *, NoteBinaryDataEncodedLength, size_t *)
+FAKE_VALUE_FUNC(const char *, NoteBinaryDataEncodedLength, uint32_t *)
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
-FAKE_VALUE_FUNC(const char *, NoteChunkedReceive, uint8_t *, size_t *, bool,
+FAKE_VALUE_FUNC(const char *, NoteChunkedReceive, uint8_t *, uint32_t *, bool,
                 size_t, uint32_t *)
 FAKE_VOID_FUNC(NoteLockNote)
 FAKE_VOID_FUNC(NoteUnlockNote)
@@ -34,11 +34,11 @@ FAKE_VOID_FUNC(NoteUnlockNote)
 // If a lambda captures anything, it can't be converted in this way, and you get
 // a compiler error.
 uint8_t buf[32];
-size_t bufLen = sizeof(buf);
-size_t dataLen = 0;
+uint32_t bufLen = sizeof(buf);
+uint32_t dataLen = 0;
 
 char rawMsg[] = "Hello Blues!";
-size_t rawMsgLen = strlen(rawMsg);
+uint32_t rawMsgLen = strlen(rawMsg);
 
 namespace
 {
@@ -52,7 +52,7 @@ SCENARIO("NoteBinaryReceive")
     RESET_FAKE(NoteLockNote);
     RESET_FAKE(NoteUnlockNote);
 
-    const size_t OFFSET_ZERO = 0;
+    const uint32_t OFFSET_ZERO = 0;
 
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
@@ -61,7 +61,7 @@ SCENARIO("NoteBinaryReceive")
     NoteNewRequest_fake.custom_fake = [](const char *req) -> J* {
         return JCreateObject();
     };
-    NoteBinaryDataEncodedLength_fake.custom_fake = [](size_t *size)
+    NoteBinaryDataEncodedLength_fake.custom_fake = [](uint32_t *size)
     -> const char * {
         *size = bufLen;
 
@@ -126,7 +126,7 @@ SCENARIO("NoteBinaryReceive")
 
     GIVEN("NoteChunkedReceive indicates there's unexpectedly more data "
           "available") {
-        NoteChunkedReceive_fake.custom_fake = [](uint8_t *, size_t *, bool,
+        NoteChunkedReceive_fake.custom_fake = [](uint8_t *, uint32_t *, bool,
         size_t, uint32_t *available) -> const char* {
             *available = 1;
 
@@ -144,9 +144,9 @@ SCENARIO("NoteBinaryReceive")
     }
 
     GIVEN("The binary payload is received") {
-        NoteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, size_t *size,
+        NoteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, uint32_t *size,
         bool, size_t, uint32_t *available) -> const char* {
-            size_t outLen = *size;
+            uint32_t outLen = *size;
             NoteBinaryEncode((uint8_t *)rawMsg, rawMsgLen, buffer, &outLen);
 
             buffer[outLen] = '\n';

@@ -32,7 +32,7 @@ SCENARIO("NoteBinaryDataDecodedLength")
 
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    size_t size = 1;
+    uint32_t size = 1;
 
     GIVEN("The card.binary request fails") {
         NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
