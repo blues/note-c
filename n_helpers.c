@@ -440,9 +440,9 @@ const char * NoteBinaryTransmit(uint8_t *data, uint32_t dataLen,
                                 uint32_t bufLen, uint32_t offset)
 {
     // Validate parameter(s)
-    if (!dataLen) {
-        NOTE_C_LOG_ERROR("dataLen cannot be NULL");
-        return ERRSTR("dataLen cannot be NULL", c_err);
+    if (!data) {
+        NOTE_C_LOG_ERROR("data cannot be NULL");
+        return ERRSTR("data cannot be NULL", c_err);
     }
 
     // Issue a "card.binary" request.
