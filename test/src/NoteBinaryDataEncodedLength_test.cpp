@@ -34,6 +34,16 @@ SCENARIO("NoteBinaryDataEncodedLength")
 
     uint32_t size = 1;
 
+    GIVEN("Bad parameters are supplied") {
+        WHEN("Length is NULL") {
+            const char *err = NoteBinaryDataEncodedLength(NULL);
+
+            THEN("An error is returned") {
+                CHECK(err != NULL);
+            }
+        }
+    }
+
     GIVEN("The card.binary request fails") {
         NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);

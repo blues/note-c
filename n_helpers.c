@@ -186,7 +186,7 @@ const char * NoteBinaryDataEncodedLength(uint32_t *len)
   @param  inBuf The binary payload.
   @param  inLen The length of the binary payload.
   @param  outBuf The buffer to write the decoded payload to. This can be the
-                 same address as inBuf, allowing for in-place decoding.
+                 same address as inBuf, allowing for in place decoding.
   @param  outLen On input, holds the length of outBuf. On output, holds the
                  length of the decoded data.
   @returns  NULL on success, else an error string pointer.
@@ -216,7 +216,7 @@ const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
   @param  inBuf The data to encode.
   @param  inLen The length of the data to encode.
   @param  outBuf The buffer to write the encoded data to. This can be the
-                 same address as inBuf, allowing for in-place encoding.
+                 same address as inBuf, allowing for in place encoding.
   @param  outLen On input, holds the length of outBuf. On output, holds the
                  length of the encoded data.
   @returns  NULL on success, else an error string pointer.
@@ -362,7 +362,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, uint32_t bufLen,
     --bufLen;
 
     uint32_t decLen = bufLen;
-    // Decode it in-place, which is safe because decoding shrinks
+    // Decode it in place, which is safe because decoding shrinks
     err = NoteBinaryDecode(buffer, bufLen, buffer, &decLen);
     if (err) {
         return err;
@@ -1728,7 +1728,7 @@ bool NotePayloadRetrieveAfterSleep(NotePayloadDesc *desc)
         return false;
     }
 
-    // Allocate a buffer for the payload. (We can't decode in-place because we
+    // Allocate a buffer for the payload. (We can't decode in place because we
     // can't risk overwriting memory if the actual payload is even slightly
     // different.)
     uint32_t allocLen = JB64DecodeLen(payload);
