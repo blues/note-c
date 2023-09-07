@@ -287,8 +287,8 @@ const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
 
 //**************************************************************************/
 /*!
-  @brief  Compute the worst-case (i.e. maximum) decoded data length
-          guaranteed to fit into a fixed-size buffer of the given size.
+  @brief  Compute the worst-case (i.e. maximum) decoded data length,
+          prior to decoding, guaranteed to fit into a fixed-size buffer.
 
   @param  size The size of the fixed-size buffer.
 
