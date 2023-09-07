@@ -328,9 +328,9 @@ const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
 uint32_t NoteBinaryMaxDecodedLength(uint32_t bufferSize);
 uint32_t NoteBinaryMaxEncodedLength(uint32_t unencodedLength);
 const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
-                               uint32_t offset, uint32_t *dataLen);
-const char * NoteBinaryTransmit(uint8_t *data, uint32_t dataLen,
-                                uint32_t bufLen, uint32_t offset);
+                               uint32_t decodedOffset, uint32_t *decodedLen);
+const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
+                                uint32_t bufLen, uint32_t decodedOffset);
 uint32_t NoteSetSTSecs(uint32_t secs);
 bool NoteTimeValid(void);
 bool NoteTimeValidST(void);
