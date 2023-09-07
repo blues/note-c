@@ -456,8 +456,8 @@ const char * NoteBinaryReceive(uint8_t * buffer, uint32_t bufLen,
 
   @param  unencodedData  A buffer with data to encode in place
   @param  unencodedLen   The length of the data in the buffer
-  @param  bufLen         The total length of the buffer
-  @param  decodedOffset  The offset where the data buffer should be appended
+  @param  bufLen         The total length of the buffer (see notes)
+  @param  notecardOffset The offset where the data buffer should be appended
                          to the decoded binary data already residing on the
                          Notecard. This does not provide random access, but
                          rather ensures alignment across sequential writes.
@@ -466,13 +466,13 @@ const char * NoteBinaryReceive(uint8_t * buffer, uint32_t bufLen,
 
   @note  Buffers are encoded in place, the buffer _MUST_ be larger than the data
          to be encoded. The original contents of the buffer will be modified.
-  @note  You may use (`NoteBinaryMaxEncodedLength()` + 1) to calculate the
+  @note  Use (`NoteBinaryMaxEncodedLength()` + sizeof(char)) to calculate the
          required size for the buffer pointed to by the `unencodedData`
-         parameter.
+         parameter, which accommodates the encoded data and newline terminator.
  */
 /**************************************************************************/
 const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
-                                uint32_t bufLen, uint32_t decodedOffset)
+                                uint32_t bufLen, uint32_t notecardOffset)
 {
     // Validate parameter(s)
     if (!unencodedData) {
@@ -514,13 +514,13 @@ const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
     // Validate the index provided by the caller, against the `length` value
     // returned from the Notecard to ensure the caller and Notecard agree on
     // how much data is residing on the Notecard.
-    if ((long)decodedOffset != len) {
+    if ((long)notecardOffset != len) {
         NOTE_C_LOG_ERROR("notecard data length is misaligned with offset");
         return ERRSTR("notecard data length is misaligned with offset", c_mem);
     }
 
     // When offset is zero, the entire buffer is available
-    const uint32_t remaining = (decodedOffset ? (max - len) : max);
+    const uint32_t remaining = (notecardOffset ? (max - len) : max);
     if (unencodedLen > remaining) {
         NOTE_C_LOG_ERROR("buffer size exceeds available memory");
         return ERRSTR("buffer size exceeds available memory", c_mem);
@@ -558,8 +558,8 @@ const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
         J *req = NoteNewRequest("card.binary.put");
         if (req) {
             JAddIntToObject(req, "cobs", encLen);
-            if (decodedOffset) {
-                JAddIntToObject(req, "offset", decodedOffset);
+            if (notecardOffset) {
+                JAddIntToObject(req, "offset", notecardOffset);
             }
             JAddStringToObject(req, "status", hashString);
 
