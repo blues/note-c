@@ -287,8 +287,8 @@ const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
 
 //**************************************************************************/
 /*!
-  @brief  Compute the maximum decoded data length, prior to encoding,
-          guaranteed to fit into a fixed-size buffer.
+  @brief  Compute the maximum decoded data length guaranteed
+          to fit into a fixed-size buffer, after being encoded.
 
           This API is designed for a space constrained environment, where a
           working buffer has been allocated to facilitate with binary
@@ -308,8 +308,8 @@ const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
 
   @param  size The size of the fixed-size buffer.
 
-  @returns  The max length of unencoded data certain to fit in the buffer after
-            encoding.
+  @returns  The max length of unencoded data certain to fit in the fixed-size
+            buffer, after being encoded.
  */
 /**************************************************************************/
 uint32_t NoteBinaryMaxDecodedLength(uint32_t bufferSize)
