@@ -90,10 +90,12 @@ static const char BINARY_EOP = '\n';
 /*!
   @brief  Get the length of the data stored on the Notecard. If there's no data
           stored on the Notecard, then `*len` will return 0.
+
   @param  len [out] the length of the decoded contents of the Notecard's binary
           data store.
+
   @returns An error string on error and NULL on success.
-*/
+ */
 /**************************************************************************/
 const char * NoteBinaryDataDecodedLength(uint32_t *len)
 {
@@ -132,11 +134,13 @@ const char * NoteBinaryDataDecodedLength(uint32_t *len)
 /*!
   @brief  Get the required buffer length to receive the entire binary object
           stored on the Notecard.
+
   @param  len [out] the length required to hold the entire contents of the
            Notecard's binary data store. If there's no data stored on the
            Notecard, then `*len` will return 0.
+
   @returns An error string on error and NULL on success.
-*/
+ */
 /**************************************************************************/
 const char * NoteBinaryDataEncodedLength(uint32_t *len)
 {
@@ -182,15 +186,51 @@ const char * NoteBinaryDataEncodedLength(uint32_t *len)
 
 //**************************************************************************/
 /*!
+  @brief  Reset the Notecard's binary buffer
+
+  @returns  NULL on success, else an error string pointer.
+
+  @note  This operation is necessary to clear the Notecard's binary buffer after
+         a binary object is received from the Notecard, or if the Notecard's
+         binary buffer has been left in an unknown state due to an error arising
+         from a binary transfer to the Notecard.
+ */
+/**************************************************************************/
+const char * NoteBinaryDataReset(void)
+{
+    J *req = NoteNewRequest("card.binary");
+    if (req) {
+        JAddBoolToObject(req, "delete", true);
+
+        // Ensure the transaction doesn't return an error.
+        J *rsp = NoteRequestResponse(req);
+        if (NoteResponseError(rsp)) {
+            NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
+            JDelete(rsp);
+            NOTE_C_LOG_ERROR("failed to reset binary buffer");
+            return ERRSTR("failed to reset binary buffer", c_err);
+        }
+    } else {
+        NOTE_C_LOG_ERROR("unable to allocate request");
+        return ERRSTR("unable to allocate request", c_mem);
+    }
+
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
   @brief  Decode a binary payload received from the Notecard.
+
   @param  inBuf The binary payload.
   @param  inLen The length of the binary payload.
   @param  outBuf The buffer to write the decoded payload to. This can be the
                  same address as inBuf, allowing for in place decoding.
   @param  outLen On input, holds the length of outBuf. On output, holds the
                  length of the decoded data.
+
   @returns  NULL on success, else an error string pointer.
-*/
+ */
 /**************************************************************************/
 const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
                               uint8_t *outBuf, uint32_t *outLen)
@@ -212,15 +252,18 @@ const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
 
 //**************************************************************************/
 /*!
+
   @brief  Binary encode a buffer to prepare it for transmission to the Notecard.
+
   @param  inBuf The data to encode.
   @param  inLen The length of the data to encode.
   @param  outBuf The buffer to write the encoded data to. This can be the
                  same address as inBuf, allowing for in place encoding.
   @param  outLen On input, holds the length of outBuf. On output, holds the
                  length of the encoded data.
+
   @returns  NULL on success, else an error string pointer.
-*/
+ */
 /**************************************************************************/
 const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
                               uint8_t *outBuf, uint32_t *outLen)
@@ -243,38 +286,39 @@ const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
 }
 
 //**************************************************************************/
-/*
-  @brief  Compute the worst-case (i.e. maximum) buffer size needed to encode
-          any decoded buffer of the given length.
+/*!
+  @brief  Compute the worst-case (i.e. maximum) decoded data length
+          guaranteed to fit into a fixed-size buffer of the given size.
 
-  @param  len The length of a decoded buffer.
+  @param  size The size of the fixed-size buffer.
 
-  @returns  The max required buffer size to hold the encoded data.
-*/
+  @returns  The max length of decoded data certain to fit in the buffer.
+ */
 /**************************************************************************/
-uint32_t NoteBinaryMaxEncodedLengthForDecodedLength(uint32_t len)
+uint32_t NoteBinaryMaxDecodedLength(uint32_t bufferSize)
 {
-    return cobsEncodedMaxLength(len);
+    return cobsGuaranteedFit(bufferSize);
 }
 
 //**************************************************************************/
 /*!
-  @brief  Compute the worst-case (i.e. maximum) decoded buffer length
-          capable of fitting into a fixed-size buffer of the given size.
+  @brief  Compute the worst-case (i.e. maximum) buffer size needed to encode
+          any unencoded buffer of the given length.
 
-  @param  size The size of the fixed-size buffer.
+  @param  unencodedLength The length of an unencoded buffer.
 
-  @returns  The max length of decoded data able to fit in the buffer.
-*/
+  @returns  The max required buffer size to hold the encoded data.
+ */
 /**************************************************************************/
-uint32_t NoteBinaryMaxDecodedLengthForBufferSize(uint32_t size)
+uint32_t NoteBinaryMaxEncodedLength(uint32_t unencodedLength)
 {
-    return cobsGuaranteedFit(size);
+    return cobsEncodedMaxLength(unencodedLength);
 }
 
 //**************************************************************************/
 /*!
   @brief  Receive a large binary object from the Notecard's binary buffer
+
   @param  buffer A buffer to hold the binary object
   @param  bufLen The total length of the provided buffer
   @param  offset The offset to the unencoded binary data already residing on
@@ -284,13 +328,15 @@ uint32_t NoteBinaryMaxDecodedLengthForBufferSize(uint32_t size)
                   given offset, set this value to `NOTE_C_BINARY_RX_ALL`. This
                   parameter will return the bytes actually received from the
                   Notecard.
+
   @returns  NULL on success, else an error string pointer.
+
   @note  The buffer must be large enough to hold the encoded value of the
          data store contents from the requested offset for the specified length.
   @note  To determine the necessary buffer size for a given `dataLen`, use
          `NoteBinaryEncodingLength()`, or use `NoteBinaryDataEncodedLength()`
          if you wish to consume the entire buffer.
-*/
+ */
 /**************************************************************************/
 const char * NoteBinaryReceive(uint8_t * buffer, uint32_t bufLen,
                                uint32_t offset, uint32_t * dataLen)
@@ -389,39 +435,8 @@ const char * NoteBinaryReceive(uint8_t * buffer, uint32_t bufLen,
 
 //**************************************************************************/
 /*!
-  @brief  Reset the Notecard's binary buffer
-  @returns  NULL on success, else an error string pointer.
-  @note  This operation is not necessary during typical use, but is useful
-         when the Notecard's binary buffer is in an unknown state. The buffer
-         will be automatically reset when a binary object is either received,
-         or transmitted with the offset parameter set to zero (0).
-*/
-/**************************************************************************/
-const char * NoteBinaryReset(void)
-{
-    J *req = NoteNewRequest("card.binary");
-    if (req) {
-        JAddBoolToObject(req, "delete", true);
-
-        // Ensure the transaction doesn't return an error.
-        J *rsp = NoteRequestResponse(req);
-        if (NoteResponseError(rsp)) {
-            NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
-            JDelete(rsp);
-            NOTE_C_LOG_ERROR("failed to reset binary buffer");
-            return ERRSTR("failed to reset binary buffer", c_err);
-        }
-    } else {
-        NOTE_C_LOG_ERROR("unable to allocate request");
-        return ERRSTR("unable to allocate request", c_mem);
-    }
-
-    return NULL;
-}
-
-//**************************************************************************/
-/*!
   @brief  Transmit a large binary object to the Notecard's binary buffer
+
   @param  data  A buffer with data to encode in place
   @param  dataLen  The length of the data in the buffer
   @param  bufLen  The total length of the buffer
@@ -429,12 +444,14 @@ const char * NoteBinaryReset(void)
                   unencoded binary data already residing on the Notecard. This
                   does not provide random access, but rather ensures alignment
                   across sequential writes.
+
   @returns  NULL on success, else an error string pointer.
+
   @note  Buffers are encoded in place, the buffer _MUST_ be larger than the data
          to be encoded. The original contents of the buffer will be modified.
   @note  You may use `NoteBinaryEncodingLength()` to calculate the required size
          for the buffer pointed to by the `data` parameter.
-*/
+ */
 /**************************************************************************/
 const char * NoteBinaryTransmit(uint8_t *data, uint32_t dataLen,
                                 uint32_t bufLen, uint32_t offset)
