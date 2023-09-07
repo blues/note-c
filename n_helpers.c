@@ -186,7 +186,7 @@ const char * NoteBinaryDataEncodedLength(uint32_t *len)
 
 //**************************************************************************/
 /*!
-  @brief  Reset the Notecard's binary buffer
+  @brief  Reset the Notecard's binary buffer.
 
   @returns  NULL on success, else an error string pointer.
 
@@ -225,7 +225,7 @@ const char * NoteBinaryDataReset(void)
   @param  inBuf The binary payload.
   @param  inLen The length of the binary payload.
   @param  outBuf The buffer to write the decoded payload to. This can be the
-                 same address as inBuf, allowing for in place decoding.
+                 same address as inBuf, allowing for in-place decoding.
   @param  outLen On input, holds the length of outBuf. On output, holds the
                  length of the decoded data.
 
@@ -258,7 +258,7 @@ const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
   @param  inBuf The data to encode.
   @param  inLen The length of the data to encode.
   @param  outBuf The buffer to write the encoded data to. This can be the
-                 same address as inBuf, allowing for in place encoding.
+                 same address as inBuf, allowing for in-place encoding.
   @param  outLen On input, holds the length of outBuf. On output, holds the
                  length of the encoded data.
 
@@ -291,8 +291,7 @@ const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
           to fit into a fixed-size buffer, after being encoded.
 
           This API is designed for a space constrained environment, where a
-          working buffer has been allocated to facilitate with binary
-          transactions.
+          working buffer has been allocated to facilitate binary transactions.
 
           There are two primary use cases:
 
@@ -350,9 +349,9 @@ uint32_t NoteBinaryMaxEncodedLength(uint32_t unencodedLength)
 
   @note  The buffer must be large enough to hold the encoded value of the
          data store contents from the requested offset for the specified length.
-  @note  To determine the necessary buffer size for a given data length, use
-         (`NoteBinaryMaxEncodedLength()` + 1), or use
-         `NoteBinaryDataEncodedLength()` if you wish to consume the entire buffer.
+         To determine the necessary buffer size for a given data length, use
+         `(NoteBinaryMaxEncodedLength() + 1)`, or if you wish to consume the
+         entire buffer use `NoteBinaryDataEncodedLength()` instead.
  */
 /**************************************************************************/
 const char * NoteBinaryReceive(uint8_t * buffer, uint32_t bufLen,
@@ -367,7 +366,7 @@ const char * NoteBinaryReceive(uint8_t * buffer, uint32_t bufLen,
         NOTE_C_LOG_ERROR("decodedLen cannot be NULL");
         return ERRSTR("decodedLen cannot be NULL", c_err);
     }
-    if (bufLen < (cobsEncodedMaxLength(*decodedLen) + sizeof(char))) {
+    if (bufLen < (cobsEncodedMaxLength(*decodedLen) + 1)) {
         NOTE_C_LOG_ERROR("insufficient buffer size");
         return ERRSTR("insufficient buffer size", c_err);
     }
@@ -466,9 +465,9 @@ const char * NoteBinaryReceive(uint8_t * buffer, uint32_t bufLen,
 
   @note  Buffers are encoded in place, the buffer _MUST_ be larger than the data
          to be encoded. The original contents of the buffer will be modified.
-  @note  Use (`NoteBinaryMaxEncodedLength()` + sizeof(char)) to calculate the
-         required size for the buffer pointed to by the `unencodedData`
-         parameter, which accommodates the encoded data and newline terminator.
+         Use `(NoteBinaryMaxEncodedLength() + 1)` to calculate the required size
+         for the buffer pointed to by the `bufLen` parameter, which MUST
+         accommodate the encoded data and newline terminator.
  */
 /**************************************************************************/
 const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
@@ -519,7 +518,7 @@ const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
         return ERRSTR("notecard data length is misaligned with offset", c_mem);
     }
 
-    // When offset is zero, the entire buffer is available
+    // When offset is zero, the Notecard's entire binary buffer is available
     const uint32_t remaining = (notecardOffset ? (max - len) : max);
     if (unencodedLen > remaining) {
         NOTE_C_LOG_ERROR("buffer size exceeds available memory");
@@ -535,11 +534,11 @@ const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
     const uint32_t dataShift = (bufLen - unencodedLen);
     memmove(unencodedData + dataShift, unencodedData, unencodedLen);
 
-    // outLen holds the buffer size available for encoding. The -1 accounts for
-    // one byte of space we need to save for a newline to mark the end of the
-    // packet. When NoteBinaryEncode returns, outLen will hold the encoded
-    // length.
-    uint32_t encLen = (bufLen - sizeof(char));
+    // `encLen` holds the buffer size available for encoding. The `- 1` accounts
+    // for one byte of space we need to save for a newline to mark the end of
+    // the packet. When `NoteBinaryEncode()` returns, `encLen` will hold the
+    // encoded length.
+    uint32_t encLen = (bufLen - 1);
     uint8_t * const encodedData = unencodedData;
     err = NoteBinaryEncode(unencodedData + dataShift, unencodedLen, encodedData, &encLen);
     if (err) {
