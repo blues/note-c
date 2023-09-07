@@ -288,11 +288,28 @@ const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
 //**************************************************************************/
 /*!
   @brief  Compute the worst-case (i.e. maximum) decoded data length,
-          prior to decoding, guaranteed to fit into a fixed-size buffer.
+          prior to encoding, guaranteed to fit into a fixed-size buffer.
+
+          This API is designed for a space constrained environment, where a
+          working buffer has been allocated to facilitate with binary
+          transactions.
+
+          There are two primary use cases:
+
+          1. When data is retrieved from the Notecard, it must be requested in
+             terms of the unencoded offset and length. However, the data is
+             encoded prior to transmission, and, as a result, the buffer must be
+             capable of receiving the encoded (larger) data. This API returns a
+             length that is safe to request from the Notecard, because the
+             resulting encoded data is guaranteed to fit in the provided buffer.
+          2. When data is transmitted to the Notecard, this API can be used to
+             verify whether or not unencoded data of a given length will fit in
+             the provided buffer after encoding.
 
   @param  size The size of the fixed-size buffer.
 
-  @returns  The max length of decoded data certain to fit in the buffer.
+  @returns  The max length of unencoded data certain to fit in the buffer after
+            encoding.
  */
 /**************************************************************************/
 uint32_t NoteBinaryMaxDecodedLength(uint32_t bufferSize)
@@ -497,7 +514,7 @@ const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
     // Validate the index provided by the caller, against the `length` value
     // returned from the Notecard to ensure the caller and Notecard agree on
     // how much data is residing on the Notecard.
-    if (decodedOffset != len) {
+    if ((long)decodedOffset != len) {
         NOTE_C_LOG_ERROR("notecard data length is misaligned with offset");
         return ERRSTR("notecard data length is misaligned with offset", c_mem);
     }
