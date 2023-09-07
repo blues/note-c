@@ -24,8 +24,8 @@ FAKE_VALUE_FUNC(bool, NoteSerialAvailable)
 FAKE_VALUE_FUNC(char, NoteSerialReceive)
 FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
 FAKE_VOID_FUNC(NoteSerialTransmit, uint8_t *, size_t, bool)
-FAKE_VALUE_FUNC(const char *, serialChunkedTransmit, uint8_t *, size_t, bool);
-FAKE_VALUE_FUNC(const char *, serialChunkedReceive, uint8_t *, size_t *, bool, size_t, uint32_t *)
+FAKE_VALUE_FUNC(const char *, serialChunkedTransmit, uint8_t *, uint32_t, bool);
+FAKE_VALUE_FUNC(const char *, serialChunkedReceive, uint8_t *, uint32_t *, bool, size_t, uint32_t *)
 
 namespace
 {
@@ -53,14 +53,14 @@ void NoteSerialTransmitAppend(uint8_t *buf, size_t len, bool)
     transmitBufLen += len;
 }
 
-const char *serialChunkedTransmitAppend(uint8_t *buf, size_t len, bool)
+const char *serialChunkedTransmitAppend(uint8_t *buf, uint32_t len, bool)
 {
     NoteSerialTransmitAppend(buf, len, true);
 
     return NULL;
 }
 
-const char *serialChunkedReceiveNothing(uint8_t *, size_t *size, bool, size_t,
+const char *serialChunkedReceiveNothing(uint8_t *, uint32_t *size, bool, size_t,
                                         uint32_t *available)
 {
     *size = 0;
@@ -69,7 +69,7 @@ const char *serialChunkedReceiveNothing(uint8_t *, size_t *size, bool, size_t,
     return NULL;
 }
 
-const char *serialChunkedReceiveOneAndDone(uint8_t *buf, size_t *size, bool,
+const char *serialChunkedReceiveOneAndDone(uint8_t *buf, uint32_t *size, bool,
         size_t, uint32_t *available)
 {
     *buf = '\n';
@@ -83,7 +83,7 @@ const char *serialChunkedReceiveOneAndDone(uint8_t *buf, size_t *size, bool,
 
 size_t serialChunkedReceiveMultipleLeft = SERIAL_CHUNKED_RECEIVE_MULTIPLE_SIZE;
 
-const char *serialChunkedReceiveMultiple(uint8_t *buf, size_t *size, bool,
+const char *serialChunkedReceiveMultiple(uint8_t *buf, uint32_t *size, bool,
         size_t, uint32_t *available)
 {
     memset(buf, 1, *size);

@@ -60,7 +60,7 @@ const char *serialNoteTransaction(char *request, char **response)
     // alloc so we can be assured that it can be null-terminated. This must be
     // the case because json parsing requires a null-terminated string.
     uint32_t available = 0;
-    size_t jsonbufAllocLen = ALLOC_CHUNK;
+    uint32_t jsonbufAllocLen = ALLOC_CHUNK;
     uint8_t *jsonbuf = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
     if (jsonbuf == NULL) {
 #ifdef ERRDBG
@@ -70,9 +70,9 @@ const char *serialNoteTransaction(char *request, char **response)
     }
 
     // Receive the Notecard response
-    size_t jsonbufLen = 0;
+    uint32_t jsonbufLen = 0;
     do {
-        size_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
+        uint32_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
         const char *err = serialChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
@@ -200,7 +200,7 @@ bool serialNoteReset()
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
+const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_t timeoutMs, uint32_t *available)
 {
     size_t received = 0;
     bool overflow = (received >= *size);
@@ -261,12 +261,21 @@ const char *serialChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialChunkedTransmit(uint8_t *buffer, size_t size, bool delay)
+const char *serialChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay)
 {
     // Transmit the request in segments so as not to overwhelm the Notecard's
     // interrupt buffers
     uint32_t segOff = 0;
     uint32_t segLeft = size;
+
+    if (sizeof(size_t) != 4) { // Give the compiler a hint to eliminate the code
+        // Ensure truncation does not occur on 16-bit microcontrollers
+        const size_t castSize = (size_t)size;
+        if (castSize != size) {
+            NOTE_C_LOG_ERROR("Cannot transmit provided size; limit to `size_t`");
+            return "Cannot transmit provided size; limit to `size_t`";
+        }
+    }
 
     while (true) {
         size_t segLen = segLeft;

@@ -137,9 +137,9 @@ const char *i2cNoteTransaction(char *request, char **response)
     }
 
     // Receive the Notecard response
-    size_t jsonbufLen = 0;
+    uint32_t jsonbufLen = 0;
     do {
-        size_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
+        uint32_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
         const char *err = i2cChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
@@ -296,7 +296,7 @@ bool i2cNoteReset()
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t timeoutMs, uint32_t *available)
+const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_t timeoutMs, uint32_t *available)
 {
     // Load buffer with chunked I2C values
     size_t received = 0;
@@ -383,7 +383,7 @@ const char *i2cChunkedReceive(uint8_t *buffer, size_t *size, bool delay, size_t 
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *i2cChunkedTransmit(uint8_t *buffer, size_t size, bool delay)
+const char *i2cChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay)
 {
     // Transmit the request in chunks, but also in segments so as not to
     // overwhelm the notecard's interrupt buffers

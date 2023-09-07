@@ -1,5 +1,5 @@
 /*!
- * @file NoteBinaryRequiredRxBuffer_test.cpp
+ * @file NoteBinaryDataDecodedLength_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -21,18 +21,28 @@
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 
-const size_t cobsLen = 10;
+const size_t len = 10;
 
 namespace
 {
 
-SCENARIO("NoteBinaryRequiredRxBuffer")
+SCENARIO("NoteBinaryDataDecodedLength")
 {
     RESET_FAKE(NoteRequestResponse);
 
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    size_t size = 1;
+    uint32_t size = 1;
+
+    GIVEN("Bad parameters are supplied") {
+        WHEN("Length is NULL") {
+            const char *err = NoteBinaryDataDecodedLength(NULL);
+
+            THEN("An error is returned") {
+                CHECK(err != NULL);
+            }
+        }
+    }
 
     GIVEN("The card.binary request fails") {
         NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
@@ -41,9 +51,10 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
             return NULL;
         };
 
-        WHEN("NoteBinaryRequiredRxBuffer is called") {
-            const char *err = NoteBinaryRequiredRxBuffer(&size);
+        WHEN("NoteBinaryDataDecodedLength is called") {
+            const char *err = NoteBinaryDataDecodedLength(&size);
 
+            REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
@@ -59,9 +70,10 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
             return rsp;
         };
 
-        WHEN("NoteBinaryRequiredRxBuffer is called") {
-            const char *err = NoteBinaryRequiredRxBuffer(&size);
+        WHEN("NoteBinaryDataDecodedLength is called") {
+            const char *err = NoteBinaryDataDecodedLength(&size);
 
+            REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
@@ -73,14 +85,15 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
         NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
-            JAddIntToObject(rsp, "cobs", 0);
+            JAddIntToObject(rsp, "length", 0);
 
             return rsp;
         };
 
-        WHEN("NoteBinaryRequiredRxBuffer is called") {
-            const char *err = NoteBinaryRequiredRxBuffer(&size);
+        WHEN("NoteBinaryDataDecodedLength is called") {
+            const char *err = NoteBinaryDataDecodedLength(&size);
 
+            REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is not returned") {
                 CHECK(err == NULL);
             }
@@ -96,21 +109,22 @@ SCENARIO("NoteBinaryRequiredRxBuffer")
         NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
             JDelete(req);
             J *rsp = JCreateObject();
-            JAddIntToObject(rsp, "cobs", cobsLen);
+            JAddIntToObject(rsp, "length", len);
 
             return rsp;
         };
 
-        WHEN("NoteBinaryRequiredRxBuffer is called") {
-            const char *err = NoteBinaryRequiredRxBuffer(&size);
+        WHEN("NoteBinaryDataDecodedLength is called") {
+            const char *err = NoteBinaryDataDecodedLength(&size);
 
+            REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is not returned") {
                 CHECK(err == NULL);
             }
 
-            THEN("The size out parameter is the size in the card.binary "
-                 "response, plus 1 for the trailing newline") {
-                CHECK(size == cobsLen + 1);
+            THEN("The size out parameter is the length value in the "
+                 "card.binary response") {
+                CHECK(size == len);
             }
         }
     }

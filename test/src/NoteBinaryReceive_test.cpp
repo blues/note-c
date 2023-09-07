@@ -20,9 +20,9 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
-FAKE_VALUE_FUNC(const char *, NoteBinaryRequiredRxBuffer, size_t *)
+FAKE_VALUE_FUNC(const char *, NoteBinaryDataEncodedLength, uint32_t *)
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
-FAKE_VALUE_FUNC(const char *, NoteChunkedReceive, uint8_t *, size_t *, bool,
+FAKE_VALUE_FUNC(const char *, NoteChunkedReceive, uint8_t *, uint32_t *, bool,
                 size_t, uint32_t *)
 FAKE_VOID_FUNC(NoteLockNote)
 FAKE_VOID_FUNC(NoteUnlockNote)
@@ -34,11 +34,11 @@ FAKE_VOID_FUNC(NoteUnlockNote)
 // If a lambda captures anything, it can't be converted in this way, and you get
 // a compiler error.
 uint8_t buf[32];
-size_t bufLen = sizeof(buf);
-size_t dataLen = 0;
+uint32_t bufLen = sizeof(buf);
+uint32_t dataLen = 0;
 
 char rawMsg[] = "Hello Blues!";
-size_t rawMsgLen = strlen(rawMsg);
+uint32_t rawMsgLen = strlen(rawMsg);
 
 namespace
 {
@@ -46,11 +46,13 @@ namespace
 SCENARIO("NoteBinaryReceive")
 {
     RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteBinaryRequiredRxBuffer);
+    RESET_FAKE(NoteBinaryDataEncodedLength);
     RESET_FAKE(NoteRequestResponse);
     RESET_FAKE(NoteChunkedReceive);
     RESET_FAKE(NoteLockNote);
     RESET_FAKE(NoteUnlockNote);
+
+    const uint32_t OFFSET_ZERO = 0;
 
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
@@ -59,7 +61,7 @@ SCENARIO("NoteBinaryReceive")
     NoteNewRequest_fake.custom_fake = [](const char *req) -> J* {
         return JCreateObject();
     };
-    NoteBinaryRequiredRxBuffer_fake.custom_fake = [](size_t *size)
+    NoteBinaryDataEncodedLength_fake.custom_fake = [](uint32_t *size)
     -> const char * {
         *size = bufLen;
 
@@ -76,60 +78,14 @@ SCENARIO("NoteBinaryReceive")
         return rsp;
     };
 
-    GIVEN("NoteBinaryRequiredRxBuffer fails") {
-        NoteBinaryRequiredRxBuffer_fake.custom_fake = [](size_t *size)
-        -> const char * {
-            *size = 0;
-
-            return NULL;
-        };
-
-        WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, &dataLen);
-
-            THEN("An error is returned") {
-                CHECK(err != NULL);
-            }
-        }
-    }
-
-    GIVEN("NoteBinaryRequiredRxBuffer indicates there's no binary data") {
-        NoteBinaryRequiredRxBuffer_fake.custom_fake = NULL;
-        NoteBinaryRequiredRxBuffer_fake.return_val = "some error";
-
-        WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, &dataLen);
-
-            THEN("An error is returned") {
-                CHECK(err != NULL);
-            }
-        }
-    }
-
-    GIVEN("The receive buffer isn't big enough") {
-        NoteBinaryRequiredRxBuffer_fake.custom_fake = [](size_t *size)
-        -> const char * {
-            *size = bufLen + 1;
-
-            return NULL;
-        };
-
-        WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, &dataLen);
-
-            THEN("An error is returned") {
-                CHECK(err != NULL);
-            }
-        }
-    }
-
     GIVEN("Allocating the card.binary.get request fails") {
         NoteNewRequest_fake.custom_fake = NULL;
         NoteNewRequest_fake.return_val = NULL;
 
         WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, &dataLen);
+            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+            REQUIRE(NoteNewRequest_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
@@ -146,8 +102,9 @@ SCENARIO("NoteBinaryReceive")
         };
 
         WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, &dataLen);
+            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+            REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
@@ -158,8 +115,9 @@ SCENARIO("NoteBinaryReceive")
         NoteChunkedReceive_fake.return_val = "some error";
 
         WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, &dataLen);
+            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+            REQUIRE(NoteChunkedReceive_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
@@ -168,7 +126,7 @@ SCENARIO("NoteBinaryReceive")
 
     GIVEN("NoteChunkedReceive indicates there's unexpectedly more data "
           "available") {
-        NoteChunkedReceive_fake.custom_fake = [](uint8_t *, size_t *, bool,
+        NoteChunkedReceive_fake.custom_fake = [](uint8_t *, uint32_t *, bool,
         size_t, uint32_t *available) -> const char* {
             *available = 1;
 
@@ -176,8 +134,9 @@ SCENARIO("NoteBinaryReceive")
         };
 
         WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, &dataLen);
+            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+            REQUIRE(NoteChunkedReceive_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
@@ -185,7 +144,7 @@ SCENARIO("NoteBinaryReceive")
     }
 
     GIVEN("The binary payload is received") {
-        NoteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, size_t *size,
+        NoteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, uint32_t *size,
         bool, size_t, uint32_t *available) -> const char* {
             uint32_t outLen = *size;
             NoteBinaryEncode((uint8_t *)rawMsg, rawMsgLen, buffer, &outLen);
@@ -207,8 +166,10 @@ SCENARIO("NoteBinaryReceive")
             };
 
             WHEN("NoteBinaryReceive is called") {
-                const char *err = NoteBinaryReceive(buf, bufLen, &dataLen);
+                const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+                REQUIRE(NoteChunkedReceive_fake.call_count > 0);
+                REQUIRE(NoteRequestResponse_fake.call_count > 0);
                 THEN("An error is returned") {
                     CHECK(err != NULL);
                 }
@@ -217,8 +178,9 @@ SCENARIO("NoteBinaryReceive")
 
         AND_GIVEN("The computed MD5 matches the status field") {
             WHEN("NoteBinaryReceive is called") {
-                const char *err = NoteBinaryReceive(buf, bufLen, &dataLen);
+                const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
 
+                REQUIRE(NoteChunkedReceive_fake.call_count > 0);
                 THEN("No error is returned") {
                     CHECK(err == NULL);
                 }
@@ -235,66 +197,8 @@ SCENARIO("NoteBinaryReceive")
             }
         }
     }
-
-    // GIVEN("The initial card.binary request fails") {
-    //     NoteRequestResponse_fake.return_val = NULL;
-
-    //     WHEN("NoteBinaryReceive is called") {
-    //         const char *err = NoteBinaryReceive(buf, size);
-
-    //         THEN("An error is returned") {
-    //             CHECK(err != NULL);
-    //         }
-    //     }
-    // }
-
-    // GIVEN("The response to the initial card.binary request has an error") {
-    //     J *rsp = JCreateObject();
-    //     JAddStringToObject(rsp, "err", "some error");
-    //     NoteRequestResponse_fake.return_val = rsp;
-
-    //     WHEN("NoteBinaryReceive is called") {
-    //         const char *err = NoteBinaryReceive(buf, size);
-
-    //         THEN("An error is returned") {
-    //             CHECK(err != NULL);
-    //         }
-    //     }
-    // }
-
-    // GIVEN("The response to the initial card.binary request indicates there's no"
-    //       "binary data to read") {
-    //     J *rsp = JCreateObject();
-    //     JAddIntToObject(rsp, "cobs", 0);
-    //     NoteRequestResponse_fake.return_val = rsp;
-
-    //     WHEN("NoteBinaryReceive is called") {
-    //         const char *err = NoteBinaryReceive(buf, size);
-
-    //         THEN("An error is returned") {
-    //             CHECK(err != NULL);
-    //         }
-    //     }
-    // }
-
-    // GIVEN("The response to the initial card.binary request indicates there's"
-    //       "more data to read than will fit in the provided buffer") {
-    //     J *rsp = JCreateObject();
-    //     JAddIntToObject(rsp, "cobs", size + 1);
-    //     NoteRequestResponse_fake.return_val = rsp;
-
-    //     WHEN("NoteBinaryReceive is called") {
-    //         const char *err = NoteBinaryReceive(buf, size);
-
-    //         THEN("An error is returned") {
-    //             CHECK(err != NULL);
-    //         }
-    //     }
-    // }
-
-    THEN("The Notecard is locked and unlocked the same number of times") {
-        CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
-    }
+    CHECK(NoteLockNote_fake.call_count > 0);
+    CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
 }
 
 }

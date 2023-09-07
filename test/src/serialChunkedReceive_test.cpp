@@ -50,7 +50,7 @@ SCENARIO("serialChunkedReceive")
 
     NoteGetMs_fake.custom_fake = NoteGetMsIncrement;
     uint8_t buf[] = {0xDE, 0xAD, 0xBE, 0xEF, 0x00};
-    size_t size = sizeof(buf);
+    uint32_t size = sizeof(buf);
     bool delay = false;
     const size_t timeoutMs = 3000;
     // 37 is not significant. serialChunkedReceive will return either a 1 or 0
@@ -174,7 +174,7 @@ SCENARIO("serialChunkedReceive")
     GIVEN("A 0-length output buffer is provided") {
         WHEN("serialChunkedReceive is called") {
             uint32_t originalAvailable = available;
-            size_t zeroSize = 0;
+            uint32_t zeroSize = 0;
             const char *err = serialChunkedReceive(buf, &zeroSize, delay,
                                                    timeoutMs, &available);
 
