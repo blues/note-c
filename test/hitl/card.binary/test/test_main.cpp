@@ -9,6 +9,7 @@ int runUnityTests(void)
     UNITY_BEGIN();
     testsuite_binary_generators();
     testsuite_card_binary();
+    delay(1000);        // sometimes the device drops the serial connection too quickly
     return UNITY_END();
 }
 

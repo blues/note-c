@@ -129,7 +129,7 @@ jobs:
           # the request will return a 401 from md5srv, but that's expected without the access token
           # Curl still returns success because it could contact the server
           code=`curl -s -o /dev/null -w "%{http_code}" $MD5SRV_URL`
-          [ "$code" -lt "500" ] || exit "5xx error from tunnel."
+          [ "$code" -lt "500" ] || ( echo "5xx error ($code) from tunnel." && exit 1 )
 
       - name: Create Notehub accesss token
         if: env.CREATE_NOTEHUB_ROUTES!='false'

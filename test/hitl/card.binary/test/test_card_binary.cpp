@@ -381,6 +381,9 @@ TEST(test_max_length_aux_serial)
         RUN_SIZE(Random_1234, BuildRandom, interface, interfacename, 5*1026, 5k, max10k_webpost_chunked, 1234); \
     }
 
+void waitForNotecardConnected() {
+    TEST_ASSERT_TRUE_MESSAGE(NotecardBinary::waitForNotecardConnected(5*60), "Notecard not connected");
+}
 
 /**
  * @brief Runs the card.binary test suite.
@@ -392,6 +395,8 @@ void testsuite_card_binary()
 
     // initialize max_binary_length for the max_length tests
     RUN_TEST(test_get_max_binary_length);
+
+    RUN_TEST(waitForNotecardConnected);
 
     bool smoke_tests = false;
 
