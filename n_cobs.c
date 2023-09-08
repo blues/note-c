@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#define COBS_EOP_OVERHEAD 1
+
 //**************************************************************************/
 /*!
   @brief Decode a string encoded with COBS encoding
@@ -94,6 +96,7 @@ uint32_t cobsEncode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst)
   @param  length Length of the data to encode
 
   @return the length required for encoded data
+
   @note  The computed length does not include the EOP (end-of-packet) marker
  */
 /**************************************************************************/
@@ -123,17 +126,19 @@ uint32_t cobsEncodedLength(const uint8_t *ptr, uint32_t length)
   @param  length Length of the data to encode
 
   @return The max length required to encode the data
+
   @note  Since the contents of the buffer are unknown, then we must assume
           that the entire buffer has no end-of-packet markers. This would
           require the injection of overhead bytes (as opposed to the
           replacement of end-of-packet markers with overhead bytes) at
           intervals of 255, thus producing the worst case scenario.
+  @note  An additional byte is added for the EOP (end-of-packet) marker.
  */
 /**************************************************************************/
 uint32_t cobsEncodedMaxLength(uint32_t length)
 {
     const uint32_t overheadBytes = ((length / 254) + ((length % 254) > 0));
-    return (length + overheadBytes);
+    return (length + overheadBytes + COBS_EOP_OVERHEAD);
 }
 
 //**************************************************************************/
@@ -144,12 +149,13 @@ uint32_t cobsEncodedMaxLength(uint32_t length)
   @param  bufLen Length of the buffer in bytes
 
   @return the length of unencoded data
-  @note The computation may leave additional space at the end, including one
-        byte for the EOP (end-of-packet) marker.
+
+  @note  The computation may leave additional space at the end.
+  @note  An additional byte is added for the EOP (end-of-packet) marker.
  */
 /**************************************************************************/
 uint32_t cobsGuaranteedFit(uint32_t bufLen)
 {
-    uint32_t cobsOverhead = 1 + (bufLen / 254) + 1;
+    uint32_t cobsOverhead = 1 + (bufLen / 254) + COBS_EOP_OVERHEAD;
     return (cobsOverhead > bufLen ? 0 : (bufLen - cobsOverhead));
 }
