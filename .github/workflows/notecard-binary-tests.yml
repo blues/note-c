@@ -71,6 +71,9 @@ jobs:
         with:
           run: |
             bash ./scripts/runmd5srv.sh
+          wait-on:
+            # just a dummy wait-on since this is required.
+            file:${{github.workspace}}/scripts/runmd5srv.sh
 
       # When done this way, the background process is terminated at the end of the step,
       # At least when running with `act`. The same may be true of github runners also.
