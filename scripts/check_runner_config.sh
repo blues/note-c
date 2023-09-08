@@ -7,7 +7,6 @@ function env_var_defined() {
 function check_all() {
     env_var_defined "NOTEHUB_CLIENT_ID"
     env_var_defined "NOTEHUB_CLIENT_SECRET"
-    env_var_defined "GITHUB_RUNNER_NAME"
     env_var_defined "NOTEHUB_PROJECT_UID"
     env_var_defined "NOTEHUB_PRODUCT_UID"
     env_var_defined "MD5SRV_PORT"

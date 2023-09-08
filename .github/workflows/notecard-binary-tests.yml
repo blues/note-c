@@ -22,9 +22,9 @@ jobs:
         NOTEHUB: "notehub.io"
         NOTEHUB_API: "api.notefile.net"
         PIO_PROJECT_DIR: ./test/hitl/card.binary
-        NOTEHUB_PROXY_ROUTE_ALIAS: card.binary.${{env.GITHUB_RUNNER_NAME}}
-        NOTEHUB_PROXY_ROUTE_LABEL: card.binary.proxy.${{env.GITHUB_RUNNER_NAME}}
-        NOTEHUB_HTTP_ROUTE_LABEL: card.binary.http.${{env.GITHUB_RUNNER_NAME}}
+        NOTEHUB_PROXY_ROUTE_ALIAS: card.binary.${{github.run_id}}
+        NOTEHUB_PROXY_ROUTE_LABEL: card.binary.proxy.${{github.run_id}}
+        NOTEHUB_HTTP_ROUTE_LABEL: card.binary.http.${{github.run_id}}
 
         # Troubleshooting helpers
         # DELETE_NOTEHUB_ROUTES set to false to see the created routes on notehub
