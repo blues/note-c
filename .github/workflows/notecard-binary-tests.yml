@@ -47,8 +47,6 @@ jobs:
         run: |
           [ -n "$MD5SRV_TOKEN" ] || echo "MD5SRV_TOKEN=`uuidgen`" >> $GITHUB_ENV
           # propagate the environment variable so that it's available in the `env` context
-          # for use by the localtunnel
-          echo "MD5SRV_PORT=$MD5SRV_PORT" >> $GITHUB_ENV
       - name: Check Env Vars
         run: |
           . scripts/check_runner_config.sh
@@ -191,9 +189,9 @@ jobs:
                 -H "Authorization: Bearer $NOTEHUB_ACCESS_TOKEN")
 
       - name: Run Tests
-        working-directory: ${{env.PIO_PROJECT_DIR}}
         run: |
           source venv/bin/activate
+          cd $PIO_PROJECT_DIR
           platformio test -v -e debug \
              --without-building --without-uploading \
              --test-port "$SWAN_SERIAL" \
