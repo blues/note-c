@@ -21,6 +21,7 @@ jobs:
     env:
         NOTEHUB: "notehub.io"
         NOTEHUB_API: "api.notefile.net"
+        NOTEHUB_ROUTE_TIMEOUT: 180
         PIO_PROJECT_DIR: ./test/hitl/card.binary
         NOTEHUB_PROXY_ROUTE_ALIAS: card.binary.${{github.run_id}}
         NOTEHUB_PROXY_ROUTE_LABEL: card.binary.proxy.${{github.run_id}}
@@ -153,8 +154,8 @@ jobs:
           main: |
             # ?note=1 instructs the MD5 server to process the content as an event, extracting the path
             # from the event body.
-            route_req=`jq -n --arg TOKEN "$MD5SRV_TOKEN" --arg LABEL "$NOTEHUB_HTTP_ROUTE_LABEL" --arg URL "$MD5SRV_URL/?note=1" \
-              '{ "label":$LABEL, "type":"http", "http":{ "timeout":60, "filter": { "type":"include", "files": ["cardbinary.qo"] }, "url":$URL, "http_headers": { "X-Access-Token":$TOKEN } } }'`
+            route_req=`jq -n --arg TOKEN "$MD5SRV_TOKEN" --arg LABEL "$NOTEHUB_HTTP_ROUTE_LABEL" --arg URL "$MD5SRV_URL/?note=1" --argjson TIMEOUT $NOTEHUB_ROUTE_TIMEOUT \
+              '{ "label":$LABEL, "type":"http", "http":{ "timeout":$TIMEOUT, "filter": { "type":"include", "files": ["cardbinary.qo"] }, "url":$URL, "http_headers": { "X-Access-Token":$TOKEN } } }'`
             echo $route_req
             route=`echo "$route_req" | curl -s -f -X POST -L "https://$NOTEHUB_API/v1/projects/${NOTEHUB_PROJECT_UID}/routes" \
                     -H "Authorization: Bearer $NOTEHUB_ACCESS_TOKEN" -d @-`
@@ -174,8 +175,8 @@ jobs:
         with:
           main: |
             ALIAS=$NOTEHUB_PROXY_ROUTE_ALIAS
-            route=`jq -n --arg TOKEN "$MD5SRV_TOKEN" --arg LABEL "$NOTEHUB_PROXY_ROUTE_LABEL" --arg URL "$MD5SRV_URL" --arg ALIAS "$ALIAS" \
-              '{ "label":$LABEL, "type":"proxy", "proxy":{ "timeout":60, "url":$URL, "alias":$ALIAS, "http_headers": { "X-Access-Token":$TOKEN } } }' \
+            route=`jq -n --arg TOKEN "$MD5SRV_TOKEN" --arg LABEL "$NOTEHUB_PROXY_ROUTE_LABEL" --arg URL "$MD5SRV_URL" --arg ALIAS "$ALIAS" --argjson TIMEOUT $NOTEHUB_ROUTE_TIMEOUT \
+              '{ "label":$LABEL, "type":"proxy", "proxy":{ "timeout":$TIMEOUT, "url":$URL, "alias":$ALIAS, "http_headers": { "X-Access-Token":$TOKEN } } }' \
               | curl -s -f -X POST -L "https://api.notefile.net/v1/projects/${NOTEHUB_PROJECT_UID}/routes" \
                     -H "Authorization: Bearer $NOTEHUB_ACCESS_TOKEN" -d @-`
             echo $route
@@ -208,3 +209,9 @@ jobs:
           report_paths: '**/test/hitl/card.binary/test*.xml'
           check_name: Notecard Binary HIL Tests
           require_tests: true
+
+      - name: Chill for a bit
+        if: failure()
+        run:
+          # cancel the workflow manually when you're done with it
+          sleep 3600
