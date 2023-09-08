@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@v3
       - name: Generate ND5 Server Token
         run: |
-          [ -n "$MD5SRV_TOKEN" ] || echo "MD5SRV_TOKEN=abc" >> $GITHUB_ENV
+          [ -n "$MD5SRV_TOKEN" ] || echo "MD5SRV_TOKEN=`uuidgen`" >> $GITHUB_ENV
       - name: Check Env Vars
         run: |
           . scripts/check_runner_config.sh
@@ -71,9 +71,6 @@ jobs:
         with:
           run: |
             bash ./scripts/runmd5srv.sh
-          wait-on: |
-            tcp:${{ env.MD5SRV_ADDRESS }}:${{ env.MD5SRV_PORT }}
-          wait-for: 1m
 
       # When done this way, the background process is terminated at the end of the step,
       # At least when running with `act`. The same may be true of github runners also.
