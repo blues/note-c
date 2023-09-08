@@ -19,186 +19,104 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
-FAKE_VALUE_FUNC(const char *, NoteBinaryDataEncodedLength, uint32_t *)
-FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
-FAKE_VALUE_FUNC(const char *, NoteChunkedReceive, uint8_t *, uint32_t *, bool,
-                size_t, uint32_t *)
-FAKE_VOID_FUNC(NoteLockNote)
-FAKE_VOID_FUNC(NoteUnlockNote)
+FAKE_VALUE_FUNC(const char *, NoteBinaryDataDecodedLength, uint32_t *)
+FAKE_VALUE_FUNC(const char *, NoteBinaryReceiveRange, uint8_t *, uint32_t, uint32_t, uint32_t)
 
-// Most of these variables have to be global because they're accessed in
-// lambda functions used as fakes for various note-c functions. They can't be
-// captured by the lambdas because the lambdas need to be convertible to plain
-// old function pointers in order to be used by the fff mocking/fake framework.
-// If a lambda captures anything, it can't be converted in this way, and you get
-// a compiler error.
-uint8_t buf[32];
-uint32_t bufLen = sizeof(buf);
+uint8_t buffer[12];
+const uint32_t bufLen = sizeof(buffer);
 uint32_t dataLen = 0;
-
-char rawMsg[] = "Hello Blues!";
-uint32_t rawMsgLen = strlen(rawMsg);
 
 namespace
 {
 
 SCENARIO("NoteBinaryReceive")
 {
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteBinaryDataEncodedLength);
-    RESET_FAKE(NoteRequestResponse);
-    RESET_FAKE(NoteChunkedReceive);
-    RESET_FAKE(NoteLockNote);
-    RESET_FAKE(NoteUnlockNote);
+    RESET_FAKE(NoteBinaryDataDecodedLength);
+    RESET_FAKE(NoteBinaryReceiveRange);
+    dataLen = 17;
 
-    const uint32_t OFFSET_ZERO = 0;
+    GIVEN("Bad parameters are supplied") {
+        WHEN("buffer is NULL") {
+            const char *err = NoteBinaryReceive(NULL, bufLen, &dataLen);
 
-    NoteSetFnDefault(malloc, free, NULL, NULL);
+            THEN("An error is returned") {
+                CHECK(err != NULL);
+            }
+        }
+        WHEN("dataLen is NULL") {
+            const char *err = NoteBinaryReceive(buffer, bufLen, NULL);
 
-    // These fakes are the default. Tests below may override them to exercise
-    // different scenarios.
-    NoteNewRequest_fake.custom_fake = [](const char *req) -> J* {
-        return JCreateObject();
-    };
-    NoteBinaryDataEncodedLength_fake.custom_fake = [](uint32_t *size)
-    -> const char * {
-        *size = bufLen;
-
-        return NULL;
-    };
-    NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
-        JDelete(req);
-        J *rsp = JCreateObject();
-        char hash[NOTE_MD5_HASH_STRING_SIZE] = {0};
-        NoteMD5HashString((unsigned char *)rawMsg, rawMsgLen, hash,
-                          NOTE_MD5_HASH_STRING_SIZE);
-        JAddStringToObject(rsp, "status", hash);
-
-        return rsp;
-    };
-
-    GIVEN("Allocating the card.binary.get request fails") {
-        NoteNewRequest_fake.custom_fake = NULL;
-        NoteNewRequest_fake.return_val = NULL;
-
-        WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
-
-            REQUIRE(NoteNewRequest_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
         }
     }
 
-    GIVEN("The response to the card.binary.get request has an error") {
-        NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
-            JDelete(req);
-            J *rsp = JCreateObject();
-            JAddStringToObject(rsp, "err", "some error");
+    GIVEN("NoteBinaryDataDecodedLength() is invoked") {
+        WHEN("An error is encountered") {
+            const char *errMsg = "ERROR! Hacking too much time!";
+            NoteBinaryDataDecodedLength_fake.return_val = errMsg;
+            const char *err = NoteBinaryReceive(buffer, bufLen, &dataLen);
 
-            return rsp;
-        };
-
-        WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
-
-            REQUIRE(NoteRequestResponse_fake.call_count > 0);
-            THEN("An error is returned") {
-                CHECK(err != NULL);
+            REQUIRE(NoteBinaryDataDecodedLength_fake.call_count > 0);
+            THEN("NoteBinaryReceiveRange() is not invoked") {
+                CHECK(NoteBinaryReceiveRange_fake.call_count == 0);
+            }
+            THEN("The dataLen is set to zero") {
+                CHECK(dataLen == 0);
+            }
+            THEN("The error is returned") {
+                CHECK(!strcmp(err,errMsg));
             }
         }
-    }
-
-    GIVEN("NoteChunkedReceive returns an error") {
-        NoteChunkedReceive_fake.return_val = "some error";
-
-        WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
-
-            REQUIRE(NoteChunkedReceive_fake.call_count > 0);
-            THEN("An error is returned") {
-                CHECK(err != NULL);
-            }
-        }
-    }
-
-    GIVEN("NoteChunkedReceive indicates there's unexpectedly more data "
-          "available") {
-        NoteChunkedReceive_fake.custom_fake = [](uint8_t *, uint32_t *, bool,
-        size_t, uint32_t *available) -> const char* {
-            *available = 1;
-
-            return NULL;
-        };
-
-        WHEN("NoteBinaryReceive is called") {
-            const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
-
-            REQUIRE(NoteChunkedReceive_fake.call_count > 0);
-            THEN("An error is returned") {
-                CHECK(err != NULL);
-            }
-        }
-    }
-
-    GIVEN("The binary payload is received") {
-        NoteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, uint32_t *size,
-        bool, size_t, uint32_t *available) -> const char* {
-            uint32_t outLen = *size;
-            NoteBinaryEncode((uint8_t *)rawMsg, rawMsgLen, buffer, &outLen);
-
-            buffer[outLen] = '\n';
-            *size = outLen + 1;
-            *available = 0;
-
-            return NULL;
-        };
-
-        AND_GIVEN("The computed MD5 hash doesn't match the status field") {
-            NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
-                JDelete(req);
-                J *rsp = JCreateObject();
-                JAddStringToObject(rsp, "status", "garbage");
-
-                return rsp;
+        WHEN("No error is encountered") {
+            const uint32_t DECODED_LEN = 79;
+            NoteBinaryDataDecodedLength_fake.custom_fake = [](uint32_t *len) -> const char * {
+                *len = DECODED_LEN;
+                return NULL;
             };
+            const char *err = NoteBinaryReceive(buffer, bufLen, &dataLen);
 
-            WHEN("NoteBinaryReceive is called") {
-                const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
-
-                REQUIRE(NoteChunkedReceive_fake.call_count > 0);
-                REQUIRE(NoteRequestResponse_fake.call_count > 0);
-                THEN("An error is returned") {
-                    CHECK(err != NULL);
-                }
+            REQUIRE(NoteBinaryDataDecodedLength_fake.call_count > 0);
+            THEN("NoteBinaryReceiveRange() is invoked") {
+                CHECK(NoteBinaryReceiveRange_fake.call_count > 0);
             }
-        }
-
-        AND_GIVEN("The computed MD5 matches the status field") {
-            WHEN("NoteBinaryReceive is called") {
-                const char *err = NoteBinaryReceive(buf, bufLen, OFFSET_ZERO, &dataLen);
-
-                REQUIRE(NoteChunkedReceive_fake.call_count > 0);
-                THEN("No error is returned") {
-                    CHECK(err == NULL);
-                }
-
-                THEN("The length of the payload is returned in the dataLen out"
-                     " parameter") {
-                    CHECK(dataLen == rawMsgLen);
-                }
-
-                THEN("The decoded payload is as expected, with no trailing "
-                     "newline") {
-                    CHECK(memcmp(buf, rawMsg, dataLen) == 0);
-                }
+            THEN("The decoded length is passed to NoteBinaryReceiveRange()") {
+                CHECK(NoteBinaryReceiveRange_fake.arg3_history[0] == DECODED_LEN);
             }
         }
     }
-    CHECK(NoteLockNote_fake.call_count > 0);
-    CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
+    GIVEN("NoteBinaryReceiveRange() is invoked") {
+        const uint32_t DECODED_LEN = 79;
+        NoteBinaryDataDecodedLength_fake.custom_fake = [](uint32_t *len) -> const char * {
+            *len = DECODED_LEN;
+            return NULL;
+        };
+        WHEN("An error is encountered") {
+            const char *errMsg = "ERROR! Hacking too much time!";
+            NoteBinaryReceiveRange_fake.return_val = errMsg;
+            const char *err = NoteBinaryReceive(buffer, bufLen, &dataLen);
+
+            REQUIRE(NoteBinaryReceiveRange_fake.call_count > 0);
+            THEN("The dataLen is set to zero") {
+                CHECK(dataLen == 0);
+            }
+            THEN("The error is returned") {
+                CHECK(!strcmp(err,errMsg));
+            }
+        }
+        WHEN("No error is encountered") {
+            const char *err = NoteBinaryReceive(buffer, bufLen, &dataLen);
+
+            REQUIRE(NoteBinaryReceiveRange_fake.call_count > 0);
+            THEN("The decoded length is returned") {
+                CHECK(dataLen == DECODED_LEN);
+            }
+            THEN("The return value is NULL") {
+                CHECK(err == NULL);
+            }
+        }
+    }
 }
 
 }

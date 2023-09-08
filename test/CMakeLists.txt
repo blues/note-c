@@ -46,6 +46,10 @@ macro(add_test TEST_NAME)
         PRIVATE note_c
         PRIVATE Catch2::Catch2WithMain
     )
+    target_compile_options(${TEST_NAME}
+        PRIVATE -Og
+        PRIVATE -ggdb
+    )
 
     list(APPEND TEST_TARGETS ${TEST_NAME})
 
@@ -152,6 +156,7 @@ add_test(NoteBinaryEncode_test)
 add_test(NoteBinaryMaxEncodedLength_test)
 add_test(NoteBinaryMaxDecodedLength_test)
 add_test(NoteBinaryReceive_test)
+add_test(NoteBinaryReceiveRange_test)
 add_test(NoteBinaryTransmit_test)
 
 if(NOTE_C_COVERAGE)

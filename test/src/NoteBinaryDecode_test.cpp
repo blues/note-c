@@ -22,9 +22,10 @@ DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(uint32_t, cobsDecode, uint8_t *, uint32_t, uint8_t, uint8_t *)
 
 uint8_t inBuf[12];
-uint32_t inLen;
+const uint32_t inLen = sizeof(inBuf);
 uint8_t outBuf[10];
-uint32_t outLen;
+const uint32_t outLen = sizeof(outBuf);
+uint32_t decLen;
 
 namespace
 {
@@ -32,26 +33,25 @@ namespace
 SCENARIO("NoteBinaryDecode")
 {
     RESET_FAKE(cobsDecode);
-    uint32_t inLen = sizeof(inBuf);
-    uint32_t outLen = sizeof(outBuf);
+    decLen = 0;
 
     GIVEN("Bad parameters are supplied") {
         WHEN("inBuf is NULL") {
-            const char *err = NoteBinaryDecode(NULL, inLen, outBuf, &outLen);
+            const char *err = NoteBinaryDecode(NULL, inLen, outBuf, outLen, &decLen);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
         }
         WHEN("outBuf is NULL") {
-            const char *err = NoteBinaryDecode(inBuf, inLen, NULL, &outLen);
+            const char *err = NoteBinaryDecode(inBuf, inLen, NULL, outLen, &decLen);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
         }
-        WHEN("outLen is NULL") {
-            const char *err = NoteBinaryDecode(inBuf, inLen, outBuf, NULL);
+        WHEN("decLen is NULL") {
+            const char *err = NoteBinaryDecode(inBuf, inLen, outBuf, outLen, NULL);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -59,7 +59,7 @@ SCENARIO("NoteBinaryDecode")
         }
         WHEN("outLen is less than the size required for the worst-case decoding") {
             uint32_t badOutLen = (cobsGuaranteedFit(inLen) - 1);
-            const char *err = NoteBinaryDecode(inBuf, inLen, outBuf, &badOutLen);
+            const char *err = NoteBinaryDecode(inBuf, inLen, outBuf, badOutLen, &decLen);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -70,7 +70,7 @@ SCENARIO("NoteBinaryDecode")
     GIVEN("Parameters are in order") {
         const uint32_t EXPECTED_RESULT = 79;
         cobsDecode_fake.return_val = EXPECTED_RESULT;
-        const char *err = NoteBinaryDecode(inBuf, inLen, outBuf, &outLen);
+        const char *err = NoteBinaryDecode(inBuf, inLen, outBuf, outLen, &decLen);
 
         THEN("cobsDecode is invoked") {
             CHECK(cobsDecode_fake.call_count > 0);
@@ -84,7 +84,7 @@ SCENARIO("NoteBinaryDecode")
             }
 
             THEN("The result is returned without modification") {
-                CHECK(EXPECTED_RESULT == outLen);
+                CHECK(EXPECTED_RESULT == decLen);
             }
         }
     }

@@ -47,6 +47,8 @@ target_compile_options(
         -Wextra
         -Wpedantic
         -Werror
+        -Og
+        -ggdb
 )
 target_include_directories(
     note_c

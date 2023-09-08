@@ -24,9 +24,10 @@ DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(uint32_t, cobsEncode, uint8_t *, uint32_t, uint8_t, uint8_t *)
 
 uint8_t inBuf[10] = "Hi there!";
-uint32_t inLen;
+uint32_t inLen = strlen((const char *)inBuf);
 uint8_t outBuf[12];
-uint32_t outLen;
+uint32_t outLen = sizeof(outBuf);
+uint32_t encLen;
 
 namespace
 {
@@ -34,26 +35,25 @@ namespace
 SCENARIO("NoteBinaryEncode")
 {
     RESET_FAKE(cobsEncode);
-    uint32_t inLen = strlen((const char *)inBuf);
-    uint32_t outLen = sizeof(outBuf);
+    encLen = 0;
 
     GIVEN("Bad parameters are supplied") {
         WHEN("inBuf is NULL") {
-            const char *err = NoteBinaryEncode(NULL, inLen, outBuf, &outLen);
+            const char *err = NoteBinaryEncode(NULL, inLen, outBuf, outLen, &encLen);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
         }
         WHEN("outBuf is NULL") {
-            const char *err = NoteBinaryEncode(inBuf, inLen, NULL, &outLen);
+            const char *err = NoteBinaryEncode(inBuf, inLen, NULL, outLen, &encLen);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
         }
-        WHEN("outLen is NULL") {
-            const char *err = NoteBinaryEncode(inBuf, inLen, outBuf, NULL);
+        WHEN("encLen is NULL") {
+            const char *err = NoteBinaryEncode(inBuf, inLen, outBuf, outLen, NULL);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -61,7 +61,7 @@ SCENARIO("NoteBinaryEncode")
         }
         WHEN("outLen is less than the size required for in place encoding") {
             uint32_t badOutLen = (cobsEncodedLength(inBuf, inLen) - 1);
-            const char *err = NoteBinaryEncode(inBuf, inLen, outBuf, &badOutLen);
+            const char *err = NoteBinaryEncode(inBuf, inLen, outBuf, badOutLen, &encLen);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -72,7 +72,7 @@ SCENARIO("NoteBinaryEncode")
     GIVEN("Parameters are in order") {
         const uint32_t EXPECTED_RESULT = 79;
         cobsEncode_fake.return_val = EXPECTED_RESULT;
-        const char *err = NoteBinaryEncode(inBuf, inLen, outBuf, &outLen);
+        const char *err = NoteBinaryEncode(inBuf, inLen, outBuf, outLen, &encLen);
 
         THEN("cobsEncode is invoked") {
             CHECK(cobsEncode_fake.call_count > 0);
@@ -86,7 +86,7 @@ SCENARIO("NoteBinaryEncode")
             }
 
             THEN("The result is returned without modification") {
-                CHECK(EXPECTED_RESULT == outLen);
+                CHECK(EXPECTED_RESULT == encLen);
             }
         }
     }
