@@ -1,5 +1,5 @@
 /*!
- * @file NoteBinaryTransmit_test.cpp
+ * @file NoteBinaryStoreTransmit_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -33,7 +33,7 @@ uint32_t bufLen = sizeof(buf);
 namespace
 {
 
-SCENARIO("NoteBinaryTransmit")
+SCENARIO("NoteBinaryStoreTransmit")
 {
     RESET_FAKE(NoteNewRequest);
     RESET_FAKE(NoteRequestResponse);
@@ -58,8 +58,8 @@ SCENARIO("NoteBinaryTransmit")
                 return NULL;
             };
 
-            WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
+            WHEN("NoteBinaryStoreTransmit is called") {
+                const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -76,8 +76,8 @@ SCENARIO("NoteBinaryTransmit")
                 return rsp;
             };
 
-            WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
+            WHEN("NoteBinaryStoreTransmit is called") {
+                const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -94,8 +94,8 @@ SCENARIO("NoteBinaryTransmit")
                 return rsp;
             };
 
-            WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
+            WHEN("NoteBinaryStoreTransmit is called") {
+                const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -114,8 +114,8 @@ SCENARIO("NoteBinaryTransmit")
                 return rsp;
             };
 
-            WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
+            WHEN("NoteBinaryStoreTransmit is called") {
+                const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -136,8 +136,8 @@ SCENARIO("NoteBinaryTransmit")
                     return rsp;
                 };
 
-                WHEN("NoteBinaryTransmit is called") {
-                    const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
+                WHEN("NoteBinaryStoreTransmit is called") {
+                    const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen,
                                                          0);
 
                     THEN("An error is returned") {
@@ -158,8 +158,8 @@ SCENARIO("NoteBinaryTransmit")
                     return rsp;
                 };
 
-                WHEN("NoteBinaryTransmit is called") {
-                    const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
+                WHEN("NoteBinaryStoreTransmit is called") {
+                    const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen,
                                                          dataLen);
 
                     THEN("An error is returned") {
@@ -188,8 +188,8 @@ SCENARIO("NoteBinaryTransmit")
         REQUIRE(newBufLen > 0);
         free(tempBuf);
 
-        WHEN("NoteBinaryTransmit is called") {
-            const char *err = NoteBinaryTransmit(buf, dataLen, newBufLen, 0);
+        WHEN("NoteBinaryStoreTransmit is called") {
+            const char *err = NoteBinaryStoreTransmit(buf, dataLen, newBufLen, 0);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -215,8 +215,8 @@ SCENARIO("NoteBinaryTransmit")
             J *noteNewReqRetSequence[] = {JCreateObject(), NULL};
             SET_RETURN_SEQ(NoteNewRequest, noteNewReqRetSequence, 2);
 
-            WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
+            WHEN("NoteBinaryStoreTransmit is called") {
+                const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -235,8 +235,8 @@ SCENARIO("NoteBinaryTransmit")
                 return false;
             };
 
-            WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
+            WHEN("NoteBinaryStoreTransmit is called") {
+                const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -256,8 +256,8 @@ SCENARIO("NoteBinaryTransmit")
             };
             NoteChunkedTransmit_fake.return_val = "some error";
 
-            WHEN("NoteBinaryTransmit is called") {
-                const char *err = NoteBinaryTransmit(buf, dataLen, bufLen, 0);
+            WHEN("NoteBinaryStoreTransmit is called") {
+                const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen, 0);
 
                 THEN("An error is returned") {
                     CHECK(err != NULL);
@@ -299,8 +299,8 @@ SCENARIO("NoteBinaryTransmit")
                     return NULL;
                 };
 
-                WHEN("NoteBinaryTransmit is called") {
-                    const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
+                WHEN("NoteBinaryStoreTransmit is called") {
+                    const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen,
                                                          0);
 
                     THEN("An error is returned") {
@@ -323,8 +323,8 @@ SCENARIO("NoteBinaryTransmit")
                     return rsp;
                 };
 
-                WHEN("NoteBinaryTransmit is called") {
-                    const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
+                WHEN("NoteBinaryStoreTransmit is called") {
+                    const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen,
                                                          0);
 
                     THEN("An error is returned") {
@@ -348,8 +348,8 @@ SCENARIO("NoteBinaryTransmit")
                     return rsp;
                 };
 
-                WHEN("NoteBinaryTransmit is called") {
-                    const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
+                WHEN("NoteBinaryStoreTransmit is called") {
+                    const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen,
                                                          0);
 
                     THEN("An error is returned") {
@@ -385,8 +385,8 @@ SCENARIO("NoteBinaryTransmit")
                 SET_CUSTOM_FAKE_SEQ(NoteRequestResponse,
                                     reqRespFakeSequenceSuccess, 3);
 
-                WHEN("NoteBinaryTransmit is called") {
-                    const char *err = NoteBinaryTransmit(buf, dataLen, bufLen,
+                WHEN("NoteBinaryStoreTransmit is called") {
+                    const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen,
                                                          0);
 
                     THEN("No error is returned") {

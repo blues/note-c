@@ -328,8 +328,8 @@ const char * NoteBinaryStoreEncodedLength(uint32_t *len);
 const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
                                     uint32_t decodedOffset, uint32_t decodedLen);
 const char * NoteBinaryStoreReset(void);
-const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
-                                uint32_t bufLen, uint32_t notecardOffset);
+const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
+                                     uint32_t bufLen, uint32_t notecardOffset);
 uint32_t NoteSetSTSecs(uint32_t secs);
 bool NoteTimeValid(void);
 bool NoteTimeValidST(void);
