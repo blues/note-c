@@ -1,5 +1,5 @@
 /*!
- * @file NoteBinaryDataReset_test.cpp
+ * @file NoteBinaryStoreReset_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -25,7 +25,7 @@ FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 namespace
 {
 
-SCENARIO("NoteBinaryDataReset")
+SCENARIO("NoteBinaryStoreReset")
 {
     RESET_FAKE(NoteNewRequest);
     RESET_FAKE(NoteRequestResponse);
@@ -43,8 +43,8 @@ SCENARIO("NoteBinaryDataReset")
         NoteNewRequest_fake.custom_fake = NULL;
         NoteNewRequest_fake.return_val = NULL;
 
-        WHEN("NoteBinaryDataReset is called") {
-            const char *err = NoteBinaryDataReset();
+        WHEN("NoteBinaryStoreReset is called") {
+            const char *err = NoteBinaryStoreReset();
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -61,8 +61,8 @@ SCENARIO("NoteBinaryDataReset")
             return rsp;
         };
 
-        WHEN("NoteBinaryDataReset is called") {
-            const char *err = NoteBinaryDataReset();
+        WHEN("NoteBinaryStoreReset is called") {
+            const char *err = NoteBinaryStoreReset();
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -71,8 +71,8 @@ SCENARIO("NoteBinaryDataReset")
     }
 
     GIVEN("The response to the card.binary indicates success") {
-        WHEN("NoteBinaryDataReset is called") {
-            const char *err = NoteBinaryDataReset();
+        WHEN("NoteBinaryStoreReset is called") {
+            const char *err = NoteBinaryStoreReset();
 
             THEN("An error is not returned") {
                 CHECK(err == NULL);

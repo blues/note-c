@@ -88,136 +88,6 @@ static const char NOTE_C_BINARY_EOP = '\n';
 
 //**************************************************************************/
 /*!
-  @brief  Get the length of the data stored on the Notecard. If there's no data
-          stored on the Notecard, then `*len` will return 0.
-
-  @param  len [out] The length of the decoded contents of the Notecard's binary
-          data store.
-
-  @returns An error string on error and NULL on success.
- */
-/**************************************************************************/
-const char * NoteBinaryStoreDecodedLength(uint32_t *len)
-{
-    // Validate parameter(s)
-    if (!len) {
-        const char *err = ERRSTR("len cannot be NULL", c_bad);
-        NOTE_C_LOG_ERROR(err);
-        return err;
-    }
-
-    // Issue a "card.binary" request.
-    J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
-    if (!rsp) {
-        const char *err = ERRSTR("unable to issue binary request", c_err);
-        NOTE_C_LOG_ERROR(err);
-        return err;
-    }
-
-    // Ensure the transaction doesn't return an error and confirm the binary
-    // feature is available.
-    if (NoteResponseError(rsp)) {
-        const char *err = JGetString(rsp, "err");
-        NOTE_C_LOG_ERROR(err);
-        JDelete(rsp);
-        err = ERRSTR("unexpected error received during handshake", c_err);
-        NOTE_C_LOG_ERROR(err);
-        return err;
-    }
-
-    // Examine "length" from the response to evaluate the length of the decoded
-    // data residing on the Notecard.
-    *len = JGetInt(rsp, "length");
-    JDelete(rsp);
-
-    return NULL;
-}
-
-//**************************************************************************/
-/*!
-  @brief  Get the required buffer length to receive the entire binary object
-          stored on the Notecard.
-
-  @param  len [out] The length required to hold the entire contents of the
-           Notecard's binary data store. If there's no data stored on the
-           Notecard, then `len` will return 0.
-
-  @returns An error string on error and NULL on success.
- */
-/**************************************************************************/
-const char * NoteBinaryStoreEncodedLength(uint32_t *len)
-{
-    // Validate parameter(s)
-    if (!len) {
-        const char *err = ERRSTR("size cannot be NULL", c_err);
-        NOTE_C_LOG_ERROR(err);
-        return err;
-    }
-
-    // Issue a "card.binary" request.
-    J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
-    if (!rsp) {
-        const char *err = ERRSTR("unable to issue binary request", c_err);
-        NOTE_C_LOG_ERROR(err);
-        return err;
-    }
-
-    // Ensure the transaction doesn't return an error and confirm the binary
-    // feature is available.
-    if (NoteResponseError(rsp)) {
-        const char *err = JGetString(rsp, "err");
-        NOTE_C_LOG_ERROR(err);
-        JDelete(rsp);
-        err = ERRSTR("unexpected error received during handshake", c_bad);
-        NOTE_C_LOG_ERROR(err);
-        return err;
-    }
-
-    // Examine "cobs" from the response to evaluate the space required to hold
-    // the COBS-encoded data to be received from the Notecard.
-    long int cobs = JGetInt(rsp, "cobs");
-    JDelete(rsp);
-    *len = cobs;
-
-    return NULL;
-}
-
-//**************************************************************************/
-/*!
-  @brief  Reset the Notecard's binary buffer.
-
-  @returns  NULL on success, else an error string pointer.
-
-  @note  This operation is necessary to clear the Notecard's binary buffer after
-         a binary object is received from the Notecard, or if the Notecard's
-         binary buffer has been left in an unknown state due to an error arising
-         from a binary transfer to the Notecard.
- */
-/**************************************************************************/
-const char * NoteBinaryDataReset(void)
-{
-    J *req = NoteNewRequest("card.binary");
-    if (req) {
-        JAddBoolToObject(req, "delete", true);
-
-        // Ensure the transaction doesn't return an error.
-        J *rsp = NoteRequestResponse(req);
-        if (NoteResponseError(rsp)) {
-            NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
-            JDelete(rsp);
-            NOTE_C_LOG_ERROR("failed to reset binary buffer");
-            return ERRSTR("failed to reset binary buffer", c_err);
-        }
-    } else {
-        NOTE_C_LOG_ERROR("unable to allocate request");
-        return ERRSTR("unable to allocate request", c_mem);
-    }
-
-    return NULL;
-}
-
-//**************************************************************************/
-/*!
   @brief  Decode binary data received from the Notecard.
 
   @param  encData The encoded binary data to decode.
@@ -342,6 +212,136 @@ uint32_t NoteBinaryCodecMaxDecodedLength(uint32_t bufferSize)
 uint32_t NoteBinaryCodecMaxEncodedLength(uint32_t unencodedLength)
 {
     return cobsEncodedMaxLength(unencodedLength);
+}
+
+//**************************************************************************/
+/*!
+  @brief  Get the length of the data stored on the Notecard. If there's no data
+          stored on the Notecard, then `*len` will return 0.
+
+  @param  len [out] The length of the decoded contents of the Notecard's binary
+          data store.
+
+  @returns An error string on error and NULL on success.
+ */
+/**************************************************************************/
+const char * NoteBinaryStoreDecodedLength(uint32_t *len)
+{
+    // Validate parameter(s)
+    if (!len) {
+        const char *err = ERRSTR("len cannot be NULL", c_bad);
+        NOTE_C_LOG_ERROR(err);
+        return err;
+    }
+
+    // Issue a "card.binary" request.
+    J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
+    if (!rsp) {
+        const char *err = ERRSTR("unable to issue binary request", c_err);
+        NOTE_C_LOG_ERROR(err);
+        return err;
+    }
+
+    // Ensure the transaction doesn't return an error and confirm the binary
+    // feature is available.
+    if (NoteResponseError(rsp)) {
+        NOTE_C_LOG_ERROR(JGetString(rsp, "err"));
+        JDelete(rsp);
+        const char *err = ERRSTR("unexpected error received during handshake", c_err);
+        NOTE_C_LOG_ERROR(err);
+        return err;
+    }
+
+    // Examine "length" from the response to evaluate the length of the decoded
+    // data residing on the Notecard.
+    *len = JGetInt(rsp, "length");
+    JDelete(rsp);
+
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Get the required buffer length to receive the entire binary object
+          stored on the Notecard.
+
+  @param  len [out] The length required to hold the entire contents of the
+           Notecard's binary data store. If there's no data stored on the
+           Notecard, then `len` will return 0.
+
+  @returns An error string on error and NULL on success.
+ */
+/**************************************************************************/
+const char * NoteBinaryStoreEncodedLength(uint32_t *len)
+{
+    // Validate parameter(s)
+    if (!len) {
+        const char *err = ERRSTR("size cannot be NULL", c_err);
+        NOTE_C_LOG_ERROR(err);
+        return err;
+    }
+
+    // Issue a "card.binary" request.
+    J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
+    if (!rsp) {
+        const char *err = ERRSTR("unable to issue binary request", c_err);
+        NOTE_C_LOG_ERROR(err);
+        return err;
+    }
+
+    // Ensure the transaction doesn't return an error and confirm the binary
+    // feature is available.
+    if (NoteResponseError(rsp)) {
+        NOTE_C_LOG_ERROR(JGetString(rsp, "err"));
+        JDelete(rsp);
+        const char *err = ERRSTR("unexpected error received during handshake", c_bad);
+        NOTE_C_LOG_ERROR(err);
+        return err;
+    }
+
+    // Examine "cobs" from the response to evaluate the space required to hold
+    // the COBS-encoded data to be received from the Notecard.
+    long int cobs = JGetInt(rsp, "cobs");
+    JDelete(rsp);
+    *len = cobs;
+
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Reset the Notecard's binary buffer.
+
+  @returns  NULL on success, else an error string pointer.
+
+  @note  This operation is necessary to clear the Notecard's binary buffer after
+         a binary object is received from the Notecard, or if the Notecard's
+         binary buffer has been left in an unknown state due to an error arising
+         from a binary transfer to the Notecard.
+ */
+/**************************************************************************/
+const char * NoteBinaryStoreReset(void)
+{
+    J *req = NoteNewRequest("card.binary");
+    if (req) {
+        JAddBoolToObject(req, "delete", true);
+
+        // Ensure the transaction doesn't return an error.
+        J *rsp = NoteRequestResponse(req);
+        if (NoteResponseError(rsp)) {
+            NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
+            JDelete(rsp);
+            const char *err = ERRSTR("failed to reset binary buffer", c_err);
+            NOTE_C_LOG_ERROR(err);
+            return err;
+        }
+    } else {
+        const char *err = ERRSTR("unable to allocate request", c_mem);
+        NOTE_C_LOG_ERROR(err);
+        return err;
+    }
+
+    return NULL;
 }
 
 //**************************************************************************/
