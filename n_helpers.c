@@ -91,9 +91,9 @@ static const char NOTE_C_BINARY_EOP = '\n';
   @brief  Decode binary data received from the Notecard.
 
   @param  encData The encoded binary data to decode.
-  @param  encLen The length of the encoded binary data.
-  @param  decBuf The target buffer for the decoded data. This can be the
-                 same address as `encData`, allowing for in-place decoding.
+  @param  encDataLen The length of the encoded binary data.
+  @param  decBuf The target buffer for the decoded data. For in-place decoding,
+                 `decBuf` can use the same address as `encData` (see note).
   @param  decBufSize The size of `decBuf`.
 
   @returns  The length of the decoded data, or zero on error.
@@ -131,18 +131,19 @@ uint32_t NoteBinaryCodecDecode(const uint8_t *encData, uint32_t encDataLen,
 
   @param  decData The decoded binary data to encode.
   @param  decDataLen The length of the decoded binary data.
-  @param  encBuf The target buffer for the encoded data. This can be in the same
-                 buffer as `decData`, allowing for in-place encoding (see note).
+  @param  encBuf The target buffer for the encoded data. For in-place encoding,
+                 `encBuf` can use the same buffer as `decData`, but cannot
+                 share the same address (see note).
   @param  encBufSize The size of `encBuf`.
 
-  @returns  NULL on success, else an error string pointer.
+  @returns  The length of the encoded data, or zero on error.
 
   @note Use `NoteBinaryCodecMaxEncodedLength()` to calculate the required
         size for the buffer pointed to by the `encBuf` parameter, which MUST
         accommodate both the encoded data and newline terminator.
   @note This API supports in-place encoding. If you wish to utilize in-place
-        encoding, then right-justify the decoded data in the buffer (updating
-        `decBuf` accordingly) and set the value of `encBuf` to the beginning
+        encoding, shift the decoded data to the end of the buffer, update
+        `decBuf` accordingly, and set the value of `encBuf` to the beginning
         of the buffer.
  */
 /**************************************************************************/
@@ -217,11 +218,11 @@ uint32_t NoteBinaryCodecMaxEncodedLength(uint32_t unencodedLength)
 
 //**************************************************************************/
 /*!
-  @brief  Get the length of the data stored on the Notecard. If there's no data
-          stored on the Notecard, then `*len` will return 0.
+  @brief  Get the length of the data in the Notecard's binary store. If there's
+          no data on the Notecard, then `*len` will return 0.
 
   @param  len [out] The length of the decoded contents of the Notecard's binary
-          data store.
+          store.
 
   @returns An error string on error and NULL on success.
  */
@@ -264,11 +265,11 @@ const char * NoteBinaryStoreDecodedLength(uint32_t *len)
 //**************************************************************************/
 /*!
   @brief  Get the required buffer length to receive the entire binary object
-          stored on the Notecard.
+          stored in the Notecard's binary store.
 
   @param  len [out] The length required to hold the entire contents of the
-           Notecard's binary data store. If there's no data stored on the
-           Notecard, then `len` will return 0.
+          Notecard's binary store. If there's no data on the Notecard, then
+          `len` will return 0.
 
   @returns An error string on error and NULL on success.
  */
@@ -301,7 +302,7 @@ const char * NoteBinaryStoreEncodedLength(uint32_t *len)
     }
 
     // Examine "cobs" from the response to evaluate the space required to hold
-    // the COBS-encoded data to be received from the Notecard.
+    // the encoded data to be received from the Notecard.
     long int cobs = JGetInt(rsp, "cobs");
     JDelete(rsp);
     *len = cobs;
@@ -311,14 +312,13 @@ const char * NoteBinaryStoreEncodedLength(uint32_t *len)
 
 //**************************************************************************/
 /*!
-  @brief  Receive a large binary object from the Notecard's binary buffer
+  @brief  Receive a large binary object from the Notecard's binary store.
 
-  @param  buffer        A buffer to hold the binary range
-  @param  bufLen        The total length of the provided buffer
-  @param  decodedOffset The offset to the decoded binary data already residing
-                        on the Notecard
-  @param  decodedLen    The length of the decoded data to fetch from the
-                        Notecard.
+  @param  buffer A buffer to hold the binary range.
+  @param  bufLen The total length of the provided buffer.
+  @param  decodedOffset The offset to the decoded binary data residing
+                        in the Notecard's binary store.
+  @param  decodedLen The length of the decoded data to fetch from the Notecard.
 
   @returns  NULL on success, else an error string pointer.
 
@@ -434,13 +434,13 @@ const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
 
 //**************************************************************************/
 /*!
-  @brief  Reset the Notecard's binary buffer.
+  @brief  Reset the Notecard's binary store.
 
   @returns  NULL on success, else an error string pointer.
 
   @note  This operation is necessary to clear the Notecard's binary buffer after
          a binary object is received from the Notecard, or if the Notecard's
-         binary buffer has been left in an unknown state due to an error arising
+         binary store has been left in an unknown state due to an error arising
          from a binary transfer to the Notecard.
  */
 /**************************************************************************/
@@ -459,6 +459,7 @@ const char * NoteBinaryStoreReset(void)
             NOTE_C_LOG_ERROR(err);
             return err;
         }
+        JDelete(rsp);
     } else {
         const char *err = ERRSTR("unable to allocate request", c_mem);
         NOTE_C_LOG_ERROR(err);
@@ -470,14 +471,14 @@ const char * NoteBinaryStoreReset(void)
 
 //**************************************************************************/
 /*!
-  @brief  Transmit a large binary object to the Notecard's binary buffer
+  @brief  Transmit a large binary object to the Notecard's binary store.
 
-  @param  unencodedData  A buffer with data to encode in place
-  @param  unencodedLen   The length of the data in the buffer
-  @param  bufLen         The total length of the buffer (see notes)
+  @param  unencodedData  A buffer with data to encode in place.
+  @param  unencodedLen   The length of the data in the buffer.
+  @param  bufLen         The total length of the buffer (see notes).
   @param  notecardOffset The offset where the data buffer should be appended
-                         to the decoded binary data already residing on the
-                         Notecard. This does not provide random access, but
+                         to the decoded binary data residing in the Notecard's
+                         binary store. This does not provide random access, but
                          rather ensures alignment across sequential writes.
 
   @returns  NULL on success, else an error string pointer.
@@ -599,9 +600,9 @@ const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedL
                 const char *err = ERRSTR("failed to initialize binary transaction", c_err);
                 NOTE_C_LOG_ERROR(err);
                 _UnlockNote();
-                // On errors, we restore the caller's input buffer by COBS
-                // decoding it. The caller is then able to retry transmission
-                // with their original pointer to this buffer.
+                // On errors, we restore the caller's input buffer by decoding
+                // it. The caller is then able to retry transmission with their
+                // original pointer to this buffer.
                 NoteBinaryCodecDecode(encodedData, encLen, encodedData, bufLen);
                 return err;
             }
@@ -613,7 +614,7 @@ const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedL
             return err;
         }
 
-        // Immediately send the COBS binary.
+        // Immediately send the encoded binary.
         const char *err = _ChunkedTransmit(encodedData, (encLen + 1), false);
 
         // Release Notecard Mutex
