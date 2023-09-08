@@ -69,20 +69,20 @@ jobs:
             [ -z "$MD5SRV_PID" ] || kill $MD5SRV_PID
             rm -rf md5srv-files
 
-            - name: Install PlatformIO dependencies
-            if: env.FLASH_TEST_FIRMWARE!='false'
-            run: |
-              python3 -m venv venv    # python venv is also used by the md5server, so this comes first.
-              source venv/bin/activate
-              pip install platformio
-              cd $PIO_PROJECT_DIR
-              pio pkg install -l "Blues Wireless Notecard" -e debug
-              # Remove the bundled note-c and put the local working copy there
-              NOTE_C_DEP="$GITHUB_WORKSPACE/$PIO_PROJECT_DIR/.pio/libdeps/debug/Blues Wireless Notecard/src/note-c"
-              rm -rf "$NOTE_C_DEP"
-              mkdir "$NOTE_C_DEP"
-              # copy only files in note-c
-              find "$GITHUB_WORKSPACE" -maxdepth 1 -type f -exec cp "{}" "${NOTE_C_DEP}" \;
+      - name: Install PlatformIO dependencies
+        if: env.FLASH_TEST_FIRMWARE!='false'
+        run: |
+          python3 -m venv venv    # python venv is also used by the md5server, so this comes first.
+          source venv/bin/activate
+          pip install platformio
+          cd $PIO_PROJECT_DIR
+          pio pkg install -l "Blues Wireless Notecard" -e debug
+          # Remove the bundled note-c and put the local working copy there
+          NOTE_C_DEP="$GITHUB_WORKSPACE/$PIO_PROJECT_DIR/.pio/libdeps/debug/Blues Wireless Notecard/src/note-c"
+          rm -rf "$NOTE_C_DEP"
+          mkdir "$NOTE_C_DEP"
+          # copy only files in note-c
+          find "$GITHUB_WORKSPACE" -maxdepth 1 -type f -exec cp "{}" "${NOTE_C_DEP}" \;
 
       - name: Start MD5 Server
         uses: JarvusInnovations/background-action@v1
