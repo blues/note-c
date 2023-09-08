@@ -98,6 +98,9 @@ jobs:
             # this symbol must be expanded by the shell
             NOTE_C_DEP: $GITHUB_WORKSPACE/$PIO_PROJECT_DIR/.pio/libdeps/debug/Blues Wireless Notecard/src/note-c
         run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install platformio
           cd $PIO_PROJECT_DIR
           pio pkg install -l "Blues Wireless Notecard" -e debug
           # Remove the bundled note-c and put the local working copy there
@@ -110,6 +113,7 @@ jobs:
         env:
           PLATFORMIO_BUILD_FLAGS: "'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"${{ env.NOTEHUB_PROXY_ROUTE_ALIAS }}\"' '-D PRODUCT_UID=\"${{ env.NOTEHUB_PRODUCT_UID }}\"'"
         run: |
+          source venv/bin/activate
           echo "build flags $PLATFORMIO_BUILD_FLAGS"
           [ -n "${{ env.PLATFORMIO_BUILD_FLAGS }}" ] || ( echo "build flags not set" && exit 1 )
           timeout 10 ./scripts/wait_for_file.sh "$STLINK_PROGRAMMER_PORT"
@@ -190,6 +194,7 @@ jobs:
       - name: Run Tests
         working-directory: $PIO_PROJECT_DIR
         run: |
+          source venv/bin/activate
           platformio test -v -e debug \
              --without-building --without-uploading \
              --test-port "$SWAN_SERIAL" \
