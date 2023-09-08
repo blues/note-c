@@ -497,8 +497,11 @@ const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedL
         const char *err = ERRSTR("unencodedData cannot be NULL", c_err);
         NOTE_C_LOG_ERROR(err);
         return err;
-    }
-    if (bufLen < (cobsEncodedLength(unencodedData, unencodedLen) + 1)) {
+    } else if ((bufLen < cobsEncodedMaxLength(unencodedLen))
+               && (bufLen < (cobsEncodedLength(unencodedData, unencodedLen) + 1))) {
+        // NOTE: `cobsEncodedMaxLength()` provides a constant time [O(1)] means
+        //       of checking the buffer size. Only when it fails will the linear
+        //       time [O(n)] check, `cobsEncodedLength()`, be invoked.
         const char *err = ERRSTR("insufficient buffer size", c_bad);
         NOTE_C_LOG_ERROR(err);
         return err;
