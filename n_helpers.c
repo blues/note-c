@@ -222,23 +222,23 @@ const char * NoteBinaryDataReset(void)
 /*!
   @brief  Decode binary data received from the Notecard.
 
-  @param  encData The encoded binary data.
+  @param  encData The encoded binary data to decode.
   @param  encLen The length of the encoded binary data.
   @param  decBuf The target buffer for the decoded data. This can be the
                  same address as `encData`, allowing for in-place decoding.
-  @param  decBufLen The length of decBuf.
+  @param  decBufSize The size of `decBuf`.
 
   @returns  The length of the decoded data, or zero on error.
 
-  @note This API supports in-place decoding. If you wish to utilize in-place
-        decoding, then set `decBuf` to `encData` and `decBufLen` to `encLen`.
   @note Use `NoteBinaryMaxDecodedLength()` to calculate the required size for
         the buffer pointed to by the `decBuf` parameter, which MUST accommodate
         both the encoded data and newline terminator.
+  @note This API supports in-place decoding. If you wish to utilize in-place
+        decoding, then set `decBuf` to `encData` and `decBufSize` to `encLen`.
  */
 /**************************************************************************/
 uint32_t NoteBinaryCodecDecode(const uint8_t *encData, uint32_t encDataLen,
-                                   uint8_t *decBuf, uint32_t decBufLen)
+                                   uint8_t *decBuf, uint32_t decBufSize)
 {
     uint32_t result;
 
@@ -246,7 +246,7 @@ uint32_t NoteBinaryCodecDecode(const uint8_t *encData, uint32_t encDataLen,
     if (encData == NULL || decBuf == NULL) {
         NOTE_C_LOG_ERROR(ERRSTR("NULL parameter", c_err));
         result = 0;
-    } else if (decBufLen < cobsGuaranteedFit(encDataLen)) {
+    } else if (decBufSize < cobsGuaranteedFit(encDataLen)) {
         NOTE_C_LOG_ERROR(ERRSTR("output buffer too small", c_err));
         result = 0;
     } else {
@@ -259,44 +259,45 @@ uint32_t NoteBinaryCodecDecode(const uint8_t *encData, uint32_t encDataLen,
 //**************************************************************************/
 /*!
 
-  @brief  Binary encode a buffer to prepare it for transmission to the Notecard.
+  @brief  Encode binary data to transmit to the Notecard.
 
-  @param  inBuf The data to encode.
-  @param  inLen The length of the data to encode.
-  @param  outBuf The buffer to write the encoded data to. This can be the
-                 same address as inBuf, allowing for in-place encoding.
-  @param  outLen The length of outBuf.
-  @param  encLen [out] The length of the encoded data.
+  @param  decData The decoded binary data to encode.
+  @param  decDataLen The length of the decoded binary data.
+  @param  encBuf The target buffer for the encoded data. This can be in the same
+                 buffer as `decData`, allowing for in-place encoding (see note).
+  @param  encBufSize The size of `encBuf`.
 
   @returns  NULL on success, else an error string pointer.
 
-  @note When in-place encoding, the overall length expands. Therefore, the
-        unencoded data should first be right-justified in the buffer, then the
-        value of `outBuf` should be set to the beginning of the buffer.
   @note Use `NoteBinaryMaxEncodedLength()` to calculate the required size for
-        the buffer pointed to by the `outBuf` parameter, which MUST accommodate
+        the buffer pointed to by the `encBuf` parameter, which MUST accommodate
         both the encoded data and newline terminator.
+  @note This API supports in-place encoding. If you wish to utilize in-place
+        encoding, then right-justify the decoded data in the buffer (updating
+        `decBuf` accordingly) and set the value of `encBuf` to the beginning
+        of the buffer.
  */
 /**************************************************************************/
-const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
-                              uint8_t *outBuf, uint32_t outLen,
-                              uint32_t *encLen)
+uint32_t NoteBinaryCodecEncode(const uint8_t *decData, uint32_t decDataLen,
+                               uint8_t *encBuf, uint32_t encBufSize)
 {
-    if (inBuf == NULL || outBuf == NULL || encLen == NULL) {
-        NOTE_C_LOG_ERROR("NULL parameter");
-        return ERRSTR("NULL parameter", c_err);
+    uint32_t result;
+
+    // Validate parameter(s)
+    if (decData == NULL || encBuf == NULL) {
+        NOTE_C_LOG_ERROR(ERRSTR("NULL parameter", c_err));
+        result = 0;
+    } else  if ((encBufSize < cobsEncodedMaxLength(decDataLen)) && (encBufSize < cobsEncodedLength(decData, decDataLen))) {
+        // NOTE: `cobsEncodedMaxLength()` provides a constant time [O(1)] means
+        //       of checking the buffer size. Only when it fails will the linear
+        //       time [O(n)] check, `cobsEncodedLength()`, be invoked.
+        NOTE_C_LOG_ERROR(ERRSTR("output buffer too small", c_err));
+        result = 0;
+    } else {
+        result = cobsEncode((uint8_t *)decData, decDataLen, NOTE_C_BINARY_EOP, encBuf);
     }
 
-    if (outLen < cobsEncodedMaxLength(inLen)) {
-        if (outLen < cobsEncodedLength(inBuf, inLen)) {
-            NOTE_C_LOG_ERROR("output buffer too small");
-            return ERRSTR("output buffer too small", c_err);
-        }
-    }
-
-    *encLen = cobsEncode((uint8_t *)inBuf, inLen, NOTE_C_BINARY_EOP, outBuf);
-
-    return NULL;
+    return result;
 }
 
 //**************************************************************************/
@@ -558,14 +559,11 @@ const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
 
     // Update unencoded data pointer
     unencodedData += dataShift;
-    uint32_t encLen = 0;
 
-    // `(bufLen - 1)` accounts for one byte of space we need to save for a
-    // newline to mark the end of the packet.
-    err = NoteBinaryEncode(unencodedData, unencodedLen, encodedData, (bufLen - 1), &encLen);
-    if (err) {
-        return err;
-    }
+    // Capture encoded length
+    // NOTE: `(bufLen - 1)` accounts for one byte of space we need to save for a
+    //       newline to mark the end of the packet.
+    const uint32_t encLen = NoteBinaryCodecEncode(unencodedData, unencodedLen, encodedData, (bufLen - 1));
 
     // Append the \n, which marks the end of a packet.
     encodedData[encLen] = '\n';
