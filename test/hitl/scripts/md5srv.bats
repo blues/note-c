@@ -20,6 +20,11 @@ assert [ -n "$port" ]
 assert [ -n "$md5url" ]
 assert [ -n "$token" ]
 
+# don't want these environment variables defined as these interfere with the tests
+assert [ -z "$MD5SRV_PORT" ]
+assert [ -z "$MD5SRV_ADDRESS" ]
+assert [ -z "$MD5SRV_TOKEN" ]
+
 # The -f curl flag is used to distinguish between a communication error and a http server error
 
 
@@ -91,6 +96,24 @@ function assert_json() {
     kill $!
     assert_success
 }
+
+@test "Can be run with default arguments taking default values from the environment" {
+    # scope setting the environment variables. I thought they would not live beyond the
+    # test but they seem to affect later tests without scoping.
+    function scopeed() {
+        ND5SRV_PORT=8234
+        MD5SRV_TOKEN=1234
+        ND5SRV_ADDRESS=127.0.0.1
+        python3 md5srv.py &
+        pid=$!
+        waitForMD5ServerWithTimeout "$MD5SRV_ADDRESS" "$MD5SRV_PORT"
+        run timeout 5 curl -s -f -X PUT http://0.0.0.0:8080/default-args-env -d abc -H "X-Access-Token: $MD5SRV_TOKEN"
+        kill $pid
+        assert_success
+    }
+    $scoped
+}
+
 
 @test "Should allow web.put without --save no file is created" {
     cleanTestDir
@@ -204,14 +227,15 @@ function assert_json() {
 }
 
 @test "Can post a chunk and then retrieve it" {
+    assert [ -z "$MD5SRV_PORT" ]
     startMD5Server
     waitForMD5ServerWithTimeout
     content=abcdef
     content_length=6
-    curl -s -X POST $md5url/getchunk?chunk=0 -d "$content" -H "X-Access-Token: $token"
-    run curl -s -X GET -D headers.txt $md5url/getchunk?chunk=0 -d "$content" -H "X-Access-Token: $token"
+    timeout 5 curl -s -X POST $md5url/getchunk?chunk=0 -d "$content" -H "X-Access-Token: $token"
+    run timeout 5 curl -s -X GET -D headers.txt $md5url/getchunk?chunk=0 -d "$content" -H "X-Access-Token: $token"
     stopMD5Server
-    
+
     assert_success
     assert_output "${content}"
     assert [ -e $test_dir/getchunk/payload00000.bin ]
