@@ -337,7 +337,7 @@ uint32_t NoteBinaryMaxDecodedLength(uint32_t bufferSize)
 /**************************************************************************/
 uint32_t NoteBinaryMaxEncodedLength(uint32_t unencodedLength)
 {
-    return cobsEncodedMaxLength(unencodedLength);
+    return cobsEncodedMaxLength(unencodedLength)+1;
 }
 
 //**************************************************************************/
