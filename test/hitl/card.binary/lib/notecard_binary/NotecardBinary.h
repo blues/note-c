@@ -359,7 +359,7 @@ public:
         int tries;
     };
 
-    using transfer_cb_t = std::function<bool(const TransferDetails&, const TransferHandlerContext&)>;
+    using transfer_cb_t = std::function<bool(const TransferDetails&, TransferHandlerContext&)>;
 
     /**
      * @brief A no-op callback that returns success. Use this when no action is needed after filling the Notecard binary buffer beyond
@@ -457,7 +457,7 @@ public:
             return false;
         }
 
-        notecard.logDebugf("Sending image of size %u, in chunks of size %u, with a maximum Notecard binary size of %u\n", totalSize, chunkSize, maxBinarySize);
+        notecard.logDebugf("Sending image of size %u, in transport chunks of size %u, with a maximum Notecard binary size of %u\n", totalSize, chunkSize, maxBinarySize);
 
         image.reset();
         size_t totalTransferred = 0;
@@ -480,7 +480,7 @@ public:
             while (bytesToTransfer) {
                 const size_t thisChunk = bytesToTransfer >= chunkSize ? chunkSize : bytesToTransfer;
                 const size_t offset = chunkSize * chunkIndex;
-                notecard.logDebugf("Sending chunk %d, offset: %d, length: %d...\n", chunkIndex, offset, thisChunk);
+                notecard.logDebugf("Sending transport chunk %d, offset: %d, length: %d...\n", chunkIndex, offset, thisChunk);
 
                 size_t bytesRead = transferImage.read(buffer, thisChunk);
                 if (bytesRead != thisChunk) {
@@ -559,6 +559,9 @@ outer:
             while (++ctx.tries <= 5) {
                 if (!transfer_cb(tx, ctx)) {
                     notecard.logDebugf("FAIL: (try %d) %s - Validation cancelled by transfer handler\n", ctx.tries, imageName);
+                    if (ctx.tries<0) {
+                        notecard.logDebugf("Handler is not idempotent, giving up.\n");
+                    }
                 }
                 else {
                     if (tries>1) {
@@ -568,7 +571,7 @@ outer:
                     break;
                 }
             }
-            if (ctx.tries > 0) {
+            if (ctx.tries) {
                 return false;
             }
 
@@ -785,6 +788,13 @@ public:
     }
 
 private:
+    /**
+     * @brief Performs a web.get request and compares the content with the chunk just processed.
+     * This doesn't depend on the state of the binary buffer, and is idempotent.
+     * @param tx        The transfer details about the current part of the image to verify.
+     * @param name      The name of the image as given to the endpoint.
+     * @param shouldRetry  [out] whether the error represents a retriable error.
+     */
     bool validateReceivedChunk(const NotecardBinary::TransferDetails& tx, const char* name, bool* shouldRetry)
     {
         bool success = false;
@@ -846,6 +856,14 @@ private:
         return success;
     }
 
+    /**
+     * @brief Validates all chunks sent to the endpoint by retrieving the md5 and length
+     * of all chunks sent.
+     * 
+     * @param tx 
+     * @param name 
+     * @param chunked Whether there were multiple chunks sent to the endpoint or not.
+     */
     bool validateTotalContent(const NotecardBinary::TransferDetails& tx, const char* name, bool chunked)
     {
         // get the total md5 for all chunks
@@ -919,7 +937,7 @@ private:
                 }
                 JDelete(rsp);
             } else {
-                notecard.logDebugf("NULL response recieved to `web.delete`.\n");
+                notecard.logDebugf("NULL response received to `web.delete`.\n");
             }
         } else {
             notecard.logDebugf("Could not create request.\n");
@@ -1102,11 +1120,11 @@ public:
      * @return true
      * @return false
      */
-    bool handleTransfer(const NotecardBinary::TransferDetails& tx, const NotecardBinary::TransferHandlerContext& ctx)
+    bool handleTransfer(const NotecardBinary::TransferDetails& tx, NotecardBinary::TransferHandlerContext& ctx)
     {
         bool success = false;
         bool chunked = (tx.currentTransferSize!=tx.total);   // only one chunk equal to the total
-
+        
         if (!NotecardBinary::waitForNotecardConnected(NOT_CONNECTED_TIMEOUT)) {
             notecard.logDebug("Cannot perform note.add request, Notecard not connected.");
             return false;
@@ -1148,6 +1166,10 @@ public:
 
         if (success) {
             success = validateReceivedContent(tx, name, chunked);
+            // todo - check the card.binary size. If it has changed, we cannot retry
+            // since the buffer is cleared. Retry will have to happen at a higher level,
+            // resending the buffer.
+            ctx.tries = -1; // indicate this can't be retried.
         }
         return success;
     }
