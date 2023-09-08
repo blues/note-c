@@ -750,11 +750,9 @@ public:
         uint8_t rxBuf[rxSize];
         uint32_t dataLen = length;
         J* response = nullptr;
-        const char* err = NoteBinaryReceiveAll(rxBuf, rxSize, &dataLen);
+        const char* err = NoteBinaryReceive(rxBuf, rxSize, 0, dataLen);
         if (err) {
             notecard.logDebugf("error retrieving payload: %s\n", err);
-        } else if (dataLen!=length) {
-            notecard.logDebugf("returned data from NoteBinaryReceiveAll actual (%d)!=expected (%d)\n", dataLen, length);
         } else {
             notecard.logDebug("response content from card.binary: ");
             notecard.logDebug((const char*)rxBuf);
