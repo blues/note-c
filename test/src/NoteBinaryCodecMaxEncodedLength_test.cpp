@@ -1,5 +1,5 @@
 /*!
- * @file NoteBinaryMaxEncodedLength_test.cpp
+ * @file NoteBinaryCodecMaxEncodedLength_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -26,14 +26,14 @@ const uint32_t unencodedLen = 10;
 namespace
 {
 
-SCENARIO("NoteBinaryMaxEncodedLength")
+SCENARIO("NoteBinaryCodecMaxEncodedLength")
 {
     RESET_FAKE(cobsEncodedMaxLength);
 
     GIVEN("Parameters are in order") {
         const uint32_t EXPECTED_RESULT = 79;
         cobsEncodedMaxLength_fake.return_val = EXPECTED_RESULT;
-        const uint32_t result = NoteBinaryMaxEncodedLength(unencodedLen);
+        const uint32_t result = NoteBinaryCodecMaxEncodedLength(unencodedLen);
 
         THEN("cobsEncodedMaxLength is invoked") {
             CHECK(cobsEncodedMaxLength_fake.call_count > 0);

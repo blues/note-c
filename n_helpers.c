@@ -269,9 +269,9 @@ uint32_t NoteBinaryCodecDecode(const uint8_t *encData, uint32_t encDataLen,
 
   @returns  NULL on success, else an error string pointer.
 
-  @note Use `NoteBinaryMaxEncodedLength()` to calculate the required size for
-        the buffer pointed to by the `encBuf` parameter, which MUST accommodate
-        both the encoded data and newline terminator.
+  @note Use `NoteBinaryCodecMaxEncodedLength()` to calculate the required
+        size for the buffer pointed to by the `encBuf` parameter, which MUST
+        accommodate both the encoded data and newline terminator.
   @note This API supports in-place encoding. If you wish to utilize in-place
         encoding, then right-justify the decoded data in the buffer (updating
         `decBuf` accordingly) and set the value of `encBuf` to the beginning
@@ -341,7 +341,7 @@ uint32_t NoteBinaryCodecMaxDecodedLength(uint32_t bufferSize)
   @returns  The max required buffer size to hold the encoded data.
  */
 /**************************************************************************/
-uint32_t NoteBinaryMaxEncodedLength(uint32_t unencodedLength)
+uint32_t NoteBinaryCodecMaxEncodedLength(uint32_t unencodedLength)
 {
     return cobsEncodedMaxLength(unencodedLength);
 }
@@ -362,8 +362,8 @@ uint32_t NoteBinaryMaxEncodedLength(uint32_t unencodedLength)
   @note  The buffer must be large enough to hold the encoded value of the
          data store contents from the requested offset for the specified length.
          To determine the necessary buffer size for a given data length, use
-         `NoteBinaryMaxEncodedLength()`, or if you wish to consume the entire
-         buffer use `NoteBinaryDataEncodedLength()` instead.
+         `NoteBinaryCodecMaxEncodedLength()`, or if you wish to consume the
+         entire buffer use `NoteBinaryDataEncodedLength()` instead.
  */
 /**************************************************************************/
 const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
@@ -485,9 +485,9 @@ const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
 
   @note  Buffers are encoded in place, the buffer _MUST_ be larger than the data
          to be encoded. The original contents of the buffer will be modified.
-         Use `NoteBinaryMaxEncodedLength()` to calculate the required size for
-         the buffer pointed to by the `bufLen` parameter, which MUST accommodate
-         both the encoded data and newline terminator.
+         Use `NoteBinaryCodecMaxEncodedLength()` to calculate the required size
+         for the buffer pointed to by the `unencodedData` parameter, which MUST
+         accommodate both the encoded data and newline terminator.
  */
 /**************************************************************************/
 const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
