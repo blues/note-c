@@ -406,7 +406,7 @@ void testsuite_card_binary()
     bool smoke_tests = false;
 
     {
-        BinaryTestArgs max10k_note_add = BinaryTestArgs().maxCardBinary(1*1023).handler(BinaryTestArgs::NOTE_ADD);
+        BinaryTestArgs max1k_note_add = BinaryTestArgs().maxCardBinary(1*1023).handler(BinaryTestArgs::NOTE_ADD);
         RUN_SIZE(Random_1234, BuildRandom, NOTECARD_IF_I2C, i2c, 5*1026, 5k, max1k_note_add, 1234);
     }
 
