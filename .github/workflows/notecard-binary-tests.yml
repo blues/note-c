@@ -110,7 +110,7 @@ jobs:
         if: env.FLASH_TEST_FIRMWARE!='false'
         run: |
           source venv/bin/activate
-          PLATFORMIO_BUILD_FLAGS="'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"$NOTEHUB_PROXY_ROUTE_ALIAS\"' '-D PRODUCT_UID=\"$NOTEHUB_PRODUCT_UID\"'"
+          export PLATFORMIO_BUILD_FLAGS="'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"$NOTEHUB_PROXY_ROUTE_ALIAS\"' '-D PRODUCT_UID=\"$NOTEHUB_PRODUCT_UID\"'"
           echo "build flags $PLATFORMIO_BUILD_FLAGS"
           timeout 10 ./scripts/wait_for_file.sh "$STLINK_PROGRAMMER_PORT"
           platformio test -e debug --without-testing --upload-port "$STLINK_PROGRAMMER_PORT" --project-dir "$PIO_PROJECT_DIR"
