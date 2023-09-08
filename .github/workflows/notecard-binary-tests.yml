@@ -191,7 +191,7 @@ jobs:
                 -H "Authorization: Bearer $NOTEHUB_ACCESS_TOKEN")
 
       - name: Run Tests
-        working-directory: $PIO_PROJECT_DIR
+        working-directory: ${{env.PIO_PROJECT_DIR}}
         run: |
           source venv/bin/activate
           platformio test -v -e debug \
