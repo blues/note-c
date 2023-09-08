@@ -108,12 +108,10 @@ jobs:
           find "$GITHUB_WORKSPACE" -maxdepth 1 -type f -exec cp "{}" "${NOTE_C_DEP}" \;
       - name: Build and Upload Test Firmware
         if: env.FLASH_TEST_FIRMWARE!='false'
-        env:
-          PLATFORMIO_BUILD_FLAGS: "'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"$NOTEHUB_PROXY_ROUTE_ALIAS\"' '-D PRODUCT_UID=\"$NOTEHUB_PRODUCT_UID\"'"
         run: |
           source venv/bin/activate
+          PLATFORMIO_BUILD_FLAGS="'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"$NOTEHUB_PROXY_ROUTE_ALIAS\"' '-D PRODUCT_UID=\"$NOTEHUB_PRODUCT_UID\"'"
           echo "build flags $PLATFORMIO_BUILD_FLAGS"
-          [ -n "${{ env.PLATFORMIO_BUILD_FLAGS }}" ] || ( echo "build flags not set" && exit 1 )
           timeout 10 ./scripts/wait_for_file.sh "$STLINK_PROGRAMMER_PORT"
           platformio test -e debug --without-testing --upload-port "$STLINK_PROGRAMMER_PORT" --project-dir "$PIO_PROJECT_DIR"
           timeout 10 ./scripts/wait_for_file.sh "$SWAN_SERIAL"
