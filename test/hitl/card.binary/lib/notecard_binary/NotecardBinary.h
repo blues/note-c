@@ -319,7 +319,7 @@ public:
         J *req = notecard.newRequest("hub.set");
 
 #if !defined(PRODUCT_UID) && defined(DEFAULT_PRODUCT_UID)
-    #define PRODUCT_UID DEFAULT_PRODUCT_UID
+#define PRODUCT_UID DEFAULT_PRODUCT_UID
 #endif
 
 // This is the unique Product Identifier for your device
@@ -562,8 +562,7 @@ outer:
                     if (ctx.tries<0) {
                         notecard.logDebugf("Handler is not idempotent, giving up.\n");
                     }
-                }
-                else {
+                } else {
                     if (tries>1) {
                         notecard.logDebugf("SUCCESS: (try %d) %s - transfer handler successful\n", ctx.tries, imageName);
                     }
@@ -859,9 +858,9 @@ private:
     /**
      * @brief Validates all chunks sent to the endpoint by retrieving the md5 and length
      * of all chunks sent.
-     * 
-     * @param tx 
-     * @param name 
+     *
+     * @param tx
+     * @param name
      * @param chunked Whether there were multiple chunks sent to the endpoint or not.
      */
     bool validateTotalContent(const NotecardBinary::TransferDetails& tx, const char* name, bool chunked)
@@ -1124,7 +1123,7 @@ public:
     {
         bool success = false;
         bool chunked = (tx.currentTransferSize!=tx.total);   // only one chunk equal to the total
-        
+
         if (!NotecardBinary::waitForNotecardConnected(NOT_CONNECTED_TIMEOUT)) {
             notecard.logDebug("Cannot perform note.add request, Notecard not connected.");
             return false;
