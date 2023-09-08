@@ -342,53 +342,6 @@ uint32_t NoteBinaryMaxEncodedLength(uint32_t unencodedLength)
 
 //**************************************************************************/
 /*!
-  @brief  Receive the Notecard's entire binary buffer
-
-  @param  buffer   A buffer to hold the binary object
-  @param  bufLen   The total length of the provided buffer
-  @param  dataLen  [out] The length of the decoded data received from the
-                   Notecard.
-
-  @returns  NULL on success, else an error string pointer.
-
-  @note  The buffer must be large enough to hold the encoded value of the
-         data store contents from the requested offset for the specified length.
-         To determine the necessary buffer size the Notecard's binary data, use
-         `NoteBinaryDataEncodedLength()`.
- */
-/**************************************************************************/
-const char * NoteBinaryReceiveAll(uint8_t *buffer, uint32_t bufLen,
-                                  uint32_t *dataLen)
-{
-    const char *err = NULL;
-    uint32_t decodedLen = 0;
-
-    // Validate parameter(s)
-    if (!buffer) {
-        err = ERRSTR("NULL buffer", c_bad);
-        NOTE_C_LOG_ERROR(err);
-    } else if (!dataLen) {
-        err = ERRSTR("NULL dataLen not allowed", c_bad);
-        NOTE_C_LOG_ERROR(err);
-    } else {
-        // Calculate the data length available on the Notecard
-        if ((err = NoteBinaryDataDecodedLength(&decodedLen))) {
-            decodedLen = 0;
-        }
-        // Request entire binary data store from Notecard
-        else if ((err = NoteBinaryReceive(buffer, bufLen, 0, decodedLen))) {
-            decodedLen = 0;
-        }
-
-        // Populate `dataLen` if available
-        *dataLen = decodedLen;
-    }
-
-    return err;
-}
-
-//**************************************************************************/
-/*!
   @brief  Receive a large binary object from the Notecard's binary buffer
 
   @param  buffer        A buffer to hold the binary range
