@@ -101,7 +101,7 @@ jobs:
           cd $PIO_PROJECT_DIR
           pio pkg install -l "Blues Wireless Notecard" -e debug
           # Remove the bundled note-c and put the local working copy there
-          NOTE_C_DEP=$GITHUB_WORKSPACE/$PIO_PROJECT_DIR/.pio/libdeps/debug/Blues Wireless Notecard/src/note-c
+          NOTE_C_DEP="$GITHUB_WORKSPACE/$PIO_PROJECT_DIR/.pio/libdeps/debug/Blues Wireless Notecard/src/note-c"
           rm -rf "$NOTE_C_DEP"
           mkdir "$NOTE_C_DEP"
           # copy only files in note-c
