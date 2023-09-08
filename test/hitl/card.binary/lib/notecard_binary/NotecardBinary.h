@@ -726,9 +726,12 @@ public:
             // this is also used with `note.add` which may return before Notehub has routed
             // the event. Try for a while.
             bool shouldRetry = true;
-            int retries = 5;
+            int retries = 10;   // it can take a minute for the note to be sent and routed
             while (shouldRetry && retries-->0) {
                 success = validateReceivedChunk(tx, name, &shouldRetry);
+                if (!success) {
+                    delay(10000);
+                }
             }
         }
         if (success && tx.isComplete) {
