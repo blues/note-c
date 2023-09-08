@@ -351,12 +351,17 @@ public:
         size_t totalChunks;                 // the total number of chunks sent. Valid only when isComplete is true.
     };
 
-    using transfer_cb_t = std::function<bool(const TransferDetails&)>;
+    struct TransferHandlerContext {
+        int tries;
+    };
+
+    using transfer_cb_t = std::function<bool(const TransferDetails&, const TransferHandlerContext&)>;
 
     /**
-     * @brief A no-op callback that returns success. Use this when no action is needed after filling the Notecard binary buffer.
+     * @brief A no-op callback that returns success. Use this when no action is needed after filling the Notecard binary buffer beyond
+     * the validation that always happens.
      */
-    static bool accept_transfer_callback(const TransferDetails& details)
+    static bool accept_transfer_callback(const TransferDetails& details, const TransferHandlerContext& ctx)
     {
         return true;
     }
@@ -517,7 +522,7 @@ outer:
                 .currentTransferImage = transferImage,
                 .isComplete =  (totalTransferred + binaryTransferSize)==totalSize,
                 .totalImage = image,
-                .totalMD5 = totalMD5
+                .totalMD5 = totalMD5,
             };
 
             if (tx.isComplete) {
@@ -545,8 +550,21 @@ outer:
                 }
             }
 
-            if (!transfer_cb(tx)) {
-                notecard.logDebugf("FAIL: %s - Validation cancelled by transfer callback\n", imageName);
+            int tries = 0;
+            TransferHandlerContext ctx = { .tries = 0 };
+            while (++ctx.tries <= 5) {
+                if (!transfer_cb(tx, ctx)) {
+                    notecard.logDebugf("FAIL: (try %d) %s - Validation cancelled by transfer handler\n", ctx.tries, imageName);
+                }
+                else {
+                    if (tries>1) {
+                        notecard.logDebugf("SUCCESS: (try %d) %s - transfer handler successful\n", ctx.tries, imageName);
+                    }
+                    ctx.tries = 0;  // say we're good
+                    break;
+                }
+            }
+            if (ctx.tries > 0) {
                 return false;
             }
 
@@ -947,7 +965,7 @@ public:
      * @return true
      * @return false
      */
-    bool handleTransfer(const NotecardBinary::TransferDetails& tx)
+    bool handleTransfer(const NotecardBinary::TransferDetails& tx, const NotecardBinary::TransferHandlerContext& ctx)
     {
         bool success = false;
 
@@ -1057,7 +1075,7 @@ public:
     NotecardBinary::transfer_cb_t transfer_callback()
     {
         using namespace std::placeholders;
-        return std::bind(&WebPostHandler::handleTransfer, this, _1);
+        return std::bind(&WebPostHandler::handleTransfer, this, _1, _2);
     }
 };
 
@@ -1080,7 +1098,7 @@ public:
      * @return true
      * @return false
      */
-    bool handleTransfer(const NotecardBinary::TransferDetails& tx)
+    bool handleTransfer(const NotecardBinary::TransferDetails& tx, const NotecardBinary::TransferHandlerContext& ctx)
     {
         bool success = false;
         bool chunked = (tx.currentTransferSize!=tx.total);   // only one chunk equal to the total
@@ -1133,7 +1151,7 @@ public:
     NotecardBinary::transfer_cb_t transfer_callback()
     {
         using namespace std::placeholders;
-        return std::bind(&NoteAddHandler::handleTransfer, this, _1);
+        return std::bind(&NoteAddHandler::handleTransfer, this, _1, _2);
     }
 };
 
