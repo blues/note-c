@@ -342,7 +342,7 @@ uint32_t NoteBinaryMaxEncodedLength(uint32_t unencodedLength)
 
 //**************************************************************************/
 /*!
-  @brief  Receive a large binary object from the Notecard's binary buffer
+  @brief  Receive the Notecard's entire binary buffer
 
   @param  buffer   A buffer to hold the binary object
   @param  bufLen   The total length of the provided buffer
@@ -357,8 +357,8 @@ uint32_t NoteBinaryMaxEncodedLength(uint32_t unencodedLength)
          `NoteBinaryDataEncodedLength()`.
  */
 /**************************************************************************/
-const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
-                               uint32_t *dataLen)
+const char * NoteBinaryReceiveAll(uint8_t *buffer, uint32_t bufLen,
+                                  uint32_t *dataLen)
 {
     const char *err = NULL;
     uint32_t decodedLen = 0;
@@ -376,7 +376,7 @@ const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
             decodedLen = 0;
         }
         // Request entire binary data store from Notecard
-        else if ((err = NoteBinaryReceiveRange(buffer, bufLen, 0, decodedLen))) {
+        else if ((err = NoteBinaryReceive(buffer, bufLen, 0, decodedLen))) {
             decodedLen = 0;
         }
 
@@ -389,7 +389,7 @@ const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
 
 //**************************************************************************/
 /*!
-  @brief  Receive a large binary range from the Notecard's binary buffer
+  @brief  Receive a large binary object from the Notecard's binary buffer
 
   @param  buffer        A buffer to hold the binary range
   @param  bufLen        The total length of the provided buffer
@@ -407,9 +407,8 @@ const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
          entire buffer use `NoteBinaryDataEncodedLength()` instead.
  */
 /**************************************************************************/
-const char * NoteBinaryReceiveRange(uint8_t *buffer, uint32_t bufLen,
-                                    uint32_t decodedOffset,
-                                    uint32_t decodedLen)
+const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
+                               uint32_t decodedOffset, uint32_t decodedLen)
 {
     // Validate parameter(s)
     if (!buffer) {
