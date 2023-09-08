@@ -137,11 +137,13 @@ public:
  * @brief Maintains a view of another generator.
  *
  */
-class BinaryGeneratorView : public AbstractBinaryGenerator {
+class BinaryGeneratorView : public AbstractBinaryGenerator
+{
     BinaryGenerator& _image;
     size_t _viewOffset;
 
-    int readNext() override {
+    int readNext() override
+    {
         return _image.read();
     }
 
@@ -152,13 +154,15 @@ public:
     {
     }
 
-    void reset() override {
+    void reset() override
+    {
         _image.reset();
         _image.skip(_viewOffset);
         resetOffset();
     }
 
-    size_t read(uint8_t* buf, size_t length) override {
+    size_t read(uint8_t* buf, size_t length) override
+    {
         // cap the length to what's remaining in this view
         length = std::min(remaining(), length);
         size_t count = _image.read(buf, length);
@@ -352,7 +356,8 @@ public:
     /**
      * @brief A no-op callback that returns success. Use this when no action is needed after filling the Notecard binary buffer.
      */
-    static bool accept_transfer_callback(const TransferDetails& details) {
+    static bool accept_transfer_callback(const TransferDetails& details)
+    {
         return true;
     }
 
@@ -405,7 +410,8 @@ public:
         transfer_cb_t transfer_cb;
     };
 
-    bool transferBinary(const BinaryTransfer& tx) {
+    bool transferBinary(const BinaryTransfer& tx)
+    {
         return _transferBinary(tx.imageName, tx.image, tx.chunkSize, tx.buffer, tx.bufferLength, tx.maxBinarySize, tx.validate, tx.validateChunkSizes, tx.validateChunkSizesCount, tx.transfer_cb);
     }
 
@@ -635,10 +641,9 @@ cancel:
                 size_t size = readDataUntilTimeout(Serial1, NOTE_BINARY_CHECK_EXTRA_DATA_TIMEOUT, rxBuffer, rxBufferSize, receivedLength, duration);
                 if (size) {
                     notecard.logDebugf("additional data after binary: %d (0x%x) bytes read in %dms\n", size, size, duration);
-                }
-                else
+                } else
 #endif
-                success = true;
+                    success = true;
             }
         }
         free(rxBuffer);
@@ -660,7 +665,8 @@ cancel:
         return true;
     }
 
-    static bool waitForNotecardConnected(uint32_t timeoutMs) {
+    static bool waitForNotecardConnected(uint32_t timeoutMs)
+    {
         uint32_t start = millis();
         bool connected = false;
         while (!connected && millis()-start<timeoutMs) {
@@ -670,8 +676,7 @@ cancel:
                     if (!connected) {
                         delay(10000);
                     }
-                }
-                else {
+                } else {
                     delay(2000);
                 }
                 JDelete(rsp);
@@ -691,9 +696,10 @@ cancel:
 
 /**
  * @brief Helpers needed by file handlers.
- * 
+ *
  */
-class FileHandler {
+class FileHandler
+{
 protected:
     /**
      * @brief The route alias to the MD5 server. Used to retrieve the chunks sent, the complete transfer MD5/length
@@ -711,7 +717,8 @@ public:
     FileHandler(const char* alias, const char* chunkContent) :
         alias(alias), chunkContent(chunkContent) {}
 
-    bool validateReceivedContent(const NotecardBinary::TransferDetails& tx, const char* name, bool chunked) {
+    bool validateReceivedContent(const NotecardBinary::TransferDetails& tx, const char* name, bool chunked)
+    {
         // to verify chunks and the total content, the md5 server must be started with the `--save` flag
         bool success = true;
 
@@ -733,7 +740,8 @@ public:
         return success;
     }
 
-    J* parseWebResponse(size_t length) {
+    J* parseWebResponse(size_t length)
+    {
         // decode the json response as a troubleshooting aid
         size_t rxSize = NoteBinaryMaxEncodedLength(length);
         uint8_t rxBuf[rxSize];
@@ -742,11 +750,9 @@ public:
         const char* err = NoteBinaryReceiveAll(rxBuf, rxSize, &dataLen);
         if (err) {
             notecard.logDebugf("error retrieving payload: %s\n", err);
-        }
-        else if (dataLen!=length) {
+        } else if (dataLen!=length) {
             notecard.logDebugf("returned data from NoteBinaryReceiveAll actual (%d)!=expected (%d)\n", dataLen, length);
-        }
-        else {
+        } else {
             notecard.logDebug("response content from card.binary: ");
             notecard.logDebug((const char*)rxBuf);
             notecard.logDebug("\n");
@@ -756,7 +762,8 @@ public:
     }
 
 private:
-    bool validateReceivedChunk(const NotecardBinary::TransferDetails& tx, const char* name, bool* shouldRetry) {
+    bool validateReceivedChunk(const NotecardBinary::TransferDetails& tx, const char* name, bool* shouldRetry)
+    {
         bool success = false;
         bool retry = false;
         J *req = notecard.newRequest("web.get");
@@ -773,8 +780,7 @@ private:
         J* rsp = notecard.requestAndResponse(req);
         if (!rsp) {
             notecard.logDebug("NULL response to `web.get`\n");
-        }
-        else {
+        } else {
             int result = JGetNumber(rsp, "result");
             J* body = JGetObject(rsp, "body");
             int cobs = JGetNumber(rsp, "cobs");
@@ -784,23 +790,17 @@ private:
             retry = result==404;
             if (err && err[0]) {
                 notecard.logDebugf("web.get failed with error: %s\n", err);
-            }
-            else if (result<200 || result>=300) {
+            } else if (result<200 || result>=300) {
                 notecard.logDebugf("web.get result was %d\n", result);
-            }
-            else if (!body) {
+            } else if (!body) {
                 notecard.logDebugf("web.get body is not present\n");
-            }
-            else if (!cobs) {
+            } else if (!cobs) {
                 notecard.logDebugf("web.get expected response property 'cobs' is not present\n");
-            }
-            else if (!length) {
+            } else if (!length) {
                 notecard.logDebugf("web.get expected response property 'length' is not present\n");
-            }
-            else if (length!=int(tx.currentTransferSize)) {
+            } else if (length!=int(tx.currentTransferSize)) {
                 notecard.logDebugf("web.get length!=chunkTransferSize (%d!=%d)\n", length, tx.currentTransferSize);
-            }
-            else {
+            } else {
                 // validate the binary buffer against the last chunk sent
                 size_t bufferLength = 4097; // just to be nasty ;-)
                 uint8_t* buffer = (uint8_t*)malloc(bufferLength);
@@ -808,8 +808,7 @@ private:
                     // TODO: NOTE_C_BINARY_RX_ALL doesn't work at present. Using the real size.
                     success = NotecardBinary::validateBinaryReceived(tx, buffer, bufferLength, length);
                     free(buffer);
-                }
-                else {
+                } else {
                     notecard.logDebugf("Unable to allocate 4k buffer to verify content\n");
                 }
             }
@@ -824,7 +823,8 @@ private:
         return success;
     }
 
-    bool validateTotalContent(const NotecardBinary::TransferDetails& tx, const char* name, bool chunked) {
+    bool validateTotalContent(const NotecardBinary::TransferDetails& tx, const char* name, bool chunked)
+    {
         // get the total md5 for all chunks
         bool success = false;
         J *req = notecard.newRequest("web.get");
@@ -835,42 +835,36 @@ private:
         J* rsp = notecard.requestAndResponse(req);
         if (!rsp) {
             notecard.logDebug("NULL response to `web.get`\n");
-        }
-        else {
+        } else {
             int result = JGetNumber(rsp, "result");
             J* body = JGetObject(rsp, "body");
             int cobs = JGetNumber(rsp, "cobs");
             const char* err = JGetString(rsp, "err");
             if (err && err[0]) {
                 notecard.logDebugf("web.get failed with error: %s\n", err);
-            }
-            else if (result<200 || result>=300) {
+            } else if (result<200 || result>=300) {
                 notecard.logDebugf("web.get result was %d\n", result);
-            }
-            else if (!body) {
+            } else if (!body) {
                 notecard.logDebugf("web.get body is not present\n");
-            }
-            else if (cobs) {
+            } else if (cobs) {
                 notecard.logDebugf("web.get unexpected response property 'cobs' is present\n");
-            }
-            else {
+            } else {
                 size_t expectedChunks = chunked ? tx.totalChunks : 1;
                 size_t actualLength = JGetNumber(body, "length");
                 size_t actualChunks = JGetNumber(body, "chunks");
                 const char* actualMD5String = JGetString(body, "md5");
                 char expectedMD5String[NOTE_MD5_HASH_STRING_SIZE];
                 NoteMD5HashToString((uint8_t*)tx.totalMD5, expectedMD5String, sizeof(expectedMD5String));
-                if (!actualMD5String) actualMD5String = "not a string";
+                if (!actualMD5String) {
+                    actualMD5String = "not a string";
+                }
                 if (strcmp(actualMD5String, expectedMD5String)) {
                     notecard.logDebugf("web.get MD5 actual!=expected: %s!=%s\n", actualMD5String, expectedMD5String);
-                }
-                else if (actualLength!=tx.total) {
+                } else if (actualLength!=tx.total) {
                     notecard.logDebugf("web.get total length: actual!=expected: %d!=%d\n", actualLength, tx.total);
-                }
-                else if (actualChunks!=expectedChunks) {
+                } else if (actualChunks!=expectedChunks) {
                     notecard.logDebugf("web.get total chunks: actual!=expected: %d!=%d\n", actualChunks, expectedChunks);
-                }
-                else {
+                } else {
                     notecard.logDebugf("web.get response validated: md5=%s, chunks=%d, length=%d.\n", actualMD5String, actualChunks, actualLength);
                     success = true;
                 }
@@ -884,7 +878,8 @@ private:
      * @brief Perform a `web.delete` request to remove the directory containing the
      * saved files.
      */
-    bool deleteContent(const NotecardBinary::TransferDetails& tx, const char* name) {
+    bool deleteContent(const NotecardBinary::TransferDetails& tx, const char* name)
+    {
         bool success = false;
         if (J* req = notecard.newRequest("web.delete")) {
             JAddStringToObject(req, "route", alias);
@@ -896,17 +891,14 @@ private:
                 int result = JGetNumber(rsp, "result");
                 if (result != 200) {
                     notecard.logDebugf("HTTP status %d trying to delete %s\n", result, name);
-                }
-                else {
+                } else {
                     success = true;
                 }
                 JDelete(rsp);
-            }
-            else {
+            } else {
                 notecard.logDebugf("NULL response recieved to `web.delete`.\n");
             }
-        }
-        else {
+        } else {
             notecard.logDebugf("Could not create request.\n");
         }
         return success;
@@ -924,7 +916,8 @@ private:
  * After the data has been sent, a `web.get` request is used to retrieve the total length and md5
  * for the entire image, and the number of chunks received.
  */
-class WebPostHandler : public FileHandler {
+class WebPostHandler : public FileHandler
+{
     const char* name;
     const char* content;
     bool chunked;   // When true send each chunk directly to the endpoint. When false, have notehub combine the chunks and send all at once.
@@ -973,7 +966,7 @@ public:
         const uint8_t* expectedMD5 = chunked ? tx.currentTransferMD5 : tx.totalMD5;
         const size_t expectedLength = chunked ? tx.currentTransferSize : tx.total;
 
-    	if (J *req = notecard.newRequest(webPut ? "web.put" : "web.post")) {
+        if (J *req = notecard.newRequest(webPut ? "web.put" : "web.post")) {
             JAddStringToObject(req, "route", alias);
             if (name) {
                 char buf[256];
@@ -1012,25 +1005,20 @@ public:
                 // Notehub returns 100: Continue for all web.post with offset apart from the last
                 else if (!chunked && !tx.isComplete && result!=100) {
                     notecard.logDebugf("expected web.post result of 100 for all fragments apart from the last, but was %d\n", result);
-                }
-                else if ((chunked || tx.isComplete) && (result!=200)) {
+                } else if ((chunked || tx.isComplete) && (result!=200)) {
                     notecard.logDebugf("web.post result of 200 expected, but was %d\n", result);
                 }
                 // only get a "real" response from the endpoint when chunking, or when the final fragment is sent to notehub
                 else if (!chunked && !tx.isComplete) {
                     success = true;
-                }
-                else {
+                } else {
                     if (!body) {
                         notecard.logDebugf("web.post body is not present\n");
-                    }
-                    else if (!cobs) {
+                    } else if (!cobs) {
                         notecard.logDebugf("web.post response 'cobs' not present\n");
-                    }
-                    else if (!length) {
+                    } else if (!length) {
                         notecard.logDebugf("web.post response 'length' not present\n");
-                    }
-                    else {
+                    } else {
                         char expectedMD5String[NOTE_MD5_HASH_STRING_SIZE];
                         // need to tighten up the note-c APIs with respect to const
                         NoteMD5HashToString((uint8_t*)expectedMD5, expectedMD5String, sizeof(expectedMD5String));
@@ -1038,17 +1026,16 @@ public:
                         const char* contentType = JGetString(response_content, "Content-Type");
                         size_t contentLength = JGetNumber(response_content, "length");
 
-                        if (!receivedMD5string) receivedMD5string = "not a string";
+                        if (!receivedMD5string) {
+                            receivedMD5string = "not a string";
+                        }
                         if (strcmp(receivedMD5string, expectedMD5String)) {
                             notecard.logDebugf("web.post MD5 actual!=expected: %s!=%s\n", receivedMD5string, expectedMD5String);
-                        }
-                        else if (content && (!contentType || strcmp(contentType, content))) {
+                        } else if (content && (!contentType || strcmp(contentType, content))) {
                             notecard.logDebugf("web.post Content-Type actual!=expected: %s!=%s\n", contentType, content);
-                        }
-                        else if (!contentLength || (contentLength!=expectedLength)) {
+                        } else if (!contentLength || (contentLength!=expectedLength)) {
                             notecard.logDebugf("web.post Content-Length actual!=expected: %s!=%s\n", contentLength, expectedLength);
-                        }
-                        else {
+                        } else {
                             notecard.logDebug("web.post response validated.\n");
                             success = true;
                         }
@@ -1061,18 +1048,20 @@ public:
             if (success) {
                 success = validateReceivedContent(tx, name, chunked);
             }
-	    }
+        }
         return success;
     }
 
     // Turns a reference to a member function into a regular std::function by binding the 'this' argument.
-    NotecardBinary::transfer_cb_t transfer_callback() {
+    NotecardBinary::transfer_cb_t transfer_callback()
+    {
         using namespace std::placeholders;
         return std::bind(&WebPostHandler::handleTransfer, this, _1);
     }
 };
 
-class NoteAddHandler : public FileHandler {
+class NoteAddHandler : public FileHandler
+{
     const char* name;
 public:
     /**
@@ -1123,17 +1112,14 @@ public:
                 const char* err = JGetString(rsp, "err");
                 if (err && err[0]) {
                     notecard.logDebugf("note.add error: %s\n", err);
-                }
-                else {
+                } else {
                     success = true;
                 }
                 JDelete(rsp);
-            }
-            else {
+            } else {
                 notecard.logDebugf("no response from Notecard\n");
             }
-        }
-        else {
+        } else {
             notecard.logDebugf("Could not allocate request\n");
         }
 
@@ -1143,7 +1129,8 @@ public:
         return success;
     }
 
-    NotecardBinary::transfer_cb_t transfer_callback() {
+    NotecardBinary::transfer_cb_t transfer_callback()
+    {
         using namespace std::placeholders;
         return std::bind(&NoteAddHandler::handleTransfer, this, _1);
     }

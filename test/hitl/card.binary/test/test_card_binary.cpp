@@ -46,7 +46,8 @@ void assert_initialize_notecard(NotecardInterface iface)
 uint8_t transfer_buffer[NotecardBinary::MAX_CHUNK_SIZE + 128];
 size_t max_binary_length;
 
-void AssertNoteBinaryReset() {
+void AssertNoteBinaryReset()
+{
     const char* err = NoteBinaryDataReset();
     if (err) {
         notecard.logDebugf("Error calling NoteBinaryReset %s\n", err);
@@ -76,24 +77,28 @@ struct BinaryTestArgs {
     } _handler;
 
 
-    BinaryTestArgs() {
+    BinaryTestArgs()
+    {
         _maxCardBinary = 0;
         _validateChunkSizes = nullptr;
         _validateChunkSizesCount = 0;
         _handler = NONE;
     }
 
-    BinaryTestArgs& handler(Handler handler) {
+    BinaryTestArgs& handler(Handler handler)
+    {
         _handler = handler;
         return *this;
     }
 
-    BinaryTestArgs& maxCardBinary(size_t max) {
+    BinaryTestArgs& maxCardBinary(size_t max)
+    {
         _maxCardBinary = max;
         return *this;
     }
 
-    template<const size_t N> BinaryTestArgs& validateChunkSizes(const int (&sizes)[N]) {
+    template<const size_t N> BinaryTestArgs& validateChunkSizes(const int (&sizes)[N])
+    {
         _validateChunkSizesCount = N;
         _validateChunkSizes = sizes;
         return *this;
@@ -122,8 +127,7 @@ void binaryTransferTest(const char* name, BinaryGenerator& generator, NotecardIn
         if (!max_binary_length) {
             TEST_FAIL_MESSAGE("max_binary_length not set. Be sure the get_max_length test has been run first.");
             return;
-        }
-        else {
+        } else {
             maxCardBinary = max_binary_length;
         }
     }
@@ -153,21 +157,21 @@ void binaryTransferTest(const char* name, BinaryGenerator& generator, NotecardIn
 
     // NoteAddHandler noteAddHandler;
     switch (testArgs._handler) {
-        case BinaryTestArgs::NONE:
-            tx.transfer_cb = NotecardBinary::accept_transfer_callback;
-            break;
-        case BinaryTestArgs::WEB_POST_CHUNKED:
-            tx.transfer_cb = webPostChunkedHandler.transfer_callback();
-            break;
-        case BinaryTestArgs::WEB_POST_UNCHUNKED:
-            tx.transfer_cb = webPostHandler.transfer_callback();
-            break;
-        case BinaryTestArgs::NOTE_ADD:
-            tx.transfer_cb = noteAddHandler.transfer_callback();
-            break;
-        default:
-            TEST_FAIL_MESSAGE("Unknown transfer handler");
-            return;
+    case BinaryTestArgs::NONE:
+        tx.transfer_cb = NotecardBinary::accept_transfer_callback;
+        break;
+    case BinaryTestArgs::WEB_POST_CHUNKED:
+        tx.transfer_cb = webPostChunkedHandler.transfer_callback();
+        break;
+    case BinaryTestArgs::WEB_POST_UNCHUNKED:
+        tx.transfer_cb = webPostHandler.transfer_callback();
+        break;
+    case BinaryTestArgs::NOTE_ADD:
+        tx.transfer_cb = noteAddHandler.transfer_callback();
+        break;
+    default:
+        TEST_FAIL_MESSAGE("Unknown transfer handler");
+        return;
     }
 
     TEST_ASSERT_TRUE_MESSAGE(cardBinary.transferBinary(tx), "binary transfer failed");
@@ -381,7 +385,8 @@ TEST(test_max_length_aux_serial)
         RUN_SIZE(Random_1234, BuildRandom, interface, interfacename, 5*1026, 5k, max10k_webpost_chunked, 1234); \
     }
 
-void waitForNotecardConnected() {
+void waitForNotecardConnected()
+{
     TEST_ASSERT_TRUE_MESSAGE(NotecardBinary::waitForNotecardConnected(5*60), "Notecard not connected");
 }
 
@@ -419,12 +424,12 @@ void testsuite_card_binary()
 
 
 #if 0
-        RUN_ALL_SIZES_ALL_IFACES(all_sevens, AllSevens);
+    RUN_ALL_SIZES_ALL_IFACES(all_sevens, AllSevens);
 
-        RUN_ALL_SIZES_ALL_IFACES(random_1234, BuildRandom, 1234);
-        RUN_ALL_SIZES_ALL_IFACES(all_zeros, AllZeros);
-        RUN_ALL_SIZES_ALL_IFACES(72k_binary, SmallBinaryImage);
-    #endif
+    RUN_ALL_SIZES_ALL_IFACES(random_1234, BuildRandom, 1234);
+    RUN_ALL_SIZES_ALL_IFACES(all_zeros, AllZeros);
+    RUN_ALL_SIZES_ALL_IFACES(72k_binary, SmallBinaryImage);
+#endif
     if (false) {
         RUN_FILTER(test_max_length_aux_serial);
         RUN_FILTER(test_max_length_serial);
