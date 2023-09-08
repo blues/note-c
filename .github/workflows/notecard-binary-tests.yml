@@ -46,6 +46,9 @@ jobs:
       - name: Generate ND5 Server Token
         run: |
           [ -n "$MD5SRV_TOKEN" ] || echo "MD5SRV_TOKEN=`uuidgen`" >> $GITHUB_ENV
+          # propagate the environment variable so that it's available in the `env` context
+          # for use by the localtunnel
+          echo "MD5SRV_PORT=$MD5SRV_PORT" >> $GITHUB_ENV
       - name: Check Env Vars
         run: |
           . scripts/check_runner_config.sh
