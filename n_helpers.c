@@ -367,12 +367,10 @@ const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
     if (!buffer) {
         err = ERRSTR("NULL buffer", c_bad);
         NOTE_C_LOG_ERROR(err);
-    }
-    else if (!dataLen) {
+    } else if (!dataLen) {
         err = ERRSTR("NULL dataLen not allowed", c_bad);
         NOTE_C_LOG_ERROR(err);
-    }
-    else {
+    } else {
         // Calculate the data length available on the Notecard
         if ((err = NoteBinaryDataDecodedLength(&decodedLen))) {
             decodedLen = 0;
