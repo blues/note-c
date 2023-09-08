@@ -106,7 +106,7 @@ static const char NOTE_C_BINARY_EOP = '\n';
  */
 /**************************************************************************/
 uint32_t NoteBinaryCodecDecode(const uint8_t *encData, uint32_t encDataLen,
-                                   uint8_t *decBuf, uint32_t decBufSize)
+                               uint8_t *decBuf, uint32_t decBufSize)
 {
     uint32_t result;
 
