@@ -156,6 +156,7 @@ add_test(NoteBinaryCodecMaxEncodedLength_test)
 add_test(NoteBinaryStoreDecodedLength_test)
 add_test(NoteBinaryStoreEncodedLength_test)
 add_test(NoteBinaryStoreReceive_test)
+add_test(NoteBinaryStoreReceiveAll_test)
 add_test(NoteBinaryStoreReset_test)
 add_test(NoteBinaryStoreTransmit_test)
 
