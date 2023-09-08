@@ -1,5 +1,5 @@
 /*!
- * @file NoteBinaryDataEncodedLength_test.cpp
+ * @file NoteBinaryStoreEncodedLength_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -18,6 +18,8 @@
 
 #include "n_lib.h"
 
+const char * NoteBinaryStoreEncodedLength(uint32_t *);
+
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 
@@ -26,7 +28,7 @@ const uint32_t cobsLen = 10;
 namespace
 {
 
-SCENARIO("NoteBinaryDataEncodedLength")
+SCENARIO("NoteBinaryStoreEncodedLength")
 {
     RESET_FAKE(NoteRequestResponse);
 
@@ -36,7 +38,7 @@ SCENARIO("NoteBinaryDataEncodedLength")
 
     GIVEN("Bad parameters are supplied") {
         WHEN("Length is NULL") {
-            const char *err = NoteBinaryDataEncodedLength(NULL);
+            const char *err = NoteBinaryStoreEncodedLength(NULL);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -51,8 +53,8 @@ SCENARIO("NoteBinaryDataEncodedLength")
             return NULL;
         };
 
-        WHEN("NoteBinaryDataEncodedLength is called") {
-            const char *err = NoteBinaryDataEncodedLength(&size);
+        WHEN("NoteBinaryStoreEncodedLength is called") {
+            const char *err = NoteBinaryStoreEncodedLength(&size);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -69,8 +71,8 @@ SCENARIO("NoteBinaryDataEncodedLength")
             return rsp;
         };
 
-        WHEN("NoteBinaryDataEncodedLength is called") {
-            const char *err = NoteBinaryDataEncodedLength(&size);
+        WHEN("NoteBinaryStoreEncodedLength is called") {
+            const char *err = NoteBinaryStoreEncodedLength(&size);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -88,8 +90,8 @@ SCENARIO("NoteBinaryDataEncodedLength")
             return rsp;
         };
 
-        WHEN("NoteBinaryDataEncodedLength is called") {
-            const char *err = NoteBinaryDataEncodedLength(&size);
+        WHEN("NoteBinaryStoreEncodedLength is called") {
+            const char *err = NoteBinaryStoreEncodedLength(&size);
 
             THEN("An error is not returned") {
                 CHECK(err == NULL);
@@ -111,16 +113,16 @@ SCENARIO("NoteBinaryDataEncodedLength")
             return rsp;
         };
 
-        WHEN("NoteBinaryDataEncodedLength is called") {
-            const char *err = NoteBinaryDataEncodedLength(&size);
+        WHEN("NoteBinaryStoreEncodedLength is called") {
+            const char *err = NoteBinaryStoreEncodedLength(&size);
 
             THEN("An error is not returned") {
                 CHECK(err == NULL);
             }
 
             THEN("The size out parameter is the cobs value in the card.binary "
-                 "response, plus 1 for the trailing newline") {
-                CHECK(size == cobsLen + 1);
+                 "response") {
+                CHECK(size == cobsLen);
             }
         }
     }

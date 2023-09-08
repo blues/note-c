@@ -20,7 +20,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
-FAKE_VALUE_FUNC(const char *, NoteBinaryDataEncodedLength, uint32_t *)
+FAKE_VALUE_FUNC(const char *, NoteBinaryStoreEncodedLength, uint32_t *)
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 FAKE_VALUE_FUNC(const char *, NoteChunkedReceive, uint8_t *, uint32_t *, bool,
                 size_t, uint32_t *)
@@ -47,7 +47,7 @@ namespace
 SCENARIO("NoteBinaryReceive")
 {
     RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteBinaryDataEncodedLength);
+    RESET_FAKE(NoteBinaryStoreEncodedLength);
     RESET_FAKE(NoteRequestResponse);
     RESET_FAKE(NoteChunkedReceive);
     RESET_FAKE(NoteLockNote);
@@ -60,7 +60,7 @@ SCENARIO("NoteBinaryReceive")
     NoteNewRequest_fake.custom_fake = [](const char *req) -> J* {
         return JCreateObject();
     };
-    NoteBinaryDataEncodedLength_fake.custom_fake = [](uint32_t *size)
+    NoteBinaryStoreEncodedLength_fake.custom_fake = [](uint32_t *size)
     -> const char * {
         *size = bufLen;
 

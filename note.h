@@ -324,7 +324,7 @@ uint32_t NoteBinaryCodecEncode(const uint8_t *decData, uint32_t decDataLen,
 uint32_t NoteBinaryCodecMaxDecodedLength(uint32_t bufferSize);
 uint32_t NoteBinaryCodecMaxEncodedLength(uint32_t unencodedLength);
 const char * NoteBinaryStoreDecodedLength(uint32_t *len);
-const char * NoteBinaryDataEncodedLength(uint32_t *len);
+const char * NoteBinaryStoreEncodedLength(uint32_t *len);
 const char * NoteBinaryDataReset(void);
 const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
                                uint32_t decodedOffset, uint32_t decodedLen);

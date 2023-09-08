@@ -145,19 +145,21 @@ const char * NoteBinaryStoreDecodedLength(uint32_t *len)
   @returns An error string on error and NULL on success.
  */
 /**************************************************************************/
-const char * NoteBinaryDataEncodedLength(uint32_t *len)
+const char * NoteBinaryStoreEncodedLength(uint32_t *len)
 {
     // Validate parameter(s)
     if (!len) {
-        NOTE_C_LOG_ERROR("size cannot be NULL");
-        return ERRSTR("size cannot be NULL", c_err);
+        const char *err = ERRSTR("size cannot be NULL", c_err);
+        NOTE_C_LOG_ERROR(err);
+        return err;
     }
 
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
     if (!rsp) {
-        NOTE_C_LOG_ERROR("unable to issue binary request");
-        return ERRSTR("unable to issue binary request", c_err);
+        const char *err = ERRSTR("unable to issue binary request", c_err);
+        NOTE_C_LOG_ERROR(err);
+        return err;
     }
 
     // Ensure the transaction doesn't return an error and confirm the binary
@@ -166,23 +168,16 @@ const char * NoteBinaryDataEncodedLength(uint32_t *len)
         const char *err = JGetString(rsp, "err");
         NOTE_C_LOG_ERROR(err);
         JDelete(rsp);
-        NOTE_C_LOG_ERROR("unexpected error received during handshake");
-        return ERRSTR("unexpected error received during handshake", c_bad);
+        err = ERRSTR("unexpected error received during handshake", c_bad);
+        NOTE_C_LOG_ERROR(err);
+        return err;
     }
 
     // Examine "cobs" from the response to evaluate the space required to hold
     // the COBS-encoded data to be received from the Notecard.
     long int cobs = JGetInt(rsp, "cobs");
     JDelete(rsp);
-    if (!cobs) {
-        // If cobs is 0, the required buffer length is 0 because there's nothing
-        // to receive.
-        *len = 0;
-    } else {
-        // Otherwise, the required length is cobs + 1: the binary data plus
-        // 1 byte for the terminating newline.
-        *len = cobs + 1;
-    }
+    *len = cobs;
 
     return NULL;
 }
@@ -366,7 +361,7 @@ uint32_t NoteBinaryCodecMaxEncodedLength(uint32_t unencodedLength)
          data store contents from the requested offset for the specified length.
          To determine the necessary buffer size for a given data length, use
          `NoteBinaryCodecMaxEncodedLength()`, or if you wish to consume the
-         entire buffer use `NoteBinaryDataEncodedLength()` instead.
+         entire buffer use `(NoteBinaryStoreEncodedLength() + 1)` instead.
  */
 /**************************************************************************/
 const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
