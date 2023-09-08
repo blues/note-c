@@ -155,7 +155,8 @@ uint32_t NoteBinaryCodecEncode(const uint8_t *decData, uint32_t decDataLen,
     if (decData == NULL || encBuf == NULL) {
         NOTE_C_LOG_ERROR(ERRSTR("NULL parameter", c_err));
         result = 0;
-    } else  if ((encBufSize < cobsEncodedMaxLength(decDataLen)) && (encBufSize < cobsEncodedLength(decData, decDataLen))) {
+    } else if ((encBufSize < cobsEncodedMaxLength(decDataLen))
+           && (encBufSize < cobsEncodedLength(decData, decDataLen))) {
         // NOTE: `cobsEncodedMaxLength()` provides a constant time [O(1)] means
         //       of checking the buffer size. Only when it fails will the linear
         //       time [O(n)] check, `cobsEncodedLength()`, be invoked.
