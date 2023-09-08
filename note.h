@@ -320,9 +320,8 @@ void NoteMD5HashToString(unsigned char *hash, char *strbuf, unsigned long buflen
 const char * NoteBinaryDataDecodedLength(uint32_t *len);
 const char * NoteBinaryDataEncodedLength(uint32_t *len);
 const char * NoteBinaryDataReset(void);
-const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
-                              uint8_t *outBuf, uint32_t outLen,
-                              uint32_t *decLen);
+uint32_t NoteBinaryCodecDecode(const uint8_t *encData, uint32_t encDataLen,
+                              uint8_t *decBuf, uint32_t decBufLen);
 const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
                               uint8_t *outBuf, uint32_t outLen,
                               uint32_t *encLen);
