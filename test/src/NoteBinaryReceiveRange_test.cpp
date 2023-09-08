@@ -35,7 +35,8 @@ FAKE_VOID_FUNC(NoteUnlockNote)
 // a compiler error.
 uint8_t buf[32];
 uint32_t bufLen = sizeof(buf);
-uint32_t dataLen = 17;
+uint32_t decodedOffset = 0;
+uint32_t decodedLen = 17;
 
 char rawMsg[] = "Hello Blues!";
 uint32_t rawMsgLen = strlen(rawMsg);
@@ -51,8 +52,6 @@ SCENARIO("NoteBinaryReceiveRange")
     RESET_FAKE(NoteChunkedReceive);
     RESET_FAKE(NoteLockNote);
     RESET_FAKE(NoteUnlockNote);
-
-    const uint32_t OFFSET_ZERO = 0;
 
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
@@ -78,12 +77,36 @@ SCENARIO("NoteBinaryReceiveRange")
         return rsp;
     };
 
+    GIVEN("Bad parameters are supplied") {
+        WHEN("buffer is NULL") {
+            const char *err = NoteBinaryReceiveRange(NULL, bufLen, decodedOffset, decodedLen);
+
+            THEN("An error is returned") {
+                CHECK(err != NULL);
+            }
+        }
+        WHEN("bufLen is too small") {
+            const char *err = NoteBinaryReceiveRange(buf, bufLen, decodedOffset, bufLen);
+
+            THEN("An error is returned") {
+                CHECK(err != NULL);
+            }
+        }
+        WHEN("decodedLen is zero") {
+            const char *err = NoteBinaryReceiveRange(buf, bufLen, decodedOffset, 0);
+
+            THEN("An error is returned") {
+                CHECK(err != NULL);
+            }
+        }
+    }
+
     GIVEN("Allocating the card.binary.get request fails") {
         NoteNewRequest_fake.custom_fake = NULL;
         NoteNewRequest_fake.return_val = NULL;
 
         WHEN("NoteBinaryReceiveRange is called") {
-            const char *err = NoteBinaryReceiveRange(buf, bufLen, OFFSET_ZERO, dataLen);
+            const char *err = NoteBinaryReceiveRange(buf, bufLen, decodedOffset, decodedLen);
 
             REQUIRE(NoteNewRequest_fake.call_count > 0);
             THEN("An error is returned") {
@@ -102,7 +125,7 @@ SCENARIO("NoteBinaryReceiveRange")
         };
 
         WHEN("NoteBinaryReceiveRange is called") {
-            const char *err = NoteBinaryReceiveRange(buf, bufLen, OFFSET_ZERO, dataLen);
+            const char *err = NoteBinaryReceiveRange(buf, bufLen, decodedOffset, decodedLen);
 
             REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is returned") {
@@ -115,7 +138,7 @@ SCENARIO("NoteBinaryReceiveRange")
         NoteChunkedReceive_fake.return_val = "some error";
 
         WHEN("NoteBinaryReceiveRange is called") {
-            const char *err = NoteBinaryReceiveRange(buf, bufLen, OFFSET_ZERO, dataLen);
+            const char *err = NoteBinaryReceiveRange(buf, bufLen, decodedOffset, decodedLen);
 
             REQUIRE(NoteChunkedReceive_fake.call_count > 0);
             THEN("An error is returned") {
@@ -134,7 +157,7 @@ SCENARIO("NoteBinaryReceiveRange")
         };
 
         WHEN("NoteBinaryReceiveRange is called") {
-            const char *err = NoteBinaryReceiveRange(buf, bufLen, OFFSET_ZERO, dataLen);
+            const char *err = NoteBinaryReceiveRange(buf, bufLen, decodedOffset, decodedLen);
 
             REQUIRE(NoteChunkedReceive_fake.call_count > 0);
             THEN("An error is returned") {
@@ -166,7 +189,7 @@ SCENARIO("NoteBinaryReceiveRange")
             };
 
             WHEN("NoteBinaryReceiveRange is called") {
-                const char *err = NoteBinaryReceiveRange(buf, bufLen, OFFSET_ZERO, dataLen);
+                const char *err = NoteBinaryReceiveRange(buf, bufLen, decodedOffset, decodedLen);
 
                 REQUIRE(NoteChunkedReceive_fake.call_count > 0);
                 REQUIRE(NoteRequestResponse_fake.call_count > 0);
@@ -178,8 +201,8 @@ SCENARIO("NoteBinaryReceiveRange")
 
         AND_GIVEN("The computed MD5 matches the status field") {
             WHEN("NoteBinaryReceiveRange is called") {
-                uint32_t dataLen = rawMsgLen;
-                const char *err = NoteBinaryReceiveRange(buf, bufLen, OFFSET_ZERO, dataLen);
+                uint32_t decodedLen = rawMsgLen;
+                const char *err = NoteBinaryReceiveRange(buf, bufLen, decodedOffset, decodedLen);
 
                 REQUIRE(NoteChunkedReceive_fake.call_count > 0);
                 THEN("No error is returned") {
@@ -188,12 +211,11 @@ SCENARIO("NoteBinaryReceiveRange")
 
                 THEN("The decoded payload is as expected, with no trailing "
                      "newline") {
-                    CHECK(memcmp(buf, rawMsg, dataLen) == 0);
+                    CHECK(memcmp(buf, rawMsg, decodedLen) == 0);
                 }
             }
         }
     }
-    CHECK(NoteLockNote_fake.call_count > 0);
     CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
 }
 
