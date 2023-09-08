@@ -806,7 +806,7 @@ private:
             int length = JGetNumber(rsp, "length");
 
             const char* err = JGetString(rsp, "err");
-            retry = result==404;
+            retry = result==404 || result==503 || result==504;
             if (err && err[0]) {
                 notecard.logDebugf("web.get failed with error: %s\n", err);
             } else if (result<200 || result>=300) {
