@@ -497,6 +497,11 @@ const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedL
         NOTE_C_LOG_ERROR(err);
         return err;
     }
+    if (bufLen < (cobsEncodedLength(unencodedData, unencodedLen) + 1)) {
+        const char *err = ERRSTR("insufficient buffer size", c_bad);
+        NOTE_C_LOG_ERROR(err);
+        return err;
+    }
 
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));

@@ -182,12 +182,12 @@ SCENARIO("NoteBinaryStoreTransmit")
         // Discover the actual encoded length of the data
         const uint32_t tempBufLen = cobsEncodedMaxLength(dataLen);
         uint8_t *tempBuf = (uint8_t *)malloc(tempBufLen);
-        uint32_t newBufLen = NoteBinaryCodecEncode(buf, dataLen, tempBuf, tempBufLen);
-        REQUIRE(newBufLen > 0);
+        uint32_t encLen = NoteBinaryCodecEncode(buf, dataLen, tempBuf, tempBufLen);
+        REQUIRE(encLen > 0);
         free(tempBuf);
 
         WHEN("NoteBinaryStoreTransmit is called") {
-            const char *err = NoteBinaryStoreTransmit(buf, dataLen, newBufLen, 0);
+            const char *err = NoteBinaryStoreTransmit(buf, dataLen, encLen, 0);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
