@@ -47,7 +47,7 @@ jobs:
         run: |
           [ -n "$MD5SRV_TOKEN" ] || echo "MD5SRV_TOKEN=`uuidgen`" >> $GITHUB_ENV
           # propagate the environment variable so that it's available in the `env` context
-          echo "MD5SRV_PORT=$MD%SRV_PORT" >> $GITHUB_ENV
+          echo "MD5SRV_PORT=$MD5SRV_PORT" >> $GITHUB_ENV
       - name: Check Env Vars
         run: |
           . scripts/check_runner_config.sh
