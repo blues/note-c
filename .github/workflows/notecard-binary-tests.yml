@@ -109,7 +109,7 @@ jobs:
       - name: Build and Upload Test Firmware
         if: env.FLASH_TEST_FIRMWARE!='false'
         env:
-          PLATFORMIO_BUILD_FLAGS: "'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"${{ env.NOTEHUB_PROXY_ROUTE_ALIAS }}\"' '-D PRODUCT_UID=\"${{ env.NOTEHUB_PRODUCT_UID }}\"'"
+          PLATFORMIO_BUILD_FLAGS: "'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"$NOTEHUB_PROXY_ROUTE_ALIAS\"' '-D PRODUCT_UID=\"$NOTEHUB_PRODUCT_UID\"'"
         run: |
           source venv/bin/activate
           echo "build flags $PLATFORMIO_BUILD_FLAGS"
