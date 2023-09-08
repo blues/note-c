@@ -310,42 +310,6 @@ const char * NoteBinaryStoreEncodedLength(uint32_t *len)
 
 //**************************************************************************/
 /*!
-  @brief  Reset the Notecard's binary buffer.
-
-  @returns  NULL on success, else an error string pointer.
-
-  @note  This operation is necessary to clear the Notecard's binary buffer after
-         a binary object is received from the Notecard, or if the Notecard's
-         binary buffer has been left in an unknown state due to an error arising
-         from a binary transfer to the Notecard.
- */
-/**************************************************************************/
-const char * NoteBinaryStoreReset(void)
-{
-    J *req = NoteNewRequest("card.binary");
-    if (req) {
-        JAddBoolToObject(req, "delete", true);
-
-        // Ensure the transaction doesn't return an error.
-        J *rsp = NoteRequestResponse(req);
-        if (NoteResponseError(rsp)) {
-            NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
-            JDelete(rsp);
-            const char *err = ERRSTR("failed to reset binary buffer", c_err);
-            NOTE_C_LOG_ERROR(err);
-            return err;
-        }
-    } else {
-        const char *err = ERRSTR("unable to allocate request", c_mem);
-        NOTE_C_LOG_ERROR(err);
-        return err;
-    }
-
-    return NULL;
-}
-
-//**************************************************************************/
-/*!
   @brief  Receive a large binary object from the Notecard's binary buffer
 
   @param  buffer        A buffer to hold the binary range
@@ -464,6 +428,42 @@ const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
     }
 
     // Return `NULL` if success, else error string pointer
+    return NULL;
+}
+
+//**************************************************************************/
+/*!
+  @brief  Reset the Notecard's binary buffer.
+
+  @returns  NULL on success, else an error string pointer.
+
+  @note  This operation is necessary to clear the Notecard's binary buffer after
+         a binary object is received from the Notecard, or if the Notecard's
+         binary buffer has been left in an unknown state due to an error arising
+         from a binary transfer to the Notecard.
+ */
+/**************************************************************************/
+const char * NoteBinaryStoreReset(void)
+{
+    J *req = NoteNewRequest("card.binary");
+    if (req) {
+        JAddBoolToObject(req, "delete", true);
+
+        // Ensure the transaction doesn't return an error.
+        J *rsp = NoteRequestResponse(req);
+        if (NoteResponseError(rsp)) {
+            NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
+            JDelete(rsp);
+            const char *err = ERRSTR("failed to reset binary buffer", c_err);
+            NOTE_C_LOG_ERROR(err);
+            return err;
+        }
+    } else {
+        const char *err = ERRSTR("unable to allocate request", c_mem);
+        NOTE_C_LOG_ERROR(err);
+        return err;
+    }
+
     return NULL;
 }
 
