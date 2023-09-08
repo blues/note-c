@@ -94,9 +94,6 @@ jobs:
 
       - name: Install PlatformIO dependencies
         if: env.FLASH_TEST_FIRMWARE!='false'
-        env:
-            # this symbol must be expanded by the shell
-            NOTE_C_DEP: $GITHUB_WORKSPACE/$PIO_PROJECT_DIR/.pio/libdeps/debug/Blues Wireless Notecard/src/note-c
         run: |
           python3 -m venv venv
           source venv/bin/activate
@@ -104,10 +101,11 @@ jobs:
           cd $PIO_PROJECT_DIR
           pio pkg install -l "Blues Wireless Notecard" -e debug
           # Remove the bundled note-c and put the local working copy there
-          rm -rf "${{env.NOTE_C_DEP}}"
-          mkdir "${{env.NOTE_C_DEP}}"
+          NOTE_C_DEP=$GITHUB_WORKSPACE/$PIO_PROJECT_DIR/.pio/libdeps/debug/Blues Wireless Notecard/src/note-c
+          rm -rf "$NOTE_C_DEP"
+          mkdir "$NOTE_C_DEP"
           # copy only files in note-c
-          find "${{ env.GITHUB_WORKSPACE }}" -maxdepth 1 -type f -exec cp "{}" "${{env.NOTE_C_DEP}}" \;
+          find "$GITHUB_WORKSPACE" -maxdepth 1 -type f -exec cp "{}" "${NOTE_C_DEP}" \;
       - name: Build and Upload Test Firmware
         if: env.FLASH_TEST_FIRMWARE!='false'
         env:
