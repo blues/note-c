@@ -97,19 +97,21 @@ static const char NOTE_C_BINARY_EOP = '\n';
   @returns An error string on error and NULL on success.
  */
 /**************************************************************************/
-const char * NoteBinaryDataDecodedLength(uint32_t *len)
+const char * NoteBinaryStoreDecodedLength(uint32_t *len)
 {
     // Validate parameter(s)
     if (!len) {
-        NOTE_C_LOG_ERROR("len cannot be NULL");
-        return ERRSTR("len cannot be NULL", c_err);
+        const char *err = ERRSTR("len cannot be NULL", c_bad);
+        NOTE_C_LOG_ERROR(err);
+        return err;
     }
 
     // Issue a "card.binary" request.
     J *rsp = NoteRequestResponse(NoteNewRequest("card.binary"));
     if (!rsp) {
-        NOTE_C_LOG_ERROR("unable to issue binary request");
-        return ERRSTR("unable to issue binary request", c_err);
+        const char *err = ERRSTR("unable to issue binary request", c_err);
+        NOTE_C_LOG_ERROR(err);
+        return err;
     }
 
     // Ensure the transaction doesn't return an error and confirm the binary
@@ -118,8 +120,9 @@ const char * NoteBinaryDataDecodedLength(uint32_t *len)
         const char *err = JGetString(rsp, "err");
         NOTE_C_LOG_ERROR(err);
         JDelete(rsp);
-        NOTE_C_LOG_ERROR("unexpected error received during handshake");
-        return ERRSTR("unexpected error received during handshake", c_bad);
+        err = ERRSTR("unexpected error received during handshake", c_err);
+        NOTE_C_LOG_ERROR(err);
+        return err;
     }
 
     // Examine "length" from the response to evaluate the length of the decoded
