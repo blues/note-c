@@ -230,9 +230,9 @@ const char * NoteBinaryDataReset(void)
 
   @returns  The length of the decoded data, or zero on error.
 
-  @note Use `NoteBinaryMaxDecodedLength()` to calculate the required size for
-        the buffer pointed to by the `decBuf` parameter, which MUST accommodate
-        both the encoded data and newline terminator.
+  @note Use `NoteBinaryCodecMaxDecodedLength()` to calculate the required
+        size for the buffer pointed to by the `decBuf` parameter, which MUST
+        accommodate both the encoded data and newline terminator.
   @note This API supports in-place decoding. If you wish to utilize in-place
         decoding, then set `decBuf` to `encData` and `decBufSize` to `encLen`.
  */
@@ -326,7 +326,7 @@ uint32_t NoteBinaryCodecEncode(const uint8_t *decData, uint32_t decDataLen,
             buffer, after being encoded.
  */
 /**************************************************************************/
-uint32_t NoteBinaryMaxDecodedLength(uint32_t bufferSize)
+uint32_t NoteBinaryCodecMaxDecodedLength(uint32_t bufferSize)
 {
     return cobsGuaranteedFit(bufferSize);
 }
