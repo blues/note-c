@@ -4,15 +4,18 @@ on:
   pull_request:
     branches: [ master ]
   workflow_dispatch:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '45 4 * * 1'  # 4.45am every Monday
 
 jobs:
-  # md5srv-test:
-  #   using: ./.github/workflows/md5srv-tests.yml
-  #   runs-on: local
+  md5srv-test:
+    using: ./.github/workflows/md5srv-tests.yml
+    # runs-on: local # required for `act`
 
   notecard-binary-test:
-    # needs: md5srv-test
-    runs-on: local
+    needs: md5srv-test
+    runs-on: [self-hosted, swan, notecard, stlink, notecard-serial, md5srv, notehub-client]
     defaults:
       run:
         shell: bash
