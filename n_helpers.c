@@ -364,8 +364,8 @@ const char * NoteBinaryStoreReset(void)
          entire buffer use `(NoteBinaryStoreEncodedLength() + 1)` instead.
  */
 /**************************************************************************/
-const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
-                               uint32_t decodedOffset, uint32_t decodedLen)
+const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
+                                    uint32_t decodedOffset, uint32_t decodedLen)
 {
     // Validate parameter(s)
     if (!buffer) {
