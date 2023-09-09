@@ -459,6 +459,7 @@ const char * NoteBinaryStoreReset(void)
             NOTE_C_LOG_ERROR(err);
             return err;
         }
+
         JDelete(rsp);
     } else {
         const char *err = ERRSTR("unable to allocate request", c_mem);

@@ -27,15 +27,13 @@ namespace
 
 SCENARIO("NoteBinaryStoreReset")
 {
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteRequestResponse);
-
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
     NoteNewRequest_fake.custom_fake = [](const char *req) -> J * {
         return JCreateObject();
     };
     NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
+        JDelete(req);
         return JCreateObject();
     };
 
@@ -79,6 +77,9 @@ SCENARIO("NoteBinaryStoreReset")
             }
         }
     }
+
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteRequestResponse);
 }
 
 }
