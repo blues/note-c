@@ -28,8 +28,6 @@ namespace
 
 SCENARIO("NoteBinaryCodecMaxEncodedLength")
 {
-    RESET_FAKE(cobsEncodedMaxLength);
-
     GIVEN("Parameters are in order") {
         const uint32_t EXPECTED_RESULT = 79;
         cobsEncodedMaxLength_fake.return_val = EXPECTED_RESULT;
@@ -49,6 +47,8 @@ SCENARIO("NoteBinaryCodecMaxEncodedLength")
             }
         }
     }
+
+    RESET_FAKE(cobsEncodedMaxLength);
 }
 
 }

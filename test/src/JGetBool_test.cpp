@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JGetBool")
+SCENARIO("JGetBool")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

@@ -29,11 +29,9 @@ J *NoteTransactionValid(J *)
     return JCreateObject();
 }
 
-TEST_CASE("NoteRequestResponse")
+SCENARIO("NoteRequestResponse")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteTransaction);
 
     SECTION("Passing a NULL request returns NULL") {
         CHECK(NoteRequestResponse(NULL) == NULL);
@@ -60,6 +58,8 @@ TEST_CASE("NoteRequestResponse")
 
         JDelete(resp);
     }
+
+    RESET_FAKE(NoteTransaction);
 }
 
 }

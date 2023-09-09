@@ -26,13 +26,9 @@ FAKE_VALUE_FUNC(bool, NoteRequest, J *)
 namespace
 {
 
-TEST_CASE("NoteSendToRoute")
+SCENARIO("NoteSendToRoute")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteRequestResponse);
-    RESET_FAKE(NoteRequest);
 
     const char method[] = "post";
     const char routeAlias[] = "alias";
@@ -99,6 +95,10 @@ TEST_CASE("NoteSendToRoute")
 
         JDelete(firstReq);
     }
+
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteRequestResponse);
+    RESET_FAKE(NoteRequest);
 }
 
 }

@@ -47,7 +47,7 @@ uint32_t MyGetMs()
     return 0;
 }
 
-TEST_CASE("NoteSetFn")
+SCENARIO("NoteSetFn")
 {
     NoteSetFnDefault(MyMalloc, MyFree, MyDelayMs, MyGetMs);
 

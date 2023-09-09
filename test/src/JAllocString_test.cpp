@@ -24,10 +24,8 @@ FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
 namespace
 {
 
-TEST_CASE("JAllocString")
+SCENARIO("JAllocString")
 {
-    RESET_FAKE(NoteMalloc);
-
     NoteSetFnDefault(NULL, free, NULL, NULL);
     NoteMalloc_fake.custom_fake = malloc;
 
@@ -55,6 +53,8 @@ TEST_CASE("JAllocString")
         CHECK(strcmp(str, "Hello Blues!") == 0);
         NoteFree(str);
     }
+
+    RESET_FAKE(NoteMalloc);
 }
 
 }

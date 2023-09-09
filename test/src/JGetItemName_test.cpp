@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JGetItemName")
+SCENARIO("JGetItemName")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

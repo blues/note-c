@@ -28,8 +28,6 @@ namespace
 
 SCENARIO("NoteBinaryCodecMaxDecodedLength")
 {
-    RESET_FAKE(cobsGuaranteedFit);
-
     GIVEN("Parameters are in order") {
         const uint32_t EXPECTED_RESULT = 79;
         cobsGuaranteedFit_fake.return_val = EXPECTED_RESULT;
@@ -49,6 +47,8 @@ SCENARIO("NoteBinaryCodecMaxDecodedLength")
             }
         }
     }
+
+    RESET_FAKE(cobsGuaranteedFit);
 }
 
 }

@@ -54,11 +54,8 @@ char SerialReceive()
 }
 
 
-TEST_CASE("NoteSetFnSerial")
+SCENARIO("NoteSetFnSerial")
 {
-    RESET_FAKE(serialNoteReset);
-    RESET_FAKE(serialNoteTransaction);
-
     char req[] = "{ \"req\": \"note.add\" }";
     char *resp = NULL;
     serialNoteReset_fake.return_val = true;
@@ -110,6 +107,9 @@ TEST_CASE("NoteSetFnSerial")
 
     CHECK(NoteJSONTransaction(req, &resp) != NULL);
     CHECK(serialNoteTransaction_fake.call_count == 1);
+
+    RESET_FAKE(serialNoteReset);
+    RESET_FAKE(serialNoteTransaction);
 }
 
 }

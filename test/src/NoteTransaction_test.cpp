@@ -68,14 +68,9 @@ const char *NoteJSONTransactionIOError(char *, char **resp)
     return NULL;
 }
 
-TEST_CASE("NoteTransaction")
+SCENARIO("NoteTransaction")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteReset);
-    RESET_FAKE(NoteJSONTransaction);
-    RESET_FAKE(NoteTransactionStart);
-    RESET_FAKE(crcError);
 
     // NoteReset's mock should succeed unless the test explicitly instructs
     // it to fail.
@@ -250,6 +245,11 @@ TEST_CASE("NoteTransaction")
         JDelete(resp);
     }
 #endif // !NOTE_DISABLE_USER_AGENT
+
+    RESET_FAKE(NoteReset);
+    RESET_FAKE(NoteJSONTransaction);
+    RESET_FAKE(NoteTransactionStart);
+    RESET_FAKE(crcError);
 }
 
 }

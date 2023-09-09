@@ -40,8 +40,6 @@ void NoteSerialTransmitAccumulate(uint8_t *buf, size_t size, bool)
 
 SCENARIO("serialChunkedTransmit")
 {
-    RESET_FAKE(NoteSerialTransmit);
-    RESET_FAKE(NoteDelayMs);
     memset(accumulatedBuf, 0, sizeof(accumulatedBuf));
     accumulatedIdx = 0;
 
@@ -148,6 +146,9 @@ SCENARIO("serialChunkedTransmit")
             }
         }
     }
+
+    RESET_FAKE(NoteSerialTransmit);
+    RESET_FAKE(NoteDelayMs);
 }
 
 }

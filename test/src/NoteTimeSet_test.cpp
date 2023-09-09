@@ -36,12 +36,9 @@ long unsigned int NoteGetMsIncrement(void)
     return count - 1000;
 }
 
-TEST_CASE("NoteTimeSet")
+SCENARIO("NoteTimeSet")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteGetMs);
-    RESET_FAKE(NoteNewRequest);
 
     JTIME baseTime = 1679003056;
     int offset = 5;
@@ -87,6 +84,9 @@ TEST_CASE("NoteTimeSet")
         CHECK(strcmp("", retCountry) == 0);
         CHECK(strcmp("", retArea) == 0);
     }
+
+    RESET_FAKE(NoteGetMs);
+    RESET_FAKE(NoteNewRequest);
 }
 
 }

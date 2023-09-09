@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JGetArray")
+SCENARIO("JGetArray")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

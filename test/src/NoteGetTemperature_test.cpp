@@ -25,12 +25,9 @@ FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 namespace
 {
 
-TEST_CASE("NoteGetTemperature")
+SCENARIO("NoteGetTemperature")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteRequestResponse);
 
     JNUMBER temp = 1.0;
     J *req = JCreateObject();
@@ -74,6 +71,9 @@ TEST_CASE("NoteGetTemperature")
     }
 
     JDelete(req);
+
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteRequestResponse);
 }
 
 }

@@ -31,11 +31,9 @@ void *MallocWrapper(size_t size)
     return malloc(size);
 }
 
-TEST_CASE("NotePayload")
+SCENARIO("NotePayload")
 {
     NoteSetFnDefault(NULL, free, NULL, NULL);
-
-    RESET_FAKE(NoteMalloc);
 
     NoteMalloc_fake.custom_fake = MallocWrapper;
 
@@ -138,6 +136,8 @@ TEST_CASE("NotePayload")
     }
 
     NotePayloadFree(&desc);
+
+    RESET_FAKE(NoteMalloc);
 }
 
 }

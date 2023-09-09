@@ -40,10 +40,6 @@ const char *NoteI2CReceiveInfinite(uint16_t, uint8_t *buf, uint16_t size,
 
 SCENARIO("i2cChunkedReceive")
 {
-    RESET_FAKE(NoteI2CReceive);
-    RESET_FAKE(NoteGetMs);
-    RESET_FAKE(NoteDelayMs);
-
     NoteGetMs_fake.custom_fake = NoteGetMsIncrement;
 
     uint32_t available = 0;
@@ -411,6 +407,10 @@ SCENARIO("i2cChunkedReceive")
             }
         }
     }
+
+    RESET_FAKE(NoteI2CReceive);
+    RESET_FAKE(NoteGetMs);
+    RESET_FAKE(NoteDelayMs);
 }
 
 }

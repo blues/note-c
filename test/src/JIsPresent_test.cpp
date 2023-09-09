@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JIsPresent")
+SCENARIO("JIsPresent")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

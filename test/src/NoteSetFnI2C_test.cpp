@@ -48,11 +48,8 @@ const char *I2CReceive(uint16_t, uint8_t*, uint16_t, uint32_t*)
 }
 
 
-TEST_CASE("NoteSetFnI2C")
+SCENARIO("NoteSetFnI2C")
 {
-    RESET_FAKE(i2cNoteReset);
-    RESET_FAKE(i2cNoteTransaction);
-
     char req[] = "{ \"req\": \"note.add\" }";
     char *resp = NULL;
     i2cNoteReset_fake.return_val = true;
@@ -112,6 +109,9 @@ TEST_CASE("NoteSetFnI2C")
 
     CHECK(NoteI2CAddress() == NOTE_I2C_ADDR_DEFAULT);
     CHECK(NoteI2CMax() == NOTE_I2C_MAX_DEFAULT);
+
+    RESET_FAKE(i2cNoteReset);
+    RESET_FAKE(i2cNoteTransaction);
 }
 
 }

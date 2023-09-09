@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JBoolValue")
+SCENARIO("JBoolValue")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

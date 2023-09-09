@@ -42,7 +42,7 @@ size_t MyDebugOutput(const char *line)
     return len;
 }
 
-TEST_CASE("NoteDebug")
+SCENARIO("NoteDebug")
 {
     memset(&state, 0, sizeof(state));
 

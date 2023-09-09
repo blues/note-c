@@ -31,16 +31,9 @@ FAKE_VALUE_FUNC(const char *, i2cChunkedReceive, uint8_t *, uint32_t *, bool,
 namespace
 {
 
-TEST_CASE("i2cNoteTransaction")
+SCENARIO("i2cNoteTransaction")
 {
     NoteSetFnDefault(NULL, free, NULL, NULL);
-
-    RESET_FAKE(NoteMalloc);
-    RESET_FAKE(NoteLockI2C);
-    RESET_FAKE(NoteUnlockI2C);
-    RESET_FAKE(i2cChunkedTransmit);
-    RESET_FAKE(i2cNoteQueryLength);
-    RESET_FAKE(i2cChunkedReceive);
 
     char req[] = "{\"req\": \"note.add\"}";
     char originalReq[sizeof(req)];
@@ -257,6 +250,13 @@ TEST_CASE("i2cNoteTransaction")
     THEN("The I2C bus is locked and unlocked the same number of times") {
         CHECK(NoteLockI2C_fake.call_count == NoteUnlockI2C_fake.call_count);
     }
+
+    RESET_FAKE(NoteMalloc);
+    RESET_FAKE(NoteLockI2C);
+    RESET_FAKE(NoteUnlockI2C);
+    RESET_FAKE(i2cChunkedTransmit);
+    RESET_FAKE(i2cNoteQueryLength);
+    RESET_FAKE(i2cChunkedReceive);
 }
 
 }
