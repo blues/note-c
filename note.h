@@ -317,20 +317,19 @@ void NoteMD5HashToString(unsigned char *hash, char *strbuf, unsigned long buflen
 
 // High-level helper functions that are both useful and serve to show developers
 // how to call the API
-#define NOTE_C_BINARY_RX_ALL 0
-const char * NoteBinaryDataDecodedLength(uint32_t *len);
-const char * NoteBinaryDataEncodedLength(uint32_t *len);
-const char * NoteBinaryDataReset(void);
-const char * NoteBinaryDecode(const uint8_t *inBuf, uint32_t inLen,
-                              uint8_t *outBuf, uint32_t *outLen);
-const char * NoteBinaryEncode(const uint8_t *inBuf, uint32_t inLen,
-                              uint8_t *outBuf, uint32_t *outLen);
-uint32_t NoteBinaryMaxDecodedLength(uint32_t bufferSize);
-uint32_t NoteBinaryMaxEncodedLength(uint32_t unencodedLength);
-const char * NoteBinaryReceive(uint8_t *buffer, uint32_t bufLen,
-                               uint32_t decodedOffset, uint32_t *decodedLen);
-const char * NoteBinaryTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
-                                uint32_t bufLen, uint32_t notecardOffset);
+uint32_t NoteBinaryCodecDecode(const uint8_t *encData, uint32_t encDataLen,
+                               uint8_t *decBuf, uint32_t decBufSize);
+uint32_t NoteBinaryCodecEncode(const uint8_t *decData, uint32_t decDataLen,
+                               uint8_t *encBuf, uint32_t encBufSize);
+uint32_t NoteBinaryCodecMaxDecodedLength(uint32_t bufferSize);
+uint32_t NoteBinaryCodecMaxEncodedLength(uint32_t unencodedLength);
+const char * NoteBinaryStoreDecodedLength(uint32_t *len);
+const char * NoteBinaryStoreEncodedLength(uint32_t *len);
+const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
+                                    uint32_t decodedOffset, uint32_t decodedLen);
+const char * NoteBinaryStoreReset(void);
+const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedLen,
+                                     uint32_t bufLen, uint32_t notecardOffset);
 uint32_t NoteSetSTSecs(uint32_t secs);
 bool NoteTimeValid(void);
 bool NoteTimeValidST(void);
