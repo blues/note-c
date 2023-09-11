@@ -9,8 +9,8 @@ on:
     - cron:  '45 4 * * 1'  # 4.45am every Monday
 
 jobs:
-  # md5srv-test:
-  #   uses: ./.github/workflows/md5srv-tests.yml
+  md5srv-test:
+     uses: ./.github/workflows/md5srv-tests.yml
 
   notecard-binary-test:
     # needs: md5srv-test

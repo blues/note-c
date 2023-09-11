@@ -1,18 +1,12 @@
 name: MD5 Server Tests
 
 on:
-  pull_request:
-    branches: [ master ]
-    paths:
-      - .github/workflows/md5srv-tests.yml
-      - test/hitl/scripts/md5srv**
-
   workflow_dispatch:
   workflow_call:  # reusable workflow
 
 jobs:
   test-md5srv: # job id
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux]
     defaults:
       run:
         shell: bash
