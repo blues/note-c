@@ -10,7 +10,7 @@ on:
 
 jobs:
   # md5srv-test:
-  #   uses: ./.github/workflows/hitl/md5srv-tests.yml
+  #   uses: ./.github/workflows/md5srv-tests.yml
 
   notecard-binary-test:
     # needs: md5srv-test
