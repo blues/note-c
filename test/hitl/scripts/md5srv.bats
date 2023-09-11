@@ -35,7 +35,7 @@ function cleanTestDir() {
 
 function _waitForMD5Server() {
     # even though a 4xx error is returned, curl will return a success response if it contacts the webserver
-    until curl -s $md5url > /dev/null 2>&1 ; do
+    until curl -s $md5url -o /dev/null -w "%{http_code}"; do
         sleep 0.1
     done
 }
