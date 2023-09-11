@@ -34,7 +34,7 @@ jobs:
       - name: Run Tests
         run: |
             cd ${{env.MD5SRV_DIR}}
-            $HOME/.local/bin/bats -p .
+            $HOME/.local/bin/bats -p --print-output-on-failure .
             # rerun with more detailed logging on failure
             [ $? -eq 0 ] || $HOME/.local/bin/bats -p -x .
 
