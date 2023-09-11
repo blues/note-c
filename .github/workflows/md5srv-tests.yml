@@ -35,7 +35,8 @@ jobs:
         run: |
             cd ${{env.MD5SRV_DIR}}
             $HOME/.local/bin/bats -p --print-output-on-failure .
-            # rerun with more detailed logging on failure
-            [ $? -eq 0 ] || $HOME/.local/bin/bats -p -x .
-
-
+      - name: Rerun Tests
+        if: failure()
+        run: |
+          cd ${{env.MD5SRV_DIR}}
+          $HOME/.local/bin/bats -p --print-output-on-failure -x .
