@@ -4,4 +4,4 @@ MD5SRV_PID=$!
 echo "MD5SRV_PID=$MD5SRV_PID" >> $GITHUB_ENV
 
 # Prevent the action from thinking we exited early
-sleep 2           
+sleep 2

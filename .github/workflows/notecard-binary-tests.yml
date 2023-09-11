@@ -38,9 +38,12 @@ jobs:
         # START_MD5SRV set to false to skip starting the MD5 server. There should be one
         # already running locally with MD5SRV_PORT/ADDRESS/TOKEN set correspondingly.
         START_MD5SRV: true
-        # START_LOCALTUNNEL, set to false to skip starting the localtunnel. Be sure
-        # MD5SRV_URL is defined in the environment to point to the tunnel.
-        START_LOCALTUNNEL: true
+        # START_LOCALTUNNEL, set to false to skip starting the localtunnel.
+        START_LOCALTUNNEL: false
+        # START_TUNNELMOLE: set to false to skip starting tunnel mole.
+        START_TUNNELMOLE: true
+        # When neither tunneling solution is used (because they're already instantiated outside of the workflow)
+        # be sure to set MD5SRV_URL in the environment
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -63,7 +66,7 @@ jobs:
           post: |
             # the JarvusInnovations/background-action@v1 that launches the background
             # process doesn't clean them up. We do that here. MD5SRV_PID is set in the
-            # ./scripts/runmd5srv.sh script
+            # ./scripts/run_md5srv.sh script
             echo Stop MD5 Server
             [ -n "$MD5SRV_PID" ] || (echo "MD5SRV_PID not set" && exit 1)
             [ -z "$MD5SRV_PID" ] || kill $MD5SRV_PID
@@ -88,10 +91,10 @@ jobs:
         uses: JarvusInnovations/background-action@v1
         with:
           run: |
-            bash ./scripts/runmd5srv.sh
+            bash ./scripts/run_md5srv.sh
           wait-on:
             # just a dummy wait-on since this is required.
-            file:${{github.workspace}}/scripts/runmd5srv.sh
+            file:${{github.workspace}}/scripts/run_md5srv.sh
 
       # When done this way, the background process is terminated at the end of the step,
       # At least when running with `act`. The same may be true of github runners also.
@@ -99,7 +102,7 @@ jobs:
       #   uses: pyTooling/Actions/with-post-step@v0.4.5
       #   with:
       #     main: |
-      #       ./runmd5srv.sh
+      #       ./run_md5srv.sh
       #       echo "MD5SRV_PID=$MD5SRV_PID"
       #       echo "MD5SRV_PID=$MD5SRV_PID" >> $GITHUB_ENV
       #       echo "writing server log to `realpath md5srv.log`"
@@ -126,12 +129,39 @@ jobs:
         uses: Rei-x/expose-localtunnel-action@main
         with:
           ports: ${{ env.MD5SRV_PORT }}
-      - name: Check localtunnel
+      - name: Fetch localtunnel URL
         if: env.START_LOCALTUNNEL!='false'
         run: |
           MD5SRV_URL="${{steps.localtunnel.outputs.url-1}}"
           echo "MD5SRV_URL=$MD5SRV_URL" >> $GITHUB_ENV
-          echo $MD5SRV_URL
+  
+      - name: Prep tunnelmole
+        if: env.START_TUNNELMOLE!='false'
+        uses: pyTooling/Actions/with-post-step@v0.4.5
+        with:
+          main: |
+            [ ! -e tmole.log ] || rm tmole.log
+            sleep 2 # otherwise it thinks we exited early
+          post: |
+            # the JarvusInnovations/background-action@v1 that launches the background
+            # process doesn't clean them up. We do that here. TMOLE_PID is set in the
+            # ./scripts/run_tunnelmole.sh script
+            echo Stop Tunnelmole
+            [ -n "$TMOLE_PID" ] || (echo "TMOLE_PID not set" && exit 1)
+            [ -z "$TMOLE_PID" ] || kill $TMOLE_PID
+
+      - name: Start tunnelmole
+        uses: JarvusInnovations/background-action@v1
+        if: env.START_TUNNELMOLE!='false'
+        with:
+          run: |
+            bash ./scripts/run_tunnelmole.sh
+          wait-on:
+            # just a dummy wait-on since this is required.
+            file:${{github.workspace}}/tmole.log
+
+      - name: Check server is available
+        run: |
           # the request will return a 401 from md5srv, but that's expected without the access token
           # Curl still returns success because it could contact the server
           code=`curl -s -o /dev/null -w "%{http_code}" $MD5SRV_URL`
