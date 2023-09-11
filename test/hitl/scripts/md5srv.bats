@@ -27,6 +27,10 @@ assert [ -z "$MD5SRV_TOKEN" ]
 
 # The -f curl flag is used to distinguish between a communication error and a http server error
 
+function teardown() {
+    stopMD5Server
+}
+
 
 function cleanTestDir() {
     ! $clean_test_dir || rm -rf $test_dir
@@ -35,8 +39,11 @@ function cleanTestDir() {
 
 function _waitForMD5Server() {
     # even though a 4xx error is returned, curl will return a success response if it contacts the webserver
-    until curl -s $md5url -o /dev/null -w "%{http_code}"; do
+    result=500
+    until [ $result -lt 500 ]; do
         sleep 0.1
+        result=`curl -s $md5url -H "X-Access-Token: $MD5SRV_TOKEN" -o /dev/null -w "%{http_code}"`
+        echo curl result $result
     done
 }
 
@@ -50,7 +57,7 @@ function waitForMD5ServerWithTimeout() {
 
 function startMD5Server() {
     cleanTestDir
-    refute curl $md5url     # ensure the server is not already running
+    refute curl -s $md5url     # ensure the server is not already running
     python3 md5srv.py --dir $test_dir --token $token --save --address $address --port $port 3>&- &
     export md5_pid=$!
     waitForMD5ServerWithTimeout
@@ -58,8 +65,8 @@ function startMD5Server() {
 
 function stopMD5Server() {
     pid=${1:-$md5_pid}
-    assert [ -n "$pid" ]
-    kill $pid
+    unset md5_pid
+    [ -z "$pid" ] || kill $pid
 }
 
 function assert_json() {
@@ -68,9 +75,10 @@ function assert_json() {
 
 @test "Should not fail when the target directory does not exist and --save is not present" {
     python3 md5srv.py --dir $nonexist_dir --address $address --port $port &
+    md5_pid=$!
     waitForMD5ServerWithTimeout
     run curl -s -f -X PUT $md5url/t1 -d abc
-    stopMD5Server $!
+    stopMD5Server
     assert_success
     assert_json md5 900150983cd24fb0d6963f7d28e17f72
     assert_json length 3
@@ -117,11 +125,12 @@ function assert_json() {
 
 @test "Should allow web.put without --save no file is created" {
     cleanTestDir
-    refute curl $md5url
+    refute curl -s $md5url
     python3 md5srv.py --dir $test_dir --address $address --port $port 3>&- &
+    md5_pid=$!
     waitForMD5ServerWithTimeout
     run curl -s -X PUT $md5url/t1 -d abc
-    kill $!
+
     assert_success
     assert_json md5 900150983cd24fb0d6963f7d28e17f72
     assert_json length 3
@@ -217,7 +226,6 @@ function assert_json() {
 
 @test "Can post a note which is decoded and the payload saved to the server" {
     startMD5Server
-    waitForMD5ServerWithTimeout
     run curl -s -X POST $md5url/addnote?note=1 -d "@note.json" -H "X-Access-Token: $token" -H "Content-Type: application/json"
     stopMD5Server
     assert_success
@@ -229,7 +237,6 @@ function assert_json() {
 @test "Can post a chunk and then retrieve it" {
     assert [ -z "$MD5SRV_PORT" ]
     startMD5Server
-    waitForMD5ServerWithTimeout
     content=abcdef
     content_length=6
     timeout 5 curl -s -X POST $md5url/getchunk?chunk=0 -d "$content" -H "X-Access-Token: $token"
