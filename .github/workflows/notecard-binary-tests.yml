@@ -240,9 +240,3 @@ jobs:
           report_paths: '**/test/hitl/card.binary/test*.xml'
           check_name: Notecard Binary HIL Tests
           require_tests: true
-
-      - name: Chill for a bit
-        if: failure()
-        run:
-          # cancel the workflow manually when you're done with it
-          sleep 3600
