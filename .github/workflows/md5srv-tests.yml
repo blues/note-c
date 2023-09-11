@@ -11,6 +11,7 @@ jobs:
       run:
         shell: bash
     env:
+        TERM: xterm-256color
         MD5SRV_TIMEOUT: 5
         MD5SRV_DIR: ./test/hitl/scripts
         BATS_VERSION: 1.10.0
