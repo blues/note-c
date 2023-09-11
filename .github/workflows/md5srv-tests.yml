@@ -6,7 +6,7 @@ on:
 
 jobs:
   test-md5srv: # job id
-    runs-on: [self-hosted, linux]
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
