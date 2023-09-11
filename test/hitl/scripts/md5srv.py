@@ -173,7 +173,11 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         if content_type != 'application/json':
             raise HTTPException(400, f"Unsupported content type: {content_type}")
         data = self.post_data
-        event = json.loads(data)
+        try:
+            event = json.loads(data)
+        except json.decoder.JSONDecodeError as e:
+            print(f"JSON decode error: {data} {e}")
+            raise e
         body = event['body']     # non-optional keys
         name = body['name']
         length = body['length']
