@@ -1,5 +1,5 @@
 /*!
- * @file NoteBinaryMaxDecodedLength_test.cpp
+ * @file NoteBinaryCodecMaxEncodedLength_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -19,29 +19,29 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(uint32_t, cobsGuaranteedFit, uint32_t)
+FAKE_VALUE_FUNC(uint32_t, cobsEncodedMaxLength, uint32_t)
 
-const uint32_t bufferSize = 10;
+const uint32_t unencodedLen = 10;
 
 namespace
 {
 
-SCENARIO("NoteBinaryMaxDecodedLength")
+SCENARIO("NoteBinaryCodecMaxEncodedLength")
 {
-    RESET_FAKE(cobsGuaranteedFit);
+    RESET_FAKE(cobsEncodedMaxLength);
 
     GIVEN("Parameters are in order") {
         const uint32_t EXPECTED_RESULT = 79;
-        cobsGuaranteedFit_fake.return_val = EXPECTED_RESULT;
-        const uint32_t result = NoteBinaryMaxDecodedLength(bufferSize);
+        cobsEncodedMaxLength_fake.return_val = EXPECTED_RESULT;
+        const uint32_t result = NoteBinaryCodecMaxEncodedLength(unencodedLen);
 
-        THEN("cobsGuaranteedFit is invoked") {
-            CHECK(cobsGuaranteedFit_fake.call_count > 0);
+        THEN("cobsEncodedMaxLength is invoked") {
+            CHECK(cobsEncodedMaxLength_fake.call_count > 0);
         }
 
-        WHEN("cobsGuaranteedFit is invoked") {
+        WHEN("cobsEncodedMaxLength is invoked") {
             THEN("The parameters are passed without modification") {
-                CHECK(cobsGuaranteedFit_fake.arg0_history[0] == bufferSize);
+                CHECK(cobsEncodedMaxLength_fake.arg0_history[0] == unencodedLen);
             }
 
             THEN("The result is returned without modification") {

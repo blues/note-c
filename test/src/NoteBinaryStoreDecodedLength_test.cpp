@@ -1,5 +1,5 @@
 /*!
- * @file NoteBinaryDataDecodedLength_test.cpp
+ * @file NoteBinaryStoreDecodedLength_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -26,7 +26,7 @@ const size_t len = 10;
 namespace
 {
 
-SCENARIO("NoteBinaryDataDecodedLength")
+SCENARIO("NoteBinaryStoreDecodedLength")
 {
     RESET_FAKE(NoteRequestResponse);
 
@@ -36,7 +36,7 @@ SCENARIO("NoteBinaryDataDecodedLength")
 
     GIVEN("Bad parameters are supplied") {
         WHEN("Length is NULL") {
-            const char *err = NoteBinaryDataDecodedLength(NULL);
+            const char *err = NoteBinaryStoreDecodedLength(NULL);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -51,8 +51,8 @@ SCENARIO("NoteBinaryDataDecodedLength")
             return NULL;
         };
 
-        WHEN("NoteBinaryDataDecodedLength is called") {
-            const char *err = NoteBinaryDataDecodedLength(&size);
+        WHEN("NoteBinaryStoreDecodedLength is called") {
+            const char *err = NoteBinaryStoreDecodedLength(&size);
 
             REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is returned") {
@@ -70,8 +70,8 @@ SCENARIO("NoteBinaryDataDecodedLength")
             return rsp;
         };
 
-        WHEN("NoteBinaryDataDecodedLength is called") {
-            const char *err = NoteBinaryDataDecodedLength(&size);
+        WHEN("NoteBinaryStoreDecodedLength is called") {
+            const char *err = NoteBinaryStoreDecodedLength(&size);
 
             REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is returned") {
@@ -90,8 +90,8 @@ SCENARIO("NoteBinaryDataDecodedLength")
             return rsp;
         };
 
-        WHEN("NoteBinaryDataDecodedLength is called") {
-            const char *err = NoteBinaryDataDecodedLength(&size);
+        WHEN("NoteBinaryStoreDecodedLength is called") {
+            const char *err = NoteBinaryStoreDecodedLength(&size);
 
             REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is not returned") {
@@ -114,8 +114,8 @@ SCENARIO("NoteBinaryDataDecodedLength")
             return rsp;
         };
 
-        WHEN("NoteBinaryDataDecodedLength is called") {
-            const char *err = NoteBinaryDataDecodedLength(&size);
+        WHEN("NoteBinaryStoreDecodedLength is called") {
+            const char *err = NoteBinaryStoreDecodedLength(&size);
 
             REQUIRE(NoteRequestResponse_fake.call_count > 0);
             THEN("An error is not returned") {
