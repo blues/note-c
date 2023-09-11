@@ -42,8 +42,7 @@ function _waitForMD5Server() {
     result=500
     until [ $result -lt 500 ]; do
         sleep 0.1
-        result=`curl -s $md5url -H "X-Access-Token: $MD5SRV_TOKEN" -o /dev/null -w "%{http_code}"`
-        echo curl result $result
+        result=`curl -s $md5url -o /dev/null -w "%{http_code}"`
     done
 }
 
@@ -225,6 +224,7 @@ function assert_json() {
 }
 
 @test "Can post a note which is decoded and the payload saved to the server" {
+    assert [ -e "note.json" ]
     startMD5Server
     run curl -s -X POST $md5url/addnote?note=1 -d "@note.json" -H "X-Access-Token: $token" -H "Content-Type: application/json"
     stopMD5Server
