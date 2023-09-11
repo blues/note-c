@@ -52,7 +52,7 @@ size_t max_binary_length;
 
 void AssertNoteBinaryReset()
 {
-    const char* err = NoteBinaryDataReset();
+    const char* err = NoteBinaryStoreReset();
     if (err) {
         notecard.logDebugf("Error calling NoteBinaryReset %s\n", err);
         TEST_FAIL_MESSAGE("NoteBinaryReset failed.");

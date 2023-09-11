@@ -578,7 +578,7 @@ outer:
             totalTransferCount++;
             if (totalTransferred!=totalSize) {
                 // reset the buffer for the next load
-                NoteBinaryDataReset();
+                NoteBinaryStoreReset();
             }
         }
         return totalTransferred==totalSize;
@@ -586,7 +586,7 @@ outer:
 
     bool checkBufferSize(size_t chunkSize, size_t bufferSize)
     {
-        size_t requiredSize = NoteBinaryMaxEncodedLength(chunkSize);
+        size_t requiredSize = NoteBinaryCodecMaxEncodedLength(chunkSize);
 
         NoteDebugf("Requested size: %u, available size: %u\n", requiredSize, bufferSize);
 
@@ -611,7 +611,7 @@ outer:
         bool success = false;
 
         tx.currentTransferImage.reset();    // back to the beginning to the image can be re-read.
-        size_t rxBufferSize = NoteBinaryMaxEncodedLength(validateChunkSize);
+        size_t rxBufferSize = NoteBinaryCodecMaxEncodedLength(validateChunkSize);
         uint8_t* rxBuffer = nullptr;
         const char* err;
 
@@ -626,7 +626,7 @@ outer:
             while (ok && tx.currentTransferImage.remaining()) {
                 ok = false;
                 const size_t chunkLength = std::min(tx.currentTransferImage.remaining(), validateChunkSize);
-                if ((err = NoteBinaryReceive(rxBuffer, rxBufferSize, offset, chunkLength))!=nullptr) {
+                if ((err = NoteBinaryStoreReceive(rxBuffer, rxBufferSize, offset, chunkLength))!=nullptr) {
                     notecard.logDebugf("Error receiving binary: %s\n", err);
                 } else {
                     notecard.logDebugf("card.binary.get Receive buffer size requested: %d\n", rxBufferSize);
@@ -677,7 +677,7 @@ cancel:
 
     bool transferBinaryChunk(uint8_t* chunk, size_t chunkLength, size_t bufferLength, size_t offset, std::function<bool()> binaryBufferFull)
     {
-        const char *err = NoteBinaryTransmit(chunk, chunkLength, bufferLength, offset);
+        const char *err = NoteBinaryStoreTransmit(chunk, chunkLength, bufferLength, offset);
 
         if (err) {
             NoteDebugf("Error transferring binary chunk: %s\n", err);
@@ -770,11 +770,11 @@ public:
     J* parseWebResponse(size_t length)
     {
         // decode the json response as a troubleshooting aid
-        size_t rxSize = NoteBinaryMaxEncodedLength(length);
+        size_t rxSize = NoteBinaryCodecMaxEncodedLength(length);
         uint8_t rxBuf[rxSize];
         uint32_t dataLen = length;
         J* response = nullptr;
-        const char* err = NoteBinaryReceive(rxBuf, rxSize, 0, dataLen);
+        const char* err = NoteBinaryStoreReceive(rxBuf, rxSize, 0, dataLen);
         if (err) {
             notecard.logDebugf("error retrieving payload: %s\n", err);
         } else {
