@@ -190,7 +190,7 @@ uint32_t NoteBinaryCodecEncode(const uint8_t *decData, uint32_t decDataLen,
              verify whether or not unencoded data of a given length will fit in
              the provided buffer after encoding.
 
-  @param  size The size of the fixed-size buffer.
+  @param  bufferSize The size of the fixed-size buffer.
 
   @returns  The max length of unencoded data certain to fit in the fixed-size
             buffer, after being encoded.
@@ -705,14 +705,13 @@ JTIME NoteTime()
     return NoteTimeST();
 }
 
-//**************************************************************************/
 /*!
-  @brief  Set the number of minutes between refreshes of the time
-  from the Notecard, to help minimize clock drift on this host.
-  Set this to 0 for no auto-refresh; it defaults to daily.
-  @returns Nothing
-*/
-/**************************************************************************/
+  @brief Set the number of minutes between refreshes of the time from the
+         Notecard, to help minimize clock drift on this host. Set this to 0 for
+         no auto-refresh; it defaults to daily.
+
+  @param mins Minutes between time refreshes.
+ */
 void NoteTimeRefreshMins(uint32_t mins)
 {
     refreshTimerSecs = mins * 60;
@@ -730,19 +729,17 @@ NOTE_C_STATIC void setTime(JTIME seconds)
     timeBaseSetAtMs = _GetMs();
 }
 
-//**************************************************************************/
 /*!
   @brief  Set the time from a source that is NOT the Notecard
-  @param   seconds The UNIX Epoch time, or 0 for automatic Notecard time
-  @param   offset The local time zone offset, in minutes, to adjust UTC
-  @param   zone The optional local time zone name (3 character c-string). Note
+  @param  secondsUTC The UNIX Epoch time, or 0 for automatic Notecard time
+  @param  offset The local time zone offset, in minutes, to adjust UTC
+  @param  zone The optional local time zone name (3 character c-string). Note
                 that this isn't used in any time calculations. To compute
                 accurate local time, only the offset is used. See
                 https://www.iana.org/time-zones for a time zone database.
-  @param   zone The optional country
+  @param   country The optional country
   @param   area The optional region
-*/
-/**************************************************************************/
+ */
 void NoteTimeSet(JTIME secondsUTC, int offset, char *zone, char *country, char *area)
 {
     if (secondsUTC == 0) {
@@ -876,13 +873,13 @@ JTIME NoteTimeST()
 
 }
 
-//**************************************************************************/
 /*!
-  @brief  Set suppression timer secs, returning the previous value
-  @param   New suppression timer seconds
+  @brief Set suppression timer secs, returning the previous value.
+
+  @param secs New suppression timer seconds.
+
   @returns Previous suppression timer seconds
-*/
-/**************************************************************************/
+ */
 uint32_t NoteSetSTSecs(uint32_t secs)
 {
     uint32_t prev = suppressionTimerSecs;
@@ -933,22 +930,27 @@ bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneO
     return true;
 }
 
-//**************************************************************************/
 /*!
-  @brief  Return local time info, if known. Returns true if valid.
-  @param   year (out) pointer to return year value
-  @param   month (out) pointer to return month value
-  @param   day (out) pointer to return day value
-  @param   hour (out) pointer to return hour value
-  @param   minute (out) pointer to return minute value
-  @param   second (out) pointer to return seconds value
-  @param   weekday (out) pointer to return weekday string
-  @param   retZone (in-out) if NULL, local time will be returned in UTC, else returns pointer to zone string
-  @returns boolean indicating if either the zone or DST have changed since last call
-  @note    only call this if time is valid
-*/
-/**************************************************************************/
-bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint8_t *retHour, uint8_t *retMinute, uint8_t *retSecond, char **retWeekday, char **retZone)
+  @brief Return local time info, if known. Returns true if valid.
+
+  @param retYear [out] Pointer to return year value.
+  @param retMonth [out] Pointer to return month value.
+  @param retDay [out] Pointer to return day value.
+  @param retHour [out] Pointer to return hour value.
+  @param retMinute [out] Pointer to return minute value.
+  @param retSecond [out] Pointer to return seconds value.
+  @param retWeekday [out] Pointer to return weekday string.
+  @param retZone [in,out] If NULL, local time will be returned in UTC, else
+         returns pointer to zone string
+
+  @returns True if either the zone or DST have changed since last call, false
+           otherwise.
+
+  @note Only call this if time is valid.
+ */
+bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay,
+                     uint8_t *retHour, uint8_t *retMinute, uint8_t *retSecond, char **retWeekday,
+                     char **retZone)
 {
 
     // Preset
@@ -1625,18 +1627,19 @@ bool NoteGetStatusST(char *statusBuf, int statusBufLen, JTIME *bootTime, bool *r
     return success;
 }
 
-//**************************************************************************/
 /*!
-  @brief  Save the current state and use `card.attn` to set a host
-  sleep interval.
-  @param  payload An optional binary payload to keep in memory while the host sleeps.
-  @param  seconds The duration to sleep.
-  @param  modes Optional list of additional `card.attn` modes.
-  @returns boolean. `true` if the cmd is sent without error. The Notecard
-           does not reply to `cmd` so a `true` return value does not guarantee
-           that the sleep request was received and processed by the Notecard.
+  @brief Save the current state and use `card.attn` to set a host
+         sleep interval.
+
+  @param desc An optional binary payload to keep in memory while the host
+         sleeps.
+  @param seconds The duration to sleep.
+  @param modes Optional list of additional `card.attn` modes.
+
+  @returns `true` if the cmd is sent without error. The Notecard does not reply
+            to commands so a `true` return value does not guarantee
+            that the sleep request was received and processed by the Notecard.
 */
-/**************************************************************************/
 bool NotePayloadSaveAndSleep(NotePayloadDesc *desc, uint32_t seconds, const char *modes)
 {
     char *stateB64 = NULL;
@@ -1750,15 +1753,15 @@ bool NoteWake(int stateLen, void *state)
     return true;
 }
 
-//**************************************************************************/
 /*!
   @brief  Wake the module by restoring state into a state buffer, returning
-  its length, and fail if it isn't available.
-  @param  NotePayloadDesc (out) Payload descriptor to hold the retrieved
-  payload.
-  @returns boolean. `true` if request was successful.
-*/
-/**************************************************************************/
+          its length, and fail if it isn't available.
+
+  @param  desc [out] Payload descriptor to hold the retrieved.
+          payload.
+
+  @returns True if the request was successful, false otherwise.
+ */
 bool NotePayloadRetrieveAfterSleep(NotePayloadDesc *desc)
 {
 

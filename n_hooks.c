@@ -254,8 +254,8 @@ bool NoteIsDebugOutputActive()
 //**************************************************************************/
 /*!
   @brief  Set the platform-specific transaction initiation/completion fn's
-  @param   startfn  The platform-specific transaction initiation function to use.
-  @param   stopfn  The platform-specific transaction completion function to use.
+  @param   startFn  The platform-specific transaction initiation function to use.
+  @param   stopFn  The platform-specific transaction completion function to use.
   to use.
 */
 /**************************************************************************/
@@ -388,6 +388,7 @@ void NoteSetFnDisabled()
 /*!
   @brief  Write a number to the debug stream and output a newline.
   @param   line  A debug string for output.
+  @param n The number to write.
 */
 /**************************************************************************/
 void NoteDebugIntln(const char *line, int n)
@@ -497,8 +498,8 @@ void NoteDelayMs(uint32_t ms)
 //**************************************************************************/
 /*!
   @brief  Convert number to a hex string
-  @param   the number
-  @param   the buffer to return it into
+  @param  n the number
+  @param  p the buffer to return it into
 */
 /**************************************************************************/
 void n_htoa32(uint32_t n, char *p)
