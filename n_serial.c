@@ -206,7 +206,7 @@ const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, si
 {
     size_t received = 0;
     bool overflow = (received >= *size);
-    const size_t startMs = _GetMs();
+    size_t startMs = _GetMs();
     for (bool eop = false ; !overflow && !eop ;) {
         while (!_SerialAvailable()) {
             if (timeoutMs && (_GetMs() - startMs >= timeoutMs)) {
@@ -218,10 +218,17 @@ const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, si
 #endif
                 return ERRSTR("timeout: transaction incomplete {io}",c_iotimeout);
             }
-            if (delay) {
+            // Be socialable while awaiting first byte
+            if (delay && received == 0) {
                 _DelayMs(1);
             }
         }
+
+        // Once we've received any character, we will no longer wait patiently
+        timeoutMs = 1000;
+        startMs = _GetMs();
+
+        // Receive the next character
         char ch = _SerialReceive();
 
         // Place into the buffer

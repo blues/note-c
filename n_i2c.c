@@ -305,7 +305,7 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
     size_t received = 0;
     uint16_t requested = 0;
     bool overflow = false;
-    const size_t startMs = _GetMs();
+    size_t startMs = _GetMs();
 
     // Request all available bytes, up to the maximum request size
     requested = (*available > 0xFFFF) ? 0xFFFF : *available;
@@ -327,6 +327,12 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
 
         // Add requested bytes to received total
         received += requested;
+
+        // Once we've received any character, we will no longer wait patiently
+        if (requested != 0) {
+            timeoutMs = 1000;
+            startMs = _GetMs();
+        }
 
         // Request all available bytes, up to the maximum request size
         requested = (*available > 0xFFFF) ? 0xFFFF : *available;
