@@ -21,7 +21,7 @@
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
-FAKE_VALUE_FUNC(bool, NoteRequest, J *)
+FAKE_VALUE_FUNC(J *, noteTransactionShouldLock, J *, bool)
 FAKE_VALUE_FUNC(const char *, NoteChunkedTransmit, uint8_t *, uint32_t, bool)
 FAKE_VOID_FUNC(NoteLockNote)
 FAKE_VOID_FUNC(NoteUnlockNote)
@@ -220,10 +220,8 @@ SCENARIO("NoteBinaryStoreTransmit")
         }
 
         AND_GIVEN("The card.binary.put request fails") {
-            NoteRequest_fake.custom_fake = [](J *req) -> bool {
-                JDelete(req);
-
-                return false;
+            noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
+                return NULL;
             };
 
             WHEN("NoteBinaryStoreTransmit is called") {
@@ -240,10 +238,8 @@ SCENARIO("NoteBinaryStoreTransmit")
         }
 
         AND_GIVEN("NoteChunkedTransmit fails") {
-            NoteRequest_fake.custom_fake = [](J *req) -> bool {
-                JDelete(req);
-
-                return true;
+            noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
+                return JCreateObject();
             };
             NoteChunkedTransmit_fake.return_val = "some error";
 
@@ -262,10 +258,8 @@ SCENARIO("NoteBinaryStoreTransmit")
 
         AND_GIVEN("The response to the card.binary request after the "
                   "transmission indicates a problem") {
-            NoteRequest_fake.custom_fake = [](J *req) -> bool {
-                JDelete(req);
-
-                return true;
+            noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
+                return JCreateObject();
             };
             NoteChunkedTransmit_fake.return_val = NULL;
 
@@ -392,7 +386,7 @@ SCENARIO("NoteBinaryStoreTransmit")
 
     RESET_FAKE(NoteNewRequest);
     RESET_FAKE(NoteRequestResponse);
-    RESET_FAKE(NoteRequest);
+    RESET_FAKE(noteTransactionShouldLock);
     RESET_FAKE(NoteChunkedTransmit);
     RESET_FAKE(NoteLockNote);
     RESET_FAKE(NoteUnlockNote);

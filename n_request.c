@@ -313,7 +313,23 @@ char *NoteRequestResponseJSON(char *reqJSON)
 /**************************************************************************/
 J *NoteTransaction(J *req)
 {
+    return noteTransactionShouldLock(req, true);
+}
 
+/**************************************************************************/
+/*!
+  @brief Same as `NoteTransaction`, but takes an additional parameter that
+  indicates if the Notecard should be locked.
+  @param   req
+  The `J` cJSON request object.
+  @param   lockNotecard
+  Set to `true` if the Notecard should be locked and `false` otherwise.
+  @returns a `J` cJSON object with the response, or NULL if there is
+  insufficient memory.
+*/
+/**************************************************************************/
+J *noteTransactionShouldLock(J *req, bool lockNotecard)
+{
     // Validate in case of memory failure of the requestor
     if (req == NULL) {
         return NULL;
@@ -353,14 +369,17 @@ J *NoteTransaction(J *req)
         }
     }
 
-    // Lock
-    _LockNote();
+    if (lockNotecard) {
+        _LockNote();
+    }
 
     // Serialize the JSON request
     char *json = JPrintUnformatted(req);
     if (json == NULL) {
         J *rsp = errDoc(ERRSTR("can't convert to JSON",c_bad));
-        _UnlockNote();
+        if (lockNotecard) {
+            _UnlockNote();
+        }
         _TransactionStop();
         return rsp;
     }
@@ -468,14 +487,18 @@ J *NoteTransaction(J *req)
     if (errStr != NULL) {
         NoteResetRequired();
         J *rsp = errDoc(errStr);
-        _UnlockNote();
+        if (lockNotecard) {
+            _UnlockNote();
+        }
         _TransactionStop();
         return rsp;
     }
 
     // Exit with a blank object (with no err field) if no response expected
     if (noResponseExpected) {
-        _UnlockNote();
+        if (lockNotecard) {
+            _UnlockNote();
+        }
         _TransactionStop();
         return JCreateObject();
     }
@@ -489,7 +512,9 @@ J *NoteTransaction(J *req)
             _Free(responseJSON);
         }
         J *rsp = errDoc(ERRSTR("unrecognized response from card {io}",c_iobad));
-        _UnlockNote();
+        if (lockNotecard) {
+            _UnlockNote();
+        }
         _TransactionStop();
         return rsp;
     }
@@ -506,8 +531,9 @@ J *NoteTransaction(J *req)
     // Discard the buffer now that it's parsed
     _Free(responseJSON);
 
-    // Unlock
-    _UnlockNote();
+    if (lockNotecard) {
+        _UnlockNote();
+    }
 
     // Stop the transaction
     _TransactionStop();
