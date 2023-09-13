@@ -32,7 +32,7 @@ namespace
 
 SCENARIO("NoteBinaryCodecDecode")
 {
-    RESET_FAKE(cobsDecode);
+    // Reset variables(s)
     decLen = 0;
 
     GIVEN("Bad parameters are supplied") {
@@ -82,6 +82,8 @@ SCENARIO("NoteBinaryCodecDecode")
             }
         }
     }
+
+    RESET_FAKE(cobsDecode);
 }
 
 }

@@ -41,11 +41,6 @@ char *populateRecvBuf(size_t size)
 
 SCENARIO("serialChunkedReceive")
 {
-    RESET_FAKE(NoteSerialAvailable);
-    RESET_FAKE(NoteSerialReceive);
-    RESET_FAKE(NoteGetMs);
-    RESET_FAKE(NoteDelayMs);
-
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
     NoteGetMs_fake.custom_fake = NoteGetMsIncrement;
@@ -288,6 +283,11 @@ SCENARIO("serialChunkedReceive")
             }
         }
     }
+
+    RESET_FAKE(NoteSerialAvailable);
+    RESET_FAKE(NoteSerialReceive);
+    RESET_FAKE(NoteGetMs);
+    RESET_FAKE(NoteDelayMs);
 }
 
 }

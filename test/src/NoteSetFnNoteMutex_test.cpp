@@ -33,7 +33,7 @@ void UnlockNote()
     ++unlockNoteCalled;
 }
 
-TEST_CASE("NoteSetFnNoteMutex")
+SCENARIO("NoteSetFnNoteMutex")
 {
     NoteSetFnNoteMutex(LockNote, UnlockNote);
 

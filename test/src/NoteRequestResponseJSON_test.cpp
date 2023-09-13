@@ -59,13 +59,9 @@ char *JPrintUnformattedValid(const J *)
     return respDst;
 }
 
-
-TEST_CASE("NoteRequestResponseJSON")
+SCENARIO("NoteRequestResponseJSON")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteRequestResponse);
-    RESET_FAKE(JPrintUnformatted);
 
     SECTION("Passing a NULL request returns NULL") {
         CHECK(NoteRequestResponseJSON(NULL) == NULL);
@@ -106,6 +102,9 @@ TEST_CASE("NoteRequestResponseJSON")
 
         NoteFree(resp);
     }
+
+    RESET_FAKE(NoteRequestResponse);
+    RESET_FAKE(JPrintUnformatted);
 }
 
 }

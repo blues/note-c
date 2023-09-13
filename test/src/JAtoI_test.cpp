@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JAtoI")
+SCENARIO("JAtoI")
 {
     const char* strings[] = {
         "0",

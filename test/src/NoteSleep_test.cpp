@@ -25,12 +25,9 @@ FAKE_VALUE_FUNC(bool, NoteRequest, J *)
 namespace
 {
 
-TEST_CASE("NoteSleep")
+SCENARIO("NoteSleep")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteNewCommand);
-    RESET_FAKE(NoteRequest);
 
     char payload[] = "ewogICJpbnRlcnZhbHMiOiI2MCwxMiwxNCIKfQ==";
     uint32_t seconds = 10;
@@ -73,6 +70,9 @@ TEST_CASE("NoteSleep")
             JDelete(cmd);
         }
     }
+
+    RESET_FAKE(NoteNewCommand);
+    RESET_FAKE(NoteRequest);
 }
 
 }

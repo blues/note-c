@@ -35,7 +35,7 @@ void MyTxnStop()
     return;
 }
 
-TEST_CASE("NoteTransactionHooks")
+SCENARIO("NoteTransactionHooks")
 {
     SECTION("Hooks not set") {
         NoteTransactionStart(0);

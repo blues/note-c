@@ -25,12 +25,9 @@ FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 namespace
 {
 
-TEST_CASE("NoteGetServiceConfig")
+SCENARIO("NoteGetServiceConfig")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteRequestResponse);
 
     const size_t BUF_SIZE = 64;
     const char zeros[BUF_SIZE] = {0};
@@ -92,6 +89,9 @@ TEST_CASE("NoteGetServiceConfig")
             CHECK(!strcmp(snBuf, respSn));
         }
     }
+
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteRequestResponse);
 }
 
 }

@@ -27,13 +27,9 @@ FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
 namespace
 {
 
-TEST_CASE("NoteTime")
+SCENARIO("NoteTime")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteRequestResponse);
-    RESET_FAKE(NoteGetMs);
 
     SECTION("No response to card.time") {
         NoteRequestResponse_fake.return_val = NULL;
@@ -98,6 +94,10 @@ TEST_CASE("NoteTime")
                                         baseTimeSetAtMs) / 1000;
         CHECK(NoteTime() == newBaseTime);
     }
+
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteRequestResponse);
+    RESET_FAKE(NoteGetMs);
 }
 
 }

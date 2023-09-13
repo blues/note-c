@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JIsExactString")
+SCENARIO("JIsExactString")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

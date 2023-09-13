@@ -53,9 +53,6 @@ const char * NoteI2CReceiveAvailable(uint16_t, uint8_t *, uint16_t,
 
 SCENARIO("i2cNoteQueryLength")
 {
-    RESET_FAKE(NoteI2CReceive);
-    RESET_FAKE(NoteGetMs);
-
     NoteGetMs_fake.custom_fake = NoteGetMsIncrement;
     uint32_t available = 0;
     size_t timeoutMs = 5000;
@@ -145,6 +142,9 @@ SCENARIO("i2cNoteQueryLength")
             }
         }
     }
+
+    RESET_FAKE(NoteI2CReceive);
+    RESET_FAKE(NoteGetMs);
 }
 
 }

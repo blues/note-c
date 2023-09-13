@@ -35,13 +35,6 @@ namespace
 
 SCENARIO("NoteBinaryStoreTransmit")
 {
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteRequestResponse);
-    RESET_FAKE(NoteRequest);
-    RESET_FAKE(NoteChunkedTransmit);
-    RESET_FAKE(NoteLockNote);
-    RESET_FAKE(NoteUnlockNote);
-
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
     NoteNewRequest_fake.custom_fake = [](const char *) -> J * {
@@ -398,6 +391,13 @@ SCENARIO("NoteBinaryStoreTransmit")
     THEN("The Notecard is locked and unlocked the same number of times") {
         CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
     }
+
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteRequestResponse);
+    RESET_FAKE(NoteRequest);
+    RESET_FAKE(NoteChunkedTransmit);
+    RESET_FAKE(NoteLockNote);
+    RESET_FAKE(NoteUnlockNote);
 }
 
 }

@@ -27,14 +27,9 @@ FAKE_VOID_FUNC(NoteDebug, const char *)
 namespace
 {
 
-TEST_CASE("NotePrint")
+SCENARIO("NotePrint")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteIsDebugOutputActive);
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteRequest);
-    RESET_FAKE(NoteDebug);
 
     const char msg[] = "Hello world!";
 
@@ -79,6 +74,11 @@ TEST_CASE("NotePrint")
         CHECK(NoteDebug_fake.call_count == 0);
 
     }
+
+    RESET_FAKE(NoteIsDebugOutputActive);
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteRequest);
+    RESET_FAKE(NoteDebug);
 }
 
 }

@@ -102,14 +102,6 @@ SCENARIO("serialNoteTransaction")
 {
     NoteSetFnDefault(NULL, free, NULL, NULL);
 
-    RESET_FAKE(NoteMalloc);
-    RESET_FAKE(NoteSerialAvailable);
-    RESET_FAKE(NoteSerialTransmit);
-    RESET_FAKE(NoteSerialReceive);
-    RESET_FAKE(NoteGetMs);
-    RESET_FAKE(serialChunkedTransmit);
-    RESET_FAKE(serialChunkedReceive);
-
     char req[] = "{\"req\": \"note.add\"}";
 
     GIVEN("A valid JSON request C-string and a NULL response pointer") {
@@ -348,6 +340,14 @@ SCENARIO("serialNoteTransaction")
             }
         }
     }
+
+    RESET_FAKE(NoteMalloc);
+    RESET_FAKE(NoteSerialAvailable);
+    RESET_FAKE(NoteSerialTransmit);
+    RESET_FAKE(NoteSerialReceive);
+    RESET_FAKE(NoteGetMs);
+    RESET_FAKE(serialChunkedTransmit);
+    RESET_FAKE(serialChunkedReceive);
 }
 
 }

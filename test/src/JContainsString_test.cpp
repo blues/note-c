@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JContainsString")
+SCENARIO("JContainsString")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

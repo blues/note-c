@@ -39,10 +39,6 @@ const char *NoteI2CTransmitCapture(uint16_t, uint8_t *buf, uint16_t size)
 
 SCENARIO("i2cChunkedTransmit")
 {
-    RESET_FAKE(NoteI2CTransmit);
-    RESET_FAKE(NoteI2CReset);
-    RESET_FAKE(NoteDelayMs);
-
     bool delay = true;
     transmitBufIdx = 0;
 
@@ -138,6 +134,10 @@ SCENARIO("i2cChunkedTransmit")
             memcmp(buf, transmitBuf, sizeof(buf) == 0);
         }
     }
+
+    RESET_FAKE(NoteI2CTransmit);
+    RESET_FAKE(NoteI2CReset);
+    RESET_FAKE(NoteDelayMs);
 }
 
 }

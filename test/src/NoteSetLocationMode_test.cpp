@@ -25,12 +25,9 @@ FAKE_VALUE_FUNC(bool, NoteRequest, J *)
 namespace
 {
 
-TEST_CASE("NoteSetLocationMode")
+SCENARIO("NoteSetLocationMode")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteRequest);
 
     const char mode[] = "periodic";
     const uint32_t seconds = 3600;
@@ -71,6 +68,9 @@ TEST_CASE("NoteSetLocationMode")
 
         JDelete(NoteNewRequest_fake.return_val);
     }
+
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteRequest);
 }
 
 }

@@ -24,11 +24,9 @@ FAKE_VALUE_FUNC(J *, JCreateObject)
 namespace
 {
 
-TEST_CASE("NoteNewRequest")
+SCENARIO("NoteNewRequest")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(JCreateObject);
 
     const char req[] = "{ \"req\": \"card.info\" }";
 
@@ -49,6 +47,8 @@ TEST_CASE("NoteNewRequest")
 
         JDelete(reqJson);
     }
+
+    RESET_FAKE(JCreateObject);
 }
 
 }

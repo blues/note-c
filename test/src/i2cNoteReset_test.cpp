@@ -30,14 +30,8 @@ FAKE_VOID_FUNC(NoteUnlockI2C)
 namespace
 {
 
-TEST_CASE("i2cNoteReset")
+SCENARIO("i2cNoteReset")
 {
-    RESET_FAKE(NoteI2CReset);
-    RESET_FAKE(NoteI2CTransmit);
-    RESET_FAKE(NoteI2CReceive);
-    RESET_FAKE(NoteLockI2C);
-    RESET_FAKE(NoteUnlockI2C);
-
     SECTION("NoteI2CReset fails") {
         NoteI2CReset_fake.return_val = false;
 
@@ -93,6 +87,12 @@ TEST_CASE("i2cNoteReset")
 
     CHECK(NoteLockI2C_fake.call_count == 1);
     CHECK(NoteUnlockI2C_fake.call_count == 1);
+
+    RESET_FAKE(NoteI2CReset);
+    RESET_FAKE(NoteI2CTransmit);
+    RESET_FAKE(NoteI2CReceive);
+    RESET_FAKE(NoteLockI2C);
+    RESET_FAKE(NoteUnlockI2C);
 }
 
 }

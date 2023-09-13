@@ -45,7 +45,7 @@ void UnlockNote()
     ++unlockNoteCalled;
 }
 
-TEST_CASE("NoteSetFnMutex")
+SCENARIO("NoteSetFnMutex")
 {
     NoteSetFnMutex(LockI2C, UnlockI2C, LockNote, UnlockNote);
 

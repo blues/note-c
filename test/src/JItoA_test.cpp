@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JItoA")
+SCENARIO("JItoA")
 {
     long int n = 0;
     char text[16];

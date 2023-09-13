@@ -30,8 +30,6 @@ namespace
 
 SCENARIO("NoteBinaryStoreEncodedLength")
 {
-    RESET_FAKE(NoteRequestResponse);
-
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
     uint32_t size = 1;
@@ -126,6 +124,8 @@ SCENARIO("NoteBinaryStoreEncodedLength")
             }
         }
     }
+
+    RESET_FAKE(NoteRequestResponse);
 }
 
 }

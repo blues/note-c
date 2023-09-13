@@ -25,12 +25,9 @@ FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 namespace
 {
 
-TEST_CASE("NoteLocationValid")
+SCENARIO("NoteLocationValid")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteRequestResponse);
 
     char errBuf[32];
 
@@ -72,6 +69,9 @@ TEST_CASE("NoteLocationValid")
             CHECK(NoteRequestResponse_fake.call_count == 1);
         }
     }
+
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteRequestResponse);
 }
 
 }

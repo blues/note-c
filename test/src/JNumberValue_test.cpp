@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JNumberValue")
+SCENARIO("JNumberValue")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

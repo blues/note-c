@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JIntValue")
+SCENARIO("JIntValue")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

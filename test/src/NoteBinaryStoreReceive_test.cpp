@@ -46,13 +46,6 @@ namespace
 
 SCENARIO("NoteBinaryStoreReceive")
 {
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteBinaryStoreEncodedLength);
-    RESET_FAKE(NoteRequestResponse);
-    RESET_FAKE(NoteChunkedReceive);
-    RESET_FAKE(NoteLockNote);
-    RESET_FAKE(NoteUnlockNote);
-
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
     // These fakes are the default. Tests below may override them to exercise
@@ -216,6 +209,13 @@ SCENARIO("NoteBinaryStoreReceive")
         }
     }
     CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
+
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteBinaryStoreEncodedLength);
+    RESET_FAKE(NoteRequestResponse);
+    RESET_FAKE(NoteChunkedReceive);
+    RESET_FAKE(NoteLockNote);
+    RESET_FAKE(NoteUnlockNote);
 }
 
 }

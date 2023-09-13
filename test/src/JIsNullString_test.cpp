@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JIsNullString")
+SCENARIO("JIsNullString")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

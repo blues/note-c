@@ -20,7 +20,7 @@
 namespace
 {
 
-TEST_CASE("JType")
+SCENARIO("JType")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

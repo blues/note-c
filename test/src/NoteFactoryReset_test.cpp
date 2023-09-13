@@ -26,13 +26,9 @@ FAKE_VALUE_FUNC(bool, NoteReset)
 namespace
 {
 
-TEST_CASE("NoteFactoryReset")
+SCENARIO("NoteFactoryReset")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
-
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteRequest);
-    RESET_FAKE(NoteReset);
 
     SECTION("NoteNewRequest fails") {
         NoteNewRequest_fake.return_val = NULL;
@@ -78,6 +74,10 @@ TEST_CASE("NoteFactoryReset")
 
         JDelete(req);
     }
+
+    RESET_FAKE(NoteNewRequest);
+    RESET_FAKE(NoteRequest);
+    RESET_FAKE(NoteReset);
 }
 
 }
