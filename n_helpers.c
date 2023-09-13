@@ -359,11 +359,18 @@ const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
         JAddIntToObject(req, "offset", decodedOffset);
         JAddIntToObject(req, "length", decodedLen);
 
+        // We already have the Notecard lock, so call
+        // noteTransactionShouldLock with `lockNotecard` set to false so we
+        // don't try to lock again.
+        J *rsp = noteTransactionShouldLock(req, false);
+        JDelete(req);
         // Ensure the transaction doesn't return an error.
-        J *rsp = NoteRequestResponse(req);
-        if (NoteResponseError(rsp)) {
-            NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
-            JDelete(rsp);
+        if (!rsp || NoteResponseError(rsp)) {
+            if (rsp) {
+                NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
+                JDelete(rsp);
+            }
+
             const char *err = ERRSTR("failed to initialize binary transaction", c_err);
             NOTE_C_LOG_ERROR(err);
             _UnlockNote();
@@ -596,8 +603,18 @@ const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedL
             }
             JAddStringToObject(req, "status", hashString);
 
+            // We already have the Notecard lock, so call
+            // noteTransactionShouldLock with `lockNotecard` set to false so we
+            // don't try to lock again.
+            rsp = noteTransactionShouldLock(req, false);
+            JDelete(req);
             // Ensure the transaction doesn't return an error.
-            if (!NoteRequest(req)) {
+            if (!rsp || NoteResponseError(rsp)) {
+                if (rsp) {
+                    NOTE_C_LOG_ERROR(JGetString(rsp,"err"));
+                    JDelete(rsp);
+                }
+
                 const char *err = ERRSTR("failed to initialize binary transaction", c_err);
                 NOTE_C_LOG_ERROR(err);
                 _UnlockNote();
@@ -607,6 +624,8 @@ const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedL
                 NoteBinaryCodecDecode(encodedData, encLen, encodedData, bufLen);
                 return err;
             }
+
+            JDelete(rsp);
         } else {
             const char *err = ERRSTR("unable to allocate request", c_mem);
             NOTE_C_LOG_ERROR(err);

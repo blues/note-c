@@ -21,7 +21,7 @@
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
 FAKE_VALUE_FUNC(const char *, NoteBinaryStoreEncodedLength, uint32_t *)
-FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
+FAKE_VALUE_FUNC(J *, noteTransactionShouldLock, J *, bool)
 FAKE_VALUE_FUNC(const char *, NoteChunkedReceive, uint8_t *, uint32_t *, bool,
                 size_t, uint32_t *)
 FAKE_VOID_FUNC(NoteLockNote)
@@ -59,8 +59,7 @@ SCENARIO("NoteBinaryStoreReceive")
 
         return NULL;
     };
-    NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
-        JDelete(req);
+    noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
         J *rsp = JCreateObject();
         char hash[NOTE_MD5_HASH_STRING_SIZE] = {0};
         NoteMD5HashString((unsigned char *)rawMsg, rawMsgLen, hash,
@@ -109,8 +108,7 @@ SCENARIO("NoteBinaryStoreReceive")
     }
 
     GIVEN("The response to the card.binary.get request has an error") {
-        NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
-            JDelete(req);
+        noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
             J *rsp = JCreateObject();
             JAddStringToObject(rsp, "err", "some error");
 
@@ -120,7 +118,7 @@ SCENARIO("NoteBinaryStoreReceive")
         WHEN("NoteBinaryStoreReceive is called") {
             const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
 
-            REQUIRE(NoteRequestResponse_fake.call_count > 0);
+            REQUIRE(noteTransactionShouldLock_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
@@ -172,8 +170,7 @@ SCENARIO("NoteBinaryStoreReceive")
         };
 
         AND_GIVEN("The computed MD5 hash doesn't match the status field") {
-            NoteRequestResponse_fake.custom_fake = [](J *req) -> J * {
-                JDelete(req);
+            noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
                 J *rsp = JCreateObject();
                 JAddStringToObject(rsp, "status", "garbage");
 
@@ -184,7 +181,7 @@ SCENARIO("NoteBinaryStoreReceive")
                 const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
 
                 REQUIRE(NoteChunkedReceive_fake.call_count > 0);
-                REQUIRE(NoteRequestResponse_fake.call_count > 0);
+                REQUIRE(noteTransactionShouldLock_fake.call_count > 0);
                 THEN("An error is returned") {
                     CHECK(err != NULL);
                 }
@@ -208,11 +205,12 @@ SCENARIO("NoteBinaryStoreReceive")
             }
         }
     }
+
     CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
 
     RESET_FAKE(NoteNewRequest);
     RESET_FAKE(NoteBinaryStoreEncodedLength);
-    RESET_FAKE(NoteRequestResponse);
+    RESET_FAKE(noteTransactionShouldLock);
     RESET_FAKE(NoteChunkedReceive);
     RESET_FAKE(NoteLockNote);
     RESET_FAKE(NoteUnlockNote);

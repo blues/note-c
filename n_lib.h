@@ -77,6 +77,7 @@ extern "C" {
 #endif
 
 // Transactions
+J *noteTransactionShouldLock(J *req, bool lockNotecard);
 const char *i2cNoteTransaction(char *request, char **response);
 bool i2cNoteReset(void);
 const char *serialNoteTransaction(char *request, char **response);
