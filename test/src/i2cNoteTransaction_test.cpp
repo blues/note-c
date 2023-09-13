@@ -247,9 +247,7 @@ SCENARIO("i2cNoteTransaction")
         CHECK(strcmp(originalReq, req) == 0);
     }
 
-    THEN("The I2C bus is locked and unlocked the same number of times") {
-        CHECK(NoteLockI2C_fake.call_count == NoteUnlockI2C_fake.call_count);
-    }
+    CHECK(NoteLockI2C_fake.call_count == NoteUnlockI2C_fake.call_count);
 
     RESET_FAKE(NoteMalloc);
     RESET_FAKE(NoteLockI2C);
