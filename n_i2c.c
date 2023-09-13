@@ -57,17 +57,18 @@ NOTE_C_STATIC const char * i2cNoteQueryLength(uint32_t * available,
         const char *err = _I2CReceive(_I2CAddress(), &dummy_buffer, 0, available);
         if (err) {
 #ifdef ERRDBG
-            _Debug(err);
+            NOTE_C_LOG_ERROR(err);
 #endif
             return err;
         }
 
         // If we've timed out, return an error
         if (timeoutMs && _GetMs() - startMs >= timeoutMs) {
+            const char *err = ERRSTR("timeout: no response from Notecard {io}", c_iotimeout);
 #ifdef ERRDBG
-            _Debug("timeout: no response from Notecard {io}\n");
+            NOTE_C_LOG_ERROR(err);
 #endif
-            return ERRSTR("timeout: no response from Notecard {io}\n", c_iotimeout);
+            return err;
         }
     }
     return NULL;
@@ -118,7 +119,7 @@ const char *i2cNoteTransaction(char *request, char **response)
     err = i2cNoteQueryLength(&available, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000));
     if (err) {
 #ifdef ERRDBG
-        _Debug("failed to query Notecard\n");
+        NOTE_C_LOG_ERROR(ERRSTR("failed to query Notecard", c_err));
 #endif
         _UnlockI2C();
         return err;
@@ -128,11 +129,12 @@ const char *i2cNoteTransaction(char *request, char **response)
     if (jsonbufAllocLen) {
         jsonbuf = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
         if (jsonbuf == NULL) {
+            const char *err = ERRSTR("transaction: jsonbuf malloc failed", c_mem);
 #ifdef ERRDBG
-            _Debug("transaction: jsonbuf malloc failed\n");
+            NOTE_C_LOG_ERROR(err);
 #endif
             _UnlockI2C();
-            return ERRSTR("insufficient memory\n", c_mem);
+            return err;
         }
     }
 
@@ -148,7 +150,7 @@ const char *i2cNoteTransaction(char *request, char **response)
                 _Free(jsonbuf);
             }
 #ifdef ERRDBG
-            _Debug("error occured during receive\n");
+            NOTE_C_LOG_ERROR(ERRSTR("error occured during receive", c_iobad));
 #endif
             _UnlockI2C();
             return err;
@@ -165,14 +167,15 @@ const char *i2cNoteTransaction(char *request, char **response)
             jsonbufAllocLen += (ALLOC_CHUNK * ((available / ALLOC_CHUNK) + ((available % ALLOC_CHUNK) > 0)));
             uint8_t *jsonbufNew = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
             if (jsonbufNew == NULL) {
+                const char *err = ERRSTR("transaction: jsonbuf grow malloc failed", c_mem);
 #ifdef ERRDBG
-                _Debug("transaction: jsonbuf grow malloc failed\n");
+                NOTE_C_LOG_ERROR(err);
 #endif
                 if (jsonbuf) {
                     _Free(jsonbuf);
                 }
                 _UnlockI2C();
-                return ERRSTR("insufficient memory\n", c_mem);
+                return err;
             }
             if (jsonbuf) {
                 memcpy(jsonbufNew, jsonbuf, jsonbufLen);
@@ -266,7 +269,7 @@ bool i2cNoteReset()
     // Reinitialize i2c if there's no response
     if (!notecardReady) {
         _I2CReset(_I2CAddress());
-        _Debug(ERRSTR("notecard not responding\n", "no notecard\n"));
+        NOTE_C_LOG_ERROR(ERRSTR("notecard not responding", c_iobad));
     }
 
     // Done with the bus
@@ -317,7 +320,7 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
         if (err) {
             *size = received;
 #ifdef ERRDBG
-            _Debug(err);
+            NOTE_C_LOG_ERROR(err);
 #endif
             return err;
         }
@@ -355,10 +358,10 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
             *size = received;
 #ifdef ERRDBG
             if (received) {
-                _Debug("received only partial reply before timeout\n");
+                NOTE_C_LOG_ERROR(ERRSTR("received only partial reply before timeout", c_iobad));
             }
 #endif
-            return ERRSTR("timeout: transaction incomplete {io}\n", c_iotimeout);
+            return ERRSTR("timeout: transaction incomplete {io}", c_iotimeout);
         }
 
         // Delay, simply waiting for the Note to process the request
@@ -402,9 +405,7 @@ const char *i2cChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay)
         if (estr != NULL) {
             _I2CReset(_I2CAddress());
 #ifdef ERRDBG
-            _Debug("i2c transmit: ");
-            _Debug(estr);
-            _Debug("\n");
+            NOTE_C_LOG_ERROR(estr);
 #endif
             return estr;
         }

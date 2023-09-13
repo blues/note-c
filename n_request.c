@@ -418,7 +418,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
         // Trace
         if (suppressShowTransactions == 0) {
-            _Debugln(json);
+            NOTE_C_LOG_INFO(json);
         }
 
         // Perform the transaction
@@ -433,7 +433,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         if (errStr != NULL) {
             resetRequired = !_Reset();
             lastRequestRetries++;
-            _Debugln("retrying I/O error detected by host");
+            NOTE_C_LOG_WARN(ERRSTR("retrying I/O error detected by host", c_iobad));
             _DelayMs(500);
             continue;
         }
@@ -445,7 +445,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             _Free(responseJSON);
             errStr = "crc error {io}";
             lastRequestRetries++;
-            _Debugln("CRC error on response");
+            NOTE_C_LOG_ERROR(ERRSTR("CRC error on response", iobad));
             _DelayMs(500);
             continue;
         }
@@ -456,16 +456,15 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         if (rsp != NULL) {
             isIoError = NoteErrorContains(JGetString(rsp, c_err), c_ioerr);
             if (isIoError) {
-                _Debug("err: ");
-                _Debugln(JGetString(rsp, c_err));
+                NOTE_C_LOG_ERROR(JGetString(rsp, c_err));
             }
             JDelete(rsp);
         }
         if (isIoError) {
             _Free(responseJSON);
-            errStr = "notecard i/o error {io}";
+            errStr = ERRSTR("notecard i/o error {io}", c_iobad);
             lastRequestRetries++;
-            _Debugln("retrying I/O error detected by notecard");
+            NOTE_C_LOG_WARN(ERRSTR("retrying I/O error detected by notecard", c_iobad));
             _DelayMs(500);
             continue;
         }
@@ -522,9 +521,9 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     // Debug
     if (suppressShowTransactions == 0) {
         if (responseJSON[strlen(responseJSON)-1] == '\n') {
-            _Debug(responseJSON);
+            NOTE_C_LOG_INFO(responseJSON);
         } else {
-            _Debugln(responseJSON);
+            NOTE_C_LOG_INFO(responseJSON);
         }
     }
 
