@@ -388,9 +388,7 @@ SCENARIO("NoteBinaryStoreTransmit")
         }
     }
 
-    THEN("The Notecard is locked and unlocked the same number of times") {
-        CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
-    }
+    CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
 
     RESET_FAKE(NoteNewRequest);
     RESET_FAKE(NoteRequestResponse);
