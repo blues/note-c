@@ -52,7 +52,10 @@ static J *errDoc(const char *errmsg)
     if (rspdoc != NULL) {
         JAddStringToObject(rspdoc, c_err, errmsg);
     }
+
     if (suppressShowTransactions == 0) {
+        // Manually craft and log out the
+        // JSON object crafted by `errDoc()`
         _Debug("{\"err\":\"");
         _Debug(errmsg);
         _Debug("\"}\n");
@@ -414,7 +417,6 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             break;
         }
 #endif // !NOTE_LOWMEM
-
 
         // Trace
         if (suppressShowTransactions == 0) {
