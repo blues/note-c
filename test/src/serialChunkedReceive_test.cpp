@@ -231,7 +231,7 @@ SCENARIO("serialChunkedReceive")
 
     GIVEN("Bytes are intermittently unavailable to read but the full packet "
           "eventually comes in") {
-        bool serialAvailableReturnVals[] = {false, false, false, true, true, true, true};
+        bool serialAvailableReturnVals[] = {false, false, false, true, true, false, true, true};
         size_t numAvailRetVals = sizeof(serialAvailableReturnVals) /
                                  sizeof(*serialAvailableReturnVals);
         size_t numAvailableBytes = 4;
