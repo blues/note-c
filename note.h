@@ -199,32 +199,32 @@ void NoteDebugWithLevelLn(uint8_t level, const char *msg);
 
 #define NOTE_C_LOG_ERROR(msg) do { \
   NoteDebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, __FILE__ ":" \
-  NOTE_C_STRINGIZE(__LINE__) " (ERROR) "); \
+  NOTE_C_STRINGIZE(__LINE__) " [ERROR] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_ERROR, msg); \
 } while (0);
 
 #define NOTE_C_LOG_WARN(msg) do { \
   NoteDebugWithLevel(NOTE_C_LOG_LEVEL_WARN, __FILE__ ":" \
-  NOTE_C_STRINGIZE(__LINE__) " (WARN) "); \
+  NOTE_C_STRINGIZE(__LINE__) " [WARN] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_WARN, msg); \
 } while (0);
 
 #define NOTE_C_LOG_INFO(msg) do { \
   NoteDebugWithLevel(NOTE_C_LOG_LEVEL_INFO, __FILE__ ":" \
-  NOTE_C_STRINGIZE(__LINE__) " (INFO) "); \
+  NOTE_C_STRINGIZE(__LINE__) " [INFO] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_INFO, msg); \
 } while (0);
 
 #define NOTE_C_LOG_DEBUG(msg) do { \
   NoteDebugWithLevel(NOTE_C_LOG_LEVEL_DEBUG, __FILE__ ":" \
-  NOTE_C_STRINGIZE(__LINE__) " (DEBUG) "); \
+  NOTE_C_STRINGIZE(__LINE__) " [DEBUG] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_DEBUG, msg); \
 } while (0);
 
 // The max log level for NoteDebugWithLevel is only configurable at
-// compile-time, via NOTE_C_LOG_LEVEL_MAX.
-#ifndef NOTE_C_LOG_LEVEL_MAX
-#define NOTE_C_LOG_LEVEL_MAX NOTE_C_LOG_LEVEL_ERROR
+// compile-time, via NOTE_C_LOG_LEVEL.
+#ifndef NOTE_C_LOG_LEVEL
+#define NOTE_C_LOG_LEVEL NOTE_C_LOG_LEVEL_INFO
 #endif
 
 void *NoteMalloc(size_t size);

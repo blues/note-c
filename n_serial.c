@@ -28,7 +28,7 @@ const char *serialNoteTransaction(char *request, char **response)
 {
     const char *err = serialChunkedTransmit((uint8_t *)request, strlen(request), true);
     if (err) {
-        _Debug(err);
+        NOTE_C_LOG_ERROR(err);
         return err;
     }
 
@@ -47,9 +47,9 @@ const char *serialNoteTransaction(char *request, char **response)
     for (const uint32_t startMs = _GetMs(); !_SerialAvailable(); ) {
         if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
 #ifdef ERRDBG
-            _Debug("reply to request didn't arrive from module in time\n");
+            NOTE_C_LOG_ERROR(ERRSTR("reply to request didn't arrive from module in time", c_iotimeout));
 #endif
-            return ERRSTR("transaction timeout {io}",c_iotimeout);
+            return ERRSTR("transaction timeout {io}", c_iotimeout);
         }
         if (!cardTurboIO) {
             _DelayMs(10);
@@ -63,10 +63,11 @@ const char *serialNoteTransaction(char *request, char **response)
     uint32_t jsonbufAllocLen = ALLOC_CHUNK;
     uint8_t *jsonbuf = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
     if (jsonbuf == NULL) {
+        const char *err = ERRSTR("transaction: jsonbuf malloc failed", c_mem);
 #ifdef ERRDBG
-        _Debug("transaction: jsonbuf malloc failed\n");
+        NOTE_C_LOG_ERROR(err);
 #endif
-        return ERRSTR("insufficient memory",c_mem);
+        return err;
     }
 
     // Receive the Notecard response
@@ -79,7 +80,7 @@ const char *serialNoteTransaction(char *request, char **response)
         if (err) {
             _Free(jsonbuf);
 #ifdef ERRDBG
-            _Debug("error occured during receive\n");
+            NOTE_C_LOG_ERROR(ERRSTR("error occured during receive", c_iobad));
 #endif
             return err;
         }
@@ -95,11 +96,12 @@ const char *serialNoteTransaction(char *request, char **response)
             jsonbufAllocLen += (ALLOC_CHUNK * ((available / ALLOC_CHUNK) + ((available % ALLOC_CHUNK) > 0)));
             uint8_t *jsonbufNew = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
             if (jsonbufNew == NULL) {
+                const char *err = ERRSTR("transaction: jsonbuf grow malloc failed", c_mem);
 #ifdef ERRDBG
-                _Debug("transaction: jsonbuf grow malloc failed\n");
+                NOTE_C_LOG_ERROR(err);
 #endif
                 _Free(jsonbuf);
-                return ERRSTR("insufficient memory", c_mem);
+                return err;
             }
             memcpy(jsonbufNew, jsonbuf, jsonbufLen);
             _Free(jsonbuf);
@@ -168,9 +170,9 @@ bool serialNoteReset()
         }
 
 #ifdef ERRDBG
-        _Debug(somethingFound ? "unrecognized data from notecard\n" : "notecard not responding\n");
+        NOTE_C_LOG_ERROR(somethingFound ? ERRSTR("unrecognized data from notecard", c_iobad) : ERRSTR("notecard not responding", c_iobad));
 #else
-        _Debug("no notecard\n");
+        NOTE_C_LOG_ERROR(ERRSTR("notecard not responding", c_iobad));
 #endif
         _DelayMs(500);
         if (!_SerialReset()) {
@@ -211,7 +213,7 @@ const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, si
                 *size = received;
 #ifdef ERRDBG
                 if (received) {
-                    _Debug("received only partial reply before timeout\n");
+                    NOTE_C_LOG_ERROR(ERRSTR("received only partial reply before timeout", c_iobad));
                 }
 #endif
                 return ERRSTR("timeout: transaction incomplete {io}",c_iotimeout);

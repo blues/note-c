@@ -99,8 +99,8 @@ SCENARIO("NoteDebug")
         SECTION("NoteDebugWithLevel") {
             const char msg[] = "my message";
 
-            SECTION("Info level messages NOT logged by default") {
-                NOTE_C_LOG_INFO(msg);
+            SECTION("Debug level messages NOT logged by default") {
+                NOTE_C_LOG_DEBUG(msg);
 
                 CHECK(!state.debugOutputCalled);
             }
