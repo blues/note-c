@@ -218,7 +218,8 @@ const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, si
 #endif
                 return ERRSTR("timeout: transaction incomplete {io}",c_iotimeout);
             }
-            // Be socialable while awaiting first byte
+            // Yield while awaiting the first byte (lazy). After the first byte,
+            // start to spin for the remaining bytes (greedy).
             if (delay && received == 0) {
                 _DelayMs(1);
             }
@@ -281,8 +282,9 @@ const char *serialChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay)
         // Ensure truncation does not occur on 16-bit microcontrollers
         const size_t castSize = (size_t)size;
         if (castSize != size) {
-            NOTE_C_LOG_ERROR("Cannot transmit provided size; limit to `size_t`");
-            return "Cannot transmit provided size; limit to `size_t`";
+            const char *err = ERRSTR("Cannot transmit provided size; limit to `size_t`", c_iobad);
+            NOTE_C_LOG_ERROR(err);
+            return err;
         }
     }
 
