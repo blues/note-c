@@ -522,11 +522,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
     // Debug
     if (suppressShowTransactions == 0) {
-        if (responseJSON[strlen(responseJSON)-1] == '\n') {
-            NOTE_C_LOG_INFO(responseJSON);
-        } else {
-            NOTE_C_LOG_INFO(responseJSON);
-        }
+        NOTE_C_LOG_INFO(responseJSON);
     }
 
     // Discard the buffer now that it's parsed
