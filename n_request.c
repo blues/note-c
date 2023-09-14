@@ -445,7 +445,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             _Free(responseJSON);
             errStr = "crc error {io}";
             lastRequestRetries++;
-            NOTE_C_LOG_ERROR(ERRSTR("CRC error on response", iobad));
+            NOTE_C_LOG_ERROR(ERRSTR("CRC error on response", c_iobad));
             _DelayMs(500);
             continue;
         }
