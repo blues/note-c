@@ -774,3 +774,25 @@ NOTE_C_STATIC bool crcError(char *json, uint16_t shouldBeSeqno)
     return (shouldBeSeqno != actualSeqno || shouldBeCrc32 != actualCrc32);
 }
 #endif
+
+// Compute the maximum serial transmit timeout in
+// milliseconds. We base this upon a worst-case 9600bps
+// transfer rate, and allow a timeout buffer after the
+// time it should take to transmit
+uint32_t transferTimeoutMs(uint32_t size)
+{
+    // Milliseconds per second
+    const size_t ms1Sec = 1000;
+    const size_t baudRate = 9600;
+
+    // Assuming 10 bits per byte (with serial framing),
+    // this is how many milliseconds it should take to
+    // transmit the data at the given baud rate.
+    uint32_t timeoutMs = ((size * 10) / baudRate) * ms1Sec;
+
+    // Add timeout
+    timeoutMs += NOTECARD_TRANSACTION_TIMEOUT_SEC * ms1Sec;
+
+    // Done
+    return timeoutMs;
+}
