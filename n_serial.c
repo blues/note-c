@@ -11,6 +11,8 @@
  *
  */
 
+#include <stdlib.h>
+
 #include "n_lib.h"
 
 /**************************************************************************/
@@ -40,12 +42,37 @@ const char *serialNoteTransaction(char *request, char **response)
         return NULL;
     }
 
+    // `web.*` transactions are unpredictable because we do not know the
+    // associated payload size or the network conditions. The default timeout
+    // for a `web.*` transaction is 90-seconds. Therefore a perfect functioning
+    // transaction could exceed `NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC`, and
+    // an error would be returned to the caller when no error condition exists.
+    // By interrogating the request, we can discover if the request is a
+    //`web.*` transaction. If so, we will update the timeout to the default
+    // 90-seconds, or the value of the `seconds` parameter specified by the
+    // caller (who better understands context of the `web.*` transaction).
+    size_t transaction_timeout_seconds = NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC;
+
+    // Interrogate the request
+    if (strstr(request, "web.")) {
+        NOTE_C_LOG_DEBUG("web.* request received.");
+        char *secondsStr = strstr(request,"\"seconds\":");
+        if (secondsStr) {
+            const size_t base_10 = 10;
+            NOTE_C_LOG_DEBUG("Using `seconds` parameter value for timeout.");
+            transaction_timeout_seconds = (size_t)strtol((secondsStr + 10), NULL, base_10);
+        } else {
+            NOTE_C_LOG_DEBUG("No `seconds` parameter provided. Defaulting to 90-second timeout.");
+            transaction_timeout_seconds = 90;
+        }
+    }
+
     // Wait for something to become available, processing timeout errors
     // up-front because the json parse operation immediately following is
     // subject to the serial port timeout. We'd like more flexibility in max
     // timeout and ultimately in our error handling.
     for (const uint32_t startMs = _GetMs(); !_SerialAvailable(); ) {
-        if ((_GetMs() - startMs) >= (NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000)) {
+        if ((_GetMs() - startMs) >= (transaction_timeout_seconds * 1000)) {
 #ifdef ERRDBG
             NOTE_C_LOG_ERROR(ERRSTR("reply to request didn't arrive from module in time", c_iotimeout));
 #endif

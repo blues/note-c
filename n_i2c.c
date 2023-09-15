@@ -11,6 +11,8 @@
  *
  */
 
+#include <stdlib.h>
+
 #include "n_lib.h"
 
 #ifdef NOTE_C_TEST
@@ -112,11 +114,36 @@ const char *i2cNoteTransaction(char *request, char **response)
 
     delayIO();
 
+    // `web.*` transactions are unpredictable because we do not know the
+    // associated payload size or the network conditions. The default timeout
+    // for a `web.*` transaction is 90-seconds. Therefore a perfect functioning
+    // transaction could exceed `NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC`, and
+    // an error would be returned to the caller when no error condition exists.
+    // By interrogating the request, we can discover if the request is a
+    //`web.*` transaction. If so, we will update the timeout to the default
+    // 90-seconds, or the value of the `seconds` parameter specified by the
+    // caller (who better understands context of the `web.*` transaction).
+    size_t transaction_timeout_seconds = NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC;
+
+    // Interrogate the request
+    if (strstr(request, "web.")) {
+        NOTE_C_LOG_DEBUG("web.* request received.");
+        char *secondsStr = strstr(request,"\"seconds\":");
+        if (secondsStr) {
+            const size_t base_10 = 10;
+            NOTE_C_LOG_DEBUG("Using `seconds` parameter value for timeout.");
+            transaction_timeout_seconds = (size_t)strtol((secondsStr + 10), NULL, base_10);
+        } else {
+            NOTE_C_LOG_DEBUG("No `seconds` parameter provided. Defaulting to 90-second timeout.");
+            transaction_timeout_seconds = 90;
+        }
+    }
+
     // Allocate a buffer for input, noting that we always put the +1 in the
     // alloc so we can be assured that it can be null-terminated. This must be
     // the case because json parsing requires a null-terminated string.
     uint32_t available = 0;
-    err = i2cNoteQueryLength(&available, (NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000));
+    err = i2cNoteQueryLength(&available, (transaction_timeout_seconds * 1000));
     if (err) {
 #ifdef ERRDBG
         NOTE_C_LOG_ERROR(ERRSTR("failed to query Notecard", c_err));
