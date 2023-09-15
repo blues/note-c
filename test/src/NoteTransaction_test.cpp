@@ -21,7 +21,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, NoteReset)
-FAKE_VALUE_FUNC(const char *, NoteJSONTransaction, char *, char **)
+FAKE_VALUE_FUNC(const char *, NoteJSONTransaction, char *, char **, size_t)
 FAKE_VALUE_FUNC(bool, NoteTransactionStart, uint32_t)
 FAKE_VALUE_FUNC(J *, NoteUserAgent)
 FAKE_VALUE_FUNC(bool, crcError, char *, uint16_t)
@@ -29,7 +29,7 @@ FAKE_VALUE_FUNC(bool, crcError, char *, uint16_t)
 namespace
 {
 
-const char *NoteJSONTransactionValid(char *, char **resp)
+const char *NoteJSONTransactionValid(char *, char **resp, size_t)
 {
     static char respString[] = "{ \"total\": 1 }";
 
@@ -42,7 +42,7 @@ const char *NoteJSONTransactionValid(char *, char **resp)
     return NULL;
 }
 
-const char *NoteJSONTransactionBadJSON(char *, char **resp)
+const char *NoteJSONTransactionBadJSON(char *, char **resp, size_t)
 {
     static char respString[] = "Bad JSON";
 
@@ -55,7 +55,7 @@ const char *NoteJSONTransactionBadJSON(char *, char **resp)
     return NULL;
 }
 
-const char *NoteJSONTransactionIOError(char *, char **resp)
+const char *NoteJSONTransactionIOError(char *, char **resp, size_t)
 {
     static char respString[] = "{\"err\": \"{io}\"}";
 

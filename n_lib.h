@@ -28,8 +28,8 @@ extern "C" {
     @brief  How long to wait for the card for any given transaction.
 */
 /**************************************************************************/
-#define NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC 30
-#define NOTECARD_INTRA_TRANSACTION_TIMEOUT_SEC  1
+#define CARD_INTER_TRANSACTION_TIMEOUT_SEC 30
+#define CARD_INTRA_TRANSACTION_TIMEOUT_SEC  1
 
 // The notecard is a real-time device that has a fixed size interrupt buffer.
 // We can push data at it far, far faster than it can process it, therefore we
@@ -79,9 +79,9 @@ extern "C" {
 
 // Transactions
 J *noteTransactionShouldLock(J *req, bool lockNotecard);
-const char *i2cNoteTransaction(char *request, char **response);
+const char *i2cNoteTransaction(char *request, char **response, size_t timeoutMs);
 bool i2cNoteReset(void);
-const char *serialNoteTransaction(char *request, char **response);
+const char *serialNoteTransaction(char *request, char **response, size_t timeoutMs);
 bool serialNoteReset(void);
 const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_t timeoutMs, uint32_t *available);
 const char *i2cChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay);
@@ -102,7 +102,7 @@ bool NoteI2CReset(uint16_t DevAddress);
 const char *NoteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size);
 const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *avail);
 bool NoteHardReset(void);
-const char *NoteJSONTransaction(char *request, char **response);
+const char *NoteJSONTransaction(char *request, char **response, size_t timeoutMs);
 const char *NoteChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_t timeoutMs, uint32_t *available);
 const char *NoteChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay);
 bool NoteIsDebugOutputActive(void);

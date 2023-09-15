@@ -18,15 +18,17 @@
 /**************************************************************************/
 /*!
   @brief  Given a JSON string, perform a serial transaction with the Notecard.
-  @param   request
-            A c-string containing the JSON request object.
-  @param   response
-            An out parameter c-string buffer that will contain the JSON
+
+  @param   request A c-string containing the JSON request object.
+  @param   response An out parameter c-string buffer that will contain the JSON
             response from the Notercard. If NULL, no response will be captured.
+  @param   timeoutMs The maximum amount of time, in milliseconds, to wait
+            for data to arrive. Passing zero (0) disables the timeout.
+
   @returns a c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialNoteTransaction(char *request, char **response)
+const char *serialNoteTransaction(char *request, char **response, size_t timeoutMs)
 {
     const char *err = serialChunkedTransmit((uint8_t *)request, strlen(request), true);
     if (err) {
@@ -42,37 +44,12 @@ const char *serialNoteTransaction(char *request, char **response)
         return NULL;
     }
 
-    // `web.*` transactions are unpredictable because we do not know the
-    // associated payload size or the network conditions. The default timeout
-    // for a `web.*` transaction is 90-seconds. Therefore a perfect functioning
-    // transaction could exceed `NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC`, and
-    // an error would be returned to the caller when no error condition exists.
-    // By interrogating the request, we can discover if the request is a
-    //`web.*` transaction. If so, we will update the timeout to the default
-    // 90-seconds, or the value of the `seconds` parameter specified by the
-    // caller (who better understands context of the `web.*` transaction).
-    size_t transaction_timeout_seconds = NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC;
-
-    // Interrogate the request
-    if (strstr(request, "web.")) {
-        NOTE_C_LOG_DEBUG("web.* request received.");
-        char *secondsStr = strstr(request,"\"seconds\":");
-        if (secondsStr) {
-            const size_t base_10 = 10;
-            NOTE_C_LOG_DEBUG("Using `seconds` parameter value for timeout.");
-            transaction_timeout_seconds = (size_t)strtol((secondsStr + 10), NULL, base_10);
-        } else {
-            NOTE_C_LOG_DEBUG("No `seconds` parameter provided. Defaulting to 90-second timeout.");
-            transaction_timeout_seconds = 90;
-        }
-    }
-
     // Wait for something to become available, processing timeout errors
     // up-front because the json parse operation immediately following is
     // subject to the serial port timeout. We'd like more flexibility in max
     // timeout and ultimately in our error handling.
     for (const uint32_t startMs = _GetMs(); !_SerialAvailable(); ) {
-        if ((_GetMs() - startMs) >= (transaction_timeout_seconds * 1000)) {
+        if (timeoutMs && (_GetMs() - startMs) >= timeoutMs) {
 #ifdef ERRDBG
             NOTE_C_LOG_ERROR(ERRSTR("reply to request didn't arrive from module in time", c_iotimeout));
 #endif
@@ -103,7 +80,7 @@ const char *serialNoteTransaction(char *request, char **response)
         uint32_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        const char *err = serialChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
+        const char *err = serialChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
         if (err) {
             _Free(jsonbuf);
 #ifdef ERRDBG
@@ -148,6 +125,7 @@ const char *serialNoteTransaction(char *request, char **response)
 /*!
     @brief  Initialize or re-initialize the Serial bus, returning false if
             anything fails.
+
     @returns a boolean. `true` if the reset was successful, `false`, if not.
 */
 /**************************************************************************/
@@ -214,18 +192,16 @@ bool serialNoteReset()
 /**************************************************************************/
 /*!
   @brief  Receive bytes over Serial from the Notecard.
-  @param   buffer
-            A buffer to receive bytes into.
+
+  @param   buffer A buffer to receive bytes into.
   @param   size (in/out)
             - (in) The size of the buffer in bytes.
             - (out) The length of the received data in bytes.
-  @param   delay
-            Respect standard processing delays.
-  @param   timeoutMs
-            The maximum amount of time, in milliseconds, to wait for serial data
-            to arrive. Passing zero (0) disables the timeout.
-  @param   available (out)
-            The amount of bytes unable to fit into the provided buffer.
+  @param   delay Respect standard processing delays.
+  @param   timeoutMs The maximum amount of time, in milliseconds, to wait for
+            serial data to arrive. Passing zero (0) disables the timeout.
+  @param   available (out) The amount of bytes unable to fit into the provided buffer.
+
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
@@ -253,7 +229,7 @@ const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, si
         }
 
         // Once we've received any character, we will no longer wait patiently
-        timeoutMs = (NOTECARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000);
+        timeoutMs = (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000);
         startMs = _GetMs();
 
         // Receive the next character
@@ -289,12 +265,11 @@ const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, si
 /**************************************************************************/
 /*!
   @brief  Transmit bytes over serial to the Notecard.
-  @param   buffer
-            A buffer of bytes to transmit.
-  @param   size
-            The count of bytes in the buffer to send.
-  @param   delay
-            Respect standard processing delays.
+
+  @param   buffer A buffer of bytes to transmit.
+  @param   size The count of bytes in the buffer to send.
+  @param   delay Respect standard processing delays.
+
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
