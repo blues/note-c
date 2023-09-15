@@ -58,7 +58,7 @@ SCENARIO("NoteSleep")
             SECTION("Additional modes") {
                 CHECK(NoteSleep(payload, seconds, modes));
                 CHECK(!strcmp("sleep,modea,modeb",
-                              JGetString(NoteRequest_fake.arg0_history[0], "mode")));
+                              JGetString(NoteRequest_fake.arg0_val, "mode")));
             }
 
             SECTION("No additional modes") {

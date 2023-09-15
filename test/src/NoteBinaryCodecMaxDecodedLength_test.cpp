@@ -39,7 +39,7 @@ SCENARIO("NoteBinaryCodecMaxDecodedLength")
 
         WHEN("cobsGuaranteedFit is invoked") {
             THEN("The parameters are passed without modification") {
-                CHECK(cobsGuaranteedFit_fake.arg0_history[0] == bufferSize);
+                CHECK(cobsGuaranteedFit_fake.arg0_val == bufferSize);
             }
 
             THEN("The result is returned without modification") {

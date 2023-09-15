@@ -246,6 +246,102 @@ SCENARIO("NoteTransaction")
     }
 #endif // !NOTE_DISABLE_USER_AGENT
 
+    SECTION("Regular transactions have a timeout of CARD_INTER_TRANSACTION_TIMEOUT_SEC seconds") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+
+        J *resp = NoteTransaction(req);
+        CHECK(NoteJSONTransaction_fake.arg2_val == (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000));
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("`note.add` with `milliseconds` updates timeout value with `milliseconds`") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        JAddIntToObject(req, "milliseconds", 9171979);
+
+        J *resp = NoteTransaction(req);
+        CHECK(NoteJSONTransaction_fake.arg2_val == 9171979);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("`note.add` with `seconds` updates timeout value with `seconds`") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        JAddIntToObject(req, "seconds", 917);
+
+        J *resp = NoteTransaction(req);
+        CHECK(NoteJSONTransaction_fake.arg2_val == (917 * 1000));
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("`note.add` with both `milliseconds` and `seconds` updates timeout value with `milliseconds`") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        JAddIntToObject(req, "seconds", 917);
+        JAddIntToObject(req, "milliseconds", 9171979);
+
+        J *resp = NoteTransaction(req);
+        CHECK(NoteJSONTransaction_fake.arg2_val == 9171979);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("`web.post` with `milliseconds` updates timeout value with `milliseconds`") {
+        J *req = NoteNewRequest("web.post");
+        REQUIRE(req != NULL);
+        JAddIntToObject(req, "milliseconds", 9171979);
+
+        J *resp = NoteTransaction(req);
+        CHECK(NoteJSONTransaction_fake.arg2_val == 9171979);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("`web.post` with `seconds` updates timeout value with `seconds`") {
+        J *req = NoteNewRequest("web.post");
+        REQUIRE(req != NULL);
+        JAddIntToObject(req, "seconds", 1979);
+
+        J *resp = NoteTransaction(req);
+        CHECK(NoteJSONTransaction_fake.arg2_val == (1979 * 1000));
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("`web.post` with both `milliseconds` and `seconds` updates timeout value with `milliseconds`") {
+        J *req = NoteNewRequest("web.post");
+        REQUIRE(req != NULL);
+        JAddIntToObject(req, "seconds", 917);
+        JAddIntToObject(req, "milliseconds", 9171979);
+
+        J *resp = NoteTransaction(req);
+        CHECK(NoteJSONTransaction_fake.arg2_val == 9171979);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("`web.post` without `milliseconds` or `seconds` updates timeout value with 90 seconds") {
+        J *req = NoteNewRequest("web.post");
+        REQUIRE(req != NULL);
+
+        J *resp = NoteTransaction(req);
+        CHECK(NoteJSONTransaction_fake.arg2_val == (90 * 1000));
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
     RESET_FAKE(NoteReset);
     RESET_FAKE(NoteJSONTransaction);
     RESET_FAKE(NoteTransactionStart);

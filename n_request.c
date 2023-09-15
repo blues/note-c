@@ -423,35 +423,49 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             NOTE_C_LOG_INFO(json);
         }
 
-        // `web.*` transactions are unpredictable because we do not know the
-        // associated payload size or the network conditions. The default timeout
-        // for a `web.*` transaction is 90-seconds. Therefore a perfect functioning
-        // transaction could exceed `CARD_INTER_TRANSACTION_TIMEOUT_SEC`, and
-        // an error would be returned to the caller when no error condition exists.
-        // By interrogating the request, we can discover if the request is a
-        //`web.*` transaction. If so, we will update the timeout to the default
-        // 90-seconds, or the value of the `seconds` parameter specified by the
-        // caller (who better understands context of the `web.*` transaction).
-        size_t transactionTimeoutSeconds = CARD_INTER_TRANSACTION_TIMEOUT_SEC;
+        // Sending binary transactions can be unpredictable, because we do not
+        // know the associated payload size or the network conditions. Both
+        // `note.add` and `web.*` transactions can be responsible for generating
+        // large binary payloads. The default timeout for a `web.*` transaction
+        // is 90-seconds. Therefore, a perfectly functioning transaction could
+        // exceed `CARD_INTER_TRANSACTION_TIMEOUT_SEC`, and an error would be
+        // returned to the caller when, in fact, no error condition exists. By
+        // interrogating the request, we can discover if the request is a binary
+        // transaction. This will allow us to update the timeout to the default
+        // web transaction timeout of 90-seconds, or the value of the `seconds`
+        // parameter as specified by the caller (who better understands context
+        // of both the binary transaction and network conditions).
+        size_t transactionTimeoutMs = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
 
         // Interrogate the request
-        if (JContainsString(req, (reqType ? "req" : "cmd"), "web.")) {
-            NOTE_C_LOG_DEBUG("web.* request received.");
-            if (JIsPresent(req, "seconds")) {
+        if (JContainsString(req, (reqType ? "req" : "cmd"), "note.add")) {
+            if (JIsPresent(req, "milliseconds")) {
+                NOTE_C_LOG_DEBUG("Using `milliseconds` parameter value for timeout.");
+                transactionTimeoutMs = JGetInt(req, "milliseconds");
+            } else if (JIsPresent(req, "seconds")) {
                 NOTE_C_LOG_DEBUG("Using `seconds` parameter value for timeout.");
-                transactionTimeoutSeconds = JGetInt(req, "seconds");
+                transactionTimeoutMs = (JGetInt(req, "seconds") * 1000);
+            }
+        } else if (JContainsString(req, (reqType ? "req" : "cmd"), "web.")) {
+            NOTE_C_LOG_DEBUG("web.* request received.");
+            if (JIsPresent(req, "milliseconds")) {
+                NOTE_C_LOG_DEBUG("Using `milliseconds` parameter value for timeout.");
+                transactionTimeoutMs = JGetInt(req, "milliseconds");
+            } else if (JIsPresent(req, "seconds")) {
+                NOTE_C_LOG_DEBUG("Using `seconds` parameter value for timeout.");
+                transactionTimeoutMs = (JGetInt(req, "seconds") * 1000);
             } else {
-                NOTE_C_LOG_DEBUG("No `seconds` parameter provided. Defaulting to 90-second timeout.");
-                transactionTimeoutSeconds = 90;
+                NOTE_C_LOG_DEBUG("No `milliseconds` or `seconds` parameter provided. Defaulting to 90-second timeout.");
+                transactionTimeoutMs = (90 * 1000);
             }
         }
 
         // Perform the transaction
         if (noResponseExpected) {
-            errStr = _Transaction(json, NULL, transactionTimeoutSeconds);
+            errStr = _Transaction(json, NULL, transactionTimeoutMs);
             break;
         }
-        errStr = _Transaction(json, &responseJSON, transactionTimeoutSeconds);
+        errStr = _Transaction(json, &responseJSON, transactionTimeoutMs);
 
 #ifndef NOTE_LOWMEM
         // If there's an I/O error on the transaction, retry

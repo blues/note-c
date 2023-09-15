@@ -60,7 +60,7 @@ SCENARIO("NoteSetLocationMode")
             CHECK(NoteSetLocationMode("", seconds));
             // If the mode parameter is the empty string, the request should
             // have mode: "-".
-            CHECK(!strcmp("-", JGetString(NoteRequest_fake.arg0_history[0],
+            CHECK(!strcmp("-", JGetString(NoteRequest_fake.arg0_val,
                                           "mode")));
         }
 
