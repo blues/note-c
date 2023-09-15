@@ -45,7 +45,7 @@ const char *serialNoteTransaction(char *request, char **response)
     // subject to the serial port timeout. We'd like more flexibility in max
     // timeout and ultimately in our error handling.
     for (const uint32_t startMs = _GetMs(); !_SerialAvailable(); ) {
-        if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
+        if ((_GetMs() - startMs) >= (NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000)) {
 #ifdef ERRDBG
             NOTE_C_LOG_ERROR(ERRSTR("reply to request didn't arrive from module in time", c_iotimeout));
 #endif
@@ -76,7 +76,7 @@ const char *serialNoteTransaction(char *request, char **response)
         uint32_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        const char *err = serialChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
+        const char *err = serialChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
         if (err) {
             _Free(jsonbuf);
 #ifdef ERRDBG
@@ -226,7 +226,7 @@ const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, si
         }
 
         // Once we've received any character, we will no longer wait patiently
-        timeoutMs = 1000;
+        timeoutMs = (NOTECARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000);
         startMs = _GetMs();
 
         // Receive the next character

@@ -177,11 +177,11 @@ SCENARIO("serialNoteTransaction")
             long unsigned int getMsReturnVals[3];
 
             AND_GIVEN("There's a timeout after waiting for "
-                      "NOTECARD_TRANSACTION_TIMEOUT_SEC seconds") {
+                      "NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC seconds") {
                 getMsReturnVals[0] = UINT32_MAX -
-                                     NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000;
+                                     NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000;
                 getMsReturnVals[1] = UINT32_MAX -
-                                     (NOTECARD_TRANSACTION_TIMEOUT_SEC - 1) *
+                                     (NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC - 1) *
                                      1000;
                 // Force the millisecond counter, which is used to determine if
                 // we've timed out, to roll over to cover that edge case.

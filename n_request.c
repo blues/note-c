@@ -339,7 +339,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     }
 
     // Make sure that we get access to the notecard hardware before we begin
-    if (!_TransactionStart(NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+    if (!_TransactionStart(NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000)) {
         return NULL;
     }
 

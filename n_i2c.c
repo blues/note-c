@@ -116,7 +116,7 @@ const char *i2cNoteTransaction(char *request, char **response)
     // alloc so we can be assured that it can be null-terminated. This must be
     // the case because json parsing requires a null-terminated string.
     uint32_t available = 0;
-    err = i2cNoteQueryLength(&available, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000));
+    err = i2cNoteQueryLength(&available, (NOTECARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000));
     if (err) {
 #ifdef ERRDBG
         NOTE_C_LOG_ERROR(ERRSTR("failed to query Notecard", c_err));
@@ -144,7 +144,7 @@ const char *i2cNoteTransaction(char *request, char **response)
         uint32_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        const char *err = i2cChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
+        const char *err = i2cChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
         if (err) {
             if (jsonbuf) {
                 _Free(jsonbuf);
@@ -330,7 +330,7 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
 
         // Once we've received any character, we will no longer wait patiently
         if (requested != 0) {
-            timeoutMs = 1000;
+            timeoutMs = (NOTECARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000);
             startMs = _GetMs();
         }
 
