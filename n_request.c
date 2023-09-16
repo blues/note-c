@@ -495,9 +495,13 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
         // See if the response JSON can't be unmarshaled, or if it contains an {io} error
         J *rsp = JParse(responseJSON);
-        bool isIoError = (rsp == NULL);
-        bool isBadBin = NoteErrorContains(JGetString(rsp, c_err), c_badbinerr);
-        if (rsp != NULL) {
+        bool isBadBin = false;
+        bool isIoError = false;
+        if (rsp == NULL) {
+            isIoError = true;
+            NOTE_C_LOG_ERROR(ERRSTR("Response expected, but responseJSON returned NULL.", c_ioerr));
+        } else {
+            isBadBin = NoteErrorContains(JGetString(rsp, c_err), c_badbinerr);
             isIoError = NoteErrorContains(JGetString(rsp, c_err), c_ioerr);
             if (isIoError) {
                 NOTE_C_LOG_ERROR(JGetString(rsp, c_err));
@@ -506,7 +510,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         }
         if (isIoError) {
             _Free(responseJSON);
-            errStr = ERRSTR("notecard i/o error {io}", c_iobad);
+            errStr = ERRSTR("notecard i/o error {io}", c_ioerr);
 
             if (isBadBin) {
                 NOTE_C_LOG_DEBUG("{bad-bin} is not elibigle for retry");
