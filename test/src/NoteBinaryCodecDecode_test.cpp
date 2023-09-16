@@ -72,9 +72,9 @@ SCENARIO("NoteBinaryCodecDecode")
 
         WHEN("cobsDecode is invoked") {
             THEN("The parameters are passed without modification") {
-                CHECK(cobsDecode_fake.arg0_history[0] == encData);
-                CHECK(cobsDecode_fake.arg1_history[0] == encDataLen);
-                CHECK(cobsDecode_fake.arg3_history[0] == decBuf);
+                CHECK(cobsDecode_fake.arg0_val == encData);
+                CHECK(cobsDecode_fake.arg1_val == encDataLen);
+                CHECK(cobsDecode_fake.arg3_val == decBuf);
             }
 
             THEN("The result is returned without modification") {

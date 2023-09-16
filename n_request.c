@@ -339,7 +339,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     }
 
     // Make sure that we get access to the notecard hardware before we begin
-    if (!_TransactionStart(NOTECARD_TRANSACTION_TIMEOUT_SEC*1000)) {
+    if (!_TransactionStart(CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000)) {
         return NULL;
     }
 
@@ -423,12 +423,50 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             NOTE_C_LOG_INFO(json);
         }
 
+        // When note.add or web.* requests are used to transfer binary data, the
+        // time to complete the transaction can vary depending on the size of
+        // the payload and network conditions. Therefore, it's possible for
+        // these transactions to timeout prematurely.
+        //
+        // The algorithm below, executes the following logic:
+        //   - If the request is a `note.add`, set the timeout value to the
+        //     value of the "milliseconds" parameter, if it exists. If it
+        //     doesn't, use the "seconds" parameter. If that doesn't exist,
+        //     use the standard timeout of `CARD_INTER_TRANSACTION_TIMEOUT_SEC`.
+        //   - If the request is a `web.*`, follow the same logic, but instead
+        //     of using the standard timeout, use the Notecard timeout of 90
+        //     seconds for all `web.*` transactions.
+        size_t transactionTimeoutMs = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
+
+        // Interrogate the request
+        if (JContainsString(req, (reqType ? "req" : "cmd"), "note.add")) {
+            if (JIsPresent(req, "milliseconds")) {
+                NOTE_C_LOG_DEBUG("Using `milliseconds` parameter value for timeout.");
+                transactionTimeoutMs = JGetInt(req, "milliseconds");
+            } else if (JIsPresent(req, "seconds")) {
+                NOTE_C_LOG_DEBUG("Using `seconds` parameter value for timeout.");
+                transactionTimeoutMs = (JGetInt(req, "seconds") * 1000);
+            }
+        } else if (JContainsString(req, (reqType ? "req" : "cmd"), "web.")) {
+            NOTE_C_LOG_DEBUG("web.* request received.");
+            if (JIsPresent(req, "milliseconds")) {
+                NOTE_C_LOG_DEBUG("Using `milliseconds` parameter value for timeout.");
+                transactionTimeoutMs = JGetInt(req, "milliseconds");
+            } else if (JIsPresent(req, "seconds")) {
+                NOTE_C_LOG_DEBUG("Using `seconds` parameter value for timeout.");
+                transactionTimeoutMs = (JGetInt(req, "seconds") * 1000);
+            } else {
+                NOTE_C_LOG_DEBUG("No `milliseconds` or `seconds` parameter provided. Defaulting to 90-second timeout.");
+                transactionTimeoutMs = (90 * 1000);
+            }
+        }
+
         // Perform the transaction
         if (noResponseExpected) {
-            errStr = _Transaction(json, NULL);
+            errStr = _Transaction(json, NULL, transactionTimeoutMs);
             break;
         }
-        errStr = _Transaction(json, &responseJSON);
+        errStr = _Transaction(json, &responseJSON, transactionTimeoutMs);
 
 #ifndef NOTE_LOWMEM
         // If there's an I/O error on the transaction, retry

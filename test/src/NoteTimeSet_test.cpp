@@ -67,7 +67,7 @@ SCENARIO("NoteTimeSet")
         NoteTimeSet(0, offset, zone, country, area);
         currTime = NoteTime();
         // Check that a card.time request was made.
-        CHECK(strcmp(NoteNewRequest_fake.arg0_history[0], "card.time") == 0);
+        CHECK(strcmp(NoteNewRequest_fake.arg0_val, "card.time") == 0);
         // Setting the base time to 0 seconds also invalidates the region info.
         CHECK(!NoteRegion(&retCountry, &retArea, &retZone, &retOffset));
         CHECK(0 == retOffset);

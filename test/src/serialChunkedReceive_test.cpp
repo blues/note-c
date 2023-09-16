@@ -43,7 +43,14 @@ SCENARIO("serialChunkedReceive")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    NoteGetMs_fake.custom_fake = NoteGetMsIncrement;
+    NoteGetMs_fake.custom_fake = []() -> long unsigned int {
+        static long unsigned int count = 0;
+
+        // increment by 1 second
+        count += 750;
+        // return count pre-increment
+        return count - 750;
+    };
     uint8_t buf[] = {0xDE, 0xAD, 0xBE, 0xEF, 0x00};
     uint32_t size = sizeof(buf);
     bool delay = false;
@@ -224,7 +231,7 @@ SCENARIO("serialChunkedReceive")
 
     GIVEN("Bytes are intermittently unavailable to read but the full packet "
           "eventually comes in") {
-        bool serialAvailableReturnVals[] = {true, true, false, true, true};
+        bool serialAvailableReturnVals[] = {false, false, false, true, true, false, true, true};
         size_t numAvailRetVals = sizeof(serialAvailableReturnVals) /
                                  sizeof(*serialAvailableReturnVals);
         size_t numAvailableBytes = 4;

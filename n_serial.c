@@ -11,20 +11,24 @@
  *
  */
 
+#include <stdlib.h>
+
 #include "n_lib.h"
 
 /**************************************************************************/
 /*!
   @brief  Given a JSON string, perform a serial transaction with the Notecard.
-  @param   request
-            A c-string containing the JSON request object.
-  @param   response
-            An out parameter c-string buffer that will contain the JSON
+
+  @param   request A c-string containing the JSON request object.
+  @param   response An out parameter c-string buffer that will contain the JSON
             response from the Notercard. If NULL, no response will be captured.
+  @param   timeoutMs The maximum amount of time, in milliseconds, to wait
+            for data to arrive. Passing zero (0) disables the timeout.
+
   @returns a c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *serialNoteTransaction(char *request, char **response)
+const char *serialNoteTransaction(char *request, char **response, size_t timeoutMs)
 {
     const char *err = serialChunkedTransmit((uint8_t *)request, strlen(request), true);
     if (err) {
@@ -45,7 +49,7 @@ const char *serialNoteTransaction(char *request, char **response)
     // subject to the serial port timeout. We'd like more flexibility in max
     // timeout and ultimately in our error handling.
     for (const uint32_t startMs = _GetMs(); !_SerialAvailable(); ) {
-        if (_GetMs() - startMs >= NOTECARD_TRANSACTION_TIMEOUT_SEC*1000) {
+        if (timeoutMs && (_GetMs() - startMs) >= timeoutMs) {
 #ifdef ERRDBG
             NOTE_C_LOG_ERROR(ERRSTR("reply to request didn't arrive from module in time", c_iotimeout));
 #endif
@@ -76,7 +80,7 @@ const char *serialNoteTransaction(char *request, char **response)
         uint32_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        const char *err = serialChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
+        const char *err = serialChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
         if (err) {
             _Free(jsonbuf);
 #ifdef ERRDBG
@@ -121,6 +125,7 @@ const char *serialNoteTransaction(char *request, char **response)
 /*!
     @brief  Initialize or re-initialize the Serial bus, returning false if
             anything fails.
+
     @returns a boolean. `true` if the reset was successful, `false`, if not.
 */
 /**************************************************************************/
@@ -187,18 +192,16 @@ bool serialNoteReset()
 /**************************************************************************/
 /*!
   @brief  Receive bytes over Serial from the Notecard.
-  @param   buffer
-            A buffer to receive bytes into.
+
+  @param   buffer A buffer to receive bytes into.
   @param   size (in/out)
             - (in) The size of the buffer in bytes.
             - (out) The length of the received data in bytes.
-  @param   delay
-            Respect standard processing delays.
-  @param   timeoutMs
-            The maximum amount of time, in milliseconds, to wait for serial data
-            to arrive. Passing zero (0) disables the timeout.
-  @param   available (out)
-            The amount of bytes unable to fit into the provided buffer.
+  @param   delay Respect standard processing delays.
+  @param   timeoutMs The maximum amount of time, in milliseconds, to wait for
+            serial data to arrive. Passing zero (0) disables the timeout.
+  @param   available (out) The amount of bytes unable to fit into the provided buffer.
+
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
@@ -206,7 +209,7 @@ const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, si
 {
     size_t received = 0;
     bool overflow = (received >= *size);
-    const size_t startMs = _GetMs();
+    size_t startMs = _GetMs();
     for (bool eop = false ; !overflow && !eop ;) {
         while (!_SerialAvailable()) {
             if (timeoutMs && (_GetMs() - startMs >= timeoutMs)) {
@@ -218,10 +221,18 @@ const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, si
 #endif
                 return ERRSTR("timeout: transaction incomplete {io}",c_iotimeout);
             }
-            if (delay) {
+            // Yield while awaiting the first byte (lazy). After the first byte,
+            // start to spin for the remaining bytes (greedy).
+            if (delay && received == 0) {
                 _DelayMs(1);
             }
         }
+
+        // Once we've received any character, we will no longer wait patiently
+        timeoutMs = (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000);
+        startMs = _GetMs();
+
+        // Receive the next character
         char ch = _SerialReceive();
 
         // Place into the buffer
@@ -254,12 +265,11 @@ const char *serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, si
 /**************************************************************************/
 /*!
   @brief  Transmit bytes over serial to the Notecard.
-  @param   buffer
-            A buffer of bytes to transmit.
-  @param   size
-            The count of bytes in the buffer to send.
-  @param   delay
-            Respect standard processing delays.
+
+  @param   buffer A buffer of bytes to transmit.
+  @param   size The count of bytes in the buffer to send.
+  @param   delay Respect standard processing delays.
+
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
@@ -274,8 +284,9 @@ const char *serialChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay)
         // Ensure truncation does not occur on 16-bit microcontrollers
         const size_t castSize = (size_t)size;
         if (castSize != size) {
-            NOTE_C_LOG_ERROR("Cannot transmit provided size; limit to `size_t`");
-            return "Cannot transmit provided size; limit to `size_t`";
+            const char *err = ERRSTR("Cannot transmit provided size; limit to `size_t`", c_iobad);
+            NOTE_C_LOG_ERROR(err);
+            return err;
         }
     }
 

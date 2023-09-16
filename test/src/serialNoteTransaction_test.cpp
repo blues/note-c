@@ -103,6 +103,7 @@ SCENARIO("serialNoteTransaction")
     NoteSetFnDefault(NULL, free, NULL, NULL);
 
     char req[] = "{\"req\": \"note.add\"}";
+    const size_t timeoutMs = CARD_INTER_TRANSACTION_TIMEOUT_SEC;
 
     GIVEN("A valid JSON request C-string and a NULL response pointer") {
         size_t reqLen = strlen(req);
@@ -110,7 +111,7 @@ SCENARIO("serialNoteTransaction")
         serialChunkedTransmit_fake.custom_fake = serialChunkedTransmitAppend;
 
         WHEN("serialNoteTransaction is called") {
-            const char *err = serialNoteTransaction(req, NULL);
+            const char *err = serialNoteTransaction(req, NULL, timeoutMs);
 
             THEN("serialNoteTransaction returns NULL (no error)") {
                 CHECK(err == NULL);
@@ -132,7 +133,7 @@ SCENARIO("serialNoteTransaction")
             serialChunkedTransmit_fake.return_val = "some error";
 
             WHEN("serialNoteTransaction is called") {
-                const char *err = serialNoteTransaction(req, NULL);
+                const char *err = serialNoteTransaction(req, NULL, timeoutMs);
 
                 THEN("serialNoteTransaction returns an error") {
                     CHECK(err != NULL);
@@ -149,7 +150,7 @@ SCENARIO("serialNoteTransaction")
             NoteSerialAvailable_fake.return_val = true;
 
             WHEN("serialNoteTransaction is called") {
-                const char *err = serialNoteTransaction(req, &rsp);
+                const char *err = serialNoteTransaction(req, &rsp, timeoutMs);
 
                 THEN("NoteMalloc is called") {
                     REQUIRE(NoteMalloc_fake.call_count > 0);
@@ -177,11 +178,11 @@ SCENARIO("serialNoteTransaction")
             long unsigned int getMsReturnVals[3];
 
             AND_GIVEN("There's a timeout after waiting for "
-                      "NOTECARD_TRANSACTION_TIMEOUT_SEC seconds") {
+                      "CARD_INTER_TRANSACTION_TIMEOUT_SEC seconds") {
                 getMsReturnVals[0] = UINT32_MAX -
-                                     NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000;
+                                     CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000;
                 getMsReturnVals[1] = UINT32_MAX -
-                                     (NOTECARD_TRANSACTION_TIMEOUT_SEC - 1) *
+                                     (CARD_INTER_TRANSACTION_TIMEOUT_SEC - 1) *
                                      1000;
                 // Force the millisecond counter, which is used to determine if
                 // we've timed out, to roll over to cover that edge case.
@@ -190,7 +191,7 @@ SCENARIO("serialNoteTransaction")
                 SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 3);
 
                 WHEN("serialNoteTransaction is called") {
-                    const char* err = serialNoteTransaction(req, &rsp);
+                    const char* err = serialNoteTransaction(req, &rsp, timeoutMs);
 
                     THEN("NoteSerialReceive is not called (no bytes received "
                          "from the Notecard)") {
@@ -218,7 +219,7 @@ SCENARIO("serialNoteTransaction")
             serialChunkedReceive_fake.return_val = "some error";
 
             WHEN("serialNoteTransaction is called") {
-                const char *err = serialNoteTransaction(req, &rsp);
+                const char *err = serialNoteTransaction(req, &rsp, timeoutMs);
 
                 THEN("serialNoteTransaction returns an error") {
                     CHECK(err != NULL);
@@ -236,7 +237,7 @@ SCENARIO("serialNoteTransaction")
             serialChunkedReceive_fake.custom_fake = serialChunkedReceiveNothing;
 
             WHEN("serialNoteTransaction is called") {
-                const char *err = serialNoteTransaction(req, &rsp);
+                const char *err = serialNoteTransaction(req, &rsp, timeoutMs);
 
                 THEN("serialNoteTransaction returns NULL (no error)") {
                     CHECK(err == NULL);
@@ -262,7 +263,7 @@ SCENARIO("serialNoteTransaction")
                 serialChunkedReceiveOneAndDone;
 
             WHEN("serialNoteTransaction is called") {
-                const char *err = serialNoteTransaction(req, &rsp);
+                const char *err = serialNoteTransaction(req, &rsp, timeoutMs);
 
                 THEN("serialNoteTransaction returns NULL (no error)") {
                     CHECK(err == NULL);
@@ -296,7 +297,7 @@ SCENARIO("serialNoteTransaction")
                 SERIAL_CHUNKED_RECEIVE_MULTIPLE_SIZE;
 
             WHEN("serialNoteTransaction is called") {
-                const char *err = serialNoteTransaction(req, &rsp);
+                const char *err = serialNoteTransaction(req, &rsp, timeoutMs);
 
                 THEN("serialNoteTransaction returns NULL (no error)") {
                     CHECK(err == NULL);
@@ -327,7 +328,7 @@ SCENARIO("serialNoteTransaction")
                 SET_CUSTOM_FAKE_SEQ(NoteMalloc, mallocFns, 2);
 
                 WHEN("serialNoteTransaction is called") {
-                    const char *err = serialNoteTransaction(req, &rsp);
+                    const char *err = serialNoteTransaction(req, &rsp, timeoutMs);
 
                     THEN("serialNoteTransaction returns an error") {
                         CHECK(err != NULL);

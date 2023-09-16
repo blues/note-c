@@ -39,7 +39,7 @@ SCENARIO("NoteBinaryCodecMaxEncodedLength")
 
         WHEN("cobsEncodedMaxLength is invoked") {
             THEN("The parameters are passed without modification") {
-                CHECK(cobsEncodedMaxLength_fake.arg0_history[0] == unencodedLen);
+                CHECK(cobsEncodedMaxLength_fake.arg0_val == unencodedLen);
             }
 
             THEN("The result is returned without modification") {

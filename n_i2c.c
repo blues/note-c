@@ -11,6 +11,8 @@
  *
  */
 
+#include <stdlib.h>
+
 #include "n_lib.h"
 
 #ifdef NOTE_C_TEST
@@ -77,15 +79,17 @@ NOTE_C_STATIC const char * i2cNoteQueryLength(uint32_t * available,
 /**************************************************************************/
 /*!
   @brief  Given a JSON string, perform an I2C transaction with the Notecard.
-  @param   request
-            A c-string containing the JSON request object.
-  @param   response
-            An out parameter c-string buffer that will contain the JSON
+
+  @param   request A c-string containing the JSON request object.
+  @param   response An out parameter c-string buffer that will contain the JSON
             response from the Notercard.
+  @param   timeoutMs The maximum amount of time, in milliseconds, to wait
+            for data to arrive. Passing zero (0) disables the timeout.
+
   @returns a c-string with an error, or `NULL` if no error occurred.
 */
 /**************************************************************************/
-const char *i2cNoteTransaction(char *request, char **response)
+const char *i2cNoteTransaction(char *request, char **response, size_t timeoutMs)
 {
     const char *err = NULL;
     const size_t nullIndex = strlen(request);
@@ -116,7 +120,7 @@ const char *i2cNoteTransaction(char *request, char **response)
     // alloc so we can be assured that it can be null-terminated. This must be
     // the case because json parsing requires a null-terminated string.
     uint32_t available = 0;
-    err = i2cNoteQueryLength(&available, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000));
+    err = i2cNoteQueryLength(&available, timeoutMs);
     if (err) {
 #ifdef ERRDBG
         NOTE_C_LOG_ERROR(ERRSTR("failed to query Notecard", c_err));
@@ -144,7 +148,7 @@ const char *i2cNoteTransaction(char *request, char **response)
         uint32_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        const char *err = i2cChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (NOTECARD_TRANSACTION_TIMEOUT_SEC * 1000), &available);
+        const char *err = i2cChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
         if (err) {
             if (jsonbuf) {
                 _Free(jsonbuf);
@@ -202,6 +206,7 @@ const char *i2cNoteTransaction(char *request, char **response)
 /*!
   @brief  Initialize or re-initialize the I2C subsystem, returning false if
   anything fails.
+
   @returns a boolean. `true` if the reset was successful, `false`, if not.
 */
 /**************************************************************************/
@@ -282,20 +287,19 @@ bool i2cNoteReset()
 /**************************************************************************/
 /*!
   @brief  Receive bytes over I2C from the Notecard.
-  @param   buffer
-            A buffer to receive bytes into.
+
+  @param   buffer A buffer to receive bytes into.
   @param   size (in/out)
             - (in) The size of the buffer in bytes.
             - (out) The length of the received data in bytes.
-  @param   delay
-            Respect standard processing delays.
-  @param   timeoutMs
-            The maximum amount of time, in milliseconds, to wait for serial data
-            to arrive. Passing zero (0) disables the timeout.
+  @param   delay Respect standard processing delays.
+  @param   timeoutMs The maximum amount of time, in milliseconds, to wait for
+            serial data to arrive. Passing zero (0) disables the timeout.
   @param   available (in/out)
             - (in) The amount of bytes to request. Sending zero (0) will
                    initiate a priming query when using the I2C interface.
             - (out) The amount of bytes unable to fit into the provided buffer.
+
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
@@ -305,7 +309,7 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
     size_t received = 0;
     uint16_t requested = 0;
     bool overflow = false;
-    const size_t startMs = _GetMs();
+    size_t startMs = _GetMs();
 
     // Request all available bytes, up to the maximum request size
     requested = (*available > 0xFFFF) ? 0xFFFF : *available;
@@ -327,6 +331,12 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
 
         // Add requested bytes to received total
         received += requested;
+
+        // Once we've received any character, we will no longer wait patiently
+        if (requested != 0) {
+            timeoutMs = (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000);
+            startMs = _GetMs();
+        }
 
         // Request all available bytes, up to the maximum request size
         requested = (*available > 0xFFFF) ? 0xFFFF : *available;
@@ -377,12 +387,11 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
 /**************************************************************************/
 /*!
   @brief  Transmit bytes over I2C to the Notecard.
-  @param   buffer
-            A buffer of bytes to transmit.
-  @param   size
-            The count of bytes in the buffer to send
-  @param   delay
-            Respect standard processing delays.
+
+  @param   buffer A buffer of bytes to transmit.
+  @param   size The count of bytes in the buffer to send
+  @param   delay Respect standard processing delays.
+
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/

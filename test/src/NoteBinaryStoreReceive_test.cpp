@@ -176,6 +176,7 @@ SCENARIO("NoteBinaryStoreReceive")
 
                 return rsp;
             };
+            decodedLen = rawMsgLen;
 
             WHEN("NoteBinaryStoreReceive is called") {
                 const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
