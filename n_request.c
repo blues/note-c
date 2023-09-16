@@ -499,7 +499,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         bool isIoError = false;
         if (rsp == NULL) {
             isIoError = true;
-            NOTE_C_LOG_ERROR(ERRSTR("Response expected, but responseJSON returned NULL.", c_ioerr));
+            NOTE_C_LOG_ERROR(ERRSTR("Response expected, but response is NULL.", c_ioerr));
         } else {
             isBadBin = NoteErrorContains(JGetString(rsp, c_err), c_badbinerr);
             isIoError = NoteErrorContains(JGetString(rsp, c_err), c_ioerr);
