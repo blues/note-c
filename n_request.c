@@ -423,18 +423,19 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             NOTE_C_LOG_INFO(json);
         }
 
-        // Sending binary transactions can be unpredictable, because we do not
-        // know the associated payload size or the network conditions. Both
-        // `note.add` and `web.*` transactions can be responsible for generating
-        // large binary payloads. The default timeout for a `web.*` transaction
-        // is 90-seconds. Therefore, a perfectly functioning transaction could
-        // exceed `CARD_INTER_TRANSACTION_TIMEOUT_SEC`, and an error would be
-        // returned to the caller when, in fact, no error condition exists. By
-        // interrogating the request, we can discover if the request is a binary
-        // transaction. This will allow us to update the timeout to the default
-        // web transaction timeout of 90-seconds, or the value of the `seconds`
-        // parameter as specified by the caller (who better understands context
-        // of both the binary transaction and network conditions).
+        // When note.add or web.* requests are used to transfer binary data, the
+        // time to complete the transaction can vary depending on the size of
+        // the payload and network conditions. Therefore, it's possible for
+        // these transactions to timeout prematurely.
+        //
+        // The algorithm below, executes the following logic:
+        //   - If the request is a `note.add`, set the timeout value to the
+        //     value of the "milliseconds" parameter, if it exists. If it
+        //     doesn't, use the "seconds" parameter. If that doesn't exist,
+        //     use the standard timeout of `CARD_INTER_TRANSACTION_TIMEOUT_SEC`.
+        //   - If the request is a `web.*`, follow the same logic, but instead
+        //     of using the standard timeout, use the Notecard timeout of 90
+        //     seconds for all `web.*` transactions.
         size_t transactionTimeoutMs = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
 
         // Interrogate the request
