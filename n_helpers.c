@@ -244,14 +244,18 @@ const char * NoteBinaryStoreDecodedLength(uint32_t *len)
         return err;
     }
 
-    // Ensure the transaction doesn't return an error and confirm the binary
-    // feature is available.
+    // Ensure the transaction doesn't return an error
+    // and confirm the binary feature is available
     if (NoteResponseError(rsp)) {
-        NOTE_C_LOG_ERROR(JGetString(rsp, "err"));
-        JDelete(rsp);
-        const char *err = ERRSTR("unexpected error received during handshake", c_err);
-        NOTE_C_LOG_ERROR(err);
-        return err;
+        const char *jErr = JGetString(rsp, "err");
+        // Swallow `{bad-bin}` errors, because we intend to overwrite the data.
+        if (!NoteErrorContains(jErr, c_badbinerr)) {
+            NOTE_C_LOG_ERROR(jErr);
+            JDelete(rsp);
+            const char *err = ERRSTR("unexpected error received during handshake", c_bad);
+            NOTE_C_LOG_ERROR(err);
+            return err;
+        }
     }
 
     // Examine "length" from the response to evaluate the length of the decoded
@@ -291,14 +295,18 @@ const char * NoteBinaryStoreEncodedLength(uint32_t *len)
         return err;
     }
 
-    // Ensure the transaction doesn't return an error and confirm the binary
-    // feature is available.
+    // Ensure the transaction doesn't return an error
+    // and confirm the binary feature is available
     if (NoteResponseError(rsp)) {
-        NOTE_C_LOG_ERROR(JGetString(rsp, "err"));
-        JDelete(rsp);
-        const char *err = ERRSTR("unexpected error received during handshake", c_bad);
-        NOTE_C_LOG_ERROR(err);
-        return err;
+        const char *jErr = JGetString(rsp, "err");
+        // Swallow `{bad-bin}` errors, because we intend to overwrite the data.
+        if (!NoteErrorContains(jErr, c_badbinerr)) {
+            NOTE_C_LOG_ERROR(jErr);
+            JDelete(rsp);
+            const char *err = ERRSTR("unexpected error received during handshake", c_bad);
+            NOTE_C_LOG_ERROR(err);
+            return err;
+        }
     }
 
     // Examine "cobs" from the response to evaluate the space required to hold
