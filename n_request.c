@@ -508,8 +508,10 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             _Free(responseJSON);
             errStr = ERRSTR("notecard i/o error {io}", c_iobad);
 
-            // {bad-bin} is not elibigle for retry
-            if (!isBadBin) {
+            if (isBadBin) {
+                NOTE_C_LOG_DEBUG("{bad-bin} is not elibigle for retry");
+                break;
+            } else {
                 lastRequestRetries++;
                 NOTE_C_LOG_WARN(ERRSTR("retrying I/O error detected by notecard", c_iobad));
                 _DelayMs(500);
