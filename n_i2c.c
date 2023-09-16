@@ -190,6 +190,7 @@ const char *i2cNoteTransaction(char *request, char **response, size_t timeoutMs)
                 _Free(jsonbuf);
             }
             jsonbuf = jsonbufNew;
+            NOTE_C_LOG_DEBUG("additional receive buffer chunk allocated");
         }
     } while (available);
 
@@ -437,6 +438,10 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
         if (delay) {
             _DelayMs(50);
         }
+    }
+
+    if (overflow) {
+        NOTE_C_LOG_ERROR(ERRSTR("receive buffer overflow detected", c_err));
     }
 
     *size = received;
