@@ -58,6 +58,10 @@ NOTE_C_STATIC const char * i2cNoteQueryLength(uint32_t * available,
         // Send a dummy I2C transaction to prime the Notecard
         const char *err = _I2CReceive(_I2CAddress(), &dummy_buffer, 0, available);
         if (err) {
+            // We have received a hardware or protocol level error. On the
+            // Notecard-ESP, this can be the result of a flash stall due to
+            // unavoidable resource contention. Delay to relieve system stress.
+            _DelayMs(250);
 #ifdef ERRDBG
             NOTE_C_LOG_ERROR(err);
 #endif
@@ -369,6 +373,11 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
         // available to receive from the Notecard.
         const char *err = _I2CReceive(_I2CAddress(), (buffer + received), requested, available);
         if (err) {
+            // We have received a hardware or protocol level error. On the
+            // Notecard-ESP, this can be the result of a flash stall due to
+            // unavoidable resource contention. Delay to relieve system stress.
+            _DelayMs(250);
+
             *size = received;
 #ifdef ERRDBG
             NOTE_C_LOG_ERROR(err);
