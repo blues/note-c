@@ -41,6 +41,16 @@ SCENARIO("NoteBinaryStoreTransmit")
         return JCreateObject();
     };
 
+    GIVEN("Bad parameters are supplied") {
+        WHEN("unencodedData is NULL") {
+            const char *err = NoteBinaryStoreTransmit(NULL, dataLen, bufLen, 0);
+
+            THEN("An error is returned") {
+                CHECK(err != NULL);
+            }
+        }
+    }
+
     GIVEN("The response to the initial card.binary request to get the length "
           "and max parameters indicates a problem") {
 
