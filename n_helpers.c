@@ -397,7 +397,9 @@ const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
 
     // Read raw bytes from the active interface into a predefined buffer
     uint32_t available = 0;
+    NOTE_C_LOG_DEBUG("receiving binary data...");
     const char *err = _ChunkedReceive(buffer, &bufLen, false, (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
+    NOTE_C_LOG_DEBUG("binary receive complete.");
 
     // Release Notecard Mutex
     _UnlockNote();
@@ -643,7 +645,9 @@ const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedL
         }
 
         // Immediately send the encoded binary.
+        NOTE_C_LOG_DEBUG("transmitting binary data...");
         const char *err = _ChunkedTransmit(encodedData, (encLen + 1), false);
+        NOTE_C_LOG_DEBUG("binary transmission complete.");
 
         // Release Notecard Mutex
         _UnlockNote();
