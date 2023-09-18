@@ -131,19 +131,19 @@ const char *serialNoteTransaction(char *request, char **response, size_t timeout
 /**************************************************************************/
 bool serialNoteReset()
 {
+    NOTE_C_LOG_DEBUG("Reseting Serial interface...");
 
-    // Initialize, or re-initialize, because we've observed Arduino serial
-    // driver flakiness.
-    _DelayMs(250);
+    // Reset the Serial subsystem and exit if failure
+    _DelayMs(CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS);
     if (!_SerialReset()) {
+        NOTE_C_LOG_ERROR(ERRSTR("Unable to reset Serial interface.", c_err));
         return false;
     }
 
     // The guaranteed behavior for robust resyncing is to send two newlines
     // and  wait for two echoed blank lines in return.
     bool notecardReady = false;
-    int retries;
-    for (retries=0; retries<10; retries++) {
+    for (size_t retries = 0; retries < CARD_RESET_SYNC_RETRIES ; ++retries) {
 
         // Send a newline to the module to clean out request/response processing
         // NOTE: This MUST always be `\n` and not `\r\n`, because there are some
@@ -151,15 +151,18 @@ bool serialNoteReset()
         //       after communicating over I2C.
         _SerialTransmit((uint8_t *)"\n", 1, true);
 
-        // Drain all serial for 500ms
+        // Drain all communications for 500ms
         bool somethingFound = false;
         bool nonControlCharFound = false;
-        for (const size_t startMs = _GetMs() ; _GetMs() - startMs < 500 ;) {
+
+        // Read Serial data for at least CARD_RESET_DRAIN_MS continously
+        for (const size_t startMs = _GetMs() ; (_GetMs() - startMs) < CARD_RESET_DRAIN_MS ;) {
+            // Determine if Serial data is available
             while (_SerialAvailable()) {
                 somethingFound = true;
-                // The Notecard responds to a bare \n with \r\n. If we get any
-                // other characters back, it means the host and Notecard aren't
-                // synced up yet, and we need to transmit \n again.
+                // The Notecard responds to a bare `\n` with `\r\n`. If we get
+                // any other characters back, it means the host and Notecard
+                // aren't synced up yet, and we need to transmit `\n` again.
                 char ch = _SerialReceive();
                 if (ch != '\n' && ch != '\r') {
                     nonControlCharFound = true;
@@ -179,10 +182,14 @@ bool serialNoteReset()
 #else
         NOTE_C_LOG_ERROR(ERRSTR("notecard not responding", c_iobad));
 #endif
-        _DelayMs(500);
+
+        _DelayMs(CARD_RESET_DRAIN_MS);
         if (!_SerialReset()) {
+            NOTE_C_LOG_ERROR(ERRSTR("Unable to reset Serial interface.", c_err));
             return false;
         }
+
+        NOTE_C_LOG_DEBUG("Retrying Serial interface reset.")
     }
 
     // Done
