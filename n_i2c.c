@@ -237,7 +237,8 @@ bool i2cNoteReset()
         // If we get a failure on transmitting the `\n`, it means that the
         // Notecard isn't present.
         if (transmitErr) {
-            NOTE_C_LOG_ERROR(ERRSTR("Failed to transmit during reset.",c_iobad));
+            NOTE_C_LOG_ERROR(transmitErr);
+            _DelayMs(5000);
             return false;
         }
         if (!cardTurboIO) {
