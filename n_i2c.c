@@ -249,15 +249,16 @@ bool i2cNoteReset()
         bool somethingFound = false;
         bool nonControlCharFound = false;
 
+        // Determine if I2C data is available
+        // set variables to perform query
+        uint16_t chunkLen = 0;
+
         // Read I2C data for at least CARD_RESET_DRAIN_MS continously
         for (const size_t startMs = _GetMs() ; (_GetMs() - startMs) < CARD_RESET_DRAIN_MS ;) {
-            // Determine if I2C data is available
-            // set variables to perform query
-            uint16_t chunkLen = 0;
-            uint8_t buffer[128] = {0};
 
             // Read the next chunk of available data
             uint32_t available;
+            uint8_t buffer[128] = {0};
             chunkLen = (chunkLen > sizeof(buffer)) ? sizeof(buffer) : chunkLen;
             chunkLen = (chunkLen > _I2CMax()) ? _I2CMax() : chunkLen;
             delayIO();
