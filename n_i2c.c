@@ -212,13 +212,13 @@ const char *i2cNoteTransaction(char *request, char **response, size_t timeoutMs)
 /**************************************************************************/
 bool i2cNoteReset()
 {
-    NOTE_C_LOG_DEBUG("Reseting I2C interface...");
+    NOTE_C_LOG_DEBUG("resetting I2C interface...");
 
     // Reset the I2C subsystem and exit if failure
     _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
     _LockI2C();
     if (!_I2CReset(_I2CAddress())) {
-        NOTE_C_LOG_ERROR(ERRSTR("Unable to reset I2C interface.", c_err));
+        NOTE_C_LOG_ERROR(ERRSTR("unable to reset I2C interface.", c_err));
         _UnlockI2C();
         return false;
     }
@@ -238,6 +238,7 @@ bool i2cNoteReset()
         // Notecard isn't present.
         if (transmitErr) {
             NOTE_C_LOG_ERROR(transmitErr);
+            NOTE_C_LOG_ERROR(ERRSTR("failed to reset I2C", c_bad));
             _DelayMs(5000);
             return false;
         }
@@ -253,7 +254,7 @@ bool i2cNoteReset()
         // set variables to perform query
         uint16_t chunkLen = 0;
 
-        // Read I2C data for at least CARD_RESET_DRAIN_MS continously
+        // Read I2C data for at least `CARD_RESET_DRAIN_MS` continously
         for (const size_t startMs = _GetMs() ; (_GetMs() - startMs) < CARD_RESET_DRAIN_MS ;) {
 
             // Read the next chunk of available data
@@ -306,13 +307,13 @@ bool i2cNoteReset()
 
         _DelayMs(CARD_RESET_DRAIN_MS);
         if (!_I2CReset(_I2CAddress())) {
-            NOTE_C_LOG_ERROR(ERRSTR("Unable to reset I2C interface.", c_err));
+            NOTE_C_LOG_ERROR(ERRSTR("unable to reset I2C interface.", c_err));
             _UnlockI2C();
             return false;
         }
         delayIO();
 
-        NOTE_C_LOG_DEBUG("Retrying I2C interface reset.")
+        NOTE_C_LOG_DEBUG("retrying I2C interface reset.")
     }
 
     // Done with the bus
@@ -390,6 +391,9 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
         // be pulled. This loop will only exit when a newline is received AND
         // there are no more bytes available from the Notecard, OR if the buffer
         // is full and cannot receive more bytes (i.e. overflow condition).
+        if (*available && eop) {
+            NOTE_C_LOG_WARN(ERRSTR("received newline before all data was received", c_iobad));
+        };
 
         // If there's something available on the Notecard for us to receive, do it
         if (*available > 0) {

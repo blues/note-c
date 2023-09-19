@@ -131,12 +131,12 @@ const char *serialNoteTransaction(char *request, char **response, size_t timeout
 /**************************************************************************/
 bool serialNoteReset()
 {
-    NOTE_C_LOG_DEBUG("Reseting Serial interface...");
+    NOTE_C_LOG_DEBUG("resetting Serial interface...");
 
     // Reset the Serial subsystem and exit if failure
     _DelayMs(CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS);
     if (!_SerialReset()) {
-        NOTE_C_LOG_ERROR(ERRSTR("Unable to reset Serial interface.", c_err));
+        NOTE_C_LOG_ERROR(ERRSTR("unable to reset Serial interface.", c_err));
         return false;
     }
 
@@ -185,11 +185,11 @@ bool serialNoteReset()
 
         _DelayMs(CARD_RESET_DRAIN_MS);
         if (!_SerialReset()) {
-            NOTE_C_LOG_ERROR(ERRSTR("Unable to reset Serial interface.", c_err));
+            NOTE_C_LOG_ERROR(ERRSTR("unable to reset Serial interface.", c_err));
             return false;
         }
 
-        NOTE_C_LOG_DEBUG("Retrying Serial interface reset.")
+        NOTE_C_LOG_DEBUG("retrying Serial interface reset.")
     }
 
     // Done
