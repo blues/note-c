@@ -239,8 +239,8 @@ bool i2cNoteReset()
         if (transmitErr) {
             NOTE_C_LOG_ERROR(transmitErr);
             NOTE_C_LOG_ERROR(ERRSTR("failed to reset I2C", c_bad));
-            _DelayMs(5000);
-            return false;
+            _DelayMs(CARD_REQUEST_I2C_NACK_WAIT_MS);
+            continue;
         }
         if (!cardTurboIO) {
             _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
@@ -267,8 +267,8 @@ bool i2cNoteReset()
             if (err) {
                 // We have received a hardware or protocol level error.
                 // Introduce delay to relieve system stress.
-                _DelayMs(CARD_RESET_DRAIN_MS);
-                break;
+                _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
+                continue;
             }
 
             // Set flags
