@@ -36,22 +36,26 @@ namespace
 
 static size_t rtc_ms = 0;
 
-void NoteDelayMs_mock(uint32_t delayMs) {
+void NoteDelayMs_mock(uint32_t delayMs)
+{
     rtc_ms += delayMs;
 }
 
-long unsigned int NoteGetMs_mock(void) {
+long unsigned int NoteGetMs_mock(void)
+{
     return rtc_ms;
 }
 
-const char * NoteI2CReceive_CleanResetSeq0(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available) {
+const char * NoteI2CReceive_CleanResetSeq0(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
     if (available) {
         *available = 2;
     }
     return nullptr;
 }
 
-const char * NoteI2CReceive_CleanResetSeq1(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available) {
+const char * NoteI2CReceive_CleanResetSeq1(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
     if (available) {
         *available = 0;
     }
@@ -62,14 +66,16 @@ const char * NoteI2CReceive_CleanResetSeq1(uint16_t, uint8_t *buffer, uint16_t, 
     return nullptr;
 }
 
-const char * NoteI2CReceive_ClearMessageSeq0(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available) {
+const char * NoteI2CReceive_ClearMessageSeq0(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
     if (available) {
         *available = 4;
     }
     return nullptr;
 }
 
-const char * NoteI2CReceive_ClearMessageSeq1(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available) {
+const char * NoteI2CReceive_ClearMessageSeq1(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
     if (available) {
         *available = 0;
     }
@@ -82,14 +88,16 @@ const char * NoteI2CReceive_ClearMessageSeq1(uint16_t, uint8_t *buffer, uint16_t
     return nullptr;
 }
 
-const char * NoteI2CReceive_ClearMessageSeq2(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available) {
+const char * NoteI2CReceive_ClearMessageSeq2(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
     if (available) {
         *available = 2;
     }
     return nullptr;
 }
 
-const char * NoteI2CReceive_ClearMessageSeq3(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available) {
+const char * NoteI2CReceive_ClearMessageSeq3(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
     if (available) {
         *available = 0;
     }
@@ -260,7 +268,8 @@ SCENARIO("i2cNoteReset")
         WHEN("`NoteI2CReceive()` succeeds") {
             const uint32_t available_result = 17;
             NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *, uint16_t, uint32_t *available) -> const char * {
-                if (available) {
+                if (available)
+                {
                     *available = available_result;
                 }
                 return nullptr;
@@ -299,7 +308,8 @@ SCENARIO("i2cNoteReset")
 
         WHEN("`NoteI2CReceive()` available returns a value greater than that which can be contained by uint16_t") {
             NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *, uint16_t, uint32_t *available) -> const char * {
-                if (available) {
+                if (available)
+                {
                     *available = (0xFFFF + 17);
                 }
                 return nullptr;
@@ -315,7 +325,8 @@ SCENARIO("i2cNoteReset")
         WHEN("`NoteI2CReceive()` available returns a value greater than the buffer size") {
             const size_t buffer_size = ALLOC_CHUNK;
             NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *, uint16_t, uint32_t *available) -> const char * {
-                if (available) {
+                if (available)
+                {
                     *available = 179;
                 }
                 return nullptr;
@@ -330,7 +341,8 @@ SCENARIO("i2cNoteReset")
 
         WHEN("`NoteI2CReceive()` available returns a value greater than the maximum size allowed by the Serial-over-I2C protocol") {
             NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *, uint16_t, uint32_t *available) -> const char * {
-                if (available) {
+                if (available)
+                {
                     *available = 179;
                 }
                 return nullptr;
