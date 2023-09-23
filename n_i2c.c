@@ -212,49 +212,82 @@ const char *i2cNoteTransaction(char *request, char **response, size_t timeoutMs)
 /**************************************************************************/
 bool i2cNoteReset()
 {
+    bool notecardReady = false;
+
+    // Claim the I2C bus
+    _LockI2C();
+    NOTE_C_LOG_DEBUG("resetting I2C interface...");
 
     // Reset the I2C subsystem and exit if failure
-    _LockI2C();
-    bool success = _I2CReset(_I2CAddress());
-    if (!success) {
+    _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
+    notecardReady = _I2CReset(_I2CAddress());
+    if (!notecardReady) {
+        NOTE_C_LOG_ERROR(ERRSTR("error encountered during I2C reset hook execution", c_err));
         _UnlockI2C();
         return false;
     }
-
-    // Synchronize by guaranteeing not only that I2C works, but that after we
-    // send \n that we drain the remainder of any pending partial reply from a
-    // previously-aborted session. If we get a failure on transmitting the \n,
-    // it means that the notecard isn't even present.
     delayIO();
-    const char *transmitErr = _I2CTransmit(_I2CAddress(), (uint8_t *)"\n", 1);
-    if (!cardTurboIO) {
+
+    // The guaranteed behavior for robust resyncing is to send two newlines
+    // and  wait for two echoed blank lines in return.
+    for (size_t retries = 0; retries < CARD_RESET_SYNC_RETRIES ; ++retries) {
+        // Send a newline to the module to clean out request/response processing
+        // NOTE: This MUST always be `\n` and not `\r\n`, because there are some
+        //       versions of the Notecard firmware will not respond to `\r\n`
+        //       after communicating over I2C.
+        const char *transmitErr = _I2CTransmit(_I2CAddress(), (uint8_t *)"\n", 1);
+        // If we get a failure on transmitting the `\n`, it means that the
+        // Notecard isn't present.
+        if (transmitErr) {
+            NOTE_C_LOG_ERROR(transmitErr);
+            NOTE_C_LOG_ERROR(ERRSTR("error encountered during I2C transmit hook execution", c_err));
+            _DelayMs(CARD_REQUEST_I2C_NACK_WAIT_MS);
+            notecardReady = false;
+            continue;
+        }
+
+        // Wait for the Notecard to respond with a carriage return and newline
         _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
-    }
 
-    // This outer loop does retries on I2C error, and is simply here for robustness.
-    bool notecardReady = false;
-    int retries;
-    for (retries=0; transmitErr==NULL && !notecardReady && retries<3; retries++) {
-
-        // Loop to drain all chunks of data that may be ready to transmit to us
+        // Determine if I2C data is available
+        // set initial state of variable to perform query
         uint16_t chunkLen = 0;
-        while (true) {
+
+        // Content flags to determine if reset conditions are met.
+        bool somethingFound = false;
+        bool nonControlCharFound = false;
+
+        // Read I2C data for at least `CARD_RESET_DRAIN_MS` continuously
+        for (const size_t startMs = _GetMs() ; (_GetMs() - startMs) < CARD_RESET_DRAIN_MS ;) {
 
             // Read the next chunk of available data
-            uint32_t available;
-            uint8_t buffer[128];
+            uint32_t available = 0;
+            uint8_t buffer[ALLOC_CHUNK] = {0};
             chunkLen = (chunkLen > sizeof(buffer)) ? sizeof(buffer) : chunkLen;
             chunkLen = (chunkLen > _I2CMax()) ? _I2CMax() : chunkLen;
-            delayIO();
             const char *err = _I2CReceive(_I2CAddress(), buffer, chunkLen, &available);
             if (err) {
-                break;
+                // We have received a hardware or protocol level error.
+                // Introduce delay to relieve system stress.
+                NOTE_C_LOG_ERROR(err);
+                NOTE_C_LOG_ERROR(ERRSTR("error encountered during I2C receive hook execution", c_err));
+                _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
+                notecardReady = false;
+                continue;
             }
 
-            // If nothing left, we're ready to transmit a command to receive the data
-            if (available == 0) {
-                notecardReady = true;
-                break;
+            // Set content flags
+            if (chunkLen) {
+                somethingFound = true;
+                // The Notecard responds to a bare `\n` with `\r\n`. If we get
+                // any other characters back, it means the host and Notecard
+                // aren't synced up yet, and we need to transmit `\n` again.
+                for (size_t i = 0; i < chunkLen ; ++i) {
+                    char ch = buffer[i];
+                    if (ch != '\n' && ch != '\r') {
+                        nonControlCharFound = true;
+                    }
+                }
             }
 
             // Read the minimum of the available bytes left to read and what
@@ -262,22 +295,36 @@ bool i2cNoteReset()
             // buffer size as a uint16_t).
             chunkLen = (available > 0xFFFF) ? 0xFFFF : available;
 
+            _DelayMs(CARD_REQUEST_I2C_CHUNK_DELAY_MS);
         }
 
-        // Exit loop if success
-        if (notecardReady) {
+        // If characters were received and they were ONLY `\r` or `\n`,
+        // then the Notecard has been successfully reset.
+        if (!somethingFound || nonControlCharFound) {
+            notecardReady = false;
+#ifdef ERRDBG
+            if (somethingFound) {
+                NOTE_C_LOG_WARN(ERRSTR("unrecognized data from notecard", c_iobad));
+            } else {
+                NOTE_C_LOG_ERROR(ERRSTR("notecard not responding", c_iobad));
+
+                // Reset the I2C subsystem and exit if failure
+                if (!_I2CReset(_I2CAddress())) {
+                    NOTE_C_LOG_ERROR(ERRSTR("error encountered during I2C reset hook execution", c_err));
+                    break;
+                }
+                delayIO();
+            }
+#endif
+        } else {
+            notecardReady = true;
             break;
         }
 
+        NOTE_C_LOG_DEBUG("retrying I2C interface reset...")
     }
 
-    // Reinitialize i2c if there's no response
-    if (!notecardReady) {
-        _I2CReset(_I2CAddress());
-        NOTE_C_LOG_ERROR(ERRSTR("notecard not responding", c_iobad));
-    }
-
-    // Done with the bus
+    // Done with the I2C bus
     _UnlockI2C();
 
     // Done
@@ -352,6 +399,9 @@ const char *i2cChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, size_
         // be pulled. This loop will only exit when a newline is received AND
         // there are no more bytes available from the Notecard, OR if the buffer
         // is full and cannot receive more bytes (i.e. overflow condition).
+        if (*available && eop) {
+            NOTE_C_LOG_WARN(ERRSTR("received newline before all data was received", c_iobad));
+        };
 
         // If there's something available on the Notecard for us to receive, do it
         if (*available > 0) {

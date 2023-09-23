@@ -55,6 +55,12 @@ extern "C" {
 #define CARD_REQUEST_I2C_CHUNK_DELAY_MS 20
 /**************************************************************************/
 /*!
+    @brief  The delay, in miliseconds, to wait after receiving a NACK I2C.
+*/
+/**************************************************************************/
+#define CARD_REQUEST_I2C_NACK_WAIT_MS 1000
+/**************************************************************************/
+/*!
     @brief  The max length, in bytes, of each request segment when using Serial.
 */
 /**************************************************************************/
@@ -65,7 +71,18 @@ extern "C" {
 */
 /**************************************************************************/
 #define CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS 250
-
+/**************************************************************************/
+/*!
+    @brief  The time, in miliseconds, to drain incoming messages.
+*/
+/**************************************************************************/
+#define CARD_RESET_DRAIN_MS 500
+/**************************************************************************/
+/*!
+    @brief  The number of times we will try to get in sync before giving up.
+*/
+/**************************************************************************/
+#define CARD_RESET_SYNC_RETRIES 10
 /**************************************************************************/
 /*!
     @brief  Memory allocation chunk size.
