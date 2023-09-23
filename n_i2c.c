@@ -246,6 +246,7 @@ bool i2cNoteReset()
             continue;
         }
 
+        // Wait for the Notecard to respond with a carriage return and newline
         _DelayMs(CARD_REQUEST_I2C_SEGMENT_DELAY_MS);
 
         // Determine if I2C data is available
@@ -256,7 +257,7 @@ bool i2cNoteReset()
         bool somethingFound = false;
         bool nonControlCharFound = false;
 
-        // Read I2C data for at least `CARD_RESET_DRAIN_MS` continously
+        // Read I2C data for at least `CARD_RESET_DRAIN_MS` continuously
         for (const size_t startMs = _GetMs() ; (_GetMs() - startMs) < CARD_RESET_DRAIN_MS ;) {
 
             // Read the next chunk of available data
@@ -264,7 +265,6 @@ bool i2cNoteReset()
             uint8_t buffer[ALLOC_CHUNK] = {0};
             chunkLen = (chunkLen > sizeof(buffer)) ? sizeof(buffer) : chunkLen;
             chunkLen = (chunkLen > _I2CMax()) ? _I2CMax() : chunkLen;
-            delayIO();
             const char *err = _I2CReceive(_I2CAddress(), buffer, chunkLen, &available);
             if (err) {
                 // We have received a hardware or protocol level error.

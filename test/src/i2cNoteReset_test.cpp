@@ -419,11 +419,9 @@ SCENARIO("i2cNoteReset")
                 i2cNoteReset();
 
                 THEN("Then the I/O delay is respected") {
-                    // This a magic number that may change if the implementation changes.
                     // 1 + pre loop
-                    // 10 retries * n executions that occur in the timeout loop (currently 25)
-                    // 251 = (1 + (10 * 250))
-                    CHECK(delayIO_fake.call_count > 251);
+                    // 10 retries (simple NoteI2CReceive_fake returns zero --> nothing was found 10x)
+                    CHECK(delayIO_fake.call_count > 10);
                 }
             }
         }
