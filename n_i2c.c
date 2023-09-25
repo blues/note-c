@@ -258,7 +258,7 @@ bool i2cNoteReset()
         bool nonControlCharFound = false;
 
         // Read I2C data for at least `CARD_RESET_DRAIN_MS` continuously
-        for (const size_t startMs = _GetMs() ; (_GetMs() - startMs) < CARD_RESET_DRAIN_MS ;) {
+        for (size_t startMs = _GetMs() ; (_GetMs() - startMs) < CARD_RESET_DRAIN_MS ;) {
 
             // Read the next chunk of available data
             uint32_t available = 0;
@@ -281,11 +281,13 @@ bool i2cNoteReset()
                 somethingFound = true;
                 // The Notecard responds to a bare `\n` with `\r\n`. If we get
                 // any other characters back, it means the host and Notecard
-                // aren't synced up yet, and we need to transmit `\n` again.
+                // aren't synced up yet and we need to transmit `\n` again.
                 for (size_t i = 0; i < chunkLen ; ++i) {
                     char ch = buffer[i];
                     if (ch != '\n' && ch != '\r') {
                         nonControlCharFound = true;
+                        // Reset the timer with each non-control character
+                        startMs = _GetMs();
                     }
                 }
             }

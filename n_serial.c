@@ -162,7 +162,7 @@ bool serialNoteReset()
                 somethingFound = true;
                 // The Notecard responds to a bare `\n` with `\r\n`. If we get
                 // any other characters back, it means the host and Notecard
-                // aren't synced up yet, and we need to transmit `\n` again.
+                // aren't synced up yet and we need to transmit `\n` again.
                 char ch = _SerialReceive();
                 if (ch != '\n' && ch != '\r') {
                     nonControlCharFound = true;
