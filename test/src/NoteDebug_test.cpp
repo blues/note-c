@@ -113,8 +113,10 @@ SCENARIO("NoteDebug")
 #else
                 CHECK(state.debugOutputCalled);
                 CHECK(strstr(state.debugBuf, msg) != NULL);
+#ifdef NOTE_C_LOG_SHOW_FILE_AND_LINE
                 CHECK(strstr(state.debugBuf, __FILE__) != NULL);
-#endif
+#endif // NOTE_C_LOG_SHOW_FILE_AND_LINE
+#endif // NOTE_NODEBUG
             }
         }
     }

@@ -197,27 +197,35 @@ void NoteDebugWithLevelLn(uint8_t level, const char *msg);
 #define _NOTE_C_STRINGIZE(x) #x
 #define NOTE_C_STRINGIZE(x) _NOTE_C_STRINGIZE(x)
 
+#ifdef NOTE_C_LOG_SHOW_FILE_AND_LINE
+#define NOTE_C_LOG_FILE_AND_LINE(lvl) do { \
+  NoteDebugWithLevel(lvl, __FILE__ ":" NOTE_C_STRINGIZE(__LINE__) " "); \
+} while (0);
+#else
+#define NOTE_C_LOG_FILE_AND_LINE(lvl)
+#endif
+
 #define NOTE_C_LOG_ERROR(msg) do { \
-  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, __FILE__ ":" \
-  NOTE_C_STRINGIZE(__LINE__) " [ERROR] "); \
+  NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_ERROR); \
+  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "[ERROR] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_ERROR, msg); \
 } while (0);
 
 #define NOTE_C_LOG_WARN(msg) do { \
-  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_WARN, __FILE__ ":" \
-  NOTE_C_STRINGIZE(__LINE__) " [WARN] "); \
+  NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_WARN); \
+  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_WARN, "[WARN] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_WARN, msg); \
 } while (0);
 
 #define NOTE_C_LOG_INFO(msg) do { \
-  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_INFO, __FILE__ ":" \
-  NOTE_C_STRINGIZE(__LINE__) " [INFO] "); \
+  NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_INFO); \
+  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_INFO, "[INFO] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_INFO, msg); \
 } while (0);
 
 #define NOTE_C_LOG_DEBUG(msg) do { \
-  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_DEBUG, __FILE__ ":" \
-  NOTE_C_STRINGIZE(__LINE__) " [DEBUG] "); \
+  NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_DEBUG); \
+  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_DEBUG, "[DEBUG] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_DEBUG, msg); \
 } while (0);
 
