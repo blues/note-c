@@ -131,7 +131,7 @@ SCENARIO("NoteTransaction")
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
         NoteJSONTransaction_fake.custom_fake = [](char *, char **response, size_t) -> const char * {
-            *response = (char *)malloc(10);
+            *response = (char *)malloc(20);
             strncpy(*response, "{\"err\":\"{bad-bin}\"}", 20);
             return nullptr;
         };
