@@ -20,6 +20,8 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
+FAKE_VALUE_FUNC(uint32_t, NoteBinaryCodecDecode, const uint8_t *, uint32_t, uint8_t *,
+                uint32_t)
 FAKE_VALUE_FUNC(const char *, NoteBinaryStoreEncodedLength, uint32_t *)
 FAKE_VALUE_FUNC(J *, noteTransactionShouldLock, J *, bool)
 FAKE_VALUE_FUNC(const char *, NoteChunkedReceive, uint8_t *, uint32_t *, bool,
@@ -158,6 +160,9 @@ SCENARIO("NoteBinaryStoreReceive")
     }
 
     GIVEN("The binary payload is received") {
+        NoteBinaryCodecDecode_fake.custom_fake = [](const uint8_t *encData, uint32_t encDataLen, uint8_t *decBuf, uint32_t) -> uint32_t {
+            return cobsDecode((uint8_t *)encData, encDataLen, '\n', decBuf);
+        };
         NoteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, uint32_t *size,
         bool, size_t, uint32_t *available) -> const char* {
             uint32_t outLen = NoteBinaryCodecEncode((uint8_t *)rawMsg, rawMsgLen, buffer, *size);
@@ -177,6 +182,23 @@ SCENARIO("NoteBinaryStoreReceive")
                 return rsp;
             };
             decodedLen = rawMsgLen;
+
+            WHEN("NoteBinaryStoreReceive is called") {
+                const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
+
+                REQUIRE(NoteChunkedReceive_fake.call_count > 0);
+                REQUIRE(noteTransactionShouldLock_fake.call_count > 0);
+                THEN("An error is returned") {
+                    CHECK(err != NULL);
+                }
+            }
+        }
+
+        AND_GIVEN("The decoded length does not match the reqeusted length") {
+            decodedLen = rawMsgLen;
+            NoteBinaryCodecDecode_fake.custom_fake = [](const uint8_t *encData, uint32_t encDataLen, uint8_t *decBuf, uint32_t) -> uint32_t {
+                return (cobsDecode((uint8_t *)encData, encDataLen, '\n', decBuf) - 1);
+            };
 
             WHEN("NoteBinaryStoreReceive is called") {
                 const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
@@ -209,11 +231,12 @@ SCENARIO("NoteBinaryStoreReceive")
 
     CHECK(NoteLockNote_fake.call_count == NoteUnlockNote_fake.call_count);
 
-    RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(NoteBinaryStoreEncodedLength);
     RESET_FAKE(noteTransactionShouldLock);
+    RESET_FAKE(NoteBinaryCodecDecode);
+    RESET_FAKE(NoteBinaryStoreEncodedLength);
     RESET_FAKE(NoteChunkedReceive);
     RESET_FAKE(NoteLockNote);
+    RESET_FAKE(NoteNewRequest);
     RESET_FAKE(NoteUnlockNote);
 }
 
