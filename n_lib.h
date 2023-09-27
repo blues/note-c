@@ -133,7 +133,7 @@ bool NoteIsDebugOutputActive(void);
 // Utilities
 void n_htoa32(uint32_t n, char *p);
 void n_htoa16(uint16_t n, unsigned char *p);
-uint64_t n_atoh(char *p, int maxlen);
+uint64_t n_atoh(char *p, int maxLen);
 
 // COBS Helpers
 uint32_t cobsDecode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst);
