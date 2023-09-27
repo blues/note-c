@@ -43,7 +43,7 @@ void NoteDelayMs_mock(uint32_t delayMs)
 
 long unsigned int NoteGetMs_mock(void)
 {
-    return rtc_ms;
+    return rtc_ms++;
 }
 
 const char * NoteI2CReceive_CleanResetSeq0(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
@@ -62,6 +62,54 @@ const char * NoteI2CReceive_CleanResetSeq1(uint16_t, uint8_t *buffer, uint16_t, 
     if (buffer) {
         buffer[0] = '\r';
         buffer[1] = '\n';
+    }
+    return nullptr;
+}
+
+const char * NoteI2CReceive_AvailGTBufferMessageSeq0(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
+    if (available) {
+        *available = (ALLOC_CHUNK + 1);
+    }
+    return nullptr;
+}
+
+const char * NoteI2CReceive_AvailGTBufferMessageSeq1(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
+    if (available) {
+        *available = 0;
+    }
+    return nullptr;
+}
+
+const char * NoteI2CReceive_AvailGTFFFFMessageSeq0(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
+    if (available) {
+        *available = 19790917;
+    }
+    return nullptr;
+}
+
+const char * NoteI2CReceive_AvailGTFFFFMessageSeq1(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
+    if (available) {
+        *available = 0;
+    }
+    return nullptr;
+}
+
+const char * NoteI2CReceive_AvailGTMaxMessageSeq0(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
+    if (available) {
+        *available = NoteI2CMax();
+    }
+    return nullptr;
+}
+
+const char * NoteI2CReceive_AvailGTMaxMessageSeq1(uint16_t, uint8_t *buffer, uint16_t, uint32_t *available)
+{
+    if (available) {
+        *available = 0;
     }
     return nullptr;
 }
@@ -266,14 +314,13 @@ SCENARIO("i2cNoteReset")
             }
         }
         WHEN("`NoteI2CReceive()` succeeds") {
-            const uint32_t available_result = 17;
-            NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *, uint16_t, uint32_t *available) -> const char * {
-                if (available)
-                {
-                    *available = available_result;
-                }
-                return nullptr;
+            const char * (*ClearMessageSeq[])(uint16_t, uint8_t *, uint16_t, uint32_t *) = {
+                NoteI2CReceive_ClearMessageSeq0,
+                NoteI2CReceive_ClearMessageSeq1,
+                NoteI2CReceive_ClearMessageSeq2,
+                NoteI2CReceive_ClearMessageSeq3,
             };
+            SET_CUSTOM_FAKE_SEQ(NoteI2CReceive, ClearMessageSeq, 4);
             const bool success = i2cNoteReset();
 
             THEN("Delay for `CARD_REQUEST_I2C_CHUNK_DELAY_MS`") {
@@ -291,8 +338,11 @@ SCENARIO("i2cNoteReset")
                 CHECK(NoteI2CReceive_fake.arg1_val != nullptr);
             }
             AND_THEN("The third parameter is populated with the available value from the previous query") {
-                REQUIRE(NoteI2CReceive_fake.call_count >= 2);
-                CHECK(NoteI2CReceive_fake.arg2_val == available_result);
+                REQUIRE(NoteI2CReceive_fake.call_count >= 4);
+                CHECK(NoteI2CReceive_fake.arg2_history[0] == 0);
+                CHECK(NoteI2CReceive_fake.arg2_history[1] == 4);
+                CHECK(NoteI2CReceive_fake.arg2_history[2] == 0);
+                CHECK(NoteI2CReceive_fake.arg2_history[3] == 2);
             }
             AND_THEN("The fourth parameter is a non-NULL unsigned integer pointer used for the query response") {
                 CHECK(NoteI2CReceive_fake.arg3_val != nullptr);
@@ -307,46 +357,40 @@ SCENARIO("i2cNoteReset")
         NoteI2CTransmit_fake.return_val = nullptr;
 
         WHEN("`NoteI2CReceive()` available returns a value greater than that which can be contained by uint16_t") {
-            NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *, uint16_t, uint32_t *available) -> const char * {
-                if (available)
-                {
-                    *available = (0xFFFF + 17);
-                }
-                return nullptr;
+            const char * (*AvailGTFFFFMessageSeq[])(uint16_t, uint8_t *, uint16_t, uint32_t *) = {
+                NoteI2CReceive_AvailGTFFFFMessageSeq0,
+                NoteI2CReceive_AvailGTFFFFMessageSeq1,
             };
+            SET_CUSTOM_FAKE_SEQ(NoteI2CReceive, AvailGTFFFFMessageSeq, 2);
             const bool success = i2cNoteReset();
 
-            THEN("The third parameter is populated with a value capped at 0xFFFF") {
+            THEN("The third parameter is populated with the available value from the previous query") {
                 REQUIRE(NoteI2CReceive_fake.call_count >= 2);
-                CHECK(NoteI2CReceive_fake.arg2_val <= 0xFFFF);
+                CHECK(NoteI2CReceive_fake.arg2_history[0] == 0);
+                CHECK(NoteI2CReceive_fake.arg2_history[1] == NoteI2CMax());
             }
         }
 
         WHEN("`NoteI2CReceive()` available returns a value greater than the buffer size") {
-            const size_t buffer_size = ALLOC_CHUNK;
-            NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *, uint16_t, uint32_t *available) -> const char * {
-                if (available)
-                {
-                    *available = 179;
-                }
-                return nullptr;
+            const char * (*AvailGTBufferMessageSeq[])(uint16_t, uint8_t *, uint16_t, uint32_t *) = {
+                NoteI2CReceive_AvailGTBufferMessageSeq0,
+                NoteI2CReceive_AvailGTBufferMessageSeq1,
             };
+            SET_CUSTOM_FAKE_SEQ(NoteI2CReceive, AvailGTBufferMessageSeq, 2);
             const bool success = i2cNoteReset();
 
             THEN("The third parameter is populated with a value capped at the buffer size") {
                 REQUIRE(NoteI2CReceive_fake.call_count >= 2);
-                CHECK(NoteI2CReceive_fake.arg2_val <= buffer_size);
+                CHECK(NoteI2CReceive_fake.arg2_val <= ALLOC_CHUNK);
             }
         }
 
         WHEN("`NoteI2CReceive()` available returns a value greater than the maximum size allowed by the Serial-over-I2C protocol") {
-            NoteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *, uint16_t, uint32_t *available) -> const char * {
-                if (available)
-                {
-                    *available = 179;
-                }
-                return nullptr;
+            const char * (*AvailGTMaxMessageSeq[])(uint16_t, uint8_t *, uint16_t, uint32_t *) = {
+                NoteI2CReceive_AvailGTMaxMessageSeq0,
+                NoteI2CReceive_AvailGTMaxMessageSeq1,
             };
+            SET_CUSTOM_FAKE_SEQ(NoteI2CReceive, AvailGTMaxMessageSeq, 2);
             const bool success = i2cNoteReset();
 
             THEN("The third parameter is populated with a value capped at NoteI2CMax()") {
