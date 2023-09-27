@@ -244,14 +244,18 @@ const char * NoteBinaryStoreDecodedLength(uint32_t *len)
         return err;
     }
 
-    // Ensure the transaction doesn't return an error and confirm the binary
-    // feature is available.
+    // Ensure the transaction doesn't return an error
+    // and confirm the binary feature is available
     if (NoteResponseError(rsp)) {
-        NOTE_C_LOG_ERROR(JGetString(rsp, "err"));
-        JDelete(rsp);
-        const char *err = ERRSTR("unexpected error received during handshake", c_err);
-        NOTE_C_LOG_ERROR(err);
-        return err;
+        const char *jErr = JGetString(rsp, "err");
+        // Swallow `{bad-bin}` errors, because we intend to overwrite the data.
+        if (!NoteErrorContains(jErr, c_badbinerr)) {
+            NOTE_C_LOG_ERROR(jErr);
+            JDelete(rsp);
+            const char *err = ERRSTR("unexpected error received during handshake", c_bad);
+            NOTE_C_LOG_ERROR(err);
+            return err;
+        }
     }
 
     // Examine "length" from the response to evaluate the length of the decoded
@@ -291,14 +295,18 @@ const char * NoteBinaryStoreEncodedLength(uint32_t *len)
         return err;
     }
 
-    // Ensure the transaction doesn't return an error and confirm the binary
-    // feature is available.
+    // Ensure the transaction doesn't return an error
+    // and confirm the binary feature is available
     if (NoteResponseError(rsp)) {
-        NOTE_C_LOG_ERROR(JGetString(rsp, "err"));
-        JDelete(rsp);
-        const char *err = ERRSTR("unexpected error received during handshake", c_bad);
-        NOTE_C_LOG_ERROR(err);
-        return err;
+        const char *jErr = JGetString(rsp, "err");
+        // Swallow `{bad-bin}` errors, because we intend to overwrite the data.
+        if (!NoteErrorContains(jErr, c_badbinerr)) {
+            NOTE_C_LOG_ERROR(jErr);
+            JDelete(rsp);
+            const char *err = ERRSTR("unexpected error received during handshake", c_bad);
+            NOTE_C_LOG_ERROR(err);
+            return err;
+        }
     }
 
     // Examine "cobs" from the response to evaluate the space required to hold
@@ -389,7 +397,9 @@ const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
 
     // Read raw bytes from the active interface into a predefined buffer
     uint32_t available = 0;
+    NOTE_C_LOG_DEBUG("receiving binary data...");
     const char *err = _ChunkedReceive(buffer, &bufLen, false, (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
+    NOTE_C_LOG_DEBUG("binary receive complete.");
 
     // Release Notecard Mutex
     _UnlockNote();
@@ -644,7 +654,9 @@ const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedL
         }
 
         // Immediately send the encoded binary.
+        NOTE_C_LOG_DEBUG("transmitting binary data...");
         const char *err = _ChunkedTransmit(encodedData, (encLen + 1), false);
+        NOTE_C_LOG_DEBUG("binary transmission complete.");
 
         // Release Notecard Mutex
         _UnlockNote();

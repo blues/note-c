@@ -110,6 +110,7 @@ const char *serialNoteTransaction(char *request, char **response, size_t timeout
             memcpy(jsonbufNew, jsonbuf, jsonbufLen);
             _Free(jsonbuf);
             jsonbuf = jsonbufNew;
+            NOTE_C_LOG_DEBUG("additional receive buffer chunk allocated");
         }
     } while (available);
 
