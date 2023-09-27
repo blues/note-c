@@ -127,6 +127,32 @@ SCENARIO("NoteTransaction")
         JDelete(resp);
     }
 
+    WHEN("A response is expected and the response has a {bad-bin} error") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        NoteJSONTransaction_fake.custom_fake = [](char *, char **response, size_t) -> const char * {
+            *response = (char *)malloc(10);
+            strncpy(*response, "{\"err\":\"{bad-bin}\"}", 20);
+            return nullptr;
+        };
+
+        J *resp = NoteTransaction(req);
+
+        // Ensure the mock is called at least once
+        // Here the error causes multiple invocations by retries
+        REQUIRE(NoteJSONTransaction_fake.call_count >= 1);
+
+        // Ensure there's an error in the response.
+        REQUIRE(resp != NULL);
+
+        THEN("The transaction is not retried") {
+            CHECK(NoteJSONTransaction_fake.call_count == 1);
+        }
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
     SECTION("Bad CRC") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);

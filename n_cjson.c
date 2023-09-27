@@ -1021,7 +1021,7 @@ N_CJSON_PUBLIC(char *) JPrint(const J *item)
 N_CJSON_PUBLIC(char *) JPrintUnformatted(const J *item)
 {
     if (item == NULL) {
-        return (char *)"";
+        return (char *)calloc(1,1);
     }
     return (char*)print(item, false, false);
 }

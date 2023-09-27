@@ -51,15 +51,15 @@ static J *errDoc(const char *errmsg)
     J *rspdoc = JCreateObject();
     if (rspdoc != NULL) {
         JAddStringToObject(rspdoc, c_err, errmsg);
+
+        if (suppressShowTransactions == 0) {
+            // Since we're already allocating...
+            char * err = JConvertToJSONString(rspdoc);
+            NOTE_C_LOG_ERROR(err);
+            _Free(err);
+        }
     }
 
-    if (suppressShowTransactions == 0) {
-        // Manually craft and log out the
-        // JSON object crafted by `errDoc()`
-        _Debug("{\"err\":\"");
-        _Debug(errmsg);
-        _Debug("\"}\n");
-    }
     return rspdoc;
 }
 
@@ -461,7 +461,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
         // Trace
         if (suppressShowTransactions == 0) {
-            NOTE_C_LOG_INFO(json);
+            NOTE_C_LOG_DEBUG(json);
         }
 
         // Perform the transaction
@@ -575,7 +575,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
     // Debug
     if (suppressShowTransactions == 0) {
-        NOTE_C_LOG_INFO(responseJSON);
+        NOTE_C_LOG_DEBUG(responseJSON);
     }
 
     // Discard the buffer now that it's parsed
