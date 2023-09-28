@@ -1013,7 +1013,9 @@ fail:
 N_CJSON_PUBLIC(char *) JPrint(const J *item)
 {
     if (item == NULL) {
-        return (char *)calloc(1,1);
+        char *result = _Malloc(1);
+        result[0] = '\0';
+        return result;
     }
     return (char*)print(item, true, false);
 }
@@ -1021,7 +1023,9 @@ N_CJSON_PUBLIC(char *) JPrint(const J *item)
 N_CJSON_PUBLIC(char *) JPrintUnformatted(const J *item)
 {
     if (item == NULL) {
-        return (char *)calloc(1,1);
+        char *result = _Malloc(1);
+        result[0] = '\0';
+        return result;
     }
     return (char*)print(item, false, false);
 }
@@ -1029,7 +1033,9 @@ N_CJSON_PUBLIC(char *) JPrintUnformatted(const J *item)
 N_CJSON_PUBLIC(char *) JPrintUnformattedOmitEmpty(const J *item)
 {
     if (item == NULL) {
-        return (char *)calloc(1,1);
+        char *result = _Malloc(1);
+        result[0] = '\0';
+        return result;
     }
     return (char*)print(item, false, true);
 }
@@ -1039,7 +1045,9 @@ N_CJSON_PUBLIC(char *) JPrintBuffered(const J *item, int prebuffer, Jbool fmt)
     printbuffer p = { 0, 0, 0, 0, 0, 0, 0 };
 
     if (item == NULL) {
-        return (char *)calloc(1,1);
+        char *result = _Malloc(1);
+        result[0] = '\0';
+        return result;
     }
 
     if (prebuffer < 0) {

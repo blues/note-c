@@ -51,6 +51,7 @@ static J *errDoc(const char *errmsg)
     J *rspdoc = JCreateObject();
     if (rspdoc != NULL) {
         JAddStringToObject(rspdoc, c_err, errmsg);
+        JAddStringToObject(rspdoc, "src", "note-c");
 
         if (suppressShowTransactions == 0) {
             // Since we're already allocating...
@@ -449,15 +450,17 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
     // If we're performing retries, this is where we come back to
     const char *errStr;
-    char *responseJSON = NULL;
+    char *responseJSON;
     while (true) {
-
 #ifndef NOTE_LOWMEM
         // If no retry possibility, break out
         if (lastRequestRetries > REQUEST_RETRIES_ALLOWED) {
             break;
         }
 #endif // !NOTE_LOWMEM
+
+        // reset variables
+        responseJSON = NULL;
 
         // Trace
         if (suppressShowTransactions == 0) {
@@ -474,6 +477,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 #ifndef NOTE_LOWMEM
         // If there's an I/O error on the transaction, retry
         if (errStr != NULL) {
+            _Free(responseJSON);
             resetRequired = !_Reset();
             lastRequestRetries++;
             NOTE_C_LOG_WARN(ERRSTR("retrying I/O error detected by host", c_iobad));
@@ -508,7 +512,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             }
             JDelete(rsp);
         }
-        if (isIoError) {
+        if (isIoError || isBadBin) {
             _Free(responseJSON);
 
             if (isBadBin) {
