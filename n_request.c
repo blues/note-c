@@ -464,7 +464,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
         // Trace
         if (suppressShowTransactions == 0) {
-            NOTE_C_LOG_DEBUG(json);
+            NOTE_C_LOG_INFO(json);
         }
 
         // Perform the transaction
@@ -579,7 +579,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
     // Debug
     if (suppressShowTransactions == 0) {
-        NOTE_C_LOG_DEBUG(responseJSON);
+        NOTE_C_LOG_INFO(responseJSON);
     }
 
     // Discard the buffer now that it's parsed
