@@ -186,6 +186,7 @@ const char *i2cNoteTransaction(char *request, char **response, size_t timeoutMs)
                 _Free(jsonbuf);
             }
             jsonbuf = jsonbufNew;
+            NOTE_C_LOG_DEBUG("additional receive buffer chunk allocated");
         }
     } while (available);
 

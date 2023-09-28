@@ -51,15 +51,16 @@ static J *errDoc(const char *errmsg)
     J *rspdoc = JCreateObject();
     if (rspdoc != NULL) {
         JAddStringToObject(rspdoc, c_err, errmsg);
+        JAddStringToObject(rspdoc, "src", "note-c");
+
+        if (suppressShowTransactions == 0) {
+            // Since we're already allocating...
+            char * err = JConvertToJSONString(rspdoc);
+            NOTE_C_LOG_ERROR(err);
+            _Free(err);
+        }
     }
 
-    if (suppressShowTransactions == 0) {
-        // Manually craft and log out the
-        // JSON object crafted by `errDoc()`
-        _Debug("{\"err\":\"");
-        _Debug(errmsg);
-        _Debug("\"}\n");
-    }
     return rspdoc;
 }
 
@@ -449,15 +450,17 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
     // If we're performing retries, this is where we come back to
     const char *errStr;
-    char *responseJSON = NULL;
+    char *responseJSON;
     while (true) {
-
 #ifndef NOTE_LOWMEM
         // If no retry possibility, break out
         if (lastRequestRetries > REQUEST_RETRIES_ALLOWED) {
             break;
         }
 #endif // !NOTE_LOWMEM
+
+        // reset variables
+        responseJSON = NULL;
 
         // Trace
         if (suppressShowTransactions == 0) {
@@ -474,6 +477,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 #ifndef NOTE_LOWMEM
         // If there's an I/O error on the transaction, retry
         if (errStr != NULL) {
+            _Free(responseJSON);
             resetRequired = !_Reset();
             lastRequestRetries++;
             NOTE_C_LOG_WARN(ERRSTR("retrying I/O error detected by host", c_iobad));
@@ -495,21 +499,33 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
         // See if the response JSON can't be unmarshaled, or if it contains an {io} error
         J *rsp = JParse(responseJSON);
-        bool isIoError = (rsp == NULL);
-        if (rsp != NULL) {
+        bool isBadBin = false;
+        bool isIoError = false;
+        if (rsp == NULL) {
+            isIoError = true;
+            NOTE_C_LOG_ERROR(ERRSTR("Response expected, but response is NULL.", c_ioerr));
+        } else {
+            isBadBin = NoteErrorContains(JGetString(rsp, c_err), c_badbinerr);
             isIoError = NoteErrorContains(JGetString(rsp, c_err), c_ioerr);
             if (isIoError) {
                 NOTE_C_LOG_ERROR(JGetString(rsp, c_err));
             }
             JDelete(rsp);
         }
-        if (isIoError) {
+        if (isIoError || isBadBin) {
             _Free(responseJSON);
-            errStr = ERRSTR("notecard i/o error {io}", c_iobad);
-            lastRequestRetries++;
-            NOTE_C_LOG_WARN(ERRSTR("retrying I/O error detected by notecard", c_iobad));
-            _DelayMs(500);
-            continue;
+
+            if (isBadBin) {
+                errStr = ERRSTR("notecard binary i/o error {bad-bin}{io}", c_badbinerr);
+                NOTE_C_LOG_DEBUG("{bad-bin} is not elibigle for retry");
+                break;
+            } else {
+                errStr = ERRSTR("notecard i/o error {io}", c_ioerr);
+                lastRequestRetries++;
+                NOTE_C_LOG_WARN(ERRSTR("retrying I/O error detected by notecard", c_iobad));
+                _DelayMs(500);
+                continue;
+            }
         }
 #endif // !NOTE_LOWMEM
 

@@ -110,6 +110,7 @@ const char *serialNoteTransaction(char *request, char **response, size_t timeout
             memcpy(jsonbufNew, jsonbuf, jsonbufLen);
             _Free(jsonbuf);
             jsonbuf = jsonbufNew;
+            NOTE_C_LOG_DEBUG("additional receive buffer chunk allocated");
         }
     } while (available);
 
@@ -156,7 +157,7 @@ bool serialNoteReset()
         bool nonControlCharFound = false;
 
         // Read Serial data for at least CARD_RESET_DRAIN_MS continously
-        for (const size_t startMs = _GetMs() ; (_GetMs() - startMs) < CARD_RESET_DRAIN_MS ;) {
+        for (size_t startMs = _GetMs() ; (_GetMs() - startMs) < CARD_RESET_DRAIN_MS ;) {
             // Determine if Serial data is available
             while (_SerialAvailable()) {
                 somethingFound = true;
@@ -166,6 +167,8 @@ bool serialNoteReset()
                 char ch = _SerialReceive();
                 if (ch != '\n' && ch != '\r') {
                     nonControlCharFound = true;
+                    // Reset the timer with each non-control character
+                    startMs = _GetMs();
                 }
             }
             _DelayMs(1);
