@@ -54,10 +54,10 @@ static J *errDoc(const char *errmsg)
         JAddStringToObject(rspdoc, "src", "note-c");
 
         if (suppressShowTransactions == 0) {
-            // Since we're already allocating...
-            char * err = JConvertToJSONString(rspdoc);
-            NOTE_C_LOG_ERROR(err);
-            _Free(err);
+            _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "[ERROR] ");
+            _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "{\"err\":\"");
+            _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, errmsg);
+            _DebugWithLevelLn(NOTE_C_LOG_LEVEL_ERROR, "\",\"src\":\"note-c\"}");
         }
     }
 
@@ -565,8 +565,9 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     J *rspdoc = JParse(responseJSON);
     if (rspdoc == NULL) {
         if (responseJSON != NULL) {
-            _Debug("invalid JSON: ");
-            _Debug(responseJSON);
+            _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "[ERROR] ");
+            _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "invalid JSON: ");
+            _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, responseJSON);
             _Free(responseJSON);
         }
         J *rsp = errDoc(ERRSTR("unrecognized response from card {io}",c_iobad));

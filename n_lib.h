@@ -210,9 +210,13 @@ extern const char *c_badbinerr;
 #ifdef NOTE_NODEBUG
 #define _Debug(x)
 #define _Debugln(x)
+#define _DebugWithLevel(x, y)
+#define _DebugWithLevelLn(x, y)
 #else
 #define _Debug(x) NoteDebug(x)
 #define _Debugln(x) NoteDebugln(x)
+#define _DebugWithLevel(x, y) NoteDebugWithLevel(x, y)
+#define _DebugWithLevelLn(x, y) NoteDebugWithLevelLn(x, y)
 #endif
 
 // End of C-callable functions
