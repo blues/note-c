@@ -31,7 +31,6 @@ static uint16_t lastRequestSeqno = 0;
 #define CRC_FIELD_LENGTH		22	// ,"crc":"SSSS:CCCCCCCC"
 #define	CRC_FIELD_NAME_OFFSET	1
 #define	CRC_FIELD_NAME_TEST		"\"crc\":\""
-#define REQUEST_RETRIES_ALLOWED 5
 NOTE_C_STATIC int32_t crc32(const void* data, size_t length);
 NOTE_C_STATIC char *crcAdd(char *json, uint16_t seqno);
 NOTE_C_STATIC bool crcError(char *json, uint16_t shouldBeSeqno);
@@ -380,12 +379,12 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     // Serialize the JSON request
     char *json = JPrintUnformatted(req);
     if (json == NULL) {
-        J *rsp = errDoc(ERRSTR("can't convert to JSON",c_bad));
+        J *errRsp = errDoc(ERRSTR("can't convert to JSON", c_bad));
         if (lockNotecard) {
             _UnlockNote();
         }
         _TransactionStop();
-        return rsp;
+        return errRsp;
     }
 
     // If it is a request (as opposed to a command), include a CRC so that the
@@ -449,17 +448,22 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     }
 
     // If we're performing retries, this is where we come back to
-    const char *errStr;
-    char *responseJSON;
+    const char *errStr = NULL;
+    char *responseJSON = NULL;
+    J *rsp = NULL;
     while (true) {
 #ifndef NOTE_LOWMEM
         // If no retry possibility, break out
-        if (lastRequestRetries > REQUEST_RETRIES_ALLOWED) {
+        if (lastRequestRetries > CARD_REQUEST_RETRIES_ALLOWED) {
             break;
+        } else {
+            // free on retry
+            JDelete(rsp);
         }
 #endif // !NOTE_LOWMEM
 
         // reset variables
+        rsp = NULL;
         responseJSON = NULL;
 
         // Trace
@@ -477,7 +481,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 #ifndef NOTE_LOWMEM
         // If there's an I/O error on the transaction, retry
         if (errStr != NULL) {
-            _Free(responseJSON);
+            JFree(responseJSON);
             resetRequired = !_Reset();
             lastRequestRetries++;
             NOTE_C_LOG_WARN(ERRSTR("retrying I/O error detected by host", c_iobad));
@@ -489,7 +493,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         // it has a CRC error.  Note that the CRC is stripped from the
         // responseJSON as a side-effect of this method.
         if (lastRequestCrcAdded && crcError(responseJSON, lastRequestSeqno)) {
-            _Free(responseJSON);
+            JFree(responseJSON);
             errStr = "crc error {io}";
             lastRequestRetries++;
             NOTE_C_LOG_ERROR(ERRSTR("CRC error on response", c_iobad));
@@ -498,22 +502,30 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         }
 
         // See if the response JSON can't be unmarshaled, or if it contains an {io} error
-        J *rsp = JParse(responseJSON);
+        rsp = JParse(responseJSON);
         bool isBadBin = false;
         bool isIoError = false;
-        if (rsp == NULL) {
-            isIoError = true;
-            NOTE_C_LOG_ERROR(ERRSTR("Response expected, but response is NULL.", c_ioerr));
-        } else {
+        if (rsp != NULL) {
             isBadBin = NoteErrorContains(JGetString(rsp, c_err), c_badbinerr);
             isIoError = NoteErrorContains(JGetString(rsp, c_err), c_ioerr);
-            if (isIoError) {
-                NOTE_C_LOG_ERROR(JGetString(rsp, c_err));
+        } else {
+            // Failed to parse response as JSON
+            if (responseJSON == NULL) {
+                NOTE_C_LOG_ERROR(ERRSTR("response expected, but response is NULL.", c_ioerr));
+            } else {
+#ifndef NOTE_LOWMEM
+                _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "[ERROR] ");
+                _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "invalid JSON: ");
+                _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, responseJSON);
+#else
+                NOTE_C_LOG_ERROR(c_ioerr);
+#endif
             }
-            JDelete(rsp);
+            isIoError = true;
         }
         if (isIoError || isBadBin) {
-            _Free(responseJSON);
+            NOTE_C_LOG_ERROR(JGetString(rsp, c_err));
+            JFree(responseJSON);
 
             if (isBadBin) {
                 errStr = ERRSTR("notecard binary i/o error {bad-bin}{io}", c_badbinerr);
@@ -538,18 +550,19 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     lastRequestSeqno++;
 #endif
 
-    // Free the json
+    // Free the original serialized JSON request
     JFree(json);
 
     // If error, queue up a reset
     if (errStr != NULL) {
+        JDelete(rsp);
         NoteResetRequired();
-        J *rsp = errDoc(errStr);
+        J *errRsp = errDoc(errStr);
         if (lockNotecard) {
             _UnlockNote();
         }
         _TransactionStop();
-        return rsp;
+        return errRsp;
     }
 
     // Exit with a blank object (with no err field) if no response expected
@@ -561,30 +574,13 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         return JCreateObject();
     }
 
-    // Parse the reply from the card on the input stream
-    J *rspdoc = JParse(responseJSON);
-    if (rspdoc == NULL) {
-        if (responseJSON != NULL) {
-            _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "[ERROR] ");
-            _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "invalid JSON: ");
-            _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, responseJSON);
-            _Free(responseJSON);
-        }
-        J *rsp = errDoc(ERRSTR("unrecognized response from card {io}",c_iobad));
-        if (lockNotecard) {
-            _UnlockNote();
-        }
-        _TransactionStop();
-        return rsp;
-    }
-
     // Debug
     if (suppressShowTransactions == 0) {
         NOTE_C_LOG_INFO(responseJSON);
     }
 
-    // Discard the buffer now that it's parsed
-    _Free(responseJSON);
+    // Discard the buffer now that it has been logged
+    JFree(responseJSON);
 
     if (lockNotecard) {
         _UnlockNote();
@@ -594,7 +590,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     _TransactionStop();
 
     // Done
-    return rspdoc;
+    return rsp;
 
 }
 

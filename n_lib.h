@@ -79,7 +79,13 @@ extern "C" {
 #define CARD_RESET_DRAIN_MS 500
 /**************************************************************************/
 /*!
-    @brief  The number of times we will try to get in sync before giving up.
+    @brief  The number of times we will retry a request before giving up.
+*/
+/**************************************************************************/
+#define CARD_REQUEST_RETRIES_ALLOWED 5
+/**************************************************************************/
+/*!
+    @brief  The number of times we will retry getting in sync before giving up.
 */
 /**************************************************************************/
 #define CARD_RESET_SYNC_RETRIES 10
