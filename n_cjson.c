@@ -174,7 +174,11 @@ static J *JNew_Item(void)
     return node;
 }
 
-/* Delete a J structure. */
+/*!
+ @brief Free a `J` object.
+
+ @param item A pointer to the object.
+ */
 N_CJSON_PUBLIC(void) JDelete(J *item)
 {
     J *next = NULL;
@@ -1863,6 +1867,15 @@ N_CJSON_PUBLIC(J*) JAddFalseToObject(J * const object, const char * const name)
     return NULL;
 }
 
+/*!
+ @brief Add a boolean field to a `J` object.
+
+ @param object The object to add the field to.
+ @param name The name of the field.
+ @param boolean The value of the field.
+
+ @returns A pointer to the newly-added boolean field or NULL on error.
+ */
 N_CJSON_PUBLIC(J*) JAddBoolToObject(J * const object, const char * const name, const Jbool boolean)
 {
     if (object == NULL) {
@@ -1878,6 +1891,15 @@ N_CJSON_PUBLIC(J*) JAddBoolToObject(J * const object, const char * const name, c
     return NULL;
 }
 
+/*!
+ @brief Add a number field to a `J` object.
+
+ @param object The object to add the field to.
+ @param name The name of the field.
+ @param number The value of the field.
+
+ @returns A pointer to the newly-added number field or NULL on error.
+ */
 N_CJSON_PUBLIC(J*) JAddNumberToObject(J * const object, const char * const name, const JNUMBER number)
 {
     if (object == NULL) {
@@ -1893,6 +1915,15 @@ N_CJSON_PUBLIC(J*) JAddNumberToObject(J * const object, const char * const name,
     return NULL;
 }
 
+/*!
+ @brief Add a string field to a `J` object.
+
+ @param object The object to add the field to.
+ @param name The name of the field.
+ @param string The value of the field.
+
+ @returns A pointer to the newly-added string field or NULL on error.
+ */
 N_CJSON_PUBLIC(J*) JAddStringToObject(J * const object, const char * const name, const char * const string)
 {
     if (object == NULL || string == NULL) {
@@ -1923,6 +1954,14 @@ N_CJSON_PUBLIC(J*) JAddRawToObject(J * const object, const char * const name, co
     return NULL;
 }
 
+/*!
+ @brief Add an object field to another `J` object.
+
+ @param object The object to add the field to.
+ @param name The name of the field.
+
+ @returns A pointer to the newly-added object field or NULL on error.
+ */
 N_CJSON_PUBLIC(J*) JAddObjectToObject(J * const object, const char * const name)
 {
     if (object == NULL) {
@@ -1938,6 +1977,14 @@ N_CJSON_PUBLIC(J*) JAddObjectToObject(J * const object, const char * const name)
     return NULL;
 }
 
+/*!
+ @brief Add an array field to a `J` object.
+
+ @param object The object to add the field to.
+ @param name The name of the field.
+
+ @returns A pointer to the newly-added array field or NULL on error.
+ */
 N_CJSON_PUBLIC(J*) JAddArrayToObject(J * const object, const char * const name)
 {
     if (object == NULL) {
@@ -2281,6 +2328,13 @@ N_CJSON_PUBLIC(J *) JCreateArray(void)
     return item;
 }
 
+/*!
+ @brief Create a new `J` object.
+
+ To free the object, use `JDelete`.
+
+ @returns A pointer to the newly-created object.
+ */
 N_CJSON_PUBLIC(J *) JCreateObject(void)
 {
     J *item = JNew_Item();

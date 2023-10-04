@@ -10,9 +10,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-$SCRIPTS_DIR/run_doxygen.sh
+$SCRIPTS_DIR/build_docs.sh
 if [ $? -ne 0 ]; then
-    echo "run_doxygen.sh failed."
+    echo "build_docs.sh failed."
     exit 1
 fi
 
