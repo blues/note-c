@@ -406,9 +406,9 @@ const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
 
     // Ensure transaction was successful
     if (err) {
-        // Reset when a problem is detected, otherwise `note-c`
-        // will attempt to allocate memory to receive the response.
-        _Reset();
+        // Queue a reset when a problem is detected, otherwise `note-c` will
+        // attempt to allocate memory to receive the response.
+        NoteResetRequired();
         return ERRSTR(err, c_err);
     }
 
@@ -416,9 +416,9 @@ const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
     if (available) {
         const char *err = ERRSTR("unexpected data available", c_err);
         NOTE_C_LOG_ERROR(err);
-        // Reset when a problem is detected, otherwise `note-c`
-        // will attempt to allocate memory to receive the response.
-        _Reset();
+        // Queue a reset when a problem is detected, otherwise `note-c` will
+        // attempt to allocate memory to receive the response.
+        NoteResetRequired();
         return err;
     }
 
@@ -434,9 +434,9 @@ const char * NoteBinaryStoreReceive(uint8_t *buffer, uint32_t bufLen,
     if (decodedLen != decLen) {
         const char *err = ERRSTR("length mismatch after decoding", c_err);
         NOTE_C_LOG_ERROR(err);
-        // Reset when a problem is detected, otherwise `note-c`
-        // will attempt to allocate memory to receive the response.
-        _Reset();
+        // Queue a reset when a problem is detected, otherwise `note-c` will
+        // attempt to allocate memory to receive the response.
+        NoteResetRequired();
         return err;
     }
 
