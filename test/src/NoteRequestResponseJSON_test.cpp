@@ -19,92 +19,96 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
-FAKE_VALUE_FUNC(char *, JPrintUnformatted, const J *)
+FAKE_VALUE_FUNC(bool, NoteTransactionStart, uint32_t)
+FAKE_VOID_FUNC(NoteTransactionStop)
+FAKE_VOID_FUNC(NoteLockNote)
+FAKE_VOID_FUNC(NoteUnlockNote)
+FAKE_VALUE_FUNC(const char *, NoteJSONTransaction, char *, char **, size_t)
 
 namespace
 {
 
-J *NoteRequestResponseNULL(J *req)
-{
-    if (req != NULL) {
-        JDelete(req);
-    }
-
-    return NULL;
-}
-
-J *NoteRequestResponseValid(J *req)
-{
-    if (req != NULL) {
-        JDelete(req);
-    }
-
-    J *resp = JCreateObject();
-    assert(resp != NULL);
-    JAddNumberToObject(resp, "total", 1);
-
-    return resp;
-}
-
-char *JPrintUnformattedValid(const J *)
-{
-    static const char respSrc[] = "{\"total\": 1}";
-    char *respDst;
-
-    respDst = (char *)NoteMalloc(sizeof(respSrc));
-    assert(respDst != NULL);
-    memcpy(respDst, respSrc, sizeof(respSrc));
-
-    return respDst;
-}
-
 SCENARIO("NoteRequestResponseJSON")
 {
-    NoteSetFnDefault(malloc, free, NULL, NULL);
+    NoteTransactionStart_fake.return_val = true;
 
-    SECTION("Passing a NULL request returns NULL") {
-        CHECK(NoteRequestResponseJSON(NULL) == NULL);
+    GIVEN("The request is NULL") {
+        WHEN("NoteRequestResponseJSON is called") {
+            char *rsp = NoteRequestResponseJSON(NULL);
+
+            THEN("The response is NULL") {
+                CHECK(rsp == NULL);
+            }
+        }
     }
 
-    SECTION("Invalid request JSON") {
-        char req[] = "note.add";
-        CHECK(NoteRequestResponseJSON(req) == NULL);
+    GIVEN("The request is a command") {
+        char req[] = "{\"cmd\":\"card.sleep\"}";
+
+        WHEN("NoteRequestResponseJSON is called") {
+            char *rsp = NoteRequestResponseJSON(req);
+
+            THEN("NoteJSONTransaction is called with NULL for the response "
+                 "parameter") {
+                REQUIRE(NoteJSONTransaction_fake.call_count > 0);
+                CHECK(NoteJSONTransaction_fake.arg1_history[0] == NULL);
+            }
+        }
     }
 
-    SECTION("NULL response") {
-        char req[] = "{\"req\": \"note.add\"}";
-        NoteRequestResponse_fake.custom_fake = NoteRequestResponseNULL;
+    GIVEN("The request is not a command)") {
+        char req[] = "{\"req\":\"card.version\"}";
 
-        CHECK(NoteRequestResponseJSON(req) == NULL);
-        CHECK(NoteRequestResponse_fake.call_count == 1);
+        WHEN("NoteRequestResponseJSON is called") {
+            char *rsp = NoteRequestResponseJSON(req);
+
+            THEN("NoteJSONTransaction is called with a valid pointer for the "
+                 "response parameter") {
+                REQUIRE(NoteJSONTransaction_fake.call_count > 0);
+                CHECK(NoteJSONTransaction_fake.arg1_history[0] != NULL);
+            }
+        }
     }
 
-    SECTION("JPrintUnformatted returns NULL") {
-        char req[] = "{\"req\": \"note.add\"}";
-        NoteRequestResponse_fake.custom_fake = NoteRequestResponseValid;
-        JPrintUnformatted_fake.return_val = NULL;
+    GIVEN("The request is valid") {
+        char req[] = "{\"req\":\"card.version\"}";
 
-        CHECK(NoteRequestResponseJSON(req) == NULL);
-        CHECK(NoteRequestResponse_fake.call_count == 1);
-        CHECK(JPrintUnformatted_fake.call_count == 1);
+        WHEN("NoteRequestResponseJSON is called") {
+            char *rsp = NoteRequestResponseJSON(req);
+
+            THEN("The Notecard is locked and unlocked") {
+                REQUIRE(NoteJSONTransaction_fake.call_count > 0);
+                CHECK(NoteLockNote_fake.call_count == 1);
+                CHECK(NoteUnlockNote_fake.call_count == 1);
+            }
+
+            THEN("The transaction start/stop function are used to prepare the "
+                 "Notecard for the transaction") {
+                REQUIRE(NoteJSONTransaction_fake.call_count > 0);
+                CHECK(NoteTransactionStart_fake.call_count == 1);
+                CHECK(NoteTransactionStop_fake.call_count == 1);
+            }
+        }
+
+        AND_GIVEN("The transaction with the Notecard fails to start") {
+            NoteTransactionStart_fake.return_val = false;
+
+            WHEN("NoteRequestResponseJSON is called") {
+                char *rsp = NoteRequestResponseJSON(req);
+
+                THEN("NULL is returned") {
+                    REQUIRE(NoteTransactionStart_fake.call_count > 0);
+                    CHECK(rsp == NULL);
+                }
+            }
+        }
     }
 
-    SECTION("Valid response") {
-        char req[] = "{\"req\": \"note.add\"}";
-        NoteRequestResponse_fake.custom_fake = NoteRequestResponseValid;
-        JPrintUnformatted_fake.custom_fake = JPrintUnformattedValid;
-
-        char *resp = NoteRequestResponseJSON(req);
-
-        CHECK(resp != NULL);
-        CHECK(NoteRequestResponse_fake.call_count == 1);
-
-        NoteFree(resp);
-    }
-
-    RESET_FAKE(NoteRequestResponse);
-    RESET_FAKE(JPrintUnformatted);
+    RESET_FAKE(NoteTransactionStart);
+    RESET_FAKE(NoteTransactionStop);
+    RESET_FAKE(NoteLockNote);
+    RESET_FAKE(NoteUnlockNote);
+    RESET_FAKE(NoteJSONTransaction);
 }
 
 }
