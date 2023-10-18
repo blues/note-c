@@ -43,6 +43,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define NOTE_C_VERSION_MAJOR 1
+#define NOTE_C_VERSION_MINOR 1
+#define NOTE_C_VERSION_PATCH 1
+
 // Determine our basic floating data type.  In most cases "double" is the right answer, however for
 // very small microcontrollers we must use single-precision.
 #if defined(FLT_MAX_EXP) && defined(DBL_MAX_EXP)
