@@ -283,34 +283,47 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
  @brief Send a request to the Notecard and return the response.
 
  Unlike NoteRequestResponse, this function expects the request to be a valid
- JSON C-string, rather than a `J` object. It also returns the response as a
- dynamically allocated JSON C-string. The caller is responsible for freeing this
- string.
+ JSON C-string, rather than a `J` object. This string may be newline-terminated,
+ but it is not required. The response is returned as a dynamically allocated
+ JSON C-string. The response string is verbatim what was sent by the Notecard.
+ The terminating CR-LF will be included in the response string. The caller is
+ responsible for freeing the response string. If the request was a command (i.e.
+ it uses "cmd" instead of "req"), this function returns NULL, because the
+ Notecard does not send a response to commands.
 
  @param reqJSON A valid JSON C-string containing the request.
 
- @returns A JSON C-string with the response or NULL if there was an error
-          sending the request.
+ @returns A JSON C-string with the response or NULL if there was no response.
  */
 char *NoteRequestResponseJSON(char *reqJSON)
 {
-    // Parse the incoming JSON string
-    J *req = JParse(reqJSON);
-    if (req == NULL) {
+    size_t transactionTimeoutMs = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
+    char *rspJSON = NULL;
+
+    if (reqJSON == NULL) {
         return NULL;
     }
 
-    // Perform the transaction and free the req
-    J *rsp = NoteRequestResponse(req);
-    if (rsp == NULL) {
+    // Make sure that we get access to the Notecard before transacting.
+    if (!_TransactionStart(transactionTimeoutMs)) {
         return NULL;
     }
 
-    // Convert response back to JSON and delete it
-    char *json = JPrintUnformatted(rsp);
-    NoteDeleteResponse(rsp);
+    _LockNote();
 
-    return json;
+    if (strstr(reqJSON, "\"cmd\":") != NULL) {
+        // If it's a command, the Notecard will not respond, so we pass NULL for
+        // the response parameter.
+        _Transaction(reqJSON, NULL, transactionTimeoutMs);
+    } else {
+        _Transaction(reqJSON, &rspJSON, transactionTimeoutMs);
+    }
+
+    _UnlockNote();
+
+    _TransactionStop();
+
+    return rspJSON;
 }
 
 /*!
