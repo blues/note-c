@@ -579,10 +579,10 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
 
         // Perform the transaction
         if (noResponseExpected) {
-            errStr = _Transaction(json, jsonLen, NULL, transactionTimeoutMs);
+            errStr = _Transaction(json, (jsonLen + 1), NULL, transactionTimeoutMs);
             break;
         }
-        errStr = _Transaction(json, jsonLen, &responseJSON, transactionTimeoutMs);
+        errStr = _Transaction(json, (jsonLen + 1), &responseJSON, transactionTimeoutMs);
 
         // Swap newline-terminator for NULL-terminator
         json[jsonLen] = '\0';
