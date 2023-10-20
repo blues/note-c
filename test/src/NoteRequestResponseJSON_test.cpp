@@ -23,7 +23,7 @@ FAKE_VALUE_FUNC(bool, NoteTransactionStart, uint32_t)
 FAKE_VOID_FUNC(NoteTransactionStop)
 FAKE_VOID_FUNC(NoteLockNote)
 FAKE_VOID_FUNC(NoteUnlockNote)
-FAKE_VALUE_FUNC(const char *, NoteJSONTransaction, char *, char **, size_t)
+FAKE_VALUE_FUNC(const char *, NoteJSONTransaction, const char *, size_t, char **, size_t)
 
 namespace
 {
@@ -43,7 +43,7 @@ SCENARIO("NoteRequestResponseJSON")
     }
 
     GIVEN("The request is a command") {
-        char req[] = "{\"cmd\":\"card.sleep\"}";
+        char req[] = "{\"cmd\":\"card.sleep\"}\n";
 
         WHEN("NoteRequestResponseJSON is called") {
             char *rsp = NoteRequestResponseJSON(req);
@@ -51,13 +51,13 @@ SCENARIO("NoteRequestResponseJSON")
             THEN("NoteJSONTransaction is called with NULL for the response "
                  "parameter") {
                 REQUIRE(NoteJSONTransaction_fake.call_count > 0);
-                CHECK(NoteJSONTransaction_fake.arg1_history[0] == NULL);
+                CHECK(NoteJSONTransaction_fake.arg2_history[0] == NULL);
             }
         }
     }
 
     GIVEN("The request is not a command)") {
-        char req[] = "{\"req\":\"card.version\"}";
+        char req[] = "{\"req\":\"card.version\"}\n";
 
         WHEN("NoteRequestResponseJSON is called") {
             char *rsp = NoteRequestResponseJSON(req);
@@ -65,13 +65,13 @@ SCENARIO("NoteRequestResponseJSON")
             THEN("NoteJSONTransaction is called with a valid pointer for the "
                  "response parameter") {
                 REQUIRE(NoteJSONTransaction_fake.call_count > 0);
-                CHECK(NoteJSONTransaction_fake.arg1_history[0] != NULL);
+                CHECK(NoteJSONTransaction_fake.arg2_history[0] != NULL);
             }
         }
     }
 
     GIVEN("The request is valid") {
-        char req[] = "{\"req\":\"card.version\"}";
+        char req[] = "{\"req\":\"card.version\"}\n";
 
         WHEN("NoteRequestResponseJSON is called") {
             char *rsp = NoteRequestResponseJSON(req);

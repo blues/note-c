@@ -43,7 +43,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define NOTE_C_VERSION_MAJOR 1
+#define NOTE_C_VERSION_MAJOR 2
 #define NOTE_C_VERSION_MINOR 1
 #define NOTE_C_VERSION_PATCH 1
 
@@ -116,7 +116,7 @@ J *NoteNewRequest(const char *request);
 J *NoteNewCommand(const char *request);
 J *NoteRequestResponse(J *req);
 J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds);
-char *NoteRequestResponseJSON(char *reqJSON);
+char * NoteRequestResponseJSON(const char *reqJSON);
 void NoteSuspendTransactionDebug(void);
 void NoteResumeTransactionDebug(void);
 #define SYNCSTATUS_LEVEL_MAJOR         0

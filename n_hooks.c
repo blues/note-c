@@ -174,7 +174,7 @@ i2cReceiveFn hookI2CReceive = NULL;
 
 // Internal hooks
 typedef bool (*nNoteResetFn) (void);
-typedef const char * (*nTransactionFn) (char *, char **, size_t);
+typedef const char * (*nTransactionFn) (const char *, size_t, char **, size_t);
 typedef const char * (*nReceiveFn) (uint8_t *, uint32_t *, bool, size_t, uint32_t *);
 typedef const char * (*nTransmitFn) (uint8_t *, uint32_t, bool);
 static nNoteResetFn notecardReset = NULL;
@@ -846,8 +846,12 @@ bool NoteHardReset()
   @brief  Perform a JSON request to the Notecard using the currently-set
   platform hook.
 
-  @param   request the JSON request.
-  @param   response (out) A buffer with the JSON response.
+  @param   request A string containing the JSON request object, which MUST BE
+            terminated with a newline character.
+  @param   reqLen the string length of the JSON request.
+  @param   response [out] A c-string buffer that will contain the newline ('\n')
+            terminated JSON response from the Notercard. If NULL, no response
+            will be captured.
   @param   timeoutMs The maximum amount of time, in milliseconds, to wait
             for data to arrive. Passing zero (0) disables the timeout.
 
@@ -855,12 +859,12 @@ bool NoteHardReset()
   or the hook has not been set.
 */
 /**************************************************************************/
-const char *NoteJSONTransaction(char *request, char **response, size_t timeoutMs)
+const char *NoteJSONTransaction(const char *request, size_t reqLen, char **response, size_t timeoutMs)
 {
     if (notecardTransaction == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";
     }
-    return notecardTransaction(request, response, timeoutMs);
+    return notecardTransaction(request, reqLen, response, timeoutMs);
 }
 
 /**************************************************************************/

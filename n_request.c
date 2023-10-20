@@ -31,10 +31,14 @@ static uint16_t lastRequestSeqno = 0;
 #define	CRC_FIELD_NAME_OFFSET	1
 #define	CRC_FIELD_NAME_TEST		"\"crc\":\""
 NOTE_C_STATIC int32_t crc32(const void* data, size_t length);
-NOTE_C_STATIC char *crcAdd(char *json, uint16_t seqno);
+NOTE_C_STATIC char * crcAdd(char *json, uint16_t seqno);
 NOTE_C_STATIC bool crcError(char *json, uint16_t shouldBeSeqno);
+
 static bool notecardSupportsCrc = false;
 #endif
+
+NOTE_C_STATIC char * containsKey(const char *req, const char *key, const char * const endPtr);
+NOTE_C_STATIC J * errDoc(const char *errmsg);
 
 /*!
  @brief Create a JSON object containing an error message.
@@ -46,7 +50,7 @@ static bool notecardSupportsCrc = false;
 
  @returns A `J` object with the "err" field populated.
  */
-static J *errDoc(const char *errmsg)
+NOTE_C_STATIC J *errDoc(const char *errmsg)
 {
     J *rspdoc = JCreateObject();
     if (rspdoc != NULL) {
@@ -62,6 +66,62 @@ static J *errDoc(const char *errmsg)
     }
 
     return rspdoc;
+}
+
+NOTE_C_STATIC char * containsKey(const char *req, const char *key, const char * const endPtr)
+{
+    char * result = NULL;
+    char *keyPtr = NULL;
+
+    // Check parameter(s)
+    if (!req || !key || !endPtr) {
+        result = NULL;
+    } else {
+        // Find key
+        if (!(keyPtr = strstr(req, key))) {
+            result = NULL;
+        } else if (keyPtr >= endPtr) {
+            result = NULL;
+        } else {
+            const char *search;
+            // Ensure `key` is inside the first bracket
+            if (!(search = strchr(req, '{'))) {
+                result = NULL;
+            } else if (search > keyPtr) {
+                result = NULL;
+            } else {
+                // Ensure `key` is at highest level
+                size_t depth = 0;
+                for (++search ; search < keyPtr ; ++search) {
+                    switch (*search) {
+                    case '{':
+                        ++depth;
+                        break;
+                    case '}':
+                        --depth;
+                        break;
+                    }
+                }
+                if (depth) {
+                    result = NULL;
+                } else {
+                    // Ensure `key` is actually a key
+                    for (search = (keyPtr - 1) ; search < endPtr; --search) {
+                        if (*search != ' ') {
+                            if ('{' == *search || ',' == *search) {
+                                result = keyPtr;
+                            } else {
+                                result = NULL;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return result;
 }
 
 /*!
@@ -283,19 +343,21 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
  @brief Send a request to the Notecard and return the response.
 
  Unlike NoteRequestResponse, this function expects the request to be a valid
- JSON C-string, rather than a `J` object. This string may be newline-terminated,
- but it is not required. The response is returned as a dynamically allocated
- JSON C-string. The response string is verbatim what was sent by the Notecard.
- The terminating CR-LF will be included in the response string. The caller is
- responsible for freeing the response string. If the request was a command (i.e.
- it uses "cmd" instead of "req"), this function returns NULL, because the
- Notecard does not send a response to commands.
+ JSON C-string, rather than a `J` object. This string MUST be newline-terminated.
+ The response is returned as a dynamically allocated JSON C-string. The response
+ string is verbatim what was sent by the Notecard, which IS newline-terminated.
+ The caller is responsible for freeing the response string. If the request was a
+ command (i.e. it uses "cmd" instead of "req"), this function returns NULL,
+ because the Notecard does not send a response to commands.
 
- @param reqJSON A valid JSON C-string containing the request.
+ @param reqJSON A valid newline-terminated JSON C-string containing the request.
 
- @returns A JSON C-string with the response or NULL if there was no response.
- */
-char *NoteRequestResponseJSON(char *reqJSON)
+ @returns A newline-terminated JSON C-string with the response, or NULL
+          if there was no response or if there was an error.
+
+ @note When a "cmd" is sent, it is not possible to determine if an error occurred.
+*/
+char * NoteRequestResponseJSON(const char *reqJSON)
 {
     size_t transactionTimeoutMs = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
     char *rspJSON = NULL;
@@ -311,12 +373,27 @@ char *NoteRequestResponseJSON(char *reqJSON)
 
     _LockNote();
 
-    if (strstr(reqJSON, "\"cmd\":") != NULL) {
-        // If it's a command, the Notecard will not respond, so we pass NULL for
-        // the response parameter.
-        _Transaction(reqJSON, NULL, transactionTimeoutMs);
-    } else {
-        _Transaction(reqJSON, &rspJSON, transactionTimeoutMs);
+    // Manually tokenize the string to search for multiple embedded commands (cannot use strtok)
+    for (;;) {
+        const char * const endPtr = strchr(reqJSON, '\n');
+
+        // if string is not newline-terminated, then do not process
+        if (endPtr == reqJSON) {
+            break;
+        }
+        const size_t reqLen = ((endPtr - reqJSON) + 1);
+
+        //TODO: clean before compare
+
+        if (containsKey(reqJSON, "\"cmd\"", endPtr)) {
+            // If it's a command, the Notecard will not respond, so we pass NULL for
+            // the response parameter.
+            _Transaction(reqJSON, reqLen, NULL, transactionTimeoutMs);
+            reqJSON = (endPtr + 1);
+        } else {
+            _Transaction(reqJSON, reqLen, &rspJSON, transactionTimeoutMs);
+            break;
+        }
     }
 
     _UnlockNote();
@@ -496,12 +573,19 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             NOTE_C_LOG_INFO(json);
         }
 
+        // Swap NULL-terminator for newline-terminator
+        const size_t jsonLen = strlen(json);
+        json[jsonLen] = '\n';
+
         // Perform the transaction
         if (noResponseExpected) {
-            errStr = _Transaction(json, NULL, transactionTimeoutMs);
+            errStr = _Transaction(json, jsonLen, NULL, transactionTimeoutMs);
             break;
         }
-        errStr = _Transaction(json, &responseJSON, transactionTimeoutMs);
+        errStr = _Transaction(json, jsonLen, &responseJSON, transactionTimeoutMs);
+
+        // Swap newline-terminator for NULL-terminator
+        json[jsonLen] = '\0';
 
 #ifndef NOTE_LOWMEM
         // If there's an I/O error on the transaction, retry

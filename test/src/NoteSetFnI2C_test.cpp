@@ -20,7 +20,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, i2cNoteReset)
-FAKE_VALUE_FUNC(const char *, i2cNoteTransaction, char *, char **, size_t)
+FAKE_VALUE_FUNC(const char *, i2cNoteTransaction, const char *, size_t, char **, size_t)
 
 namespace
 {
@@ -50,7 +50,7 @@ const char *I2CReceive(uint16_t, uint8_t*, uint16_t, uint32_t*)
 
 SCENARIO("NoteSetFnI2C")
 {
-    char req[] = "{ \"req\": \"note.add\" }";
+    char req[] = "{ \"req\": \"note.add\" }\n";
     char *resp = NULL;
     i2cNoteReset_fake.return_val = true;
     i2cNoteTransaction_fake.return_val = NULL;
@@ -73,7 +73,7 @@ SCENARIO("NoteSetFnI2C")
     CHECK(NoteHardReset());
     CHECK(i2cNoteReset_fake.call_count == 1);
 
-    CHECK(NoteJSONTransaction(req, &resp, CARD_INTER_TRANSACTION_TIMEOUT_SEC) == NULL);
+    CHECK(NoteJSONTransaction(req, strlen(req), &resp, CARD_INTER_TRANSACTION_TIMEOUT_SEC) == NULL);
     CHECK(i2cNoteTransaction_fake.call_count == 1);
 
     CHECK(NoteI2CAddress() == i2cAddr);
@@ -104,7 +104,7 @@ SCENARIO("NoteSetFnI2C")
     CHECK(NoteHardReset());
     CHECK(i2cNoteReset_fake.call_count == 1);
 
-    CHECK(NoteJSONTransaction(req, &resp, CARD_INTER_TRANSACTION_TIMEOUT_SEC) != NULL);
+    CHECK(NoteJSONTransaction(req, strlen(req), &resp, CARD_INTER_TRANSACTION_TIMEOUT_SEC) != NULL);
     CHECK(i2cNoteTransaction_fake.call_count == 1);
 
     CHECK(NoteI2CAddress() == NOTE_I2C_ADDR_DEFAULT);

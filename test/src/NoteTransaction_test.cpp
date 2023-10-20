@@ -21,7 +21,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, NoteReset)
-FAKE_VALUE_FUNC(const char *, NoteJSONTransaction, char *, char **, size_t)
+FAKE_VALUE_FUNC(const char *, NoteJSONTransaction, const char *, size_t, char **, size_t)
 FAKE_VALUE_FUNC(bool, NoteTransactionStart, uint32_t)
 FAKE_VALUE_FUNC(J *, NoteUserAgent)
 FAKE_VALUE_FUNC(bool, crcError, char *, uint16_t)
@@ -29,7 +29,7 @@ FAKE_VALUE_FUNC(bool, crcError, char *, uint16_t)
 namespace
 {
 
-const char *NoteJSONTransactionValid(char *, char **resp, size_t)
+const char *NoteJSONTransactionValid(const char *, size_t, char **resp, size_t)
 {
     static char respString[] = "{ \"total\": 1 }";
 
@@ -42,7 +42,7 @@ const char *NoteJSONTransactionValid(char *, char **resp, size_t)
     return NULL;
 }
 
-const char *NoteJSONTransactionBadJSON(char *, char **resp, size_t)
+const char *NoteJSONTransactionBadJSON(const char *, size_t, char **resp, size_t)
 {
     static char respString[] = "Bad JSON";
 
@@ -55,7 +55,7 @@ const char *NoteJSONTransactionBadJSON(char *, char **resp, size_t)
     return NULL;
 }
 
-const char *NoteJSONTransactionIOError(char *, char **resp, size_t)
+const char *NoteJSONTransactionIOError(const char *, size_t, char **resp, size_t)
 {
     static char respString[] = "{\"err\": \"{io}\"}";
 
@@ -130,7 +130,7 @@ SCENARIO("NoteTransaction")
     WHEN("The transaction is successful and the response has a {bad-bin} error") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        NoteJSONTransaction_fake.custom_fake = [](char *, char **response, size_t) -> const char * {
+        NoteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **response, size_t) -> const char * {
             const char rsp_str[] = "{\"err\":\"{bad-bin}\"}";
             *response = (char *)malloc(sizeof(rsp_str));
             strncpy(*response, rsp_str, sizeof(rsp_str));
@@ -158,7 +158,7 @@ SCENARIO("NoteTransaction")
     WHEN("The transaction is successful and the response contains invalid JSON") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        NoteJSONTransaction_fake.custom_fake = [](char *, char **response, size_t) -> const char * {
+        NoteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **response, size_t) -> const char * {
             const char rsp_str[] = "{Looks like JSON, but won't parse}";
             *response = (char *)malloc(sizeof(rsp_str));
             strncpy(*response, rsp_str, sizeof(rsp_str));
@@ -307,7 +307,7 @@ SCENARIO("NoteTransaction")
         REQUIRE(req != NULL);
 
         J *resp = NoteTransaction(req);
-        CHECK(NoteJSONTransaction_fake.arg2_val == (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000));
+        CHECK(NoteJSONTransaction_fake.arg3_val == (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000));
 
         JDelete(req);
         JDelete(resp);
@@ -319,7 +319,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "milliseconds", 9171979);
 
         J *resp = NoteTransaction(req);
-        CHECK(NoteJSONTransaction_fake.arg2_val == 9171979);
+        CHECK(NoteJSONTransaction_fake.arg3_val == 9171979);
 
         JDelete(req);
         JDelete(resp);
@@ -331,7 +331,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "seconds", 917);
 
         J *resp = NoteTransaction(req);
-        CHECK(NoteJSONTransaction_fake.arg2_val == (917 * 1000));
+        CHECK(NoteJSONTransaction_fake.arg3_val == (917 * 1000));
 
         JDelete(req);
         JDelete(resp);
@@ -344,7 +344,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "milliseconds", 9171979);
 
         J *resp = NoteTransaction(req);
-        CHECK(NoteJSONTransaction_fake.arg2_val == 9171979);
+        CHECK(NoteJSONTransaction_fake.arg3_val == 9171979);
 
         JDelete(req);
         JDelete(resp);
@@ -356,7 +356,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "milliseconds", 9171979);
 
         J *resp = NoteTransaction(req);
-        CHECK(NoteJSONTransaction_fake.arg2_val == 9171979);
+        CHECK(NoteJSONTransaction_fake.arg3_val == 9171979);
 
         JDelete(req);
         JDelete(resp);
@@ -368,7 +368,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "seconds", 1979);
 
         J *resp = NoteTransaction(req);
-        CHECK(NoteJSONTransaction_fake.arg2_val == (1979 * 1000));
+        CHECK(NoteJSONTransaction_fake.arg3_val == (1979 * 1000));
 
         JDelete(req);
         JDelete(resp);
@@ -381,7 +381,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "milliseconds", 9171979);
 
         J *resp = NoteTransaction(req);
-        CHECK(NoteJSONTransaction_fake.arg2_val == 9171979);
+        CHECK(NoteJSONTransaction_fake.arg3_val == 9171979);
 
         JDelete(req);
         JDelete(resp);
@@ -392,7 +392,7 @@ SCENARIO("NoteTransaction")
         REQUIRE(req != NULL);
 
         J *resp = NoteTransaction(req);
-        CHECK(NoteJSONTransaction_fake.arg2_val == (90 * 1000));
+        CHECK(NoteJSONTransaction_fake.arg3_val == (90 * 1000));
 
         JDelete(req);
         JDelete(resp);
