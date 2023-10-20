@@ -383,8 +383,6 @@ char * NoteRequestResponseJSON(const char *reqJSON)
         }
         const size_t reqLen = ((endPtr - reqJSON) + 1);
 
-        //TODO: clean before compare
-
         if (containsKey(reqJSON, "\"cmd\"", endPtr)) {
             // If it's a command, the Notecard will not respond, so we pass NULL for
             // the response parameter.
