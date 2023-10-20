@@ -378,7 +378,7 @@ char * NoteRequestResponseJSON(const char *reqJSON)
         const char * const endPtr = strchr(reqJSON, '\n');
 
         // if string is not newline-terminated, then do not process
-        if (endPtr == reqJSON) {
+        if (endPtr == NULL) {
             break;
         }
         const size_t reqLen = ((endPtr - reqJSON) + 1);
