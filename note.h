@@ -43,7 +43,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define NOTE_C_VERSION_MAJOR 1
+#define NOTE_C_VERSION_MAJOR 2
 #define NOTE_C_VERSION_MINOR 1
 #define NOTE_C_VERSION_PATCH 1
 

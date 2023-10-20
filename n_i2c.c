@@ -80,9 +80,14 @@ NOTE_C_STATIC const char * i2cNoteQueryLength(uint32_t * available,
 /*!
   @brief  Given a JSON string, perform an I2C transaction with the Notecard.
 
-  @param   request A c-string containing the JSON request object.
+  @param   request A c-string containing the JSON request object, which may or
+		   may not be \n terminated.  If this string ends in \n, it is guaranteed
+		   that the input is treated as 'const' and it WILL NOT be modified. 
+		   If the string does not end in \n, the input string is temporarily
+		   modified to force \n to be sent, and thus MUST NOT be contained in NVM.
   @param   response An out parameter c-string buffer that will contain the JSON
-            response from the Notercard.
+           response from the Notercard.  It is guaranteed that the response
+		   is \n terminated.
   @param   timeoutMs The maximum amount of time, in milliseconds, to wait
             for data to arrive. Passing zero (0) disables the timeout.
 
@@ -92,17 +97,26 @@ NOTE_C_STATIC const char * i2cNoteQueryLength(uint32_t * available,
 const char *i2cNoteTransaction(char *request, char **response, size_t timeoutMs)
 {
     const char *err = NULL;
-    const size_t nullIndex = strlen(request);
     const size_t requestLen = (strlen(request) + 1);
 
     // Swap NULL terminator ('\0') with newline during transmission ('\n')
-    request[nullIndex] = '\n';
+	bool overwroteNull = false;
+    const size_t nullIndex = strlen(request);
+	if (nullIndex == 0) {
+		return NULL;
+	}
+	if (request[nullIndex-1] != '\n') {
+		overwroteNull = true;
+	    request[nullIndex] = '\n';
+	}
 
     // Lock over the entire transaction
     _LockI2C();
 
     err = i2cChunkedTransmit((uint8_t *)request, requestLen, true);
-    request[nullIndex] = '\0';  // Restore the transmit buffer
+	if (overwroteNull) {
+	    request[nullIndex] = '\0';
+	}
     if (err) {
         _UnlockI2C();
         return err;

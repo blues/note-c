@@ -19,9 +19,11 @@
 /*!
   @brief  Given a JSON string, perform a serial transaction with the Notecard.
 
-  @param   request A c-string containing the JSON request object.
+  @param   request A c-string containing the JSON request object, which may
+		   or may not be \n-terminated.  If it is not, a \n will be transmitted.
   @param   response An out parameter c-string buffer that will contain the JSON
-            response from the Notercard. If NULL, no response will be captured.
+           response from the Notercard. If NULL, no response will be captured.
+		   It is guaranteed that the response is \n terminated.
   @param   timeoutMs The maximum amount of time, in milliseconds, to wait
             for data to arrive. Passing zero (0) disables the timeout.
 
@@ -30,14 +32,25 @@
 /**************************************************************************/
 const char *serialNoteTransaction(char *request, char **response, size_t timeoutMs)
 {
-    const char *err = serialChunkedTransmit((uint8_t *)request, strlen(request), true);
+    const size_t requestLen = strlen(request);
+	if (requestLen == 0) {
+		return NULL;
+	}
+	bool sendNewline = false;
+	if (request[requestLen-1] != '\n') {
+		sendNewline = true;
+	}
+
+    const char *err = serialChunkedTransmit((uint8_t *)request, requestLen, true);
     if (err) {
         NOTE_C_LOG_ERROR(err);
         return err;
     }
 
     // Append newline to the transaction
-    _SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
+	if (sendNewline) {
+	    _SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
+	}
 
     // If no reply expected, we're done
     if (response == NULL) {

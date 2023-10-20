@@ -283,17 +283,19 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
  @brief Send a request to the Notecard and return the response.
 
  Unlike NoteRequestResponse, this function expects the request to be a valid
- JSON C-string, rather than a `J` object. This string may be newline-terminated,
- but it is not required. The response is returned as a dynamically allocated
- JSON C-string. The response string is verbatim what was sent by the Notecard.
- The terminating CR-LF will be included in the response string. The caller is
- responsible for freeing the response string. If the request was a command (i.e.
- it uses "cmd" instead of "req"), this function returns NULL, because the
- Notecard does not send a response to commands.
+ JSON C-string, rather than a `J` object. This string MUST be newline-terminated.
+ The response is returned as a dynamically allocated JSON C-string. The response
+ string is verbatim what was sent by the Notecard, which IS newline-terminated.
+ The caller is responsible for freeing the response string. If the request was a
+ command (i.e. it uses "cmd" instead of "req"), this function returns NULL, 
+ because the Notecard does not send a response to commands.  Note that it is
+ unfortunately indistinguishable whether this was a "cmd" or whether an
+ error occurred.
 
- @param reqJSON A valid JSON C-string containing the request.
+ @param reqJSON A valid newline-terminated JSON C-string containing the request.
 
- @returns A JSON C-string with the response or NULL if there was no response.
+ @returns A newline-terminated JSON C-string with the response, or NULL
+          if there was no response or if there was an error.
  */
 char *NoteRequestResponseJSON(char *reqJSON)
 {
@@ -311,6 +313,9 @@ char *NoteRequestResponseJSON(char *reqJSON)
 
     _LockNote();
 
+	// Yes, this will fail if someone does {"req":"note.add","body":{"cmd":...
+	// but to fix this would require a full unmarshaling to double-check.  If
+	// this proves to be required, it's a straightforward change.
     if (strstr(reqJSON, "\"cmd\":") != NULL) {
         // If it's a command, the Notecard will not respond, so we pass NULL for
         // the response parameter.
