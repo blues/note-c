@@ -30,6 +30,8 @@ namespace
 
 SCENARIO("NoteRequestResponseJSON")
 {
+    NoteSetFnDefault(malloc, free, NULL, NULL);
+
     NoteTransactionStart_fake.return_val = true;
 
     GIVEN("The request is NULL") {

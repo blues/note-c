@@ -37,7 +37,6 @@ NOTE_C_STATIC bool crcError(char *json, uint16_t shouldBeSeqno);
 static bool notecardSupportsCrc = false;
 #endif
 
-NOTE_C_STATIC char * containsKey(const char *req, const char *key, const char * const endPtr);
 NOTE_C_STATIC J * errDoc(const char *errmsg);
 
 /*!
@@ -66,62 +65,6 @@ NOTE_C_STATIC J *errDoc(const char *errmsg)
     }
 
     return rspdoc;
-}
-
-NOTE_C_STATIC char * containsKey(const char *req, const char *key, const char * const endPtr)
-{
-    char * result = NULL;
-    char *keyPtr = NULL;
-
-    // Check parameter(s)
-    if (!req || !key || !endPtr) {
-        result = NULL;
-    } else {
-        // Find key
-        if (!(keyPtr = strstr(req, key))) {
-            result = NULL;
-        } else if (keyPtr >= endPtr) {
-            result = NULL;
-        } else {
-            const char *search;
-            // Ensure `key` is inside the first bracket
-            if (!(search = strchr(req, '{'))) {
-                result = NULL;
-            } else if (search > keyPtr) {
-                result = NULL;
-            } else {
-                // Ensure `key` is at highest level
-                size_t depth = 0;
-                for (++search ; search < keyPtr ; ++search) {
-                    switch (*search) {
-                    case '{':
-                        ++depth;
-                        break;
-                    case '}':
-                        --depth;
-                        break;
-                    }
-                }
-                if (depth) {
-                    result = NULL;
-                } else {
-                    // Ensure `key` is actually a key
-                    for (search = (keyPtr - 1) ; search < endPtr; --search) {
-                        if (*search != ' ') {
-                            if ('{' == *search || ',' == *search) {
-                                result = keyPtr;
-                            } else {
-                                result = NULL;
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    return result;
 }
 
 /*!
@@ -343,8 +286,9 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
  @brief Send a request to the Notecard and return the response.
 
  Unlike NoteRequestResponse, this function expects the request to be a valid
- JSON C-string, rather than a `J` object. This string MUST be newline-terminated.
- The response is returned as a dynamically allocated JSON C-string. The response
+ JSON C-string, rather than a `J` object. This string MUST have a single
+ terminating newline. No additional newlines are permitted in the string. The
+ response is returned as a dynamically allocated JSON C-string. The response
  string is verbatim what was sent by the Notecard, which IS newline-terminated.
  The caller is responsible for freeing the response string. If the request was a
  command (i.e. it uses "cmd" instead of "req"), this function returns NULL,
@@ -373,25 +317,37 @@ char * NoteRequestResponseJSON(const char *reqJSON)
 
     _LockNote();
 
-    // Manually tokenize the string to search for multiple embedded commands (cannot use strtok)
-    for (;;) {
-        const char * const endPtr = strchr(reqJSON, '\n');
+    size_t reqLen = strlen(reqJSON);
+    const char *finalChar = reqJSON + reqLen - 1;
+    if (*finalChar != '\n') {
+        // Must end with a newline.
+        return NULL;
+    }
+    const char *newline = strchr(reqJSON, '\n');
+    if (newline != finalChar) {
+        // There's an extra newline.
+        return NULL;
+    }
 
-        // if string is not newline-terminated, then do not process
-        if (endPtr == NULL) {
-            break;
+    bool isCmd = false;
+    // Only call JParse if we have to in order to verify that the provided
+    // request is actually a command.
+    if (strstr(reqJSON, "\"cmd\":") != NULL) {
+        J *jsonObj = JParse(reqJSON);
+        if (jsonObj == NULL) {
+            // Invalid JSON.
+            return NULL;
         }
-        const size_t reqLen = ((endPtr - reqJSON) + 1);
+        isCmd = JIsPresent(jsonObj, "cmd");
+        JDelete(jsonObj);
+    }
 
-        if (containsKey(reqJSON, "\"cmd\"", endPtr)) {
-            // If it's a command, the Notecard will not respond, so we pass NULL for
-            // the response parameter.
-            _Transaction(reqJSON, reqLen, NULL, transactionTimeoutMs);
-            reqJSON = (endPtr + 1);
-        } else {
-            _Transaction(reqJSON, reqLen, &rspJSON, transactionTimeoutMs);
-            break;
-        }
+    if (isCmd) {
+        // If it's a command, the Notecard will not respond, so we pass NULL for
+        // the response parameter.
+        _Transaction(reqJSON, reqLen, NULL, transactionTimeoutMs);
+    } else {
+        _Transaction(reqJSON, reqLen, &rspJSON, transactionTimeoutMs);
     }
 
     _UnlockNote();
