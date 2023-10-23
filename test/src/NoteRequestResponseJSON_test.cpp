@@ -19,11 +19,11 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(bool, NoteTransactionStart, uint32_t)
-FAKE_VOID_FUNC(NoteTransactionStop)
-FAKE_VOID_FUNC(NoteLockNote)
-FAKE_VOID_FUNC(NoteUnlockNote)
-FAKE_VALUE_FUNC(const char *, NoteJSONTransaction, const char *, size_t, char **, size_t)
+FAKE_VALUE_FUNC(bool, noteTransactionStart, uint32_t)
+FAKE_VOID_FUNC(noteTransactionStop)
+FAKE_VOID_FUNC(noteLockNote)
+FAKE_VOID_FUNC(noteUnlockNote)
+FAKE_VALUE_FUNC(const char *, noteJSONTransaction, const char *, size_t, char **, size_t)
 
 namespace
 {
@@ -32,7 +32,7 @@ SCENARIO("NoteRequestResponseJSON")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    NoteTransactionStart_fake.return_val = true;
+    noteTransactionStart_fake.return_val = true;
 
     GIVEN("The request is NULL") {
         WHEN("NoteRequestResponseJSON is called") {
@@ -50,10 +50,10 @@ SCENARIO("NoteRequestResponseJSON")
         WHEN("NoteRequestResponseJSON is called") {
             char *rsp = NoteRequestResponseJSON(req);
 
-            THEN("NoteJSONTransaction is called with NULL for the response "
+            THEN("noteJSONTransaction is called with NULL for the response "
                  "parameter") {
-                REQUIRE(NoteJSONTransaction_fake.call_count > 0);
-                CHECK(NoteJSONTransaction_fake.arg2_history[0] == NULL);
+                REQUIRE(noteJSONTransaction_fake.call_count > 0);
+                CHECK(noteJSONTransaction_fake.arg2_history[0] == NULL);
             }
         }
     }
@@ -70,18 +70,18 @@ SCENARIO("NoteRequestResponseJSON")
         WHEN("NoteRequestResponseJSON is called") {
             char *rsp = NoteRequestResponseJSON(req);
 
-            THEN("NoteJSONTransaction is called once for each command") {
-                CHECK(NoteJSONTransaction_fake.call_count == command_count);
+            THEN("noteJSONTransaction is called once for each command") {
+                CHECK(noteJSONTransaction_fake.call_count == command_count);
             }
 
-            THEN("NoteJSONTransaction is called with the correct pointer and "
+            THEN("noteJSONTransaction is called with the correct pointer and "
                  "length for each command") {
-                CHECK(NoteJSONTransaction_fake.arg0_history[0] == req);
-                CHECK(NoteJSONTransaction_fake.arg1_history[0] ==
+                CHECK(noteJSONTransaction_fake.arg0_history[0] == req);
+                CHECK(noteJSONTransaction_fake.arg1_history[0] ==
                       (sizeof(cmd1) - 1));
-                CHECK(NoteJSONTransaction_fake.arg0_history[1] ==
+                CHECK(noteJSONTransaction_fake.arg0_history[1] ==
                       (req + sizeof(cmd1) - 1));
-                CHECK(NoteJSONTransaction_fake.arg1_history[1] ==
+                CHECK(noteJSONTransaction_fake.arg1_history[1] ==
                       (sizeof(cmd2) - 1));
             }
         }
@@ -93,10 +93,10 @@ SCENARIO("NoteRequestResponseJSON")
         WHEN("NoteRequestResponseJSON is called") {
             char *rsp = NoteRequestResponseJSON(req);
 
-            THEN("NoteJSONTransaction is called with a valid pointer for the "
+            THEN("noteJSONTransaction is called with a valid pointer for the "
                  "response parameter") {
-                REQUIRE(NoteJSONTransaction_fake.call_count > 0);
-                CHECK(NoteJSONTransaction_fake.arg2_history[0] != NULL);
+                REQUIRE(noteJSONTransaction_fake.call_count > 0);
+                CHECK(noteJSONTransaction_fake.arg2_history[0] != NULL);
             }
         }
     }
@@ -110,10 +110,10 @@ SCENARIO("NoteRequestResponseJSON")
 
             THEN("The request is still treated as a regular request and not a "
                  "command") {
-                REQUIRE(NoteJSONTransaction_fake.call_count > 0);
+                REQUIRE(noteJSONTransaction_fake.call_count > 0);
                 // The response parameter is non-NULL, meaning we expect a
                 // response (i.e. it's not a command).
-                CHECK(NoteJSONTransaction_fake.arg2_history[0] != NULL);
+                CHECK(noteJSONTransaction_fake.arg2_history[0] != NULL);
             }
         }
     }
@@ -124,8 +124,8 @@ SCENARIO("NoteRequestResponseJSON")
         WHEN("NoteRequestResponseJSON is called") {
             char *rsp = NoteRequestResponseJSON(req);
 
-            THEN("NoteJSONTransaction isn't called") {
-                CHECK(NoteJSONTransaction_fake.call_count == 0);
+            THEN("noteJSONTransaction isn't called") {
+                CHECK(noteJSONTransaction_fake.call_count == 0);
             }
 
             THEN("NULL is returned") {
@@ -141,38 +141,38 @@ SCENARIO("NoteRequestResponseJSON")
             char *rsp = NoteRequestResponseJSON(req);
 
             THEN("The Notecard is locked and unlocked") {
-                REQUIRE(NoteJSONTransaction_fake.call_count > 0);
-                CHECK(NoteLockNote_fake.call_count == 1);
-                CHECK(NoteUnlockNote_fake.call_count == 1);
+                REQUIRE(noteJSONTransaction_fake.call_count > 0);
+                CHECK(noteLockNote_fake.call_count == 1);
+                CHECK(noteUnlockNote_fake.call_count == 1);
             }
 
             THEN("The transaction start/stop function are used to prepare the "
                  "Notecard for the transaction") {
-                REQUIRE(NoteJSONTransaction_fake.call_count > 0);
-                CHECK(NoteTransactionStart_fake.call_count == 1);
-                CHECK(NoteTransactionStop_fake.call_count == 1);
+                REQUIRE(noteJSONTransaction_fake.call_count > 0);
+                CHECK(noteTransactionStart_fake.call_count == 1);
+                CHECK(noteTransactionStop_fake.call_count == 1);
             }
         }
 
         AND_GIVEN("The transaction with the Notecard fails to start") {
-            NoteTransactionStart_fake.return_val = false;
+            noteTransactionStart_fake.return_val = false;
 
             WHEN("NoteRequestResponseJSON is called") {
                 char *rsp = NoteRequestResponseJSON(req);
 
                 THEN("NULL is returned") {
-                    REQUIRE(NoteTransactionStart_fake.call_count > 0);
+                    REQUIRE(noteTransactionStart_fake.call_count > 0);
                     CHECK(rsp == NULL);
                 }
             }
         }
     }
 
-    RESET_FAKE(NoteTransactionStart);
-    RESET_FAKE(NoteTransactionStop);
-    RESET_FAKE(NoteLockNote);
-    RESET_FAKE(NoteUnlockNote);
-    RESET_FAKE(NoteJSONTransaction);
+    RESET_FAKE(noteTransactionStart);
+    RESET_FAKE(noteTransactionStop);
+    RESET_FAKE(noteLockNote);
+    RESET_FAKE(noteUnlockNote);
+    RESET_FAKE(noteJSONTransaction);
 }
 
 }

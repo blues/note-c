@@ -82,7 +82,7 @@ static const char *daynames[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"
 // Forwards
 NOTE_C_STATIC void setTime(JTIME seconds);
 NOTE_C_STATIC bool timerExpiredSecs(uint32_t *timer, uint32_t periodSecs);
-NOTE_C_STATIC int ytodays(int year);
+NOTE_C_STATIC int yToDays(int year);
 
 static const char NOTE_C_BINARY_EOP = '\n';
 
@@ -823,7 +823,7 @@ bool NotePrint(const char *text)
 {
     bool success = false;
 
-    if (NoteIsDebugOutputActive()) {
+    if (noteIsDebugOutputActive()) {
         NoteDebug(text);
         return true;
     }
@@ -1042,7 +1042,7 @@ bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay,
     if (retWeekday != NULL) {
         *retWeekday = (char *) daynames[(days + 1) % 7];
     }
-    for (year = days / 365; days < (i = ytodays(year) + 365L * year); ) {
+    for (year = days / 365; days < (i = yToDays(year) + 365L * year); ) {
         --year;
     }
     days -= i;
@@ -1091,7 +1091,7 @@ bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay,
 }
 
 // Figure out how many days at start of the year
-NOTE_C_STATIC int ytodays(int year)
+NOTE_C_STATIC int yToDays(int year)
 {
     int days = 0;
     if (0 < year) {
