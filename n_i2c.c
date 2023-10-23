@@ -208,7 +208,7 @@ const char *i2cNoteTransaction(const char *request, size_t reqLen, char **respon
   @returns a boolean. `true` if the reset was successful, `false`, if not.
 */
 /**************************************************************************/
-bool i2cNoteReset()
+bool i2cNoteReset(void)
 {
     bool notecardReady = false;
 

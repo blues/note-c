@@ -246,7 +246,7 @@ void NoteSetFnDebugOutput(debugOutputFn fn)
   provided.
 */
 /**************************************************************************/
-bool NoteIsDebugOutputActive()
+bool NoteIsDebugOutputActive(void)
 {
     return hookDebugOutput != NULL;
 }
@@ -370,7 +370,7 @@ void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn, i2cT
   @brief  Set the platform-specific communications method to be disabled
 */
 /**************************************************************************/
-void NoteSetFnDisabled()
+void NoteSetFnDisabled(void)
 {
 
     hookActiveInterface = interfaceNone;
@@ -472,7 +472,7 @@ void NoteDebugWithLevelLn(uint8_t level, const char *msg)
   @returns  The current milliseconds value.
 */
 /**************************************************************************/
-long unsigned int NoteGetMs()
+long unsigned int NoteGetMs(void)
 {
     if (hookGetMs == NULL) {
         return 0;
@@ -583,7 +583,7 @@ void NoteFree(void *p)
   @brief  Lock the I2C bus using the platform-specific hook.
 */
 /**************************************************************************/
-void NoteLockI2C()
+void NoteLockI2C(void)
 {
     if (hookLockI2C != NULL) {
         hookLockI2C();
@@ -595,7 +595,7 @@ void NoteLockI2C()
   @brief  Unlock the I2C bus using the platform-specific hook.
 */
 /**************************************************************************/
-void NoteUnlockI2C()
+void NoteUnlockI2C(void)
 {
     if (hookUnlockI2C != NULL) {
         hookUnlockI2C();
@@ -607,7 +607,7 @@ void NoteUnlockI2C()
   @brief  Lock the Notecard using the platform-specific hook.
 */
 /**************************************************************************/
-void NoteLockNote()
+void NoteLockNote(void)
 {
     if (hookLockNote != NULL) {
         hookLockNote();
@@ -619,7 +619,7 @@ void NoteLockNote()
   @brief  Unlock the Notecard using the platform-specific hook.
 */
 /**************************************************************************/
-void NoteUnlockNote()
+void NoteUnlockNote(void)
 {
     if (hookUnlockNote != NULL) {
         hookUnlockNote();
@@ -644,7 +644,7 @@ bool NoteTransactionStart(uint32_t timeoutMs)
   @brief  Indicate that we've completed a transaction using the platform-specific hook.
 */
 /**************************************************************************/
-void NoteTransactionStop()
+void NoteTransactionStop(void)
 {
     if (hookTransactionStop != NULL) {
         hookTransactionStop();
@@ -657,7 +657,7 @@ void NoteTransactionStop()
   @returns A string
 */
 /**************************************************************************/
-const char *NoteActiveInterface()
+const char *NoteActiveInterface(void)
 {
     switch (hookActiveInterface) {
     case interfaceSerial:
@@ -674,7 +674,7 @@ const char *NoteActiveInterface()
   @returns A boolean indicating whether the Serial bus was reset successfully.
 */
 /**************************************************************************/
-bool NoteSerialReset()
+bool NoteSerialReset(void)
 {
     if (hookActiveInterface == interfaceSerial && hookSerialReset != NULL) {
         return hookSerialReset();
@@ -704,7 +704,7 @@ void NoteSerialTransmit(uint8_t *text, size_t len, bool flush)
   @returns A boolean indicating whether the Serial bus is available to read.
 */
 /**************************************************************************/
-bool NoteSerialAvailable()
+bool NoteSerialAvailable(void)
 {
     if (hookActiveInterface == interfaceSerial && hookSerialAvailable != NULL) {
         return hookSerialAvailable();
@@ -719,7 +719,7 @@ bool NoteSerialAvailable()
   @returns A character from the Serial bus.
 */
 /**************************************************************************/
-char NoteSerialReceive()
+char NoteSerialReceive(void)
 {
     if (hookActiveInterface == interfaceSerial && hookSerialReceive != NULL) {
         return hookSerialReceive();
@@ -784,7 +784,7 @@ const char *NoteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size,
   @returns The current I2C address.
 */
 /**************************************************************************/
-uint32_t NoteI2CAddress()
+uint32_t NoteI2CAddress(void)
 {
     if (i2cAddress == 0) {
         return NOTE_I2C_ADDR_DEFAULT;
@@ -810,7 +810,7 @@ void NoteSetI2CAddress(uint32_t i2caddress)
   @returns A 32-bit integer of the maximum number of bytes per I2C segment.
 */
 /**************************************************************************/
-uint32_t NoteI2CMax()
+uint32_t NoteI2CMax(void)
 {
     // Many Arduino libraries (such as ESP32) have a limit less than 32, so if the max isn't specified
     // we must assume the worst and segment the I2C messages into very tiny chunks.
@@ -832,7 +832,7 @@ uint32_t NoteI2CMax()
   @returns A boolean indicating whether the Notecard has been reset successfully.
 */
 /**************************************************************************/
-bool NoteHardReset()
+bool NoteHardReset(void)
 {
     if (notecardReset == NULL) {
         return true;
