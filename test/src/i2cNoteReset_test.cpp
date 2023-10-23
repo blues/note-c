@@ -18,7 +18,6 @@
 
 #include "n_lib.h"
 #include "test_static.h"
-#include "i2c_mocks.h"
 
 DEFINE_FFF_GLOBALS
 FAKE_VOID_FUNC(delayIO)
