@@ -58,6 +58,19 @@ SCENARIO("NoteRequestResponseJSON")
         }
     }
 
+    GIVEN("The request is a command pipeline") {
+        char req[] = "{\"cmd\":\"card.version\"}\n{\"cmd\":\"card.sleep\"}\n";
+        const size_t command_count = 2;
+
+        WHEN("NoteRequestResponseJSON is called") {
+            char *rsp = NoteRequestResponseJSON(req);
+
+            THEN("NoteJSONTransaction is called once for each command") {
+                CHECK(NoteJSONTransaction_fake.call_count == command_count);
+            }
+        }
+    }
+
     GIVEN("The request is not a command)") {
         char req[] = "{\"req\":\"card.version\"}\n";
 

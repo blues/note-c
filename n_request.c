@@ -286,9 +286,8 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
  @brief Send a request to the Notecard and return the response.
 
  Unlike NoteRequestResponse, this function expects the request to be a valid
- JSON C-string, rather than a `J` object. This string MUST have a single
- terminating newline. No additional newlines are permitted in the string. The
- response is returned as a dynamically allocated JSON C-string. The response
+ JSON C-string, rather than a `J` object. This string MUST be newline-terminated.
+ The response is returned as a dynamically allocated JSON C-string. The response
  string is verbatim what was sent by the Notecard, which IS newline-terminated.
  The caller is responsible for freeing the response string. If the request was a
  command (i.e. it uses "cmd" instead of "req"), this function returns NULL,
@@ -317,37 +316,38 @@ char * NoteRequestResponseJSON(const char *reqJSON)
 
     _LockNote();
 
-    size_t reqLen = strlen(reqJSON);
-    const char *finalChar = reqJSON + reqLen - 1;
-    if (*finalChar != '\n') {
-        // Must end with a newline.
-        return NULL;
-    }
-    const char *newline = strchr(reqJSON, '\n');
-    if (newline != finalChar) {
-        // There's an extra newline.
-        return NULL;
-    }
+    // Manually tokenize the string to search for multiple embedded commands (cannot use strtok)
+    for (;;) {
+        const char * const endPtr = strchr(reqJSON, '\n');
 
-    bool isCmd = false;
-    // Only call JParse if we have to in order to verify that the provided
-    // request is actually a command.
-    if (strstr(reqJSON, "\"cmd\":") != NULL) {
-        J *jsonObj = JParse(reqJSON);
-        if (jsonObj == NULL) {
-            // Invalid JSON.
-            return NULL;
+        // If string is not newline-terminated, then do not process
+        if (endPtr == NULL) {
+            break;
         }
-        isCmd = JIsPresent(jsonObj, "cmd");
-        JDelete(jsonObj);
-    }
+        const size_t reqLen = ((endPtr - reqJSON) + 1);
 
-    if (isCmd) {
-        // If it's a command, the Notecard will not respond, so we pass NULL for
-        // the response parameter.
-        _Transaction(reqJSON, reqLen, NULL, transactionTimeoutMs);
-    } else {
-        _Transaction(reqJSON, reqLen, &rspJSON, transactionTimeoutMs);
+        bool isCmd = false;
+        if (strstr(reqJSON, "\"cmd\":") != NULL) {
+            // Only call `JParse()` after verifying the provided request
+            // appears to contain a command (i.e. we find `"cmd":`).
+            J *jsonObj = JParse(reqJSON);
+            if (!jsonObj) {
+                // Invalid JSON.
+                return NULL;
+            }
+            isCmd = JIsPresent(jsonObj, "cmd");
+            JDelete(jsonObj);
+        }
+
+        if (isCmd) {
+            // If it's a command, the Notecard will not respond, so we pass NULL for
+            // the response parameter.
+            _Transaction(reqJSON, reqLen, NULL, transactionTimeoutMs);
+            reqJSON = (endPtr + 1);
+        } else {
+            _Transaction(reqJSON, reqLen, &rspJSON, transactionTimeoutMs);
+            break;
+        }
     }
 
     _UnlockNote();
