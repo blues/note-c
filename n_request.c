@@ -70,7 +70,7 @@ NOTE_C_STATIC J *errDoc(const char *errmsg)
 /*!
  @brief Suppress showing transaction details.
  */
-void NoteSuspendTransactionDebug()
+void NoteSuspendTransactionDebug(void)
 {
     suppressShowTransactions++;
 }
@@ -78,7 +78,7 @@ void NoteSuspendTransactionDebug()
 /*!
  @brief Resume showing transaction details.
  */
-void NoteResumeTransactionDebug()
+void NoteResumeTransactionDebug(void)
 {
     suppressShowTransactions--;
 }

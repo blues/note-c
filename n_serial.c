@@ -140,7 +140,7 @@ const char *serialNoteTransaction(const char *request, size_t reqLen, char **res
     @returns a boolean. `true` if the reset was successful, `false`, if not.
 */
 /**************************************************************************/
-bool serialNoteReset()
+bool serialNoteReset(void)
 {
     NOTE_C_LOG_DEBUG("resetting Serial interface...");
 

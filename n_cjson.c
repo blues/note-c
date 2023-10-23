@@ -164,7 +164,7 @@ N_CJSON_PUBLIC(void) JFree(void *p)
 }
 
 /* Internal constructor. */
-static J *JNew_Item()
+static J *JNew_Item(void)
 {
     J* node = (J*)_Malloc(sizeof(J));
     if (node) {

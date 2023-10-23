@@ -715,7 +715,7 @@ const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedL
   @returns  A boolean indicating whether the current time is valid.
 */
 /**************************************************************************/
-bool NoteTimeValid()
+bool NoteTimeValid(void)
 {
     timeTimer = 0;
     return NoteTimeValidST();
@@ -727,7 +727,7 @@ bool NoteTimeValid()
   @returns  A boolean indicating whether the current time is valid.
 */
 /**************************************************************************/
-bool NoteTimeValidST()
+bool NoteTimeValidST(void)
 {
     NoteTimeST();
     return (timeBaseSec != 0);
@@ -739,7 +739,7 @@ bool NoteTimeValidST()
   @returns  The current time.
 */
 /**************************************************************************/
-JTIME NoteTime()
+JTIME NoteTime(void)
 {
     timeTimer = 0;
     return NoteTimeST();
@@ -843,7 +843,7 @@ bool NotePrint(const char *text)
   @returns  The current time, or the time since boot.
 */
 /**************************************************************************/
-JTIME NoteTimeST()
+JTIME NoteTimeST(void)
 {
 
     // Handle timer tick wrap by resetting the base
@@ -1306,7 +1306,7 @@ bool NoteGetEnv(const char *variable, const char *defaultVal, char *buf, uint32_
   @returns boolean. `true` if connected.
 */
 /**************************************************************************/
-bool NoteIsConnected()
+bool NoteIsConnected(void)
 {
     connectivityTimer = 0;
     return NoteIsConnectedST();
@@ -1318,7 +1318,7 @@ bool NoteIsConnected()
   @returns boolean. `true` if connected.
 */
 /**************************************************************************/
-bool NoteIsConnectedST()
+bool NoteIsConnectedST(void)
 {
     if (timerExpiredSecs(&connectivityTimer, suppressionTimerSecs)) {
         J *rsp = NoteRequestResponse(NoteNewRequest("hub.status"));
@@ -1454,7 +1454,7 @@ bool NoteSetLocation(JNUMBER lat, JNUMBER lon)
   @returns boolean. `true` if the location information was cleared.
 */
 /**************************************************************************/
-bool NoteClearLocation()
+bool NoteClearLocation(void)
 {
     bool success = false;
     J *req = NoteNewRequest("card.location.mode");
@@ -2371,7 +2371,7 @@ typedef struct objHeader_s {
   @returns The number of bytes of memory available on the Notecard.
 */
 /**************************************************************************/
-uint32_t NoteMemAvailable()
+uint32_t NoteMemAvailable(void)
 {
 
     // Allocate progressively smaller and smaller chunks
