@@ -8,6 +8,9 @@
  the
  <a href="https://github.com/blues/note-c/blob/master/LICENSE">LICENSE</a>
  file.
+
+ This library bundles the <a href="https://github.com/DaveGamble/cJSON">cJSON
+ JSON parser library</a>.
  */
 
 #pragma once
