@@ -69,7 +69,12 @@ extern "C"
 #define JIsReference 256
 #define JStringIsConst 512
 
-/* The J structure: */
+/*!
+ @brief The core JSON object type used by note-c.
+
+ When using note-c, treat this struct as opaque. You should never have to work
+ directly with its members.
+ */
 typedef struct J {
     /* next/prev allow you to walk array/object chains. Alternatively, use GetArraySize/GetArrayItem/GetObjectItem */
     struct J *next;

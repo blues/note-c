@@ -17,6 +17,7 @@ endif()
 option(NOTE_C_BUILD_TESTS "Build tests." OFF)
 option(NOTE_C_COVERAGE "Compile for test NOTE_C_COVERAGE reporting." OFF)
 option(NOTE_C_MEM_CHECK "Run tests with Valgrind." OFF)
+option(NOTE_C_BUILD_DOCS "Build docs." OFF)
 
 set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(note_c SHARED)
@@ -79,3 +80,7 @@ if(NOTE_C_BUILD_TESTS)
 
     add_subdirectory(test)
 endif(NOTE_C_BUILD_TESTS)
+
+if(NOTE_C_BUILD_DOCS)
+    add_subdirectory(docs)
+endif(NOTE_C_BUILD_DOCS)

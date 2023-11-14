@@ -182,17 +182,15 @@ static nTransactionFn notecardTransaction = NULL;
 static nReceiveFn notecardChunkedReceive = NULL;
 static nTransmitFn notecardChunkedTransmit = NULL;
 
-//**************************************************************************/
 /*!
-  @brief  Set the default memory and timing hooks if they aren't already set
-  @param   mallocfn  The default memory allocation `malloc`
-  function to use.
-  @param   freefn  The default memory free
-  function to use.
-  @param   delayfn  The default delay function to use.
-  @param   millisfn  The default 'millis' function to use.
-*/
-/**************************************************************************/
+ @brief  Set the default memory and timing hooks if they aren't already set
+ @param   mallocfn  The default memory allocation `malloc`
+ function to use.
+ @param   freefn  The default memory free
+ function to use.
+ @param   delayfn  The default delay function to use.
+ @param   millisfn  The default 'millis' function to use.
+ */
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn)
 {
     if (hookMalloc == NULL) {
@@ -209,23 +207,22 @@ void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMs
     }
 }
 
-//**************************************************************************/
 /*!
-  @brief  Set the platform-specific memory and timing hooks.
-  @param   mallocfn  The platform-specific memory allocation `malloc`
-  function to use.
-  @param   freefn  The platform-specific memory free
-  function to use.
-  @param   delayfn  The platform-specific delay function to use.
-  @param   millisfn  The platform-specific 'millis' function to use.
+ @brief Set the platform-specific memory and timing hooks.
+
+ @param mallocHook The platform-specific memory allocation function (i.e.
+        `malloc`).
+ @param freeHook The platform-specific memory free function (i.e. `free`).
+ @param delayMsHook The platform-specific millisecond delay function.
+ @param getMsHook The platform-specific millisecond counter function.
 */
-/**************************************************************************/
-void NoteSetFn(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn)
+void NoteSetFn(mallocFn mallocHook, freeFn freeHook, delayMsFn delayMsHook,
+               getMsFn getMsHook)
 {
-    hookMalloc = mallocfn;
-    hookFree = freefn;
-    hookDelayMs = delayfn;
-    hookGetMs = millisfn;
+    hookMalloc = mallocHook;
+    hookFree = freeHook;
+    hookDelayMs = delayMsHook;
+    hookGetMs = getMsHook;
 }
 
 //**************************************************************************/
@@ -284,51 +281,48 @@ void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn, 
     hookUnlockNote = unlockNotefn;
 }
 
-//**************************************************************************/
 /*!
-  @brief  Set the platform-specific mutex functions for I2C.
-  @param   lockI2Cfn  The platform-specific I2C lock function to use.
-  @param   unlockI2Cfn  The platform-specific I2C unlock function to use.
-*/
-/**************************************************************************/
+ @brief Set the platform-specific mutex functions for I2C.
+
+ @param lockI2Cfn The platform-specific I2C lock function.
+ @param unlockI2Cfn The platform-specific I2C unlock function.
+ */
 void NoteSetFnI2CMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn)
 {
     hookLockI2C = lockI2Cfn;
     hookUnlockI2C = unlockI2Cfn;
 }
 
-//**************************************************************************/
 /*!
-  @brief  Set the platform-specific mutex functions for the Notecard.
-  @param   lockNotefn  The platform-specific Notecard lock function to use.
-  @param   unlockNotefn  The platform-specific Notecard unlock function
-  to use.
-*/
-/**************************************************************************/
-void NoteSetFnNoteMutex(mutexFn lockNotefn, mutexFn unlockNotefn)
+ @brief  Set the platform-specific mutex functions for the Notecard.
+
+ @param lockFn The platform-specific Notecard lock function.
+ @param unlockFn The platform-specific Notecard unlock function.
+ */
+void NoteSetFnNoteMutex(mutexFn lockFn, mutexFn unlockFn)
 {
-    hookLockNote = lockNotefn;
-    hookUnlockNote = unlockNotefn;
+    hookLockNote = lockFn;
+    hookUnlockNote = unlockFn;
 }
 
-//**************************************************************************/
 /*!
-  @brief  Set the platform-specific Serial communication functions for the
-  Notecard.
-  @param   resetfn  The platform-specific Serial reset function to use.
-  @param   transmitfn  The platform-specific Serial transmit function to use.
-  @param   availfn  The platform-specific Serial available function to use.
-  @param   receivefn  The platform-specific Serial receive function to use.
+ @brief Set the platform-specific hooks for communicating with the Notecard over
+        serial.
+
+ @param resetFn The platform-specific serial reset function.
+ @param transmitFn The platform-specific serial transmit function.
+ @param availFn The platform-specific serial available function.
+ @param receiveFn The platform-specific serial receive function.
 */
-/**************************************************************************/
-void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn transmitfn, serialAvailableFn availfn, serialReceiveFn receivefn)
+void NoteSetFnSerial(serialResetFn resetFn, serialTransmitFn transmitFn,
+                     serialAvailableFn availFn, serialReceiveFn receiveFn)
 {
     hookActiveInterface = interfaceSerial;
 
-    hookSerialReset = resetfn;
-    hookSerialTransmit = transmitfn;
-    hookSerialAvailable = availfn;
-    hookSerialReceive = receivefn;
+    hookSerialReset = resetFn;
+    hookSerialTransmit = transmitFn;
+    hookSerialAvailable = availFn;
+    hookSerialReceive = receiveFn;
 
     notecardReset = serialNoteReset;
     notecardTransaction = serialNoteTransaction;
@@ -336,28 +330,32 @@ void NoteSetFnSerial(serialResetFn resetfn, serialTransmitFn transmitfn, serialA
     notecardChunkedTransmit = serialChunkedTransmit;
 }
 
-//**************************************************************************/
 /*!
-  @brief  Set the platform-specific I2C communication functions for the
-  Notecard.
-  @param   i2caddress  The I2C address to use for Notecard communication.
-  @param   i2cmax  The I2C maximum segment size to use for Notecard
-  communication.
-  @param   resetfn  The platform-specific I2C reset function to use.
-  @param   transmitfn  The platform-specific I2C transmit function to use.
-  @param   receivefn  The platform-specific I2C receive function to use.
-*/
-/**************************************************************************/
-void NoteSetFnI2C(uint32_t i2caddress, uint32_t i2cmax, i2cResetFn resetfn, i2cTransmitFn transmitfn, i2cReceiveFn receivefn)
+ @brief Set the platform-specific hooks for communicating with the Notecard over
+        I2C, as well as the I2C address of the Notecard and maximum transmission
+        size.
+
+  @param notecardAddr The I2C address of the Notecard. Pass 0 to use the default
+         address.
+  @param maxTransmitSize The max number of bytes to send to the Notecard in a
+         single I2C segment. Pass 0 to use the default maximum transmission
+         size.
+  @param resetFn The platform-specific I2C reset function.
+  @param transmitFn The platform-specific I2C transmit function.
+  @param receiveFn The platform-specific I2C receive function.
+ */
+void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
+                  i2cResetFn resetFn, i2cTransmitFn transmitFn,
+                  i2cReceiveFn receiveFn)
 {
-    i2cAddress = i2caddress;
-    i2cMax = i2cmax;
+    i2cAddress = notecardAddr;
+    i2cMax = maxTransmitSize;
 
     hookActiveInterface = interfaceI2C;
 
-    hookI2CReset = resetfn;
-    hookI2CTransmit = transmitfn;
-    hookI2CReceive = receivefn;
+    hookI2CReset = resetFn;
+    hookI2CTransmit = transmitFn;
+    hookI2CReceive = receiveFn;
 
     notecardReset = i2cNoteReset;
     notecardTransaction = i2cNoteTransaction;
