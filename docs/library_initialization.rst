@@ -149,8 +149,6 @@ The code below from `Src/main.c <https://github.com/blues/note-stm32l4/blob/mast
       NoteSetFnSerial(noteSerialReset, noteSerialTransmit, noteSerialAvailable, noteSerialReceive);
    #endif
 
-TODO: noteSerialAvailable and noteSerialReceive
-
 ``noteSerialReset``
 ^^^^^^^^^^^^^^^^^^^
 
