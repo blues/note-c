@@ -957,7 +957,14 @@ fail:
     return NULL;
 }
 
-/* Default options for JParse */
+/*!
+ @brief Parse the passed in C-string as JSON and return a `J` object
+        representing it.
+
+ @param value The JSON object as a C-string.
+
+ @returns A `J` object or NULL on error (e.g. the string was invalid JSON).
+ */
 N_CJSON_PUBLIC(J *) JParse(const char *value)
 {
     return JParseWithOpts(value, 0, 0);
