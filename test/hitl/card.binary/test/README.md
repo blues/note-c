@@ -1,7 +1,7 @@
 
 ## `card.binary`` Tests
 
-THe tests in this project aim to exhaustively test the `card.binary` feature on Notecard. 
+The tests in this project aim to exhaustively test the `card.binary` feature on Notecard.
 
 The tests have a number of variations:
 * The Notecard communications interface used to send and validate the binary data
@@ -46,7 +46,7 @@ In outline, the tests operate like this:
         web.post unchunked: validate the final web.post returns 200, the total length and MD5 received by the md5 server and the number of chunks sent
 ```
 
-THe tests perform validation at each step, from each chunk sent all the way to verifying successful
+The tests perform validation at each step, from each chunk sent all the way to verifying successful
 transmission of the complete image.
 
 

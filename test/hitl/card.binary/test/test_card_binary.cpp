@@ -311,6 +311,9 @@ const size_t EXPECTED_MAX_BINARY_LENGTH = 130554;
 void test_get_max_binary_length()
 {
     assert_initialize_notecard(NOTECARD_IF_I2C);
+
+    AssertNoteBinaryReset();
+
     J* rsp = NoteRequestResponseWithRetry(NoteNewRequest("card.binary"), 10);
     J* max_item = nullptr;
     if (rsp==nullptr || !JIsNullString(rsp, "err") || !JIsNumber(max_item=JGetObjectItem(rsp, "max"))) {
@@ -342,16 +345,17 @@ void base_test_max_length(NotecardInterface nif, const BinaryTestArgs& testArgs)
     }
     buf[64] = 0;            // throw in some "special" values.
     buf[128] = '\n';
+    buf[132] = '\r';
     buf[256] = 0x7;
     BufferBinaryGenerator pattern(buf, sizeof(buf));
     RepeatedBinaryGenerator image(pattern, max_binary_length);
     binaryTransferTest("maxlength", image, nif, 0, testArgs);
 }
 
-TEST(test_max_length_serial)
-{
-    base_test_max_length(NOTECARD_IF_SERIAL, validate);
-}
+// TEST(test_max_length_serial)
+// {
+//     base_test_max_length(NOTECARD_IF_SERIAL, validate);
+// }
 
 TEST(test_max_length_i2c)
 {
@@ -391,6 +395,7 @@ TEST(test_max_length_aux_serial)
 
 void waitForNotecardConnected()
 {
+    // TODO: waitForNotecardConnected takes timeout in milliseconds, so 5*60 seems wrong?
     TEST_ASSERT_TRUE_MESSAGE(NotecardBinary::waitForNotecardConnected(5*60), "Notecard not connected");
 }
 
@@ -403,22 +408,20 @@ void testsuite_card_binary()
     TEST_SUITE(card_binary);
 
     // initialize max_binary_length for the max_length tests
-    RUN_TEST(test_get_max_binary_length);
+    RUN_FILTER(test_get_max_binary_length);
 
-    RUN_TEST(waitForNotecardConnected);
+    RUN_FILTER(waitForNotecardConnected);
 
-    bool smoke_tests = false;
+    // TODO: This test doesn't work with a note.add because it'll try to do a web.get to validate and find nothing there.
+    // {
+    //     BinaryTestArgs max1k_note_add = BinaryTestArgs().maxCardBinary(1*1023).handler(BinaryTestArgs::NOTE_ADD);
+    //     RUN_SIZE(Random_1234, BuildRandom, NOTECARD_IF_I2C, i2c, 5*1026, 5k, max1k_note_add, 1234);
+    // }
 
-    {
-        BinaryTestArgs max1k_note_add = BinaryTestArgs().maxCardBinary(1*1023).handler(BinaryTestArgs::NOTE_ADD);
-        RUN_SIZE(Random_1234, BuildRandom, NOTECARD_IF_I2C, i2c, 5*1026, 5k, max1k_note_add, 1234);
-    }
-
-    if (smoke_tests) {
-        RUN_SMOKE_TESTS(NOTECARD_IF_I2C, i2c);
-        RUN_SMOKE_TESTS(NOTECARD_IF_SERIAL, serial);
-        RUN_SMOKE_TESTS(NOTECARD_IF_AUX_SERIAL, auxserial);
-    }
+    RUN_SMOKE_TESTS(NOTECARD_IF_I2C, i2c);
+    set_aux_serial_baudrate();
+    RUN_SMOKE_TESTS(NOTECARD_IF_AUX_SERIAL, auxserial);
+    // RUN_SMOKE_TESTS(NOTECARD_IF_SERIAL, serial);
 
 //    RUN_AUX_SERIAL_ALL_BAUDRATES(all_sevens, AllSevens, TINY_SIZE, TINY_SIZE_NAME);
 //    RUN_AUX_SERIAL_ALL_BAUDRATES(all_sevens, AllSevens, 4*1024, 4k);
@@ -434,9 +437,8 @@ void testsuite_card_binary()
     RUN_ALL_SIZES_ALL_IFACES(all_zeros, AllZeros);
     RUN_ALL_SIZES_ALL_IFACES(72k_binary, SmallBinaryImage);
 #endif
-    if (false) {
-        RUN_FILTER(test_max_length_aux_serial);
-        RUN_FILTER(test_max_length_serial);
-        RUN_FILTER(test_max_length_i2c);
-    }
+
+    RUN_FILTER(test_max_length_i2c);
+    RUN_FILTER(test_max_length_aux_serial);
+    // RUN_FILTER(test_max_length_serial);
 }

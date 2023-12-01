@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Generate ND5 Server Token
+      - name: Generate MD5 Server Token
         run: |
           [ -n "$MD5SRV_TOKEN" ] || echo "MD5SRV_TOKEN=`uuidgen`" >> $GITHUB_ENV
           # propagate the environment variable so that it's available in the `env` context
@@ -134,7 +134,7 @@ jobs:
         run: |
           MD5SRV_URL="${{steps.localtunnel.outputs.url-1}}"
           echo "MD5SRV_URL=$MD5SRV_URL" >> $GITHUB_ENV
-  
+
       - name: Prep tunnelmole
         if: env.START_TUNNELMOLE!='false'
         uses: pyTooling/Actions/with-post-step@v0.4.5

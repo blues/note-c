@@ -6,12 +6,12 @@ The md5 server and localtunnel are long running servers so you'll need a few she
 
 ```bash
    cd test/hitl/scripts
-   python3 -m md5srv.py --token <any-string> --save -dir test_files
+   python3 -m md5srv.py --token <any-string> --save --dir test_files
 ```
 
-2. Install localtunnel if you don't already have it `npm install -g localtunn`
+2. Install localtunnel if you don't already have it `npm install -g localtunnel`
 
-3. Launch localtunnel using your own subdomain (e.g. bobscobsjobs), so it doesn't keep changing. Localtunnel can crash when the server port goes away, so may need to be relauched. 
+3. Launch localtunnel using your own subdomain (e.g. bobscobsjobs), so it doesn't keep changing. Localtunnel can crash when the server port goes away, so may need to be relauched.
 
 ```bash
    npx localtunnel -p 8080 -s <mysubdomain>
@@ -19,9 +19,9 @@ The md5 server and localtunnel are long running servers so you'll need a few she
 
 4. Create a proxy route in Notehub with a suitable name and a unique alias, such as "cobstest". The url should be the same as the output from localtunnel. Add an additional header `X-Access-Token` with the value of your token that was passed to the md5srv above.
 
-5. Edit `tset/hitl/card.binary/platformio.ini` and add these lines:
+5. Edit `test/hitl/card.binary/platformio.ini` and add these lines:
 ```
-  build_flags = 
+  build_flags =
      ...
 	'-D NOTEHUB_PROXY_ROUTE_ALIAS="cobstest"'
 	'-D PRODUCT_UID="<your product UID>"'
@@ -39,7 +39,7 @@ On pressing F5, a successful build looks like
 Processing debug (platform: ststm32; board: bw_swan_r5; framework: arduino)
 ---------------------------------------------------------------------------------------------
 Building...
- *  Terminal will be reused by tasks, press any key to close it. 
+ *  Terminal will be reused by tasks, press any key to close it.
 ```
 
 8. Run the tests with
