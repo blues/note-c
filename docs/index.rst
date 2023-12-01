@@ -6,7 +6,7 @@
 note-c
 ======
 
-note-c is the official C library for communicating with a `Blues Notecard <https://blues.io/products/notecard/>`_. The source code is open source and `available on GitHub <https://github.com/blues/note-c>`_ under the MIT license.
+note-c is the official C library for communicating with a `Blues Notecard <https://blues.com/products/notecard/>`_. The source code is open source and `available on GitHub <https://github.com/blues/note-c>`_ under the MIT license.
 
 .. toctree::
    :maxdepth: 1
