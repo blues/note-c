@@ -8,6 +8,9 @@ on:
     # * is a special character in YAML so you have to quote this string
     - cron:  '45 4 * * 1'  # 4.45am every Monday
 
+permissions:
+  checks: write
+
 jobs:
   md5srv-test:
      uses: ./.github/workflows/md5srv-tests.yml
