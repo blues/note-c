@@ -144,8 +144,14 @@ Functions
 
 .. doxygenfunction:: JAddArrayToObject
 
+.. doxygenfunction:: JParse
 
 Types
 -----
 
 .. doxygenstruct:: J
+
+Macros
+------
+
+.. doxygendefine:: N_CJSON_NESTING_LIMIT
