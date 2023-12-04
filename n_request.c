@@ -38,11 +38,6 @@ static bool notecardSupportsCrc = false;
 #endif
 
 /*!
- @defgroup json_requests Functions for creating and sending requests to a
-           Notecard.
- */
-
-/*!
  @internal
 
  @brief Create a JSON object containing an error message.

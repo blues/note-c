@@ -5,7 +5,7 @@ API Reference
 .. contents:: Table of Contents
    :depth: 2
 
-This pages covers the core functions and types that make up the note-c API.
+These pages cover the core functions and types that make up the note-c API.
 
 Dynamic Memory and Timing Hooks
 ===============================
