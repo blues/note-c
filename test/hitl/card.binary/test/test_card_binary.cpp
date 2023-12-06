@@ -352,10 +352,10 @@ void base_test_max_length(NotecardInterface nif, const BinaryTestArgs& testArgs)
     binaryTransferTest("maxlength", image, nif, 0, testArgs);
 }
 
-// TEST(test_max_length_serial)
-// {
-//     base_test_max_length(NOTECARD_IF_SERIAL, validate);
-// }
+TEST(test_max_length_serial)
+{
+    base_test_max_length(NOTECARD_IF_SERIAL, validate);
+}
 
 TEST(test_max_length_i2c)
 {
@@ -421,14 +421,12 @@ void testsuite_card_binary()
     RUN_SMOKE_TESTS(NOTECARD_IF_I2C, i2c);
     set_aux_serial_baudrate();
     RUN_SMOKE_TESTS(NOTECARD_IF_AUX_SERIAL, auxserial);
-    // RUN_SMOKE_TESTS(NOTECARD_IF_SERIAL, serial);
+    RUN_SMOKE_TESTS(NOTECARD_IF_SERIAL, serial);
 
 //    RUN_AUX_SERIAL_ALL_BAUDRATES(all_sevens, AllSevens, TINY_SIZE, TINY_SIZE_NAME);
 //    RUN_AUX_SERIAL_ALL_BAUDRATES(all_sevens, AllSevens, 4*1024, 4k);
 
     //RUN_SIZE(all_ones, BuildAllSameValue, NOTECARD_IF_SERIAL, serial, 6*1024, 6k, 1);
-
-
 
 #if 0
     RUN_ALL_SIZES_ALL_IFACES(all_sevens, AllSevens);
@@ -440,5 +438,5 @@ void testsuite_card_binary()
 
     RUN_FILTER(test_max_length_i2c);
     RUN_FILTER(test_max_length_aux_serial);
-    // RUN_FILTER(test_max_length_serial);
+    RUN_FILTER(test_max_length_serial);
 }
