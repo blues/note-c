@@ -152,6 +152,9 @@ jobs:
             echo Stop Tunnelmole
             [ -n "$TMOLE_PID" ] || (echo "TMOLE_PID not set" && exit 1)
             [ -z "$TMOLE_PID" ] || kill $TMOLE_PID
+            # Remove the tmole_ready file, which may be leftover from a prior
+            # run.
+            rm -f $GITHUB_WORKSPACE/tmole_ready
 
       - name: Start tunnelmole
         uses: JarvusInnovations/background-action@v1
@@ -159,9 +162,9 @@ jobs:
         with:
           run: |
             bash ./scripts/run_tunnelmole.sh
+          log-output-if: true
           wait-on:
-            # just a dummy wait-on since this is required.
-            file:${{github.workspace}}/tmole.log
+            file:${{github.workspace}}/tmole_ready
 
       - name: Check server is available
         run: |
