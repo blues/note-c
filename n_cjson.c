@@ -417,7 +417,7 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
     /* This checks for NaN and Infinity */
     if ((d * 0) != 0) {
         char *nbuf = (char *) number_buffer;
-        strcpy(nbuf, "null");
+        strlcpy(nbuf, "null", JNTOA_MAX);
         length = strlen(nbuf);
     } else {
 #if !CJSON_NO_CLIB
@@ -1160,7 +1160,7 @@ static Jbool print_value(const J * const item, printbuffer * const output_buffer
         if (output == NULL) {
             return false;
         }
-        strcpy((char*)output, c_null);
+        strlcpy((char*)output, c_null, c_null_len+1);
         return true;
 
     case JFalse:
@@ -1168,7 +1168,7 @@ static Jbool print_value(const J * const item, printbuffer * const output_buffer
         if (output == NULL) {
             return false;
         }
-        strcpy((char*)output, c_false);
+        strlcpy((char*)output, c_false, c_false_len+1);
         return true;
 
     case JTrue:
@@ -1176,7 +1176,7 @@ static Jbool print_value(const J * const item, printbuffer * const output_buffer
         if (output == NULL) {
             return false;
         }
-        strcpy((char*)output, c_true);
+        strlcpy((char*)output, c_true, c_true_len+1);
         return true;
 
     case JNumber:
