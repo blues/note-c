@@ -18,6 +18,7 @@ option(NOTE_C_BUILD_TESTS "Build tests." OFF)
 option(NOTE_C_COVERAGE "Compile for test NOTE_C_COVERAGE reporting." OFF)
 option(NOTE_C_MEM_CHECK "Run tests with Valgrind." OFF)
 option(NOTE_C_BUILD_DOCS "Build docs." OFF)
+option(NOTE_C_NO_LIBC "Build the library without linking against libc, generating errors for any undefined symbols." OFF)
 
 set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(note_c SHARED)
@@ -55,6 +56,16 @@ target_include_directories(
     note_c
     PUBLIC ${NOTE_C_SRC_DIR}
 )
+
+if(NOTE_C_NO_LIBC)
+    target_link_options(
+        note_c
+        PRIVATE
+            -nostdlib
+            -nodefaultlibs
+            LINKER:--no-undefined
+    )
+endif()
 
 if(NOTE_C_BUILD_TESTS)
     # Including CTest here rather than in test/CMakeLists.txt allows us to run
