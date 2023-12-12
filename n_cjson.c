@@ -82,6 +82,12 @@
 
 #define PRINT_TAB_CHARS     4
 
+#ifdef NOTE_C_TEST
+#include "test_static.h"
+#else
+#define NOTE_C_STATIC static
+#endif
+
 typedef struct {
     const unsigned char *json;
     size_t position;
@@ -115,6 +121,17 @@ N_CJSON_PUBLIC(const char*) JVersion(void)
     return NOTE_C_STRINGIZE(N_CJSON_VERSION_MAJOR) "." NOTE_C_STRINGIZE(N_CJSON_VERSION_MINOR) "." NOTE_C_STRINGIZE(N_CJSON_VERSION_PATCH);
 }
 
+NOTE_C_STATIC char Jtolower(char c)
+{
+    if (c < 'A' || c > 'Z') {
+        return c;
+    }
+
+    // 32 is the distance between any ASCII uppercase letter and its lowercase
+    // counterpart.
+    return c + 32;
+}
+
 /* Case insensitive string comparison, doesn't consider two NULL pointers equal though */
 static int case_insensitive_strcmp(const unsigned char *string1, const unsigned char *string2)
 {
@@ -126,13 +143,13 @@ static int case_insensitive_strcmp(const unsigned char *string1, const unsigned 
         return 0;
     }
 
-    for(; tolower(*string1) == tolower(*string2); (void)string1++, string2++) {
+    for(; Jtolower(*string1) == Jtolower(*string2); (void)string1++, string2++) {
         if (*string1 == '\0') {
             return 0;
         }
     }
 
-    return tolower(*string1) - tolower(*string2);
+    return Jtolower(*string1) - Jtolower(*string2);
 }
 
 static unsigned char* Jstrdup(const unsigned char* string)
@@ -417,7 +434,7 @@ static Jbool print_number(const J * const item, printbuffer * const output_buffe
     /* This checks for NaN and Infinity */
     if ((d * 0) != 0) {
         char *nbuf = (char *) number_buffer;
-        strcpy(nbuf, "null");
+        strlcpy(nbuf, "null", JNTOA_MAX);
         length = strlen(nbuf);
     } else {
 #if !CJSON_NO_CLIB
@@ -1160,7 +1177,7 @@ static Jbool print_value(const J * const item, printbuffer * const output_buffer
         if (output == NULL) {
             return false;
         }
-        strcpy((char*)output, c_null);
+        strlcpy((char*)output, c_null, c_null_len+1);
         return true;
 
     case JFalse:
@@ -1168,7 +1185,7 @@ static Jbool print_value(const J * const item, printbuffer * const output_buffer
         if (output == NULL) {
             return false;
         }
-        strcpy((char*)output, c_false);
+        strlcpy((char*)output, c_false, c_false_len+1);
         return true;
 
     case JTrue:
@@ -1176,7 +1193,7 @@ static Jbool print_value(const J * const item, printbuffer * const output_buffer
         if (output == NULL) {
             return false;
         }
-        strcpy((char*)output, c_true);
+        strlcpy((char*)output, c_true, c_true_len+1);
         return true;
 
     case JNumber:
