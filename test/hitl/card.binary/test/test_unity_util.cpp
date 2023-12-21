@@ -1,3 +1,5 @@
+#ifdef NOTE_C_TEST
+
 #include "test_unity_util.h"
 #include <string.h>
 
@@ -32,3 +34,5 @@ bool filterTest(const char* name)
     }
     return true;
 }
+
+#endif // NOTE_C_TEST

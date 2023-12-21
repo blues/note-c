@@ -1,3 +1,5 @@
+#ifdef NOTE_C_TEST
+
 #include "test_card_binary.h"
 #include "test_binary_generators.h"
 #include "test_unity_util.h"
@@ -34,3 +36,5 @@ void loop()
 // #if SERIAL_RX_BUFFER_SIZE!=16384
 //  #error serial buffer is too small
 // #endif
+
+#endif // NOTE_C_TEST

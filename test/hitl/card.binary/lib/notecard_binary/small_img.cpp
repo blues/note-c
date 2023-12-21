@@ -1,3 +1,5 @@
+#ifdef NOTE_C_TEST
+
 #include "small_img.h"
 
 const uint8_t small_img_map[] = {
@@ -4916,3 +4918,5 @@ const uint8_t small_img_map[] = {
     0x00, 0x28, 0xa2, 0x8a, 0x00, 0xff, 0xd9
 };
 size_t small_img_len = 73687;
+
+#endif // NOTE_C_TEST

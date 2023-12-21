@@ -1,5 +1,6 @@
-#include "NotecardBinary.h"
+#ifdef NOTE_C_TEST
 
+#include "NotecardBinary.h"
 
 void setup()
 {
@@ -15,3 +16,5 @@ void loop()
 {
 
 }
+
+#endif // NOTE_C_TEST

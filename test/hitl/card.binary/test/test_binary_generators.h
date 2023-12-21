@@ -1,3 +1,5 @@
+#ifdef NOTE_C_TEST
+
 #pragma once
 #include "NotecardBinary.h"
 
@@ -58,3 +60,4 @@ struct BuildRandom {
     }
 };
 
+#endif // NOTE_C_TEST

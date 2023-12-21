@@ -1,3 +1,5 @@
+#ifdef NOTE_C_TEST
+
 #pragma once
 
 #include <Notecard.h>
@@ -46,3 +48,4 @@ bool set_aux_serial_baudrate(size_t baudrate=NOTECARD_IF_AUX_SERIAL_BAUDRATE, No
 
 extern Notecard notecard;
 
+#endif // NOTE_C_TEST
