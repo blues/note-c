@@ -301,18 +301,49 @@ const BinaryTestArgs* currentTestArgs;
   RUN_AUX_SERIAL_ALL_BAUDRATES(imagename, image, LARGE_SIZE, LARGE_SIZE_NAME, testArgs, __VA_ARGS__); \
   RUN_AUX_SERIAL_ALL_BAUDRATES(imagename, image, MAX_SIZE, MAX_SIZE_NAME, testArgs, __VA_ARGS__);
 
+static const size_t R5_MAX_BINARY_LENGTH = 130554;
+static const size_t U5_MAX_BINARY_LENGTH = 261110;
 
+size_t get_expected_max_binary_length()
+{
+    size_t ret = 0;
+    J* rsp = NoteRequestResponseWithRetry(NoteNewRequest("card.version"), 10);
+    if (rsp == nullptr) {
+        notecard.logDebug("No response to card.version.");
+    } else {
+        char *target = JGetString(JGetObject(rsp, "body"), "target");
+        if (target == nullptr) {
+            notecard.logDebug("Failed to get target from card.version body.");
+        } else {
+            if (strcmp(target, "r5") == 0) {
+                ret = R5_MAX_BINARY_LENGTH;
+            } else if (strcmp(target, "u5") == 0) {
+                ret = U5_MAX_BINARY_LENGTH;
+            } else {
+                notecard.logDebugf("Unrecognized target: %s.", target);
+            }
+        }
+    }
 
-const size_t EXPECTED_MAX_BINARY_LENGTH = 130554;
+    JDelete(rsp);
+
+    return ret;
+}
 
 /**
  * @brief Retrieves the maximum card.binary length.
  */
 void test_get_max_binary_length()
 {
+    size_t expected_max_binary_length = 0;
     assert_initialize_notecard(NOTECARD_IF_I2C);
 
     AssertNoteBinaryReset();
+
+    expected_max_binary_length = get_expected_max_binary_length();
+    if (expected_max_binary_length == 0) {
+        TEST_FAIL_MESSAGE("Failed to determine max binary length.");
+    }
 
     J* rsp = NoteRequestResponseWithRetry(NoteNewRequest("card.binary"), 10);
     J* max_item = nullptr;
@@ -324,7 +355,7 @@ void test_get_max_binary_length()
             TEST_FAIL_MESSAGE("card.binary max is too small.");
         }
         max_binary_length = length;
-        TEST_ASSERT_EQUAL(EXPECTED_MAX_BINARY_LENGTH, max_binary_length);
+        TEST_ASSERT_EQUAL(expected_max_binary_length, max_binary_length);
     }
     JDelete(rsp);
 }
@@ -396,7 +427,7 @@ TEST(test_max_length_aux_serial)
 void waitForNotecardConnected()
 {
     // TODO: waitForNotecardConnected takes timeout in milliseconds, so 5*60 seems wrong?
-    TEST_ASSERT_TRUE_MESSAGE(NotecardBinary::waitForNotecardConnected(5*60), "Notecard not connected");
+    TEST_ASSERT_TRUE_MESSAGE(NotecardBinary::waitForNotecardConnected(NOT_CONNECTED_TIMEOUT), "Notecard not connected");
 }
 
 /**

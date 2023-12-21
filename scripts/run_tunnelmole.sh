@@ -15,7 +15,6 @@ exec 3< tmole.log
 read <&3 output
 read <&3 output
 MD5SRV_URL=`echo "$output" | grep https | cut -d " " -f1`
-echo "MD5SRV_URL=$MD5SRV_URL"
 [ -n "$MD5SRV_URL" ] || (echo "Could not fetch tunnelmole URL" && exit 1)
 echo "MD5SRV_URL=$MD5SRV_URL" >> $GITHUB_ENV
 # Only create tmole_ready once MD5SRV_URL has been set, as the next step in the
