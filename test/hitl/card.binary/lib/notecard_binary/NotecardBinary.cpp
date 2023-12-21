@@ -1,3 +1,5 @@
+#ifdef PLATFORMIO
+
 #include "NotecardBinary.h"
 
 Notecard notecard;
@@ -11,3 +13,5 @@ BufferBinaryGenerator small_image(small_binary);
 
 // ensure the virtual destructor is defined.
 BinaryGenerator::~BinaryGenerator() {}
+
+#endif // PLATFORMIO

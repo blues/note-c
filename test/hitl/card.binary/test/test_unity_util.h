@@ -1,3 +1,4 @@
+#ifdef PLATFORMIO
 
 // This also needs to be added to build_flags in platformio.ini
 #ifndef UNITY_INCLUDE_PRINT_FORMATTED
@@ -31,3 +32,4 @@ extern bool filterTest(const char* name);
         RUN_TEST(func); \
     }
 
+#endif // PLATFORMIO

@@ -1,3 +1,5 @@
+#ifdef PLATFORMIO
+
 #pragma once
 #include "NotecardBinary.h"
 
@@ -58,3 +60,4 @@ struct BuildRandom {
     }
 };
 
+#endif // PLATFORMIO

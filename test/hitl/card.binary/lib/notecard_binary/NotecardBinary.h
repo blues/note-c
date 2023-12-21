@@ -1,3 +1,5 @@
+#ifdef PLATFORMIO
+
 #pragma once
 
 #include <Arduino.h>
@@ -1182,3 +1184,5 @@ public:
 
 extern BinaryImage small_binary;
 extern BufferBinaryGenerator small_image;
+
+#endif // PLATFORMIO
