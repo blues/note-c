@@ -1,4 +1,4 @@
-#ifdef NOTE_C_TEST
+#ifdef PLATFORMIO
 
 #pragma once
 
@@ -1185,4 +1185,4 @@ public:
 extern BinaryImage small_binary;
 extern BufferBinaryGenerator small_image;
 
-#endif // NOTE_C_TEST
+#endif // PLATFORMIO

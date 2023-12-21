@@ -1,4 +1,4 @@
-#ifdef NOTE_C_TEST
+#ifdef PLATFORMIO
 
 #include "NotecardComms.h"
 #include <Arduino.h>
@@ -144,4 +144,4 @@ size_t readDataUntilTimeout(Stream& serial, size_t timeout, uint8_t* buf, size_t
 HardwareSerial Serial2(A0,A3);
 HardwareSerial Serial3(A5,A4); // A5 is RX, A4 is TX
 
-#endif // NOTE_C_TEST
+#endif // PLATFORMIO

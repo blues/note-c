@@ -1,4 +1,4 @@
-#ifdef NOTE_C_TEST
+#ifdef PLATFORMIO
 
 #pragma once
 #include "NotecardBinary.h"
@@ -60,4 +60,4 @@ struct BuildRandom {
     }
 };
 
-#endif // NOTE_C_TEST
+#endif // PLATFORMIO

@@ -1,4 +1,4 @@
-#ifdef NOTE_C_TEST
+#ifdef PLATFORMIO
 
 #include "NotecardBinary.h"
 
@@ -14,4 +14,4 @@ BufferBinaryGenerator small_image(small_binary);
 // ensure the virtual destructor is defined.
 BinaryGenerator::~BinaryGenerator() {}
 
-#endif // NOTE_C_TEST
+#endif // PLATFORMIO

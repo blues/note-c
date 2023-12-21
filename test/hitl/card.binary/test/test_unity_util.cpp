@@ -1,4 +1,4 @@
-#ifdef NOTE_C_TEST
+#ifdef PLATFORMIO
 
 #include "test_unity_util.h"
 #include <string.h>
@@ -35,4 +35,4 @@ bool filterTest(const char* name)
     return true;
 }
 
-#endif // NOTE_C_TEST
+#endif // PLATFORMIO

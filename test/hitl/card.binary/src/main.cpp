@@ -1,4 +1,4 @@
-#ifdef NOTE_C_TEST
+#ifdef PLATFORMIO
 
 #include "NotecardBinary.h"
 
@@ -17,4 +17,4 @@ void loop()
 
 }
 
-#endif // NOTE_C_TEST
+#endif // PLATFORMIO

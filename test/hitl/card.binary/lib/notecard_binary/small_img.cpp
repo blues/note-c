@@ -1,4 +1,4 @@
-#ifdef NOTE_C_TEST
+#ifdef PLATFORMIO
 
 #include "small_img.h"
 
@@ -4919,4 +4919,4 @@ const uint8_t small_img_map[] = {
 };
 size_t small_img_len = 73687;
 
-#endif // NOTE_C_TEST
+#endif // PLATFORMIO

@@ -1,4 +1,4 @@
-#ifdef NOTE_C_TEST
+#ifdef PLATFORMIO
 
 #include "test_card_binary.h"
 #include "test_binary_generators.h"
@@ -37,4 +37,4 @@ void loop()
 //  #error serial buffer is too small
 // #endif
 
-#endif // NOTE_C_TEST
+#endif // PLATFORMIO
