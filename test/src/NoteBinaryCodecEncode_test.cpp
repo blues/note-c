@@ -11,7 +11,7 @@
  *
  */
 
-#ifdef NOTE_C_TEST
+
 
 #include <string.h>
 
@@ -89,4 +89,4 @@ SCENARIO("NoteBinaryCodecEncode")
 
 }
 
-#endif // NOTE_C_TEST
+

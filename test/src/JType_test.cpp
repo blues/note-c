@@ -11,7 +11,7 @@
  *
  */
 
-#ifdef NOTE_C_TEST
+
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -64,4 +64,4 @@ SCENARIO("JType")
 
 }
 
-#endif // NOTE_C_TEST
+

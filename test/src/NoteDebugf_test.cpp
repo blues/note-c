@@ -11,7 +11,7 @@
  *
  */
 
-#ifdef NOTE_C_TEST
+
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -46,4 +46,4 @@ SCENARIO("NoteDebugf")
 
 }
 
-#endif // NOTE_C_TEST
+
