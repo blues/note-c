@@ -124,6 +124,23 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: ./build/test/coverage/lcov.info
 
+  run_low_mem_unit_tests:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build_ci_docker_image]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Load CI Docker image
+        if: ${{ needs.build_ci_docker_image.result == 'success' }}
+        uses: ./.github/actions/load-ci-image
+
+      - name: Run tests with NOTE_LOWMEM defined
+        run: |
+          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_unit_tests.sh ghcr.io/blues/note_c_ci:latest --mem-check --low-mem
+
   run_astyle:
     runs-on: ubuntu-latest
     if: ${{ always() }}

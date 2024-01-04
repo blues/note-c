@@ -12,6 +12,7 @@
  */
 
 #ifdef NOTE_C_TEST
+#ifndef NOTE_LOWMEM
 
 #include <catch2/catch_test_macros.hpp>
 #include "fff.h"
@@ -68,4 +69,5 @@ SCENARIO("crcAdd")
 
 }
 
+#endif // !NOTE_LOWMEM
 #endif // NOTE_C_TEST

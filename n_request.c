@@ -450,8 +450,8 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     // where we can find out that the cmd failed.  Note that a Seqno is included
     // as part of the CRC data so that two identical requests occurring within the
     // modulus of seqno never are mistaken as being the same request being retried.
-#ifndef NOTE_LOWMEM
     uint8_t lastRequestRetries = 0;
+#ifndef NOTE_LOWMEM
     bool lastRequestCrcAdded = false;
     if (!noResponseExpected) {
         char *newJson = crcAdd(json, lastRequestSeqno);
@@ -509,7 +509,6 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     char *responseJSON = NULL;
     J *rsp = NULL;
     while (true) {
-#ifndef NOTE_LOWMEM
         // If no retry possibility, break out
         if (lastRequestRetries > CARD_REQUEST_RETRIES_ALLOWED) {
             break;
@@ -517,7 +516,6 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             // free on retry
             JDelete(rsp);
         }
-#endif // !NOTE_LOWMEM
 
         // reset variables
         rsp = NULL;
@@ -542,7 +540,6 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         // Swap newline-terminator for NULL-terminator
         json[jsonLen] = '\0';
 
-#ifndef NOTE_LOWMEM
         // If there's an I/O error on the transaction, retry
         if (errStr != NULL) {
             JFree(responseJSON);
@@ -553,6 +550,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             continue;
         }
 
+#ifndef NOTE_LOWMEM
         // If we sent a CRC in the request, examine the response JSON to see if
         // it has a CRC error.  Note that the CRC is stripped from the
         // responseJSON as a side-effect of this method.
@@ -564,6 +562,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
             _DelayMs(500);
             continue;
         }
+#endif // !NOTE_LOWMEM
 
         // See if the response JSON can't be unmarshaled, or if it contains an {io} error
         rsp = JParse(responseJSON);
@@ -603,7 +602,6 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
                 continue;
             }
         }
-#endif // !NOTE_LOWMEM
 
         // Transaction completed
         break;

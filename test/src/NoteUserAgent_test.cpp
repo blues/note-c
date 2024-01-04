@@ -13,10 +13,13 @@
 
 #ifdef NOTE_C_TEST
 
+#include "n_lib.h"
 #include <catch2/catch_test_macros.hpp>
 #include "fff.h"
 
-#include "n_lib.h"
+// This has to come after n_lib.h, which will define NOTE_DISABLE_USER_AGENT if
+// NOTE_LOWMEM is defined.
+#ifndef NOTE_DISABLE_USER_AGENT
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, JCreateObject)
@@ -94,4 +97,5 @@ SCENARIO("NoteUserAgent")
 
 }
 
+#endif // !NOTE_DISABLE_USER_AGENT
 #endif // NOTE_C_TEST

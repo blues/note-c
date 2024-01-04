@@ -100,6 +100,10 @@ extern "C" {
 #define ALLOC_CHUNK 128
 #endif
 
+#ifdef NOTE_LOWMEM
+#define NOTE_DISABLE_USER_AGENT
+#endif
+
 // Transactions
 J *noteTransactionShouldLock(J *req, bool lockNotecard);
 const char *i2cNoteTransaction(const char *request, size_t reqLen, char **response, size_t timeoutMs);
