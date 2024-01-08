@@ -1,4 +1,3 @@
-#ifdef PLATFORMIO
 
 #include "NotecardBinary.h"
 #include <Arduino.h>
@@ -89,4 +88,4 @@ void testsuite_binary_generators()
     RUN_TEST(test_random_generator);
 }
 
-#endif // PLATFORMIO
+

@@ -1,4 +1,3 @@
-#ifdef PLATFORMIO
 
 #pragma once
 
@@ -1185,4 +1184,4 @@ public:
 extern BinaryImage small_binary;
 extern BufferBinaryGenerator small_image;
 
-#endif // PLATFORMIO
+

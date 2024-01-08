@@ -11,7 +11,7 @@
  *
  */
 
-#ifdef NOTE_C_TEST
+
 
 #include "n_lib.h"
 #include <catch2/catch_test_macros.hpp>
@@ -98,4 +98,3 @@ SCENARIO("NoteUserAgent")
 }
 
 #endif // !NOTE_DISABLE_USER_AGENT
-#endif // NOTE_C_TEST

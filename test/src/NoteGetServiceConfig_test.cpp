@@ -11,7 +11,7 @@
  *
  */
 
-#ifdef NOTE_C_TEST
+
 
 #include <catch2/catch_test_macros.hpp>
 #include "fff.h"
@@ -96,4 +96,4 @@ SCENARIO("NoteGetServiceConfig")
 
 }
 
-#endif // NOTE_C_TEST
+

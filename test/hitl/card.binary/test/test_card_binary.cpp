@@ -1,4 +1,3 @@
-#ifdef PLATFORMIO
 
 #include "NotecardBinary.h"
 #include "NotecardComms.h"
@@ -473,4 +472,4 @@ void testsuite_card_binary()
     RUN_FILTER(test_max_length_serial);
 }
 
-#endif // PLATFORMIO
+

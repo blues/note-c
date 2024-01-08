@@ -1,4 +1,3 @@
-#ifdef PLATFORMIO
 
 #include "NotecardBinary.h"
 
@@ -17,4 +16,4 @@ void loop()
 
 }
 
-#endif // PLATFORMIO
+
