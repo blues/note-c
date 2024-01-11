@@ -20,7 +20,7 @@
 #include "time_mocks.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
+FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 FAKE_VOID_FUNC(NoteDebug, const char *)
@@ -85,7 +85,7 @@ SCENARIO("NoteDebugSyncStatus")
 
         SECTION("Millisecond rollover") {
             NoteGetMs_fake.custom_fake = NULL;
-            long unsigned int getMsReturnVals[3] = {8000, 9000, 500};
+            uint32_t getMsReturnVals[3] = {8000, 9000, 500};
             SET_RETURN_SEQ(NoteGetMs, getMsReturnVals, 3);
 
             CHECK(!NoteDebugSyncStatus(pollFrequencyMs, maxLevel));

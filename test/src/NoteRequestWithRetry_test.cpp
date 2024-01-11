@@ -20,7 +20,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteTransaction, J *)
-FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
+FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 
 namespace
 {
@@ -55,7 +55,7 @@ SCENARIO("NoteRequestWithRetry")
         // With this timeout configuration, NoteTransaction will be retried at
         // most one time.
         const uint32_t timeoutSec = 5;
-        long unsigned int getMsReturnVals[3];
+        uint32_t getMsReturnVals[3];
 
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != nullptr);

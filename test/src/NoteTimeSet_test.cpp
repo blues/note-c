@@ -20,21 +20,11 @@
 #include "time_mocks.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
+FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
 
 namespace
 {
-
-long unsigned int NoteGetMsIncrement(void)
-{
-    static long unsigned int count = 0;
-
-    // increment by 1 second
-    count += 1000;
-    // return count pre-increment
-    return count - 1000;
-}
 
 SCENARIO("NoteTimeSet")
 {

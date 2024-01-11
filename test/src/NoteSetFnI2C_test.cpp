@@ -20,7 +20,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, i2cNoteReset)
-FAKE_VALUE_FUNC(const char *, i2cNoteTransaction, const char *, size_t, char **, size_t)
+FAKE_VALUE_FUNC(const char *, i2cNoteTransaction, const char *, size_t, char **, uint32_t)
 
 namespace
 {

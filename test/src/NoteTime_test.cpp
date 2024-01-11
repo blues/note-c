@@ -22,7 +22,7 @@
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
-FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
+FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 
 namespace
 {
@@ -81,9 +81,9 @@ SCENARIO("NoteTime")
 
     SECTION("Millisecond rollover") {
         JTIME baseTime = 1679335667;
-        long unsigned int baseTimeSetAtMs = 1000;
-        long unsigned int rolloverMs = 500;
-        long unsigned int getMsRetVals[] = {baseTimeSetAtMs, rolloverMs};
+        uint32_t baseTimeSetAtMs = 1000;
+        uint32_t rolloverMs = 500;
+        uint32_t getMsRetVals[] = {baseTimeSetAtMs, rolloverMs};
         SET_RETURN_SEQ(NoteGetMs, getMsRetVals, 2);
 
         // Set the time manually so that the base time is non-zero.

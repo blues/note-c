@@ -22,7 +22,7 @@
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, noteSerialAvailable)
 FAKE_VALUE_FUNC(char, noteSerialReceive)
-FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
+FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
 
 namespace
@@ -43,8 +43,8 @@ SCENARIO("serialChunkedReceive")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    NoteGetMs_fake.custom_fake = []() -> long unsigned int {
-        static long unsigned int count = 0;
+    NoteGetMs_fake.custom_fake = []() -> uint32_t {
+        static uint32_t count = 0;
 
         // increment by 1 second
         count += 750;
@@ -54,7 +54,7 @@ SCENARIO("serialChunkedReceive")
     uint8_t buf[] = {0xDE, 0xAD, 0xBE, 0xEF, 0x00};
     uint32_t size = sizeof(buf);
     bool delay = false;
-    const size_t timeoutMs = 3000;
+    const uint32_t timeoutMs = 3000;
     // 37 is not significant. serialChunkedReceive will return either a 1 or 0
     // in the "available" parameter. 37 is simply "not 1 or 0" -- that means we
     // can validate that available is changed to the correct value where

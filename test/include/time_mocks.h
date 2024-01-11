@@ -13,7 +13,7 @@
 
 #pragma once
 
-long unsigned int NoteGetMsIncrement(void)
+uint32_t NoteGetMsIncrement(void)
 {
     static long unsigned int count = 0;
 
