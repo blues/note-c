@@ -179,7 +179,7 @@ JNUMBER JGetNumber(J *rsp, const char *field)
     @returns The number, or 0, if NULL.
 */
 /**************************************************************************/
-long int JIntValue(J *item)
+JINTEGER JIntValue(J *item)
 {
     if (item == NULL) {
         return 0;
@@ -195,7 +195,7 @@ long int JIntValue(J *item)
     @returns The int found, or 0, if not present.
 */
 /**************************************************************************/
-long int JGetInt(J *rsp, const char *field)
+JINTEGER JGetInt(J *rsp, const char *field)
 {
     if (rsp == NULL) {
         return 0;
@@ -431,15 +431,18 @@ const char *JGetItemName(const J * item)
 void JItoA(long int n, char *s)
 {
     char c;
-    long int i, j, sign;
-    if ((sign = n) < 0) {
-        n = -n;
+    // Conversion to unsigned is required to handle the case where n is
+    // LONG_MIN.
+    unsigned long int unsignedN = n;
+    long int i, j;
+    if (n < 0) {
+        unsignedN = -unsignedN;
     }
     i = 0;
     do {
-        s[i++] = n % 10 + '0';
-    } while ((n /= 10) > 0);
-    if (sign < 0) {
+        s[i++] = unsignedN % 10 + '0';
+    } while ((unsignedN /= 10) > 0);
+    if (n < 0) {
         s[i++] = '-';
     }
     s[i] = '\0';
@@ -585,11 +588,7 @@ int JGetItemType(J *item)
         }
         int vlen = strlen(v);
         char *endstr;
-#if !CJSON_NO_CLIB
-        JNUMBER value = strtod(v, &endstr);
-#else
         JNUMBER value = JAtoN(v, &endstr);
-#endif
         if (endstr[0] == 0) {
             if (value == 0) {
                 return JTYPE_STRING_ZERO;
