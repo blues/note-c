@@ -23,14 +23,14 @@ FAKE_VALUE_FUNC(bool, noteSerialReset)
 FAKE_VOID_FUNC(noteSerialTransmit, uint8_t *, size_t, bool)
 FAKE_VALUE_FUNC(bool, noteSerialAvailable)
 FAKE_VALUE_FUNC(char, noteSerialReceive)
-FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
+FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 
 namespace
 {
 
-long unsigned int NoteGetMsMock()
+uint32_t NoteGetMsMock()
 {
-    static long unsigned int ret = 500;
+    static uint32_t ret = 500;
 
     // Cycle through returning 0, 1, and 500. 500 ms is the timeout of the
     // receive loop in serialNoteReset.
@@ -113,7 +113,7 @@ SCENARIO("serialNoteReset")
         noteSerialReceive_fake.return_val = '\n';
         bool serialAvailRetVals[] = {true, false};
         SET_RETURN_SEQ(noteSerialAvailable, serialAvailRetVals, 2);
-        long unsigned int getMsReturnVals[] = {
+        uint32_t getMsReturnVals[] = {
             UINT32_MAX - 500,
             UINT32_MAX - 400,
             0

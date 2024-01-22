@@ -355,7 +355,7 @@ void NoteDebugWithLevelLn(uint8_t level, const char *msg);
 
 void *NoteMalloc(size_t size);
 void NoteFree(void *);
-long unsigned int NoteGetMs(void);
+uint32_t NoteGetMs(void);
 void NoteDelayMs(uint32_t ms);
 void NoteLockI2C(void);
 void NoteUnlockI2C(void);

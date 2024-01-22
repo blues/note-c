@@ -22,10 +22,10 @@ DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
 FAKE_VALUE_FUNC(bool, noteSerialAvailable)
 FAKE_VALUE_FUNC(char, noteSerialReceive)
-FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
+FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 FAKE_VOID_FUNC(noteSerialTransmit, uint8_t *, size_t, bool)
 FAKE_VALUE_FUNC(const char *, serialChunkedTransmit, uint8_t *, uint32_t, bool);
-FAKE_VALUE_FUNC(const char *, serialChunkedReceive, uint8_t *, uint32_t *, bool, size_t, uint32_t *)
+FAKE_VALUE_FUNC(const char *, serialChunkedReceive, uint8_t *, uint32_t *, bool, uint32_t, uint32_t *)
 
 namespace
 {
@@ -60,8 +60,8 @@ const char *serialChunkedTransmitAppend(uint8_t *buf, uint32_t len, bool)
     return NULL;
 }
 
-const char *serialChunkedReceiveNothing(uint8_t *, uint32_t *size, bool, size_t,
-                                        uint32_t *available)
+const char *serialChunkedReceiveNothing(uint8_t *, uint32_t *size, bool,
+                                        uint32_t, uint32_t *available)
 {
     *size = 0;
     *available = 0;
@@ -70,7 +70,7 @@ const char *serialChunkedReceiveNothing(uint8_t *, uint32_t *size, bool, size_t,
 }
 
 const char *serialChunkedReceiveOneAndDone(uint8_t *buf, uint32_t *size, bool,
-        size_t, uint32_t *available)
+        uint32_t, uint32_t *available)
 {
     *buf = '\n';
     *size = 1;
@@ -84,7 +84,7 @@ const char *serialChunkedReceiveOneAndDone(uint8_t *buf, uint32_t *size, bool,
 size_t serialChunkedReceiveMultipleLeft = SERIAL_CHUNKED_RECEIVE_MULTIPLE_SIZE;
 
 const char *serialChunkedReceiveMultiple(uint8_t *buf, uint32_t *size, bool,
-        size_t, uint32_t *available)
+        uint32_t, uint32_t *available)
 {
     memset(buf, 1, *size);
     serialChunkedReceiveMultipleLeft -= *size;
@@ -103,7 +103,7 @@ SCENARIO("serialNoteTransaction")
     NoteSetFnDefault(NULL, free, NULL, NULL);
 
     char req[] = "{\"req\": \"note.add\"}\n";
-    const size_t timeoutMs = CARD_INTER_TRANSACTION_TIMEOUT_SEC;
+    const uint32_t timeoutMs = CARD_INTER_TRANSACTION_TIMEOUT_SEC;
 
     GIVEN("A valid JSON request C-string and a NULL response pointer") {
         noteSerialTransmit_fake.custom_fake = noteSerialTransmitAppend;
@@ -175,7 +175,7 @@ SCENARIO("serialNoteTransaction")
                   " the Notecard") {
             noteSerialAvailable_fake.return_val = false;
             NoteMalloc_fake.custom_fake = malloc;
-            long unsigned int getMsReturnVals[3];
+            uint32_t getMsReturnVals[3];
 
             AND_GIVEN("There's a timeout after waiting for "
                       "CARD_INTER_TRANSACTION_TIMEOUT_SEC seconds") {

@@ -23,7 +23,7 @@
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(const char *, noteI2CReceive, uint16_t, uint8_t *, uint16_t,
                 uint32_t *)
-FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
+FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
 
 namespace
@@ -43,7 +43,7 @@ SCENARIO("i2cChunkedReceive")
     NoteGetMs_fake.custom_fake = NoteGetMsIncrement;
 
     uint32_t available = 0;
-    size_t timeoutMs = 5000;
+    uint32_t timeoutMs = 5000;
 
     GIVEN("0 is specified for the output buffer length") {
         uint8_t buf[] = {0xAB};

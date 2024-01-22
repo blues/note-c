@@ -25,7 +25,7 @@ FAKE_VALUE_FUNC(uint32_t, NoteBinaryCodecDecode, const uint8_t *, uint32_t, uint
 FAKE_VALUE_FUNC(const char *, NoteBinaryStoreEncodedLength, uint32_t *)
 FAKE_VALUE_FUNC(J *, noteTransactionShouldLock, J *, bool)
 FAKE_VALUE_FUNC(const char *, noteChunkedReceive, uint8_t *, uint32_t *, bool,
-                size_t, uint32_t *)
+                uint32_t, uint32_t *)
 FAKE_VOID_FUNC(noteLockNote)
 FAKE_VOID_FUNC(noteUnlockNote)
 
@@ -143,7 +143,7 @@ SCENARIO("NoteBinaryStoreReceive")
     GIVEN("noteChunkedReceive indicates there's unexpectedly more data "
           "available") {
         noteChunkedReceive_fake.custom_fake = [](uint8_t *, uint32_t *, bool,
-        size_t, uint32_t *available) -> const char* {
+        uint32_t, uint32_t *available) -> const char* {
             *available = 1;
 
             return NULL;
@@ -164,7 +164,7 @@ SCENARIO("NoteBinaryStoreReceive")
             return cobsDecode((uint8_t *)encData, encDataLen, '\n', decBuf);
         };
         noteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, uint32_t *size,
-        bool, size_t, uint32_t *available) -> const char* {
+        bool, uint32_t, uint32_t *available) -> const char* {
             uint32_t outLen = NoteBinaryCodecEncode((uint8_t *)rawMsg, rawMsgLen, buffer, *size);
 
             buffer[outLen] = '\n';

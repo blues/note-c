@@ -21,7 +21,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, NoteReset)
-FAKE_VALUE_FUNC(const char *, noteJSONTransaction, const char *, size_t, char **, size_t)
+FAKE_VALUE_FUNC(const char *, noteJSONTransaction, const char *, size_t, char **, uint32_t)
 FAKE_VALUE_FUNC(bool, noteTransactionStart, uint32_t)
 FAKE_VALUE_FUNC(J *, NoteUserAgent)
 FAKE_VALUE_FUNC(bool, crcError, char *, uint16_t)
@@ -29,7 +29,7 @@ FAKE_VALUE_FUNC(bool, crcError, char *, uint16_t)
 namespace
 {
 
-const char *noteJSONTransactionValid(const char *, size_t, char **resp, size_t)
+const char *noteJSONTransactionValid(const char *, size_t, char **resp, uint32_t)
 {
     static char respString[] = "{ \"total\": 1 }";
 
@@ -42,7 +42,7 @@ const char *noteJSONTransactionValid(const char *, size_t, char **resp, size_t)
     return NULL;
 }
 
-const char *noteJSONTransactionBadJSON(const char *, size_t, char **resp, size_t)
+const char *noteJSONTransactionBadJSON(const char *, size_t, char **resp, uint32_t)
 {
     static char respString[] = "Bad JSON";
 
@@ -55,7 +55,7 @@ const char *noteJSONTransactionBadJSON(const char *, size_t, char **resp, size_t
     return NULL;
 }
 
-const char *noteJSONTransactionIOError(const char *, size_t, char **resp, size_t)
+const char *noteJSONTransactionIOError(const char *, size_t, char **resp, uint32_t)
 {
     static char respString[] = "{\"err\": \"{io}\"}";
 
@@ -130,7 +130,7 @@ SCENARIO("NoteTransaction")
     WHEN("The transaction is successful and the response has a {bad-bin} error") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **response, size_t) -> const char * {
+        noteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **response, uint32_t) -> const char * {
             const char rsp_str[] = "{\"err\":\"{bad-bin}\"}";
             *response = (char *)malloc(sizeof(rsp_str));
             strncpy(*response, rsp_str, sizeof(rsp_str));
@@ -158,7 +158,7 @@ SCENARIO("NoteTransaction")
     WHEN("The transaction is successful and the response contains invalid JSON") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **response, size_t) -> const char * {
+        noteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **response, uint32_t) -> const char * {
             const char rsp_str[] = "{Looks like JSON, but won't parse}";
             *response = (char *)malloc(sizeof(rsp_str));
             strncpy(*response, rsp_str, sizeof(rsp_str));

@@ -23,7 +23,7 @@ FAKE_VALUE_FUNC(bool, noteTransactionStart, uint32_t)
 FAKE_VOID_FUNC(noteTransactionStop)
 FAKE_VOID_FUNC(noteLockNote)
 FAKE_VOID_FUNC(noteUnlockNote)
-FAKE_VALUE_FUNC(const char *, noteJSONTransaction, const char *, size_t, char **, size_t)
+FAKE_VALUE_FUNC(const char *, noteJSONTransaction, const char *, size_t, char **, uint32_t)
 
 namespace
 {

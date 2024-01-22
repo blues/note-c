@@ -303,7 +303,7 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
 */
 char * NoteRequestResponseJSON(const char *reqJSON)
 {
-    size_t transactionTimeoutMs = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
+    uint32_t transactionTimeoutMs = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
     char *rspJSON = NULL;
 
     if (reqJSON == NULL) {
@@ -476,7 +476,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     //   - If the request is a `web.*`, follow the same logic, but instead
     //     of using the standard timeout, use the Notecard timeout of 90
     //     seconds for all `web.*` transactions.
-    size_t transactionTimeoutMs = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
+    uint32_t transactionTimeoutMs = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
 
     // Interrogate the request
     if (JContainsString(req, (reqType ? "req" : "cmd"), "note.add")) {

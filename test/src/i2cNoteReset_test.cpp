@@ -22,7 +22,7 @@
 DEFINE_FFF_GLOBALS
 FAKE_VOID_FUNC(delayIO)
 FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
-FAKE_VALUE_FUNC(long unsigned int, NoteGetMs)
+FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 FAKE_VALUE_FUNC(bool, noteI2CReset, uint16_t)
 FAKE_VALUE_FUNC(const char *, noteI2CTransmit, uint16_t, uint8_t *, uint16_t)
 FAKE_VALUE_FUNC(const char *, noteI2CReceive, uint16_t, uint8_t *, uint16_t,
@@ -33,14 +33,14 @@ FAKE_VOID_FUNC(NoteUnlockI2C)
 namespace
 {
 
-static size_t rtc_ms = 0;
+static uint32_t rtc_ms = 0;
 
 void NoteDelayMs_mock(uint32_t delayMs)
 {
     rtc_ms += delayMs;
 }
 
-long unsigned int NoteGetMs_mock(void)
+uint32_t NoteGetMs_mock(void)
 {
     return rtc_ms++;
 }
