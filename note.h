@@ -25,28 +25,43 @@
 #define NOTE_C_VERSION_MINOR 1
 #define NOTE_C_VERSION_PATCH 1
 
-// Determine our basic floating data type.  In most cases "double" is the right answer, however for
-// very small microcontrollers we must use single-precision.
+// If double and float are the same size, then we must be on a small MCU. Turn
+// on NOTE_LOWMEM to conserve memory.
 #if defined(FLT_MAX_EXP) && defined(DBL_MAX_EXP)
 #if (FLT_MAX_EXP == DBL_MAX_EXP)
-#define NOTE_FLOAT
+#define NOTE_LOWMEM
 #endif
 #elif defined(__FLT_MAX_EXP__) && defined(__DBL_MAX_EXP__)
 #if (__FLT_MAX_EXP__ == __DBL_MAX_EXP__)
-#define NOTE_FLOAT
+#define NOTE_LOWMEM
 #endif
 #else
 #error What are floating point exponent length symbols for this compiler?
 #endif
 
-// If using a short float, we must be on a VERY small MCU.  In this case, define additional
-// symbols that will save quite a bit of memory in the runtime image.
-#ifdef NOTE_FLOAT
+#ifndef JNUMBER
+#ifdef NOTE_LOWMEM
 #define JNUMBER float
-#define ERRSTR(x,y) (y)
-#define NOTE_LOWMEM
 #else
 #define JNUMBER double
+#endif
+#endif
+
+#ifndef JINTEGER
+#ifdef NOTE_LOWMEM
+#define JINTEGER int32_t
+#define JINTEGER_MIN INT32_MIN
+#define JINTEGER_MAX INT32_MAX
+#else
+#define JINTEGER int64_t
+#define JINTEGER_MIN INT64_MIN
+#define JINTEGER_MAX INT64_MAX
+#endif
+#endif
+
+#ifdef NOTE_LOWMEM
+#define ERRSTR(x,y) (y)
+#else
 #define ERRSTR(x,y) (x)
 #define ERRDBG
 #endif
@@ -378,12 +393,12 @@ char *JGetString(J *rsp, const char *field);
 JNUMBER JGetNumber(J *rsp, const char *field);
 J *JGetArray(J *rsp, const char *field);
 J *JGetObject(J *rsp, const char *field);
-long int JGetInt(J *rsp, const char *field);
+JINTEGER JGetInt(J *rsp, const char *field);
 bool JGetBool(J *rsp, const char *field);
 JNUMBER JNumberValue(J *item);
 char *JStringValue(J *item);
 bool JBoolValue(J *item);
-long int JIntValue(J *item);
+JINTEGER JIntValue(J *item);
 bool JIsNullString(J *rsp, const char *field);
 bool JIsExactString(J *rsp, const char *field, const char *teststr);
 bool JContainsString(J *rsp, const char *field, const char *substr);
