@@ -94,13 +94,13 @@ extern "C" {
     @brief  Memory allocation chunk size.
 */
 /**************************************************************************/
-#ifdef NOTE_LOWMEM
+#ifdef NOTE_C_LOW_MEM
 #define ALLOC_CHUNK 64
 #else
 #define ALLOC_CHUNK 128
 #endif
 
-#ifdef NOTE_LOWMEM
+#ifdef NOTE_C_LOW_MEM
 #define NOTE_DISABLE_USER_AGENT
 #endif
 

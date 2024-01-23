@@ -18,7 +18,7 @@
 #include "fff.h"
 
 // This has to come after n_lib.h, which will define NOTE_DISABLE_USER_AGENT if
-// NOTE_LOWMEM is defined.
+// NOTE_C_LOW_MEM is defined.
 #ifndef NOTE_DISABLE_USER_AGENT
 
 DEFINE_FFF_GLOBALS

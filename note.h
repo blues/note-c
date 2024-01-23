@@ -26,45 +26,42 @@
 #define NOTE_C_VERSION_PATCH 1
 
 // If double and float are the same size, then we must be on a small MCU. Turn
-// on NOTE_LOWMEM to conserve memory.
+// on NOTE_C_LOW_MEM to conserve memory.
 #if defined(FLT_MAX_EXP) && defined(DBL_MAX_EXP)
 #if (FLT_MAX_EXP == DBL_MAX_EXP)
-#define NOTE_LOWMEM
+#define NOTE_C_LOW_MEM
 #endif
 #elif defined(__FLT_MAX_EXP__) && defined(__DBL_MAX_EXP__)
 #if (__FLT_MAX_EXP__ == __DBL_MAX_EXP__)
-#define NOTE_LOWMEM
+#define NOTE_C_LOW_MEM
 #endif
 #else
 #error What are floating point exponent length symbols for this compiler?
 #endif
 
-#ifndef JNUMBER
-#ifdef NOTE_LOWMEM
-#define JNUMBER float
-#else
-#define JNUMBER double
-#endif
-#endif
-
-#ifndef JINTEGER
-#ifdef NOTE_LOWMEM
-#define JINTEGER int32_t
-#define JINTEGER_MIN INT32_MIN
-#define JINTEGER_MAX INT32_MAX
-#else
-#define JINTEGER int64_t
-#define JINTEGER_MIN INT64_MIN
-#define JINTEGER_MAX INT64_MAX
-#endif
+// NOTE_LOWMEM is the old name of NOTE_C_LOW_MEM. If NOTE_C_LOW_MEM is defined,
+// we define NOTE_LOWMEM as well, for backwards compatibility. NOTE_FLOAT is
+// also no longer used internally, but used to be defined when NOTE_LOWMEM was
+// defined. It's also preserved here for backwards compatibility.
+#ifdef NOTE_C_LOW_MEM
+#define NOTE_LOWMEM
+#define NOTE_FLOAT
 #endif
 
-#ifdef NOTE_LOWMEM
+#ifdef NOTE_C_LOW_MEM
 #define ERRSTR(x,y) (y)
 #else
 #define ERRSTR(x,y) (x)
 #define ERRDBG
 #endif
+
+typedef double JNUMBER;
+
+typedef int64_t JINTEGER;
+#define JINTEGER_MIN INT64_MIN
+#define JINTEGER_MAX INT64_MAX
+
+typedef uint64_t JUINTEGER;
 
 // UNIX Epoch time (also known as POSIX time) is the  number of seconds that have elapsed since
 // 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC).  In this project, it always
@@ -433,8 +430,8 @@ int JBaseItemType(int type);
 #define JNTOA_MAX       (44)
 char * JNtoA(JNUMBER f, char * buf, int precision);
 JNUMBER JAtoN(const char *string, char **endPtr);
-void JItoA(long int n, char *s);
-long int JAtoI(const char *s);
+void JItoA(JINTEGER n, char *s);
+JINTEGER JAtoI(const char *s);
 int JB64EncodeLen(int len);
 int JB64Encode(char * coded_dst, const char *plain_src,int len_plain_src);
 int JB64DecodeLen(const char * coded_src);
@@ -483,12 +480,12 @@ bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneO
 bool NoteLocationValid(char *errbuf, uint32_t errbuflen);
 bool NoteLocationValidST(char *errbuf, uint32_t errbuflen);
 void NoteTurboIO(bool enable);
-long int NoteGetEnvInt(const char *variable, long int defaultVal);
+JINTEGER NoteGetEnvInt(const char *variable, JINTEGER defaultVal);
 JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal);
 bool NoteGetEnv(const char *variable, const char *defaultVal, char *buf, uint32_t buflen);
 bool NoteSetEnvDefault(const char *variable, char *buf);
 bool NoteSetEnvDefaultNumber(const char *variable, JNUMBER defaultVal);
-bool NoteSetEnvDefaultInt(const char *variable, long int defaultVal);
+bool NoteSetEnvDefaultInt(const char *variable, JINTEGER defaultVal);
 bool NoteIsConnected(void);
 bool NoteIsConnectedST(void);
 bool NoteGetNetStatus(char *statusBuf, int statusBufLen);

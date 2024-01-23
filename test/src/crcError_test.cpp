@@ -11,7 +11,7 @@
  *
  */
 
-#ifndef NOTE_LOWMEM
+#ifndef NOTE_C_LOW_MEM
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -85,4 +85,4 @@ SCENARIO("crcError")
 
 }
 
-#endif // !NOTE_LOWMEM
+#endif // !NOTE_C_LOW_MEM

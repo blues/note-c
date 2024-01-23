@@ -61,7 +61,7 @@ if(NOTE_C_LOW_MEM)
     target_compile_definitions(
         note_c
         PUBLIC
-            NOTE_LOWMEM
+            NOTE_C_LOW_MEM
     )
 else()
     # This file is empty if NOTE_LOWMEM is defined, which leads to a warning

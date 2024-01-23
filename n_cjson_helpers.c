@@ -428,12 +428,15 @@ const char *JGetItemName(const J * item)
     @note The buffer must be large enough because no bounds checking is done.
 */
 /**************************************************************************/
-void JItoA(long int n, char *s)
+void JItoA(JINTEGER n, char *s)
 {
     char c;
     // Conversion to unsigned is required to handle the case where n is
-    // LONG_MIN.
-    unsigned long int unsignedN = n;
+    // JINTEGER_MIN. In that case, applying the unary minus operator to the
+    // signed version of n overflows and the behavior is undefined. By changing
+    // n to be unsigned, the unary minus operator behaves differently, and there
+    // is no overflow. See https://stackoverflow.com/q/8026694.
+    JUINTEGER unsignedN = n;
     long int i, j;
     if (n < 0) {
         unsignedN = -unsignedN;
@@ -460,9 +463,9 @@ void JItoA(long int n, char *s)
     @returns An integer, or 0 if invalid
 */
 /**************************************************************************/
-long int JAtoI(const char *string)
+JINTEGER JAtoI(const char *string)
 {
-    long int result = 0;
+    JINTEGER result = 0;
     unsigned int digit;
     int sign;
     while (*string == ' ') {

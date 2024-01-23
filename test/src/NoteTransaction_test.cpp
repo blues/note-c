@@ -183,7 +183,7 @@ SCENARIO("NoteTransaction")
         JDelete(resp);
     }
 
-#ifndef NOTE_LOWMEM
+#ifndef NOTE_C_LOW_MEM
     SECTION("Bad CRC") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
@@ -198,7 +198,7 @@ SCENARIO("NoteTransaction")
         JDelete(req);
         JDelete(resp);
     }
-#endif // !NOTE_LOWMEM
+#endif // !NOTE_C_LOW_MEM
 
     SECTION("I/O error") {
         J *req = NoteNewRequest("note.add");

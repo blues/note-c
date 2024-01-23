@@ -15,88 +15,49 @@
 
 #include "n_lib.h"
 
+// We treat most of the JSON code as "tested" in the sense that it comes from a
+// tested third party library. However, we have made some changes to the
+// underlying code. For example, we've tweaked the number parsing code (see
+// parse_number and print_number in n_cjson.c).
+
 namespace
 {
 
 #define FIELD "num"
 
-#if JINTEGER_MAX == 2147483647
-#define JINTEGER_MAX_STR "2147483647"
-
-#define JINTEGER_MAX_PLUS_ONE 2147483648
-#define JINTEGER_MAX_PLUS_ONE_STR "2147483648"
-// "Integers between 2^24=16777216 and 2^25=33554432 round to a multiple of
-// 2 (even number)" (https://en.wikipedia.org/wiki/Single-precision_floating-point_format)
-#define JINTEGER_MAX_PLUS_ONE_ROUNDED 2147483650
-#define JINTEGER_MAX_PLUS_ONE_ROUNDED_STR "2147483650"
-#define JINTEGER_MAX_PLUS_4096 2147487743
-#define JINTEGER_MAX_PLUS_4096_STR "2147487743"
-// The nearest multiple of 2048.
-#define JINTEGER_MAX_PLUS_4096_ROUNDED 2147487744
-#define JINTEGER_MAX_PLUS_4096_ROUNDED_STR "2147487744"
-#elif JINTEGER_MAX == 9223372036854775807
 #define JINTEGER_MAX_STR "9223372036854775807"
-
-#define JINTEGER_MAX_PLUS_ONE 9223372036854775808UL
-#define JINTEGER_MAX_PLUS_ONE_STR "9223372036854775808"
 // "Integers between 2^(n) and 2^(n+1) round to a multiple of 2^(n−52)."
 // (https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
-// 9223372036854775808 == 2^63, so its JNUMBER representation should be rounded
-// up to the nearest multiple of 2^11 (2048).
-#define JINTEGER_MAX_PLUS_ONE_ROUNDED 9223372036854776000UL
-#define JINTEGER_MAX_PLUS_ONE_ROUNDED_STR "9223372036854776000"
+// 9223372036854775807 == 2^63 - 1, so its JNUMBER representation should be rounded
+// up to the nearest multiple of 2^10 (1024).
+#define JINTEGER_MAX_TO_FLOAT ((JNUMBER)9223372036854775808UL)
+#define JINTEGER_MAX_TO_FLOAT_STR "9223372036854775808"
+
+// 9223372036854779903 is between 2^63 and 2^64, so conversion to floating point
+// should round to the nearest multiple of 2^11 (2048).
 #define JINTEGER_MAX_PLUS_4096 9223372036854779903UL
 #define JINTEGER_MAX_PLUS_4096_STR "9223372036854779903"
 // The nearest multiple of 2048.
-#define JINTEGER_MAX_PLUS_4096_ROUNDED 9223372036854780000UL
-#define JINTEGER_MAX_PLUS_4096_ROUNDED_STR "9.22337203685478e+18"
-#else
-#error "Couldn't determine value of JINTEGER_MAX."
-#endif
+#define JINTEGER_MAX_PLUS_4096_TO_FLOAT ((JNUMBER)9223372036854780000UL)
+#define JINTEGER_MAX_PLUS_4096_TO_FLOAT_STR "9.22337203685478e+18"
 
-#if JINTEGER_MIN == -2147483648
-#define JINTEGER_MIN_STR "-2147483648"
-
-#define JINTEGER_MIN_MINUS_ONE -2147483649
-#define JINTEGER_MIN_MINUS_ONE_STR "-2147483649"
-#define JINTEGER_MIN_MINUS_ONE_ROUNDED -2147483650
-
-#define JINTEGER_MIN_MINUS_4096 -2147487745
-#define JINTEGER_MIN_MINUS_4096_STR "-2147487745"
-// The nearest multiple of 2048.
-#define JINTEGER_MIN_MINUS_4096_ROUNDED -2147487744
-#define JINTEGER_MIN_MINUS_4096_ROUNDED_STR "-2147487744"
-// The weird form of the RHS of this conditional resolves this warning:
-// "warning: integer constant is so large that it is unsigned". See:
-// https://stackoverflow.com/a/65008305
-#elif JINTEGER_MIN == (-9223372036854775807 - 1)
 #define JINTEGER_MIN_STR "-9223372036854775808"
+// -9223372036854775808 is already a multiple of 1024, so it can be represented
+// exactly as a floating point number.
+#define JINTEGER_MIN_TO_FLOAT -((JNUMBER)9223372036854775808UL)
+#define JINTEGER_MIN_TO_FLOAT_STR "-9223372036854775808"
 
-#define JINTEGER_MIN_MINUS_ONE -9223372036854775809
-#define JINTEGER_MIN_MINUS_ONE_STR "-9223372036854775809"
-// The nearest multiple of 2048 happens to be JINTEGER_MIN in this case.
-#define JINTEGER_MIN_MINUS_ONE_ROUNDED (-9223372036854775807 - 1)
-
-// #define JINTEGER_MIN_MINUS_4096 -9223372036854779904
 #define JINTEGER_MIN_MINUS_4096 -((JNUMBER)9223372036854779904UL)
 #define JINTEGER_MIN_MINUS_4096_STR "-9223372036854779904"
 // The nearest multiple of 2048.
-#define JINTEGER_MIN_MINUS_4096_ROUNDED -((JNUMBER)9223372036854780000UL)
-#define JINTEGER_MIN_MINUS_4096_ROUNDED_STR "-9.22337203685478e+18"
-#else
-#error "Couldn't determine value of JINTEGER_MIN."
-#endif
+#define JINTEGER_MIN_MINUS_4096_TO_FLOAT -((JNUMBER)9223372036854780000UL)
+#define JINTEGER_MIN_MINUS_4096_TO_FLOAT_STR "-9.22337203685478e+18"
 
 #define SMALL_FLOAT 0.0009765625
 #define SMALL_FLOAT_STR "0.0009765625"
 
 #define UNIX_TIMESTAMP 1705699768
 #define UNIX_TIMESTAMP_STR "1705699768"
-
-// We treat most of the JSON code as "tested" in the sense that it comes from a
-// tested third party library. However, we have made some changes to the
-// underlying code. For example, we've tweaked the number parsing code (see
-// parse_number and print_number in n_cjson.c).
 
 SCENARIO("Unmarshalling")
 {
@@ -135,31 +96,9 @@ SCENARIO("Unmarshalling")
                 CHECK(JGetInt(obj, FIELD) == JINTEGER_MAX);
             }
 
-            THEN("JGetNumber on the object returns the max value of JINTEGER") {
-                CHECK(JGetNumber(obj, FIELD) == JINTEGER_MAX);
-            }
-
-            JDelete(obj);
-        }
-    }
-
-    GIVEN("A JSON string with a numeric field with the max value of JINTEGER "
-          "plus one") {
-        const char json[] = "{\"" FIELD "\":" JINTEGER_MAX_PLUS_ONE_STR "}";
-
-        WHEN("JParse is called on that string") {
-            obj = JParse(json);
-
-            REQUIRE(obj != NULL);
-
-            THEN("JGetInt on the object returns the max value of JINTEGER "
-                 "(saturation)") {
-                CHECK(JGetInt(obj, FIELD) == JINTEGER_MAX);
-            }
-
             THEN("JGetNumber on the object returns the max value of JINTEGER "
                  "rounded to the expected power of 2") {
-                CHECK(JGetNumber(obj, FIELD) == JINTEGER_MAX_PLUS_ONE_ROUNDED);
+                CHECK(JGetNumber(obj, FIELD) == JINTEGER_MAX_TO_FLOAT);
             }
 
             JDelete(obj);
@@ -182,7 +121,7 @@ SCENARIO("Unmarshalling")
 
             THEN("JGetNumber on the object returns the max value of JINTEGER "
                  "plus 4096 rounded to the expected power of 2") {
-                CHECK(JGetNumber(obj, FIELD) == JINTEGER_MAX_PLUS_4096_ROUNDED);
+                CHECK(JGetNumber(obj, FIELD) == JINTEGER_MAX_PLUS_4096_TO_FLOAT);
             }
 
             JDelete(obj);
@@ -201,31 +140,9 @@ SCENARIO("Unmarshalling")
                 CHECK(JGetInt(obj, FIELD) == JINTEGER_MIN);
             }
 
-            THEN("JGetNumber on the object returns the min value of JINTEGER") {
-                CHECK(JGetNumber(obj, FIELD) == JINTEGER_MIN);
-            }
-
-            JDelete(obj);
-        }
-    }
-
-    GIVEN("A JSON string with a numeric field with the min value of JINTEGER "
-          "minus one") {
-        const char json[] = "{\"" FIELD "\":" JINTEGER_MIN_MINUS_ONE_STR "}";
-
-        WHEN("JParse is called on that string") {
-            obj = JParse(json);
-
-            REQUIRE(obj != NULL);
-
-            THEN("JGetInt on the object returns the min value of JINTEGER "
-                 "(saturation)") {
-                CHECK(JGetInt(obj, FIELD) == JINTEGER_MIN);
-            }
-
             THEN("JGetNumber on the object returns the min value of JINTEGER "
                  "rounded to the expected power of 2") {
-                CHECK(JGetNumber(obj, FIELD) == JINTEGER_MIN_MINUS_ONE_ROUNDED);
+                CHECK(JGetNumber(obj, FIELD) == JINTEGER_MIN_TO_FLOAT);
             }
 
             JDelete(obj);
@@ -249,7 +166,7 @@ SCENARIO("Unmarshalling")
             THEN("JGetNumber on the object returns the min value of JINTEGER "
                  "rounded to the expected power of 2") {
                 CHECK(JGetNumber(obj, FIELD) ==
-                      JINTEGER_MIN_MINUS_4096_ROUNDED);
+                      JINTEGER_MIN_MINUS_4096_TO_FLOAT);
             }
 
             JDelete(obj);
@@ -340,30 +257,9 @@ SCENARIO("Marshalling")
     }
 
     GIVEN("A JSON object with a numeric field with the max value of JINTEGER "
-          "plus one") {
-        const char expected[] = "{\"" FIELD "\":" JINTEGER_MAX_STR "}";
-        obj = JCreateObject();
-        REQUIRE(obj != NULL);
-        REQUIRE(JAddNumberToObject(obj, FIELD, JINTEGER_MAX_PLUS_ONE) != NULL);
-
-        WHEN("JPrintUnformatted is called on that object") {
-            char *out = JPrintUnformatted(obj);
-            REQUIRE(out != NULL);
-
-            THEN("The value printed is the max value of JINTEGER (saturation") {
-                CHECK(strcmp(expected, out) == 0);
-            }
-
-            JFree(out);
-        }
-
-        JDelete(obj);
-    }
-
-    GIVEN("A JSON object with a numeric field with the max value of JINTEGER "
           "plus 4096") {
         const char expected[] = "{\"" FIELD "\":" \
-                                JINTEGER_MAX_PLUS_4096_ROUNDED_STR "}";
+                                JINTEGER_MAX_PLUS_4096_TO_FLOAT_STR "}";
         obj = JCreateObject();
         REQUIRE(obj != NULL);
         REQUIRE(JAddNumberToObject(obj, FIELD, JINTEGER_MAX_PLUS_4096) != NULL);
@@ -384,7 +280,7 @@ SCENARIO("Marshalling")
     }
 
     GIVEN("A JSON object with a numeric field with the min value of JINTEGER") {
-        const char expected[] = "{\"" FIELD "\":" JINTEGER_MIN_STR "}";
+        const char expected[] = "{\"" FIELD "\":" JINTEGER_MIN_TO_FLOAT_STR "}";
         obj = JCreateObject();
         REQUIRE(obj != NULL);
         REQUIRE(JAddNumberToObject(obj, FIELD, JINTEGER_MIN) != NULL);
@@ -430,7 +326,7 @@ SCENARIO("Marshalling")
     GIVEN("A J object with a numeric field with the min value of JINTEGER minus"
           " 4096") {
         const char expected[] = "{\"" FIELD "\":" \
-                                JINTEGER_MIN_MINUS_4096_ROUNDED_STR "}";
+                                JINTEGER_MIN_MINUS_4096_TO_FLOAT_STR "}";
         obj = JCreateObject();
         REQUIRE(obj != NULL);
         REQUIRE(JAddNumberToObject(obj, FIELD, JINTEGER_MIN_MINUS_4096) != NULL);

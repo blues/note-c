@@ -18,28 +18,28 @@
 namespace
 {
 
-#if LONG_MIN == -2147483648
-const char LONG_MIN_STR[] = "-2147483648";
+#if JINTEGER_MIN == -2147483648
+const char JINTEGER_MIN_STR[] = "-2147483648";
 // The weird form of the RHS of this conditional resolves this warning:
 // "warning: integer constant is so large that it is unsigned". See:
 // https://stackoverflow.com/a/65008305
-#elif LONG_MIN == (-9223372036854775807 - 1)
-const char LONG_MIN_STR[] = "-9223372036854775808";
+#elif JINTEGER_MIN == (-9223372036854775807 - 1)
+const char JINTEGER_MIN_STR[] = "-9223372036854775808";
 #else
-#error "Couldn't determine value of LONG_MIN."
+#error "Couldn't determine value of JINTEGER_MIN."
 #endif
 
-#if LONG_MAX == 2147483647
-const char LONG_MAX_STR[] = "2147483647";
-#elif LONG_MAX == 9223372036854775807
-const char LONG_MAX_STR[] = "9223372036854775807";
+#if JINTEGER_MAX == 2147483647
+const char JINTEGER_MAX_STR[] = "2147483647";
+#elif JINTEGER_MAX == 9223372036854775807
+const char JINTEGER_MAX_STR[] = "9223372036854775807";
 #else
-#error "Couldn't determine value of LONG_MAX."
+#error "Couldn't determine value of JINTEGER_MAX."
 #endif
 
 SCENARIO("JItoA")
 {
-    long int n;
+    JINTEGER n;
     char text[16];
 
     GIVEN("The number to convert to a string is 0") {
@@ -90,26 +90,26 @@ SCENARIO("JItoA")
         }
     }
 
-    GIVEN("The number to convert to a string is LONG_MIN") {
-        n = LONG_MIN;
+    GIVEN("The number to convert to a string is JINTEGER_MIN") {
+        n = JINTEGER_MIN;
 
         WHEN("JItoA is called on it") {
             JItoA(n, text);
 
             THEN("The correct string is produced") {
-                CHECK(strcmp(text, LONG_MIN_STR) == 0);
+                CHECK(strcmp(text, JINTEGER_MIN_STR) == 0);
             }
         }
     }
 
-    GIVEN("The number to convert to a string is LONG_MAX") {
-        n = LONG_MAX;
+    GIVEN("The number to convert to a string is JINTEGER_MAX") {
+        n = JINTEGER_MAX;
 
         WHEN("JItoA is called on it") {
             JItoA(n, text);
 
             THEN("The correct string is produced") {
-                CHECK(strcmp(text, LONG_MAX_STR) == 0);
+                CHECK(strcmp(text, JINTEGER_MAX_STR) == 0);
             }
         }
     }
