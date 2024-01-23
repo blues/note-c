@@ -75,7 +75,7 @@ SCENARIO("NoteGetStatus")
         J* resp = JCreateObject();
         REQUIRE(resp != NULL);
         JAddStringToObject(resp, "status", respStatus);
-        JAddNumberToObject(resp, "time", respBootTime);
+        JAddIntToObject(resp, "time", respBootTime);
         JAddBoolToObject(resp, "usb", respUsb);
         JAddBoolToObject(resp, "connected", respConnected);
         JAddNumberToObject(resp, "signals", respSignals);

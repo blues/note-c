@@ -302,7 +302,6 @@ bool i2cNoteReset(void)
         // then the Notecard has been successfully reset.
         if (!somethingFound || nonControlCharFound) {
             notecardReady = false;
-#ifdef ERRDBG
             if (somethingFound) {
                 NOTE_C_LOG_WARN(ERRSTR("unrecognized data from notecard", c_iobad));
             } else {
@@ -315,7 +314,6 @@ bool i2cNoteReset(void)
                 }
                 delayIO();
             }
-#endif
         } else {
             notecardReady = true;
             break;

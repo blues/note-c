@@ -39,12 +39,12 @@
 #error What are floating point exponent length symbols for this compiler?
 #endif
 
-// NOTE_LOWMEM is the old name of NOTE_C_LOW_MEM. If NOTE_C_LOW_MEM is defined,
-// we define NOTE_LOWMEM as well, for backwards compatibility. NOTE_FLOAT is
+// NOTE_LOWMEM is the old name of NOTE_C_LOW_MEM. If NOTE_LOWMEM is defined,
+// we define NOTE_C_LOW_MEM as well, for backwards compatibility. NOTE_FLOAT is
 // also no longer used internally, but used to be defined when NOTE_LOWMEM was
 // defined. It's also preserved here for backwards compatibility.
-#ifdef NOTE_C_LOW_MEM
-#define NOTE_LOWMEM
+#ifdef NOTE_LOWMEM
+#define NOTE_C_LOW_MEM
 #define NOTE_FLOAT
 #endif
 
@@ -66,7 +66,7 @@ typedef uint64_t JUINTEGER;
 // UNIX Epoch time (also known as POSIX time) is the  number of seconds that have elapsed since
 // 00:00:00 Thursday, 1 January 1970, Coordinated Universal Time (UTC).  In this project, it always
 // originates from the Notecard, which synchronizes the time from both the cell network and GPS.
-typedef unsigned long int JTIME;
+typedef JUINTEGER JTIME;
 
 // C-callable functions
 #ifdef __cplusplus
