@@ -146,6 +146,12 @@ Functions
 
 .. doxygenfunction:: JParse
 
+.. doxygenfunction:: JPrintUnformatted
+
+.. doxygenfunction:: JMalloc
+
+.. doxygenfunction:: JFree
+
 Types
 -----
 

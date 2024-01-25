@@ -168,10 +168,29 @@ static unsigned char* Jstrdup(const unsigned char* string)
     return copy;
 }
 
+/*!
+ @brief Dynamically allocate a block of memory of the given size.
+
+ This is simply a wrapper around the memory allocation function provided by the
+ user via `NoteSetFn`.
+
+ @param size The number of bytes to allocate.
+
+ @returns A pointer to the first byte of the allocated memory or NULL on error.
+ */
 N_CJSON_PUBLIC(void *) JMalloc(size_t size)
 {
     return _Malloc(size);
 }
+
+/*!
+ @brief Free a block of dynamically allocated memory.
+
+ This is simply a wrapper around the memory free function provided by the user
+ via `NoteSetFn`.
+
+ @param p A pointer to the block of memory to free.
+ */
 N_CJSON_PUBLIC(void) JFree(void *p)
 {
     _Free(p);
@@ -1026,6 +1045,17 @@ N_CJSON_PUBLIC(char *) JPrint(const J *item)
     return (char*)print(item, true, false);
 }
 
+/*!
+ @brief Get the unformatted string representation of a `J` object.
+
+ The string returned by this function is dynamically allocated and MUST be freed
+ by the caller with `JFree`. Unformatted means that the minimum JSON string
+ is produced, without any additional whitespace.
+
+ @param item The JSON object to get the unformatted string representation of.
+
+ @returns The string or NULL on error.
+ */
 N_CJSON_PUBLIC(char *) JPrintUnformatted(const J *item)
 {
     if (item == NULL) {
