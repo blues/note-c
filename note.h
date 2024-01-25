@@ -55,7 +55,11 @@
 #define ERRDBG
 #endif
 
+#ifdef NOTE_C_LOW_MEM
+typedef float JNUMBER;
+#else
 typedef double JNUMBER;
+#endif
 
 typedef int64_t JINTEGER;
 #define JINTEGER_MIN INT64_MIN

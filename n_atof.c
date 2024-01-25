@@ -46,6 +46,11 @@
                                  * no need to worry about additional digits.
                                  */
 
+// NOTE: with 9.8765432109876e-307 this overflows to INF,
+// so rather than accumulating the dblExp for adjustment
+// after the loop, I adjust the fraction directly.
+#define LARGE_EXPONENT_FIX
+
 /*
  *----------------------------------------------------------------------
  *
@@ -85,7 +90,10 @@ char **endPtr;              /* If non-NULL, store terminating character's
                                  * address here. */
 {
     int sign, expSign = FALSE;
-    JNUMBER fraction, dblExp;
+    JNUMBER fraction;
+#ifndef LARGE_EXPONENT_FIX
+    JNUMBER dblExp;
+#endif
     register const char *p;
     register int c;
     int exp = 0;                /* Exponent read from "EX" field. */
@@ -231,7 +239,9 @@ char **endPtr;              /* If non-NULL, store terminating character's
     if (exp > MAX_EXPONENT) {
         exp = MAX_EXPONENT;
     }
+#ifndef LARGE_EXPONENT_FIX
     dblExp = 1.0;
+#endif
     int d;
     for (d = 0; exp != 0; exp >>= 1, d += 1) {
         /* Table giving binary powers of 10.  Entry */
@@ -273,14 +283,24 @@ char **endPtr;              /* If non-NULL, store terminating character's
             break;
         }
         if (exp & 01) {
+#ifndef LARGE_EXPONENT_FIX
             dblExp *= p10;
+#else
+            if (expSign) {
+                fraction /= p10;
+            } else {
+                fraction *= p10;
+            }
+#endif
         }
     }
+#ifndef LARGE_EXPONENT_FIX
     if (expSign) {
         fraction /= dblExp;
     } else {
         fraction *= dblExp;
     }
+#endif
 
 done:
     if (endPtr != NULL) {
