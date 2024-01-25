@@ -491,7 +491,7 @@ void NoteDelayMs(uint32_t ms)
     }
 }
 
-#if NOTE_SHOW_MALLOC || !defined(NOTE_LOWMEM)
+#if NOTE_SHOW_MALLOC || !defined(NOTE_C_LOW_MEM)
 //**************************************************************************/
 /*!
   @brief  Convert number to a hex string

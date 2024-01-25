@@ -11,8 +11,6 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
 
 #include "n_lib.h"
@@ -36,7 +34,7 @@ SCENARIO("JAtoI")
         "   -50",
         "-50   "
     };
-    long int nums[] = {
+    JINTEGER nums[] = {
         0,
         1,
         1000,
@@ -57,5 +55,3 @@ SCENARIO("JAtoI")
 }
 
 }
-
-

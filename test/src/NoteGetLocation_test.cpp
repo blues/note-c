@@ -46,14 +46,14 @@ SCENARIO("NoteGetLocation")
                                   "{gps-active} {gps-signal} {gps-sats} {gps}";
         const float respLat = 42.577600;
         const float respLon = -70.871340;
-        const uint32_t respTime = 1598554399;
+        const JTIME respTime = 1598554399;
 
         J* resp = JCreateObject();
         REQUIRE(resp != NULL);
         JAddStringToObject(resp, "status", respStatus);
         JAddNumberToObject(resp, "lat", respLat);
         JAddNumberToObject(resp, "lon", respLon);
-        JAddNumberToObject(resp, "time", respTime);
+        JAddIntToObject(resp, "time", respTime);
         NoteRequestResponse_fake.return_val = resp;
 
         CHECK(NoteGetLocation(&lat, &lon, &time, statusBuf, sizeof(statusBuf)));

@@ -39,7 +39,7 @@ if [[ $MEM_CHECK -eq 1 ]]; then
     # host machine is running Fedora. See https://stackoverflow.com/a/75293014.
     ulimit -n 1024
 fi
-if [[ $NOTE_C_LOW_MEM -eq 1 ]]; then
+if [[ $LOW_MEM -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_LOW_MEM=1"
 fi
 

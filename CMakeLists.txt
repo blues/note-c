@@ -61,10 +61,10 @@ if(NOTE_C_LOW_MEM)
     target_compile_definitions(
         note_c
         PUBLIC
-            NOTE_LOWMEM
+            NOTE_C_LOW_MEM
     )
 else()
-    # This file is empty if NOTE_LOWMEM is defined, which leads to a warning
+    # This file is empty if NOTE_C_LOW_MEM is defined, which leads to a warning
     # about an empty translation unit, so we only add it to the build if
     # NOTE_C_LOW_MEM is false.
     target_sources(
