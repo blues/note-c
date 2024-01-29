@@ -3,12 +3,14 @@
 COVERAGE=0
 MEM_CHECK=0
 LOW_MEM=0
+SINGLE_PRECISION=0
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --coverage) COVERAGE=1 ;;
         --mem-check) MEM_CHECK=1 ;;
         --low-mem) LOW_MEM=1 ;;
+        --single-precision) SINGLE_PRECISION=1 ;;
         *) echo "Unknown parameter: $1"; exit 1 ;;
     esac
     shift
@@ -41,6 +43,9 @@ if [[ $MEM_CHECK -eq 1 ]]; then
 fi
 if [[ $LOW_MEM -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_LOW_MEM=1"
+fi
+if [[ $SINGLE_PRECISION -eq 1 ]]; then
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_TEST_SINGLE_PRECISION=1"
 fi
 
 cmake -B build/ $CMAKE_OPTIONS

@@ -161,6 +161,8 @@ add_test(NoteBinaryStoreTransmit_test)
 add_test(JPrintUnformatted_test)
 add_test(Jtolower_test)
 add_test(JSON_number_handling_test)
+add_test(JAtoN_test)
+add_test(JNtoA_test)
 
 if(NOTE_C_COVERAGE)
     find_program(LCOV lcov REQUIRED)
