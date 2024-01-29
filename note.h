@@ -55,7 +55,7 @@
 #define ERRDBG
 #endif
 
-#ifdef NOTE_C_LOW_MEM
+#ifdef NOTE_C_TEST_SINGLE_PRECISION
 typedef float JNUMBER;
 #else
 typedef double JNUMBER;

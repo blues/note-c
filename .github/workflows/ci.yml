@@ -139,7 +139,7 @@ jobs:
 
       - name: Run tests with NOTE_LOWMEM defined
         run: |
-          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_unit_tests.sh ghcr.io/blues/note_c_ci:latest --mem-check --low-mem
+          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_unit_tests.sh ghcr.io/blues/note_c_ci:latest --mem-check --low-mem --single-precision
 
   run_astyle:
     runs-on: ubuntu-latest
