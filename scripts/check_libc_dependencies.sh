@@ -32,10 +32,6 @@ PERMITTED_FNS=(
     "strlen"
     "strncmp"
     "strstr"
-    # TODO: The only explicit usage of strtod is in the cJSON code if
-    # CJSON_NO_CLIB is NOT true. It's true by default, so we need to figure out
-    # why strtod is still being brought in.
-    "strtod"
     # strtol comes from us using atoi in NoteGetEnvInt.
     "strtol"
     # Used by NotePrintf.
