@@ -287,8 +287,9 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
  @brief Send a request to the Notecard and return the response.
 
  Unlike `NoteRequestResponse`, this function expects the request to be a valid
- JSON C-string, rather than a `J` object. This string MUST be newline-terminated.
- The response is returned as a dynamically allocated JSON C-string. The response
+ JSON C-string, rather than a `J` object. The string is expected to be
+ newline-terminated, otherwise the call results in undefined behavior. The
+ response is returned as a dynamically allocated JSON C-string. The response
  string is verbatim what was sent by the Notecard, which IS newline-terminated.
  The caller is responsible for freeing the response string. If the request was a
  command (i.e. it uses "cmd" instead of "req"), this function returns NULL,
@@ -319,11 +320,32 @@ char * NoteRequestResponseJSON(const char *reqJSON)
 
     // Manually tokenize the string to search for multiple embedded commands (cannot use strtok)
     for (;;) {
-        const char * const endPtr = strchr(reqJSON, '\n');
+        const char *endPtr;
+        const char * const newlinePtr = strchr(reqJSON, '\n');
 
-        // If string is not newline-terminated, then do not process
-        if (endPtr == NULL) {
-            break;
+        // If string is not newline-terminated, then allocate a new string and terminate it
+        if (NULL == newlinePtr) {
+            // All JSON strings should be newline-terminated to meet the specification, however
+            // this is required to ensure backward compatibility with the previous implementation.
+            const size_t tempLen = strlen(reqJSON);
+            if (0 == tempLen) {
+                NOTE_C_LOG_ERROR(ERRSTR("request: jsonbuf zero length", c_bad));
+                break;
+            }
+
+            NOTE_C_LOG_WARN(ERRSTR("Memory allocation due to malformed request (not newline-terminated)", c_bad));
+            char * const temp = _Malloc(tempLen + 1);
+            if (temp == NULL) {
+                NOTE_C_LOG_ERROR(ERRSTR("request: jsonbuf malloc failed", c_mem));
+                break;
+            }
+
+            memcpy(temp, reqJSON, tempLen);
+            temp[tempLen] = '\n';
+            reqJSON = temp;
+            endPtr = &reqJSON[tempLen];
+        } else {
+            endPtr = newlinePtr;
         }
         const size_t reqLen = ((endPtr - reqJSON) + 1);
 
@@ -334,25 +356,35 @@ char * NoteRequestResponseJSON(const char *reqJSON)
             J *jsonObj = JParse(reqJSON);
             if (!jsonObj) {
                 // Invalid JSON.
-                return NULL;
+                if (NULL == newlinePtr) {
+                    _Free((void *)reqJSON);
+                }
+                break;
             }
             isCmd = JIsPresent(jsonObj, "cmd");
             JDelete(jsonObj);
         }
 
-        if (isCmd) {
+        if (!isCmd) {
+            _Transaction(reqJSON, reqLen, &rspJSON, transactionTimeoutMs);
+            if (NULL == newlinePtr) {
+                _Free((void *)reqJSON);
+            }
+            break;
+        } else {
             // If it's a command, the Notecard will not respond, so we pass NULL for
             // the response parameter.
             _Transaction(reqJSON, reqLen, NULL, transactionTimeoutMs);
             reqJSON = (endPtr + 1);
-        } else {
-            _Transaction(reqJSON, reqLen, &rspJSON, transactionTimeoutMs);
-            break;
+        }
+
+        // Clean up if we allocated a new string
+        if (NULL == newlinePtr) {
+            _Free((void *)reqJSON);
         }
     }
 
     _UnlockNote();
-
     _TransactionStop();
 
     return rspJSON;
