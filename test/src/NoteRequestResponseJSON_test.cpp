@@ -19,9 +19,12 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
+FAKE_VALUE_FUNC(N_CJSON_PUBLIC(J *), JParse, const char *)
 FAKE_VALUE_FUNC(bool, noteTransactionStart, uint32_t)
 FAKE_VOID_FUNC(noteTransactionStop)
 FAKE_VOID_FUNC(noteLockNote)
+FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
+FAKE_VOID_FUNC(NoteFree, void *)
 FAKE_VOID_FUNC(noteUnlockNote)
 FAKE_VALUE_FUNC(const char *, noteJSONTransaction, const char *, size_t, char **, uint32_t)
 
@@ -32,11 +35,20 @@ SCENARIO("NoteRequestResponseJSON")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
+    JParse_fake.custom_fake = [](const char *value) -> J * {
+        return JParseWithOpts(value,0,0);
+    };
+    NoteMalloc_fake.custom_fake = malloc;
+    NoteFree_fake.custom_fake = free;
     noteTransactionStart_fake.return_val = true;
 
     GIVEN("The request is NULL") {
         WHEN("NoteRequestResponseJSON is called") {
             char *rsp = NoteRequestResponseJSON(NULL);
+
+            THEN("noteJSONTransaction is not called") {
+                CHECK(noteJSONTransaction_fake.call_count == 0);
+            }
 
             THEN("The response is NULL") {
                 CHECK(rsp == NULL);
@@ -44,7 +56,21 @@ SCENARIO("NoteRequestResponseJSON")
         }
     }
 
-    GIVEN("The request is a command") {
+    GIVEN("The request length is zero (0)") {
+        WHEN("NoteRequestResponseJSON is called") {
+            char *rsp = NoteRequestResponseJSON("");
+
+            THEN("noteJSONTransaction is not called") {
+                CHECK(noteJSONTransaction_fake.call_count == 0);
+            }
+
+            THEN("The response is NULL") {
+                CHECK(rsp == NULL);
+            }
+        }
+    }
+
+    GIVEN("The request is a command (cmd)") {
         char req[] = "{\"cmd\":\"card.sleep\"}\n";
 
         WHEN("NoteRequestResponseJSON is called") {
@@ -87,7 +113,7 @@ SCENARIO("NoteRequestResponseJSON")
         }
     }
 
-    GIVEN("The request is not a command") {
+    GIVEN("The request is not a command (req)") {
         char req[] = "{\"req\":\"card.version\"}\n";
 
         WHEN("NoteRequestResponseJSON is called") {
@@ -121,14 +147,68 @@ SCENARIO("NoteRequestResponseJSON")
     GIVEN("The request doesn't have a terminating newline") {
         char req[] = "{\"req\":\"card.version\"}";
 
-        WHEN("NoteRequestResponseJSON is called") {
+        WHEN("NoteMalloc fails to duplicate the request") {
+            NoteMalloc_fake.custom_fake = nullptr;
+            NoteMalloc_fake.return_val = NULL;
             char *rsp = NoteRequestResponseJSON(req);
 
-            THEN("noteJSONTransaction isn't called") {
+            THEN("noteJSONTransaction is not called") {
+                REQUIRE(NoteMalloc_fake.call_count > 0);
                 CHECK(noteJSONTransaction_fake.call_count == 0);
             }
 
-            THEN("NULL is returned") {
+            THEN("NoteFree is not called") {
+                REQUIRE(NoteMalloc_fake.call_count > 0);
+                CHECK(NoteFree_fake.call_count == 0);
+            }
+
+            THEN("NoteRequestResponseJSON returns NULL") {
+                REQUIRE(NoteMalloc_fake.call_count > 0);
+                CHECK(rsp == NULL);
+            }
+        }
+
+        WHEN("NoteMalloc is able to duplicate the request") {
+            char *rsp = NoteRequestResponseJSON(req);
+
+            THEN("NoteMalloc is called") {
+                REQUIRE(noteJSONTransaction_fake.call_count > 0);
+                CHECK(NoteMalloc_fake.call_count > 0);
+            }
+
+            THEN("noteJSONTransaction is called with the newline appended") {
+                REQUIRE(noteJSONTransaction_fake.call_count > 0);
+                REQUIRE(noteJSONTransaction_fake.arg0_val != NULL);
+                // We cannot test the value of the string passed to
+                // `noteJSONTransaction` because it is a pointer to a string
+                // freed by `NoteFree`. We can only check that the length
+                // of the string is one longer than would normally be expected.
+                CHECK(noteJSONTransaction_fake.arg1_val == sizeof(req));
+            }
+
+            THEN("NoteFree is called to free the memory allocated by malloc") {
+                REQUIRE(noteJSONTransaction_fake.call_count > 0);
+                CHECK(NoteFree_fake.call_count == NoteMalloc_fake.call_count);
+            }
+        }
+
+        WHEN("The request fails to parse") {
+            char cmd[] = "{\"cmd\":\"card.version\"}";
+            JParse_fake.custom_fake = nullptr;
+            JParse_fake.return_val = NULL;
+            char *rsp = NoteRequestResponseJSON(cmd);
+
+            THEN("noteJSONTransaction is not called") {
+                REQUIRE(NoteMalloc_fake.call_count > 0);
+                CHECK(noteJSONTransaction_fake.call_count == 0);
+            }
+
+            THEN("NoteFree is called") {
+                REQUIRE(NoteMalloc_fake.call_count > 0);
+                CHECK(NoteFree_fake.call_count == NoteMalloc_fake.call_count);
+            }
+
+            THEN("NoteRequestResponseJSON returns NULL") {
                 CHECK(rsp == NULL);
             }
         }
@@ -152,6 +232,16 @@ SCENARIO("NoteRequestResponseJSON")
                 CHECK(noteTransactionStart_fake.call_count == 1);
                 CHECK(noteTransactionStop_fake.call_count == 1);
             }
+
+            THEN("NoteMalloc is not called") {
+                REQUIRE(noteJSONTransaction_fake.call_count > 0);
+                CHECK(NoteMalloc_fake.call_count == 0);
+            }
+
+            THEN("NoteFree is not called") {
+                REQUIRE(noteJSONTransaction_fake.call_count > 0);
+                CHECK(NoteFree_fake.call_count == 0);
+            }
         }
 
         AND_GIVEN("The transaction with the Notecard fails to start") {
@@ -168,6 +258,9 @@ SCENARIO("NoteRequestResponseJSON")
         }
     }
 
+    RESET_FAKE(JParse);
+    RESET_FAKE(NoteMalloc);
+    RESET_FAKE(NoteFree);
     RESET_FAKE(noteTransactionStart);
     RESET_FAKE(noteTransactionStop);
     RESET_FAKE(noteLockNote);

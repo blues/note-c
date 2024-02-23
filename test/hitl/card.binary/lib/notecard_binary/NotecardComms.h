@@ -29,7 +29,12 @@ enum NotecardInterface {
 #define NOTECARD_IF_I2C_ADDRESS NOTE_I2C_ADDR_DEFAULT
 #endif
 
-
+#if defined(NOTECARD_DEBUG_STLINK)
+  HardwareSerial stlinkSerial(PIN_VCP_RX, PIN_VCP_TX);
+  #define dbgSerial stlinkSerial
+#else
+  #define dbgSerial Serial
+#endif
 
 bool initialize_notecard_interface(NotecardInterface iface);
 size_t readDataUntilTimeout(Stream& serial, size_t timeout, uint8_t* buf, size_t bufLen, size_t dataLen, size_t& duration);

@@ -307,12 +307,9 @@ public:
     void notecardDebugStreamInitialize()
     {
 #if defined(NOTECARD_DEBUG_STLINK)
-        static HardwareSerial stlinkSerial(PIN_VCP_RX, PIN_VCP_TX);
-        stlinkSerial.begin(115200);
-        notecard.setDebugOutputStream(stlinkSerial);
-#else
-        notecard.setDebugOutputStream(Serial);
+        dbgSerial.begin(115200);
 #endif
+        notecard.setDebugOutputStream(dbgSerial);
     }
 
     bool notecardConnectionMode()
@@ -450,7 +447,7 @@ public:
     {
         const size_t totalSize = image.length();
         if (totalSize==0) {
-            notecard.logDebugf("Image length is 0!");
+            dbgSerial.println("Image length is 0!");
             return false;
         }
 
@@ -458,7 +455,12 @@ public:
             return false;
         }
 
-        notecard.logDebugf("Sending image of size %u, in transport chunks of size %u, with a maximum Notecard binary size of %u\n", totalSize, chunkSize, maxBinarySize);
+        dbgSerial.print("Sending image of size ");
+        dbgSerial.print(totalSize, DEC);
+        dbgSerial.print(", in transport chunks of size ");
+        dbgSerial.print(chunkSize, DEC);
+        dbgSerial.print(", with a maximum Notecard binary size of ");
+        dbgSerial.println(maxBinarySize, DEC);
 
         image.reset();
         size_t totalTransferred = 0;
@@ -481,11 +483,20 @@ public:
             while (bytesToTransfer) {
                 const size_t thisChunk = bytesToTransfer >= chunkSize ? chunkSize : bytesToTransfer;
                 const size_t offset = chunkSize * chunkIndex;
-                notecard.logDebugf("Sending transport chunk %d, offset: %d, length: %d...\n", chunkIndex, offset, thisChunk);
+                dbgSerial.print("Sending transport chunk ");
+                dbgSerial.print(chunkIndex, DEC);
+                dbgSerial.print(", offset: ");
+                dbgSerial.print(offset, DEC);
+                dbgSerial.print(", length: ");
+                dbgSerial.print(thisChunk, DEC);
+                dbgSerial.println("...");
 
                 size_t bytesRead = transferImage.read(buffer, thisChunk);
                 if (bytesRead != thisChunk) {
-                    notecard.logDebugf("Insufficient data from image: expected %u, got %u\n", thisChunk, bytesRead);
+                    dbgSerial.print("Insufficient data from image: expected ");
+                    dbgSerial.print(thisChunk, DEC);
+                    dbgSerial.print(", got ");
+                    dbgSerial.println(bytesRead, DEC);
                     return false;
                 }
 
@@ -508,14 +519,29 @@ public:
 outer:
             const size_t actualTransferSize = binaryTransferSize-bytesToTransfer;
             if (bytesToTransfer) {
-                notecard.logDebugf("TRANSFER FAILED: %s - transferred %d(0x%x) bytes of %d(0x%x)", imageName, actualTransferSize, actualTransferSize, binaryTransferSize, binaryTransferSize);
+                dbgSerial.print("TRANSFER FAILED: ");
+                dbgSerial.print(imageName);
+                dbgSerial.print(" - transferred ");
+                dbgSerial.print(actualTransferSize, DEC);
+                dbgSerial.print("(0x");
+                dbgSerial.print(actualTransferSize, HEX);
+                dbgSerial.print(") bytes of ");
+                dbgSerial.print(binaryTransferSize, DEC);
+                dbgSerial.print("(0x");
+                dbgSerial.print(binaryTransferSize, HEX);
+                dbgSerial.println(")");
                 return false;
             }
 
             NoteMD5Final(currentMD5, &currentMD5Context);
 
-            notecard.logDebugf("%s: Successfully transferred %d(0x%x) bytes.\n", imageName, binaryTransferSize, binaryTransferSize);
-            notecard.logDebug("Validating received binary data...\n");
+            dbgSerial.print(imageName);
+            dbgSerial.print(": Successfully transferred ");
+            dbgSerial.print(binaryTransferSize, DEC);
+            dbgSerial.print("(0x");
+            dbgSerial.print(binaryTransferSize, HEX);
+            dbgSerial.println(") bytes.");
+            dbgSerial.println("Validating received binary data...");
 
             TransferDetails tx = {
                 .name = imageName,
@@ -547,9 +573,17 @@ outer:
                     if (actualChunkSize<=0) {
                         actualChunkSize += tx.currentTransferImage.length();
                     }
-                    notecard.logDebugf("Validating buffer contents with length given=%d(actual=%d)\n", validateChunkSize, actualChunkSize);
+                    dbgSerial.print("Validating buffer contents with length given=");
+                    dbgSerial.print(validateChunkSize, DEC);
+                    dbgSerial.print(" (actual=");
+                    dbgSerial.print(actualChunkSize, DEC);
+                    dbgSerial.println(")");
                     if (!validateBinaryReceived(tx, buffer, bufferLength, actualChunkSize)) {
-                        notecard.logDebugf("FAIL: validation failed with chunk size given=%d(actual=%d)\n", validateChunkSize, actualChunkSize);
+                        dbgSerial.print("FAIL: validation failed with chunk size given=");
+                        dbgSerial.print(validateChunkSize, DEC);
+                        dbgSerial.print(" (actual=");
+                        dbgSerial.print(actualChunkSize, DEC);
+                        dbgSerial.println(")");
                         return false;
                     }
                 }
@@ -559,13 +593,21 @@ outer:
             TransferHandlerContext ctx = { .tries = 0 };
             while (++ctx.tries <= 5) {
                 if (!transfer_cb(tx, ctx)) {
-                    notecard.logDebugf("FAIL: (try %d) %s - Validation cancelled by transfer handler\n", ctx.tries, imageName);
+                    dbgSerial.print("FAIL: (try ");
+                    dbgSerial.print(ctx.tries, DEC);
+                    dbgSerial.print(") ");
+                    dbgSerial.print(imageName);
+                    dbgSerial.println(" - Validation cancelled by transfer handler");
                     if (ctx.tries<0) {
-                        notecard.logDebugf("Handler is not idempotent, giving up.\n");
+                        dbgSerial.println("Handler is not idempotent, giving up.");
                     }
                 } else {
                     if (tries>1) {
-                        notecard.logDebugf("SUCCESS: (try %d) %s - transfer handler successful\n", ctx.tries, imageName);
+                        dbgSerial.print("SUCCESS: (try ");
+                        dbgSerial.print(ctx.tries, DEC);
+                        dbgSerial.print(") ");
+                        dbgSerial.print(imageName);
+                        dbgSerial.println(" - transfer handler successful");
                     }
                     ctx.tries = 0;  // say we're good
                     break;
@@ -616,10 +658,17 @@ outer:
         uint8_t* rxBuffer = nullptr;
         const char* err;
 
-        notecard.logDebugf("Validating card binary, %u/%u size %u\n", tx.transferred, tx.total, tx.currentTransferSize);
+        dbgSerial.print("Validating card binary, ");
+        dbgSerial.print(tx.transferred, DEC);
+        dbgSerial.print("/");
+        dbgSerial.print(tx.total, DEC);
+        dbgSerial.print(" size ");
+        dbgSerial.println(tx.currentTransferSize, DEC);
 
         if (nullptr==(rxBuffer=(uint8_t*)malloc(rxBufferSize))) {
-            notecard.logDebugf("Unable to allocate %d bytes for receive buffer.\n", rxBufferSize);
+            dbgSerial.print("Unable to allocate ");
+            dbgSerial.print(rxBufferSize, DEC);
+            dbgSerial.println(" bytes for receive buffer.");
         } else {
             size_t offset = 0;
             size_t totalBytesRead = 0;
@@ -628,10 +677,16 @@ outer:
                 ok = false;
                 const size_t chunkLength = std::min(tx.currentTransferImage.remaining(), validateChunkSize);
                 if ((err = NoteBinaryStoreReceive(rxBuffer, rxBufferSize, offset, chunkLength))!=nullptr) {
-                    notecard.logDebugf("Error receiving binary: %s\n", err);
+                    dbgSerial.print("Error receiving binary: ");
+                    dbgSerial.println(err);
                 } else {
-                    notecard.logDebugf("card.binary.get Receive buffer size requested: %d\n", rxBufferSize);
-                    notecard.logDebugf("Validating received data, length %d (0x%x)...\n", chunkLength, chunkLength);
+                    dbgSerial.print("card.binary.get Receive buffer size requested: ");
+                    dbgSerial.println(rxBufferSize, DEC);
+                    dbgSerial.print("Validating received data, length ");
+                    dbgSerial.print(chunkLength, DEC);
+                    dbgSerial.print("(0x");
+                    dbgSerial.print(chunkLength, HEX);
+                    dbgSerial.println(")...");
                     size_t chunkBytesRead = 0;
                     // read and validate the image against the buffer in chunks.
                     BinaryGenerator& image = tx.currentTransferImage;   // alias
@@ -644,7 +699,14 @@ outer:
                             const uint8_t* src = rxBuffer+chunkBytesRead;
                             if (src[i]!=buffer[i]) {
                                 size_t offset = chunkBytesRead + i;
-                                notecard.logDebugf("Received buffer differs from image at offset %d(0x%x): %d != %d", offset, offset, buffer[i], src[i]);
+                                dbgSerial.print("Received buffer differs from image at offset ");
+                                dbgSerial.print(offset, DEC);
+                                dbgSerial.print("(0x");
+                                dbgSerial.print(offset, HEX);
+                                dbgSerial.print("): ");
+                                dbgSerial.print(buffer[i], DEC);
+                                dbgSerial.print(" != ");
+                                dbgSerial.println(src[i], DEC);
                                 goto cancel;
                             }
                         }
@@ -656,7 +718,7 @@ outer:
             }
 cancel:
             if (totalBytesRead==tx.currentTransferImage.length()) {
-                notecard.logDebug("Validated received data.\n");
+                dbgSerial.println("Validated received data.");
 
 #if defined(NOTE_BINARY_CHECK_EXTRA_DATA_TIMEOUT)
                 // This is not necessary to catch the error, since other requests afterwards will fail.
@@ -665,7 +727,13 @@ cancel:
                 size_t duration = 0;
                 size_t size = readDataUntilTimeout(Serial1, NOTE_BINARY_CHECK_EXTRA_DATA_TIMEOUT, rxBuffer, rxBufferSize, receivedLength, duration);
                 if (size) {
-                    notecard.logDebugf("additional data after binary: %d (0x%x) bytes read in %dms\n", size, size, duration);
+                    dbgSerial.print("additional data after binary: ");
+                    dbgSerial.print(size, DEC);
+                    dbgSerial.print("(0x");
+                    dbgSerial.print(size, HEX);
+                    dbgSerial.print(") bytes read in ");
+                    dbgSerial.print(duration, DEC);
+                    dbgSerial.println("ms");
                 } else
 #endif
                     success = true;
@@ -681,7 +749,8 @@ cancel:
         const char *err = NoteBinaryStoreTransmit(chunk, chunkLength, bufferLength, offset);
 
         if (err) {
-            NoteDebugf("Error transferring binary chunk: %s\n", err);
+            dbgSerial.print("Error transferring binary chunk: ");
+            dbgSerial.println(err);
             if (!strstr(err, "exceeds available memory")) {
                 return binaryBufferFull();
             }
@@ -777,11 +846,11 @@ public:
         J* response = nullptr;
         const char* err = NoteBinaryStoreReceive(rxBuf, rxSize, 0, dataLen);
         if (err) {
-            notecard.logDebugf("error retrieving payload: %s\n", err);
+            dbgSerial.print("error retrieving payload: ");
+            dbgSerial.println(err);
         } else {
-            notecard.logDebug("response content from card.binary: ");
-            notecard.logDebug((const char*)rxBuf);
-            notecard.logDebug("\n");
+            dbgSerial.print("response content from card.binary: ");
+            dbgSerial.println((const char*)rxBuf);
             response = JParse((char*)rxBuf);
         }
         return response;
@@ -812,7 +881,7 @@ private:
         JAddBoolToObject(req, "binary", true);
         J* rsp = notecard.requestAndResponse(req);
         if (!rsp) {
-            notecard.logDebug("NULL response to `web.get`\n");
+            dbgSerial.println("NULL response to `web.get`");
         } else {
             int result = JGetNumber(rsp, "result");
             J* body = JGetObject(rsp, "body");
@@ -822,17 +891,23 @@ private:
             const char* err = JGetString(rsp, "err");
             retry = result==404 || result==503 || result==504;
             if (err && err[0]) {
-                notecard.logDebugf("web.get failed with error: %s\n", err);
+                dbgSerial.print("web.get failed with error: ");
+                dbgSerial.println(err);
             } else if (result<200 || result>=300) {
-                notecard.logDebugf("web.get result was %d\n", result);
+                dbgSerial.print("web.get result was: ");
+                dbgSerial.println(result, DEC);
             } else if (!body) {
-                notecard.logDebugf("web.get body is not present\n");
+                dbgSerial.println("web.get body is not present");
             } else if (!cobs) {
-                notecard.logDebugf("web.get expected response property 'cobs' is not present\n");
+                dbgSerial.println("web.get expected response property 'cobs' is not present");
             } else if (!length) {
-                notecard.logDebugf("web.get expected response property 'length' is not present\n");
+                dbgSerial.println("web.get expected response property 'length' is not present");
             } else if (length!=int(tx.currentTransferSize)) {
-                notecard.logDebugf("web.get length!=chunkTransferSize (%d!=%d)\n", length, tx.currentTransferSize);
+                dbgSerial.print("web.get length!=chunkTransferSize (");
+                dbgSerial.print(length, DEC);
+                dbgSerial.print("!=");
+                dbgSerial.print(tx.currentTransferSize, DEC);
+                dbgSerial.println(")");
             } else {
                 // validate the binary buffer against the last chunk sent
                 size_t bufferLength = 4097; // just to be nasty ;-)
@@ -842,7 +917,7 @@ private:
                     success = NotecardBinary::validateBinaryReceived(tx, buffer, bufferLength, length);
                     free(buffer);
                 } else {
-                    notecard.logDebugf("Unable to allocate 4k buffer to verify content\n");
+                    dbgSerial.println("Unable to allocate 4k buffer to verify content");
                 }
             }
             if (!success && length && length<1024) {
@@ -875,20 +950,22 @@ private:
         }
         J* rsp = notecard.requestAndResponse(req);
         if (!rsp) {
-            notecard.logDebug("NULL response to `web.get`\n");
+            dbgSerial.println("NULL response to `web.get`");
         } else {
             int result = JGetNumber(rsp, "result");
             J* body = JGetObject(rsp, "body");
             int cobs = JGetNumber(rsp, "cobs");
             const char* err = JGetString(rsp, "err");
             if (err && err[0]) {
-                notecard.logDebugf("web.get failed with error: %s\n", err);
+                dbgSerial.print("web.get failed with error: ");
+                dbgSerial.println(err);
             } else if (result<200 || result>=300) {
-                notecard.logDebugf("web.get result was %d\n", result);
+                dbgSerial.print("web.get result was: ");
+                dbgSerial.println(result, DEC);
             } else if (!body) {
-                notecard.logDebugf("web.get body is not present\n");
+                dbgSerial.println("web.get body is not present");
             } else if (cobs) {
-                notecard.logDebugf("web.get unexpected response property 'cobs' is present\n");
+                dbgSerial.println("web.get unexpected response property 'cobs' is present");
             } else {
                 size_t expectedChunks = chunked ? tx.totalChunks : 1;
                 size_t actualLength = JGetNumber(body, "length");
@@ -900,13 +977,27 @@ private:
                     actualMD5String = "not a string";
                 }
                 if (strcmp(actualMD5String, expectedMD5String)) {
-                    notecard.logDebugf("web.get MD5 actual!=expected: %s!=%s\n", actualMD5String, expectedMD5String);
+                    dbgSerial.print("web.get MD5 actual!=expected: ");
+                    dbgSerial.print(actualMD5String);
+                    dbgSerial.print(" != ");
+                    dbgSerial.println(expectedMD5String);
                 } else if (actualLength!=tx.total) {
-                    notecard.logDebugf("web.get total length: actual!=expected: %d!=%d\n", actualLength, tx.total);
+                    dbgSerial.print("web.get total length: actual != expected: ");
+                    dbgSerial.print(actualLength, DEC);
+                    dbgSerial.print(" != ");
+                    dbgSerial.println(tx.total, DEC);
                 } else if (actualChunks!=expectedChunks) {
-                    notecard.logDebugf("web.get total chunks: actual!=expected: %d!=%d\n", actualChunks, expectedChunks);
+                    dbgSerial.print("web.get total chunks: actual != expected: ");
+                    dbgSerial.print(actualChunks, DEC);
+                    dbgSerial.print(" != ");
+                    dbgSerial.println(expectedChunks, DEC);
                 } else {
-                    notecard.logDebugf("web.get response validated: md5=%s, chunks=%d, length=%d.\n", actualMD5String, actualChunks, actualLength);
+                    dbgSerial.print("web.get response validated: md5=");
+                    dbgSerial.print(actualMD5String);
+                    dbgSerial.print(", chunks=");
+                    dbgSerial.print(actualChunks, DEC);
+                    dbgSerial.print(", length=");
+                    dbgSerial.println(actualLength, DEC);
                     success = true;
                 }
             }
@@ -931,16 +1022,19 @@ private:
             if (rsp) {
                 int result = JGetNumber(rsp, "result");
                 if (result != 200) {
-                    notecard.logDebugf("HTTP status %d trying to delete %s\n", result, name);
+                    dbgSerial.print("HTTP status (");
+                    dbgSerial.print(result, DEC);
+                    dbgSerial.print(") trying to delete ");
+                    dbgSerial.println(name);
                 } else {
                     success = true;
                 }
                 JDelete(rsp);
             } else {
-                notecard.logDebugf("NULL response received to `web.delete`.\n");
+                dbgSerial.println("NULL response received to `web.delete`.");
             }
         } else {
-            notecard.logDebugf("Could not create request.\n");
+            dbgSerial.println("Could not create request.");
         }
         return success;
     }
@@ -992,7 +1086,7 @@ public:
         bool success = false;
 
         if (!NotecardBinary::waitForNotecardConnected(NOT_CONNECTED_TIMEOUT)) {
-            notecard.logDebug("Cannot perform web.* request, Notecard not connected.");
+            dbgSerial.println("Cannot perform web.* request, Notecard not connected.");
             return false;
         }
 
@@ -1041,24 +1135,27 @@ public:
 
                 err = JGetString(rsp, "err");
                 if (err && err[0]) {
-                    notecard.logDebugf("web.post failed with error: %s\n", err);
+                    dbgSerial.print("web.post failed with error: ");
+                    dbgSerial.println(err);
                 }
                 // Notehub returns 100: Continue for all web.post with offset apart from the last
                 else if (!chunked && !tx.isComplete && result!=100) {
-                    notecard.logDebugf("expected web.post result of 100 for all fragments apart from the last, but was %d\n", result);
+                    dbgSerial.print("expected web.post result of 100 for all fragments apart from the last, but was: ");
+                    dbgSerial.println(result, DEC);
                 } else if ((chunked || tx.isComplete) && (result!=200)) {
-                    notecard.logDebugf("web.post result of 200 expected, but was %d\n", result);
+                    dbgSerial.print("web.post result of 200 expected, but was: ");
+                    dbgSerial.println(result, DEC);
                 }
                 // only get a "real" response from the endpoint when chunking, or when the final fragment is sent to notehub
                 else if (!chunked && !tx.isComplete) {
                     success = true;
                 } else {
                     if (!body) {
-                        notecard.logDebugf("web.post body is not present\n");
+                        dbgSerial.println("web.post body is not present");
                     } else if (!cobs) {
-                        notecard.logDebugf("web.post response 'cobs' not present\n");
+                        dbgSerial.println("web.post response 'cobs' not present");
                     } else if (!length) {
-                        notecard.logDebugf("web.post response 'length' not present\n");
+                        dbgSerial.println("web.post response 'length' not present");
                     } else {
                         char expectedMD5String[NOTE_MD5_HASH_STRING_SIZE];
                         // need to tighten up the note-c APIs with respect to const
@@ -1071,13 +1168,22 @@ public:
                             receivedMD5string = "not a string";
                         }
                         if (strcmp(receivedMD5string, expectedMD5String)) {
-                            notecard.logDebugf("web.post MD5 actual!=expected: %s!=%s\n", receivedMD5string, expectedMD5String);
+                            dbgSerial.print("web.post MD5 actual != expected: ");
+                            dbgSerial.print(receivedMD5string);
+                            dbgSerial.print(" != ");
+                            dbgSerial.println(expectedMD5String);
                         } else if (content && (!contentType || strcmp(contentType, content))) {
-                            notecard.logDebugf("web.post Content-Type actual!=expected: %s!=%s\n", contentType, content);
+                            dbgSerial.print("web.post Content-Type actual != expected: ");
+                            dbgSerial.print(contentType);
+                            dbgSerial.print(" != ");
+                            dbgSerial.println(content);
                         } else if (!contentLength || (contentLength!=expectedLength)) {
-                            notecard.logDebugf("web.post Content-Length actual!=expected: %s!=%s\n", contentLength, expectedLength);
+                            dbgSerial.print("web.post Content-Length actual != expected: ");
+                            dbgSerial.print(contentLength);
+                            dbgSerial.print(" != ");
+                            dbgSerial.println(expectedLength);
                         } else {
-                            notecard.logDebug("web.post response validated.\n");
+                            dbgSerial.println("web.post response validated.");
                             success = true;
                         }
                     }
@@ -1126,7 +1232,7 @@ public:
         bool chunked = (tx.currentTransferSize!=tx.total);   // only one chunk equal to the total
 
         if (!NotecardBinary::waitForNotecardConnected(NOT_CONNECTED_TIMEOUT)) {
-            notecard.logDebug("Cannot perform note.add request, Notecard not connected.");
+            dbgSerial.println("Cannot perform note.add request, Notecard not connected.");
             return false;
         }
 
@@ -1152,16 +1258,17 @@ public:
             if (rsp) {
                 const char* err = JGetString(rsp, "err");
                 if (err && err[0]) {
-                    notecard.logDebugf("note.add error: %s\n", err);
+                    dbgSerial.print("note.add error: ");
+                    dbgSerial.println(err);
                 } else {
                     success = true;
                 }
                 JDelete(rsp);
             } else {
-                notecard.logDebugf("no response from Notecard\n");
+                dbgSerial.println("no response from Notecard");
             }
         } else {
-            notecard.logDebugf("Could not allocate request\n");
+            dbgSerial.println("Could not allocate request");
         }
 
         if (success) {

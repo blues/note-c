@@ -54,7 +54,8 @@ void AssertNoteBinaryReset()
 {
     const char* err = NoteBinaryStoreReset();
     if (err) {
-        notecard.logDebugf("Error calling NoteBinaryReset %s\n", err);
+        dbgSerial.print("Error calling NoteBinaryReset: ");
+        dbgSerial.println(err);
         TEST_FAIL_MESSAGE("NoteBinaryReset failed.");
     }
 }
@@ -309,18 +310,19 @@ size_t get_expected_max_binary_length()
     size_t ret = 0;
     J* rsp = NoteRequestResponseWithRetry(NoteNewRequest("card.version"), 10);
     if (rsp == nullptr) {
-        notecard.logDebug("No response to card.version.");
+        dbgSerial.println("No response to card.version.");
     } else {
         char *target = JGetString(JGetObject(rsp, "body"), "target");
         if (target == nullptr) {
-            notecard.logDebug("Failed to get target from card.version body.");
+            dbgSerial.println("Failed to get target from card.version body.");
         } else {
             if (strcmp(target, "r5") == 0) {
                 ret = R5_MAX_BINARY_LENGTH;
             } else if (strcmp(target, "u5") == 0) {
                 ret = U5_MAX_BINARY_LENGTH;
             } else {
-                notecard.logDebugf("Unrecognized target: %s.", target);
+                dbgSerial.print("Unrecognized target: ");
+                dbgSerial.println(target);
             }
         }
     }
