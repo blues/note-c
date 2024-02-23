@@ -23,7 +23,7 @@
 
 #define NOTE_C_VERSION_MAJOR 2
 #define NOTE_C_VERSION_MINOR 1
-#define NOTE_C_VERSION_PATCH 2
+#define NOTE_C_VERSION_PATCH 3
 
 // If double and float are the same size, then we must be on a small MCU. Turn
 // on NOTE_C_LOW_MEM to conserve memory.
