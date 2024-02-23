@@ -178,9 +178,12 @@ SCENARIO("NoteRequestResponseJSON")
 
             THEN("noteJSONTransaction is called with the newline appended") {
                 REQUIRE(noteJSONTransaction_fake.call_count > 0);
-                REQUIRE(noteJSONTransaction_fake.arg0_history[0] != NULL);
-                CHECK(noteJSONTransaction_fake.arg0_history[0][(sizeof(req) - 1)] == '\n');
-                CHECK(noteJSONTransaction_fake.arg1_history[0] == sizeof(req));
+                REQUIRE(noteJSONTransaction_fake.arg0_val != NULL);
+                // We cannot test the value of the string passed to
+                // `noteJSONTransaction` because it is a pointer to a string
+                // freed by `NoteFree`. We can only check that the length
+                // of the string is one longer than would normally be expected.
+                CHECK(noteJSONTransaction_fake.arg1_val == sizeof(req));
             }
 
             THEN("NoteFree is called to free the memory allocated by malloc") {

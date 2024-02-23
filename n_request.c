@@ -288,7 +288,7 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
 
  Unlike `NoteRequestResponse`, this function expects the request to be a valid
  JSON C-string, rather than a `J` object. The string is expected to be
- newline-terminated, otherwise the call results in undefined behavior. The
+ newline-terminated, otherwise the call produces undefined behavior. The
  response is returned as a dynamically allocated JSON C-string. The response
  string is verbatim what was sent by the Notecard, which IS newline-terminated.
  The caller is responsible for freeing the response string. If the request was a
@@ -334,7 +334,7 @@ char * NoteRequestResponseJSON(const char *reqJSON)
             }
 
             NOTE_C_LOG_WARN(ERRSTR("Memory allocation due to malformed request (not newline-terminated)", c_bad));
-            char * const temp = _Malloc(tempLen + 1);
+            char * const temp = _Malloc(tempLen + 2);  // +2 for newline and null-terminator
             if (temp == NULL) {
                 NOTE_C_LOG_ERROR(ERRSTR("request: jsonbuf malloc failed", c_mem));
                 break;
@@ -342,8 +342,9 @@ char * NoteRequestResponseJSON(const char *reqJSON)
 
             memcpy(temp, reqJSON, tempLen);
             temp[tempLen] = '\n';
+            temp[tempLen + 1] = '\0';
             reqJSON = temp;
-            endPtr = &reqJSON[tempLen];
+            endPtr = &temp[tempLen];
         } else {
             endPtr = newlinePtr;
         }
