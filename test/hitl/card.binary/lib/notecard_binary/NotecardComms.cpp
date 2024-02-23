@@ -14,7 +14,7 @@ bool set_aux_serial_baudrate(size_t baudrate, NotecardInterface nif)
     digitalWrite(FEATHER_AUX_EN_PIN, HIGH);
 
     if (nif==NOTECARD_IF_AUX_SERIAL) {
-        notecard.logDebug("WARNING: trying to change aux serial baudrate over aux serial.\n");
+        dbgSerial.println("WARNING: trying to change aux serial baudrate over aux serial.");
     }
     initialize_notecard_interface(nif);
 
@@ -24,17 +24,21 @@ bool set_aux_serial_baudrate(size_t baudrate, NotecardInterface nif)
     J* rsp = NoteRequestResponseWithRetry(req, 10);
     bool success = false;
     if (rsp==nullptr) {
-        notecard.logDebug("No response to `card.aux.serial`.\n");
+        dbgSerial.println("No response to `card.aux.serial`.");
     } else if (!JIsNullString(rsp, "err")) {
-        notecard.logDebugf("Error response to `card.aux.serial`\n");
+        dbgSerial.println("Error response to `card.aux.serial`.");
     }
 
     const char* mode = JGetString(rsp, "mode");
     size_t rate = JGetNumber(rsp, "rate");
     if (strcmp(mode, "req")) {
-        notecard.logDebugf("expected 'mode':'req', got %s\n", mode);
+        dbgSerial.print("expected 'mode':'req', got ");
+        dbgSerial.println(mode);
     } else if (rate != baudrate) {
-        notecard.logDebugf("expected 'rate':%d, got %d\n", baudrate, rate);
+        dbgSerial.print("expected 'rate':");
+        dbgSerial.print(baudrate);
+        dbgSerial.print(", got ");
+        dbgSerial.println(rate);
     } else {
         aux_serial_baudrate = baudrate;
         success = true;
@@ -48,7 +52,7 @@ bool initialize_notecard_interface(NotecardInterface iface)
     // Initialize the hardware I/O channel to the Notecard
     switch (iface) {
     default:
-        notecard.logDebug("Unknown Notecard interface given.");
+        dbgSerial.println("Unknown Notecard interface given.");
         return false;
 
     case NOTECARD_IF_AUX_SERIAL:
@@ -75,7 +79,7 @@ bool uninitialize_notecard_interface(NotecardInterface iface)
     // Initialize the hardware I/O channel to the Notecard
     switch (iface) {
     default:
-        notecard.logDebug("Unknown Notecard interface given.");
+        dbgSerial.println("Unknown Notecard interface given.");
         return false;
 
     case NOTECARD_IF_AUX_SERIAL:
@@ -126,11 +130,15 @@ size_t readDataUntilTimeout(Stream& serial, size_t timeout, uint8_t* buf, size_t
             if (buf[matchIndex]==ch) {
                 matchIndex++;
                 if (matchIndex>=bufLen) {
-                    notecard.logDebugf("matched the complete image at offset %d\n", count);
+                    dbgSerial.print("matched the complete image at offset ");
+                    dbgSerial.println(count, DEC);
                 }
             } else {
                 if (matchIndex>10) {
-                    notecard.logDebugf("matched %d bytes at offset %d\n", matchIndex, count);
+                    dbgSerial.print("matched ");
+                    dbgSerial.print(matchIndex, DEC);
+                    dbgSerial.print(" bytes at offset ");
+                    dbgSerial.println(count, DEC);
                 }
                 matchIndex = 0;
             }
