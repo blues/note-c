@@ -253,7 +253,7 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
         rsp = NoteTransaction(req);
 
         // Loop if there is no response, or if there is an io error
-        if ( (rsp == NULL) || (JContainsString(rsp, c_err, c_ioerr) && !JContainsString(rsp, c_err, c_unsupported)) {
+        if ((rsp == NULL) || (JContainsString(rsp, c_err, c_ioerr) && !JContainsString(rsp, c_err, c_unsupported))) {
 
             // Free error response
             if (rsp != NULL) {
@@ -274,10 +274,6 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
 
     // Free the request
     JDelete(req);
-
-    if (rsp == NULL) {
-        return NULL;
-    }
 
     // Return the response
     return rsp;

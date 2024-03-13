@@ -3,15 +3,13 @@
  *
  * Written by the Blues Inc. team.
  *
- * Copyright (c) 2023 Blues Inc. MIT License. Use of this source code is
+ * Copyright (c) 2024 Blues Inc. MIT License. Use of this source code is
  * governed by licenses granted by the copyright holder including that found in
  * the
  * <a href="https://github.com/blues/note-c/blob/master/LICENSE">LICENSE</a>
  * file.
  *
  */
-
-
 
 #include <catch2/catch_test_macros.hpp>
 #include "fff.h"
@@ -58,6 +56,19 @@ const char *noteJSONTransactionBadJSON(const char *, size_t, char **resp, uint32
 const char *noteJSONTransactionIOError(const char *, size_t, char **resp, uint32_t)
 {
     static char respString[] = "{\"err\": \"{io}\"}";
+
+    if (resp) {
+        char* respBuf = reinterpret_cast<char *>(malloc(sizeof(respString)));
+        memcpy(respBuf, respString, sizeof(respString));
+        *resp = respBuf;
+    }
+
+    return NULL;
+}
+
+const char *noteJSONTransactionNotSupportedError(const char *, size_t, char **resp, uint32_t)
+{
+    static char respString[] = "{\"err\": \"{not-supported}\"}";
 
     if (resp) {
         char* respBuf = reinterpret_cast<char *>(malloc(sizeof(respString)));
@@ -212,6 +223,32 @@ SCENARIO("NoteTransaction")
 
         JDelete(req);
         JDelete(resp);
+    }
+
+    GIVEN("A valid request") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+
+        AND_GIVEN("noteJSONTransaction returns a response with a \"not "
+            "supported\" error") {
+            noteJSONTransaction_fake.custom_fake = noteJSONTransactionNotSupportedError;
+
+            WHEN("NoteTransaction is called") {
+                J *rsp = NoteTransaction(req);
+
+                THEN("The response contains the \"not supported\" error") {
+                    CHECK(JContainsString(rsp, c_err, c_unsupported));
+                }
+
+                THEN("noteJSONTransaction is only called once (no retries)") {
+                    CHECK(noteJSONTransaction_fake.call_count == 1);
+                }
+
+                JDelete(rsp);
+            }
+        }
+
+        JDelete(req);
     }
 
     SECTION("A reset is required and it fails") {
@@ -407,5 +444,3 @@ SCENARIO("NoteTransaction")
 }
 
 }
-
-
