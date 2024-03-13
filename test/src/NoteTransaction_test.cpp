@@ -230,7 +230,7 @@ SCENARIO("NoteTransaction")
         REQUIRE(req != NULL);
 
         AND_GIVEN("noteJSONTransaction returns a response with a \"not "
-            "supported\" error") {
+                  "supported\" error") {
             noteJSONTransaction_fake.custom_fake = noteJSONTransactionNotSupportedError;
 
             WHEN("NoteTransaction is called") {

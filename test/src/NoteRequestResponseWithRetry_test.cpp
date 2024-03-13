@@ -105,7 +105,7 @@ TEST_CASE("NoteRequestResponseWithRetry")
                 }
 
                 AND_GIVEN("The response to NoteTransaction contains an I/O "
-                    "error") {
+                          "error") {
                     NoteTransaction_fake.custom_fake = NoteTransactionIOError;
 
                     WHEN("NoteRequestResponseWithRetry is called") {
@@ -116,14 +116,14 @@ TEST_CASE("NoteRequestResponseWithRetry")
                         }
 
                         THEN("NoteTransaction will be called twice (1 "
-                            "retry)")  {
+                             "retry)")  {
                             CHECK(NoteTransaction_fake.call_count == 2);
                         }
                     }
                 }
 
                 AND_GIVEN("The response to NoteTransaction contains a not "
-                    "supported error") {
+                          "supported error") {
                     NoteTransaction_fake.custom_fake = NoteTransactionNotSupportedError;
 
                     WHEN("NoteRequestResponseWithRetry is called") {
@@ -140,14 +140,14 @@ TEST_CASE("NoteRequestResponseWithRetry")
                 }
 
                 AND_GIVEN("The response to NoteTransaction contains a not "
-                    "supported error AND an I/O error") {
+                          "supported error AND an I/O error") {
                     NoteTransaction_fake.custom_fake = NoteTransactionIOAndNotSupportedErrors;
 
                     WHEN("NoteRequestResponseWithRetry is called") {
                         rsp = NoteRequestResponseWithRetry(req, timeoutSec);
 
                         THEN("The returned response has a not-supported "
-                            "error") {
+                             "error") {
                             CHECK(JContainsString(rsp, c_err, c_unsupported));
                         }
 
@@ -156,14 +156,14 @@ TEST_CASE("NoteRequestResponseWithRetry")
                         }
 
                         THEN("NoteTransaction is only called once (no "
-                            "retries)")  {
+                             "retries)")  {
                             CHECK(NoteTransaction_fake.call_count == 1);
                         }
                     }
                 }
 
                 AND_GIVEN("The response to NoteTransaction contains an error "
-                    "that isn't I/O or \"not supported\"") {
+                          "that isn't I/O or \"not supported\"") {
                     NoteTransaction_fake.custom_fake = NoteTransactionOtherError;
 
                     WHEN("NoteRequestResponseWithRetry is called") {
@@ -174,14 +174,14 @@ TEST_CASE("NoteRequestResponseWithRetry")
                         }
 
                         THEN("NoteTransaction is only called once (no "
-                            "retries)")  {
+                             "retries)")  {
                             CHECK(NoteTransaction_fake.call_count == 1);
                         }
                     }
                 }
 
                 AND_GIVEN("There's a valid response on the first "
-                    " NoteTransaction attempt") {
+                          " NoteTransaction attempt") {
                     NoteTransaction_fake.return_val = JCreateObject();
 
                     WHEN("NoteRequestResponseWithRetry is called") {
@@ -192,17 +192,17 @@ TEST_CASE("NoteRequestResponseWithRetry")
                         }
 
                         THEN("NoteTranaction is only called once (no "
-                            "retries)") {
+                             "retries)") {
                             CHECK(NoteTransaction_fake.call_count == 1);
                         }
                     }
                 }
 
                 AND_GIVEN("There's a valid response on the second "
-                    "NoteTransaction attempt") {
+                          "NoteTransaction attempt") {
                     J *noteTransactionReturnVals[2] = {NULL, JCreateObject()};
                     SET_RETURN_SEQ(NoteTransaction, noteTransactionReturnVals,
-                        2);
+                                   2);
 
                     WHEN("NoteRequestResponseWithRetry is called") {
                         rsp = NoteRequestResponseWithRetry(req, timeoutSec);
