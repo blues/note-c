@@ -253,7 +253,7 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds)
         rsp = NoteTransaction(req);
 
         // Loop if there is no response, or if there is an io error
-        if ( (rsp == NULL) || JContainsString(rsp, c_err, c_ioerr)) {
+        if ( (rsp == NULL) || (JContainsString(rsp, c_err, c_ioerr) && !JContainsString(rsp, c_err, c_unsupported)) {
 
             // Free error response
             if (rsp != NULL) {
@@ -602,8 +602,8 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         bool isBadBin = false;
         bool isIoError = false;
         if (rsp != NULL) {
-            isBadBin = NoteErrorContains(JGetString(rsp, c_err), c_badbinerr);
-            isIoError = NoteErrorContains(JGetString(rsp, c_err), c_ioerr);
+            isBadBin = JContainsString(rsp, c_err, c_badbinerr);
+            isIoError = JContainsString(rsp, c_err, c_ioerr) && !JContainsString(rsp, c_err, c_unsupported);
         } else {
             // Failed to parse response as JSON
             if (responseJSON == NULL) {
