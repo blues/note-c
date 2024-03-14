@@ -94,7 +94,7 @@ jobs:
         uses: JarvusInnovations/background-action@v1
         with:
           run: |
-            bash ./scripts/run_md5srv.sh
+            ./scripts/run_md5srv.sh
           wait-on:
             # just a dummy wait-on since this is required.
             file:${{github.workspace}}/scripts/run_md5srv.sh
@@ -161,7 +161,7 @@ jobs:
         if: env.START_TUNNELMOLE!='false'
         with:
           run: |
-            bash ./scripts/run_tunnelmole.sh
+            ./scripts/run_tunnelmole.sh
           log-output-if: true
           wait-on:
             file:${{github.workspace}}/tmole_ready
