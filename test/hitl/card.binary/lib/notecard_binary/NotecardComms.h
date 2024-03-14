@@ -30,10 +30,10 @@ enum NotecardInterface {
 #endif
 
 #if defined(NOTECARD_DEBUG_STLINK)
-  HardwareSerial stlinkSerial(PIN_VCP_RX, PIN_VCP_TX);
-  #define dbgSerial stlinkSerial
+HardwareSerial stlinkSerial(PIN_VCP_RX, PIN_VCP_TX);
+#define dbgSerial stlinkSerial
 #else
-  #define dbgSerial Serial
+#define dbgSerial Serial
 #endif
 
 bool initialize_notecard_interface(NotecardInterface iface);
