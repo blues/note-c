@@ -25,26 +25,28 @@ fi
 
 sleep 1
 
-# find the url
-exec 3< tmole.log
-# ignore the first line
-read <&3 output
-read <&3 output
 
-echo "Getting MD5 server URL from tmole.log..." >&2
-MD5SRV_URL=`echo "$output" | grep https | cut -d " " -f1`
+TIMEOUT=8
+SECONDS=0
+MD5SRV_URL=""
+# Check tmole.log for the MD5 server URL every second.
+until [ "$SECONDS" -ge "$TIMEOUT" ]
+do
+    MD5SRV_URL=$(grep -oP "^https://[\w\d\.-]+" tmole.log)
+
+    if [ -n "$MD5SRV_URL" ]; then
+        break
+    else
+        SECONDS=$((SECONDS+1))
+        sleep 1
+    fi
+done
+
 if [ -z "$MD5SRV_URL" ]; then
-    echo "ERROR: Failed to get MD5 server URL." >&2
+    echo "ERROR: Timed out waiting for MD5 server URL to get written to tmole.log." >&2
     exit 1
-else
-    echo "INFO: Got MD5 server URL." >&2
 fi
 
+echo "INFO: Got MD5 server URL from tmole.log." >&2
 echo "MD5SRV_URL=$MD5SRV_URL" >> $GITHUB_ENV
-# Only create tmole_ready once MD5SRV_URL has been set, as the next step in the
-# GitHub workflow depends on it.
-touch tmole_ready
-
-sleep 2
-
 echo "INFO: tmole ready. Logging to `realpath tmole.log`" >&2
