@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['hookactiveinterface_711',['hookActiveInterface',['../n__hooks_8c.html#a2e1147a166cf94837f8793746231acce',1,'n_hooks.c']]],
+  ['hookdebugoutput_712',['hookDebugOutput',['../n__hooks_8c.html#a11663e8bd175750e1e06c8201a5478a8',1,'n_hooks.c']]],
+  ['hookdelayms_713',['hookDelayMs',['../n__hooks_8c.html#a18e7b68c9f867dcd0818086f602e932f',1,'n_hooks.c']]],
+  ['hookfree_714',['hookFree',['../n__hooks_8c.html#ac3f19a99b0efcdf65efdb56ab8c83950',1,'n_hooks.c']]],
+  ['hookgetms_715',['hookGetMs',['../n__hooks_8c.html#a06884d23d5f78279deb3a32a43ef4694',1,'n_hooks.c']]],
+  ['hooki2creceive_716',['hookI2CReceive',['../n__hooks_8c.html#a263455cdbf1fc17b92a975c7535f1950',1,'n_hooks.c']]],
+  ['hooki2creset_717',['hookI2CReset',['../n__hooks_8c.html#a57e8dca746e7d85e7eabfb0b7bee4572',1,'n_hooks.c']]],
+  ['hooki2ctransmit_718',['hookI2CTransmit',['../n__hooks_8c.html#aa0d2d6474eba5963389d55f795968cb6',1,'n_hooks.c']]],
+  ['hooklocki2c_719',['hookLockI2C',['../n__hooks_8c.html#a3f891ce572bd99b70a8c20f999d5942d',1,'n_hooks.c']]],
+  ['hooklocknote_720',['hookLockNote',['../n__hooks_8c.html#a37517c21bcce9f3a523beb50838b1126',1,'n_hooks.c']]],
+  ['hookmalloc_721',['hookMalloc',['../n__hooks_8c.html#a82e929c5ea774f51f743646d088c7067',1,'n_hooks.c']]],
+  ['hookserialavailable_722',['hookSerialAvailable',['../n__hooks_8c.html#a85a763552201e904319a46d7bbaffb2f',1,'n_hooks.c']]],
+  ['hookserialreceive_723',['hookSerialReceive',['../n__hooks_8c.html#abb53cb4c8b5875405005a10f8e5dd276',1,'n_hooks.c']]],
+  ['hookserialreset_724',['hookSerialReset',['../n__hooks_8c.html#a8b924ad75dc42dbb9f55e39bbb383e53',1,'n_hooks.c']]],
+  ['hookserialtransmit_725',['hookSerialTransmit',['../n__hooks_8c.html#adc5dbf6a449a062dc2ce585b377e01c8',1,'n_hooks.c']]],
+  ['hooktransactionstart_726',['hookTransactionStart',['../n__hooks_8c.html#a2862300245c7f82df19c4f3a3a79f759',1,'n_hooks.c']]],
+  ['hooktransactionstop_727',['hookTransactionStop',['../n__hooks_8c.html#aee65145a7f7916880913d039ee9dec70',1,'n_hooks.c']]],
+  ['hookunlocki2c_728',['hookUnlockI2C',['../n__hooks_8c.html#a0188e2a3e1e67ab47bb31ffaca28c0f1',1,'n_hooks.c']]],
+  ['hookunlocknote_729',['hookUnlockNote',['../n__hooks_8c.html#a79775290fccd64212d68cf8bf37fce1a',1,'n_hooks.c']]]
+];
