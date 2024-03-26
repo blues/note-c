@@ -16,14 +16,14 @@
 #include <time.h>
 #include "n_lib.h"
 
-//**************************************************************************/
 /*!
-    @brief  Determine if a field is present in a JSON response object.
-    @param   rsp The JSON response object.
-    @param   field The field to find.
-    @returns boolean. `true` if the field is present.
-*/
-/**************************************************************************/
+ @brief Determine if a field is present in a JSON object.
+
+ @param rsp The JSON object.
+ @param field The field to find.
+
+ @returns True if the field is present and false otherwise.
+ */
 bool JIsPresent(J *rsp, const char *field)
 {
     if (rsp == NULL) {
@@ -32,14 +32,19 @@ bool JIsPresent(J *rsp, const char *field)
     return (JGetObjectItem(rsp, field) != NULL);
 }
 
-//**************************************************************************/
 /*!
-    @brief  Return a string from the specified JSON object.
-    @param   rsp The JSON response object.
-    @param   field The field to return.
-    @returns The string response, or an empty string, if not present.
-*/
-/**************************************************************************/
+ @brief Get the value of a string field from a JSON object.
+
+ @param rsp The JSON object.
+ @param field The string field to query.
+
+ @returns A pointer to the string if the field exists and is a string and the
+          empty string ("") otherwise.
+
+ @note The returned string is a pointer to the string contained in the JSON
+       object. It is not a copy of the string, so once the JSON object is freed,
+       the pointer is no longer valid.
+ */
 char *JGetString(J *rsp, const char *field)
 {
     if (rsp == NULL) {
@@ -58,14 +63,19 @@ char *JGetString(J *rsp, const char *field)
     return item->valuestring;
 }
 
-//**************************************************************************/
 /*!
-    @brief  Return an array from the specified JSON object.
-    @param   rsp The JSON response object.
-    @param   field The field to return.
-    @returns The array found, or NULL, if not present.
-*/
-/**************************************************************************/
+ @brief Get the value of an array field from a JSON object.
+
+ @param rsp The JSON object.
+ @param field The array field to query.
+
+ @returns A pointer to the array, which is itself a JSON object (`J *`), if the
+          field exists and is an array and NULL otherwise.
+
+ @note The returned JSON object is a pointer to the array contained in the
+       parent JSON object. It is not a copy, so once the parent JSON object is
+       freed, the pointer is no longer valid.
+ */
 J *JGetArray(J *rsp, const char *field)
 {
     if (rsp == NULL) {
@@ -81,14 +91,19 @@ J *JGetArray(J *rsp, const char *field)
     return item;
 }
 
-//**************************************************************************/
 /*!
-    @brief  Return an object from the specified JSON object.
-    @param   rsp The JSON response object.
-    @param   field The field to return.
-    @returns The object found, or NULL, if not present.
-*/
-/**************************************************************************/
+ @brief Get the value of an object field from a JSON object.
+
+ @param rsp The JSON object.
+ @param field The object field to query.
+
+ @returns A pointer to the object, which is itself a JSON object (`J *`), if the
+          field exists and is an object and NULL otherwise.
+
+ @note The returned JSON object is a pointer to the object contained in the
+       parent JSON object. It is not a copy, so once the parent JSON object is
+       freed, the pointer is no longer valid.
+ */
 J *JGetObject(J *rsp, const char *field)
 {
     if (rsp == NULL) {
@@ -149,14 +164,19 @@ JNUMBER JNumberValue(J *item)
     return item->valuenumber;
 }
 
-//**************************************************************************/
 /*!
-    @brief  Return a number from the specified JSON object.
-    @param   rsp The JSON response object.
-    @param   field The field to return.
-    @returns The number found, or 0.0, if not present.
-*/
-/**************************************************************************/
+ @brief Get the floating point value of a number field from a JSON object.
+
+ @param rsp The JSON object.
+ @param field The number field to query.
+
+ @returns The value of the number field if the field exists and is a number and
+          0.0 otherwise.
+
+ @note The returned value is the floating point representation of the number. If
+       the field is an integer rather than a floating point number, use
+       `JGetInt`.
+ */
 JNUMBER JGetNumber(J *rsp, const char *field)
 {
     if (rsp == NULL) {
@@ -187,14 +207,19 @@ JINTEGER JIntValue(J *item)
     return item->valueint;
 }
 
-//**************************************************************************/
 /*!
-    @brief  Return an integer from the specified JSON object.
-    @param   rsp The JSON response object.
-    @param   field The field to return.
-    @returns The int found, or 0, if not present.
-*/
-/**************************************************************************/
+ @brief Get the integer value of a number field from a JSON object.
+
+ @param rsp The JSON object.
+ @param field The number field to query.
+
+ @returns The value of the number field if the field exists and is a number and
+          0 otherwise.
+
+ @note The returned value is the integer representation of the number. If the
+       field is a floating point number rather than an integer, use
+       `JGetNumber`.
+ */
 JINTEGER JGetInt(J *rsp, const char *field)
 {
     if (rsp == NULL) {
@@ -210,14 +235,15 @@ JINTEGER JGetInt(J *rsp, const char *field)
     return JIntValue(item);
 }
 
-//**************************************************************************/
 /*!
-    @brief  Return a boolean from the specified JSON object.
-    @param   rsp The JSON response object.
-    @param   field The field to return.
-    @returns The boolean value, or false if not present.
-*/
-/**************************************************************************/
+ @brief Get the value of a boolean field from a JSON object.
+
+ @param rsp The JSON object.
+ @param field The boolean field to query.
+
+ @returns The value of the boolean field if it exists and is a boolean and false
+          otherwise.
+ */
 bool JGetBool(J *rsp, const char *field)
 {
     if (rsp == NULL) {
@@ -325,16 +351,18 @@ bool JContainsString(J *rsp, const char *field, const char *substr)
     return (strstr(item->valuestring, substr) != NULL);
 }
 
-//**************************************************************************/
+
 /*!
-    @brief  Add a binary to a Note as a Base64-encoded string.
-    @param   req The JSON object to which the field should be added
-    @param   fieldName The field to set.
-    @param   binaryData The binary data to set.
-    @param   binaryDataLen The length of the binary string.
-    @returns bool. Whether the binary field was set.
-*/
-/**************************************************************************/
+ @brief Add binary data as a Base64-encoded string field to a JSON object.
+
+ @param req The JSON object.
+ @param fieldName The name to use for the field.
+ @param binaryData A buffer of binary data to encode.
+ @param binaryDataLen The length of the binary data in bytes.
+
+ @returns True if the string was successfully encoded and added to the object
+          and false otherwise.
+ */
 bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, uint32_t binaryDataLen)
 {
     if (req == NULL) {
@@ -355,19 +383,23 @@ bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, u
     return true;
 }
 
-//**************************************************************************/
+
 /*!
-    @brief  Get binary from an object that is expected to be a Base64-encoded string.
-    @param   rsp The JSON object containing the  field.
-    @param   fieldName The field to get data from.
-    @param   retBinaryData The binary data object allocated.  (Use standard "free" method to free it.)
-			 Note that, as a convenience to the caller in case the "binary data" is actually a string,
-			 one byte extra is allocated in the return buffer which is filled with '\0'.  This byte
-			 is not included in the retBinaryDataLen length.
-    @param   retBinaryDataLen The length of the binary data.
-    @returns bool. Whether the binary data was allocated and returned.
-*/
-/**************************************************************************/
+ @brief Decode a Base64-encoded string field in a JSON object and return the
+        decoded bytes.
+
+ @param rsp The JSON object.
+ @param fieldName The name of the field.
+ @param retBinaryData A pointer to a buffer to hold the decoded bytes.
+ @param retBinaryDataLen A pointer to a number to hold the length of the decoded
+        bytes.
+
+ @returns True if the string was successfully decoded and returned and false
+          otherwise.
+
+ @note The returned binary buffer must be freed by the user with `JFree` when it
+       is no longer needed.
+ */
 bool JGetBinaryFromObject(J *rsp, const char *fieldName, uint8_t **retBinaryData, uint32_t *retBinaryDataLen)
 {
     if (rsp == NULL) {

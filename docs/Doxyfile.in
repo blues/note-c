@@ -947,6 +947,7 @@ INPUT                  = @NOTE_C_BASE@/n_hooks.c \
                          @NOTE_C_BASE@/n_request.c \
                          @NOTE_C_BASE@/n_cjson.h \
                          @NOTE_C_BASE@/n_cjson.c \
+                         @NOTE_C_BASE@/n_cjson_helpers.c \
                          @NOTE_C_BASE@/note.h
 
 # This tag can be used to specify the character encoding of the source files
