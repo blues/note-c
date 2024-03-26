@@ -130,9 +130,7 @@ JSON Manipulation
 Functions
 ---------
 
-.. doxygenfunction:: JCreateObject
-
-.. doxygenfunction:: JDelete
+.. doxygenfunction:: JAddBinaryToObject
 
 .. doxygenfunction:: JAddBoolToObject
 
@@ -144,18 +142,45 @@ Functions
 
 .. doxygenfunction:: JAddArrayToObject
 
+.. doxygenfunction:: JCreateObject
+
+.. doxygenfunction:: JDelete
+
+.. doxygenfunction:: JFree
+
+.. doxygenfunction:: JGetArray
+
+.. doxygenfunction:: JGetBinaryFromObject
+
+.. doxygenfunction:: JGetBool
+
+.. doxygenfunction:: JGetInt
+
+.. doxygenfunction:: JGetNumber
+
+.. doxygenfunction:: JGetObject
+
+.. doxygenfunction:: JGetString
+
+.. doxygenfunction:: JIsPresent
+
+.. doxygenfunction:: JMalloc
+
 .. doxygenfunction:: JParse
 
 .. doxygenfunction:: JPrintUnformatted
 
-.. doxygenfunction:: JMalloc
-
-.. doxygenfunction:: JFree
 
 Types
 -----
 
 .. doxygenstruct:: J
+
+.. doxygentypedef:: JNUMBER
+
+.. doxygentypedef:: JINTEGER
+
+.. doxygentypedef:: JUINTEGER
 
 Macros
 ------

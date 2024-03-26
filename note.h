@@ -54,16 +54,25 @@
 #define ERRSTR(x,y) (x)
 #endif
 
+/*!
+ @brief The floating point type used for JSON handling in note-c.
+ */
 #ifdef NOTE_C_TEST_SINGLE_PRECISION
 typedef float JNUMBER;
 #else
 typedef double JNUMBER;
 #endif
 
+/*!
+ @brief The signed integer type used for JSON handling in note-c.
+ */
 typedef int64_t JINTEGER;
 #define JINTEGER_MIN INT64_MIN
 #define JINTEGER_MAX INT64_MAX
 
+/*!
+ @brief The unsigned integer type used for JSON handling in note-c.
+ */
 typedef uint64_t JUINTEGER;
 
 // UNIX Epoch time (also known as POSIX time) is the  number of seconds that have elapsed since
