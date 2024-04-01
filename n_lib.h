@@ -189,6 +189,9 @@ extern const char *c_iobad;
 extern const char *c_ioerr;
 #define c_ioerr_len 4
 
+extern const char *c_unsupported;
+#define c_unsupported_len 15
+
 extern const char *c_badbinerr;
 #define c_badbinerr_len 9
 
