@@ -27,9 +27,9 @@ static bool resetRequired = true;
 // CRC data
 #ifndef NOTE_C_LOW_MEM
 static uint16_t lastRequestSeqno = 0;
-#define CRC_FIELD_LENGTH		22	// ,"crc":"SSSS:CCCCCCCC"
-#define	CRC_FIELD_NAME_OFFSET	1
-#define	CRC_FIELD_NAME_TEST		"\"crc\":\""
+#define CRC_FIELD_LENGTH        22  // ,"crc":"SSSS:CCCCCCCC"
+#define CRC_FIELD_NAME_OFFSET   1
+#define CRC_FIELD_NAME_TEST     "\"crc\":\""
 NOTE_C_STATIC int32_t crc32(const void* data, size_t length);
 NOTE_C_STATIC char * crcAdd(char *json, uint16_t seqno);
 NOTE_C_STATIC bool crcError(char *json, uint16_t shouldBeSeqno);
@@ -45,17 +45,20 @@ static bool notecardSupportsCrc = false;
  Create a dynamically allocated `J` object containing a single string field
  "err" whose value is the passed in error message.
 
+ @param id The "id" from the original request that resulted in an error
  @param errmsg The error message.
 
  @returns A `J` object with the "err" field populated.
  */
-NOTE_C_STATIC J * errDoc(const char *errmsg)
+NOTE_C_STATIC J * errDoc(uint32_t id, const char *errmsg)
 {
     J *rspdoc = JCreateObject();
     if (rspdoc != NULL) {
         JAddStringToObject(rspdoc, c_err, errmsg);
         JAddStringToObject(rspdoc, "src", "note-c");
-
+        if (id) {
+            JAddIntToObject(rspdoc, "id", id);
+        }
         if (suppressShowTransactions == 0) {
             _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "[ERROR] ");
             _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "{\"err\":\"");
@@ -367,7 +370,33 @@ char * NoteRequestResponseJSON(const char *reqJSON)
         }
 
         if (!isCmd) {
-            _Transaction(reqJSON, reqLen, &rspJSON, transactionTimeoutMs);
+            const char *errstr = _Transaction(reqJSON, reqLen, &rspJSON, transactionTimeoutMs);
+            if (errstr != NULL) {
+                NOTE_C_LOG_ERROR(errstr);
+                uint32_t id = 0;
+                if (reqJSON != NULL) {
+                    J *req = JParse(reqJSON);
+                    if (req != NULL) {
+                        id = JGetInt(req, "id");
+                        JDelete(req);
+                    }
+                }
+                J *errdoc = errDoc(id, errstr);
+                if (errdoc != NULL) {
+                    char *errdocJSON = JPrintUnformatted(errdoc);
+                    JDelete(errdoc);
+                    if (errdocJSON != NULL) {
+                        uint32_t errdocJSONLen = strlen(errdocJSON);
+                        rspJSON = (char *) _Malloc(errdocJSONLen+2);
+                        if (rspJSON != NULL) {
+                            memcpy(rspJSON, errdocJSON, errdocJSONLen);
+                            rspJSON[errdocJSONLen++] = '\n';
+                            rspJSON[errdocJSONLen] = '\0';
+                        }
+                        _Free((void *)errdocJSON);
+                    }
+                }
+            }
             if (NULL == newlinePtr) {
                 _Free((void *)reqJSON);
             }
@@ -375,8 +404,11 @@ char * NoteRequestResponseJSON(const char *reqJSON)
         } else {
             // If it's a command, the Notecard will not respond, so we pass NULL for
             // the response parameter.
-            _Transaction(reqJSON, reqLen, NULL, transactionTimeoutMs);
+            const char *errstr = _Transaction(reqJSON, reqLen, NULL, transactionTimeoutMs);
             reqJSON = (endPtr + 1);
+            if (errstr != NULL) {
+                NOTE_C_LOG_ERROR(errstr);
+            }
         }
 
         // Clean up if we allocated a new string
@@ -466,10 +498,13 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         _LockNote();
     }
 
+    // Extract the ID of the request so that errors can be returned with the same ID
+    uint32_t id = JGetInt(req, "id");
+
     // Serialize the JSON request
     char *json = JPrintUnformatted(req);
     if (json == NULL) {
-        J *errRsp = errDoc(ERRSTR("can't convert to JSON", c_bad));
+        J *errRsp = errDoc(id, ERRSTR("can't convert to JSON", c_bad));
         if (lockNotecard) {
             _UnlockNote();
         }
@@ -652,7 +687,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     if (errStr != NULL) {
         JDelete(rsp);
         NoteResetRequired();
-        J *errRsp = errDoc(errStr);
+        J *errRsp = errDoc(id, errStr);
         if (lockNotecard) {
             _UnlockNote();
         }
@@ -857,22 +892,22 @@ NOTE_C_STATIC char *crcAdd(char *json, uint16_t seqno)
     bool isEmptyObject = (memchr(json, ':', jsonLen) == NULL);
     size_t newJsonLen = jsonLen-1;
     memcpy(newJson, json, newJsonLen);
-    newJson[newJsonLen++] = (isEmptyObject ? ' ' : ',');	// Replace }
-    newJson[newJsonLen++] = '"';							// +1
-    newJson[newJsonLen++] = 'c';							// +2
-    newJson[newJsonLen++] = 'r';							// +3
-    newJson[newJsonLen++] = 'c';							// +4
-    newJson[newJsonLen++] = '"';							// +5
-    newJson[newJsonLen++] = ':';							// +6
-    newJson[newJsonLen++] = '"';							// +7
+    newJson[newJsonLen++] = (isEmptyObject ? ' ' : ',');    // Replace }
+    newJson[newJsonLen++] = '"';                            // +1
+    newJson[newJsonLen++] = 'c';                            // +2
+    newJson[newJsonLen++] = 'r';                            // +3
+    newJson[newJsonLen++] = 'c';                            // +4
+    newJson[newJsonLen++] = '"';                            // +5
+    newJson[newJsonLen++] = ':';                            // +6
+    newJson[newJsonLen++] = '"';                            // +7
     n_htoa16(seqno, (uint8_t *) &newJson[newJsonLen]);
-    newJsonLen += 4;										// +11
-    newJson[newJsonLen++] = ':';							// +12
+    newJsonLen += 4;                                        // +11
+    newJson[newJsonLen++] = ':';                            // +12
     n_htoa32(crc32(json, jsonLen), &newJson[newJsonLen]);
-    newJsonLen += 8;										// +20
-    newJson[newJsonLen++] = '"';							// +21
-    newJson[newJsonLen++] = '}';							// +22 == CRC_FIELD_LENGTH
-    newJson[newJsonLen] = '\0';								// null-terminated as it came in
+    newJsonLen += 8;                                        // +20
+    newJson[newJsonLen++] = '"';                            // +21
+    newJson[newJsonLen++] = '}';                            // +22 == CRC_FIELD_LENGTH
+    newJson[newJsonLen] = '\0';                             // null-terminated as it came in
     return newJson;
 }
 
