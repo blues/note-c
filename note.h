@@ -397,22 +397,22 @@ size_t strlcat(char *dst, const char *src, size_t siz);
 // JSON helpers
 void JInit(void);
 void JCheck(void);
-bool JIsPresent(J *rsp, const char *field);
-char *JGetString(J *rsp, const char *field);
-JNUMBER JGetNumber(J *rsp, const char *field);
-J *JGetArray(J *rsp, const char *field);
-J *JGetObject(J *rsp, const char *field);
-JINTEGER JGetInt(J *rsp, const char *field);
-bool JGetBool(J *rsp, const char *field);
+bool JIsPresent(J *json, const char *field);
+char *JGetString(J *json, const char *field);
+JNUMBER JGetNumber(J *json, const char *field);
+J *JGetArray(J *json, const char *field);
+J *JGetObject(J *json, const char *field);
+JINTEGER JGetInt(J *json, const char *field);
+bool JGetBool(J *json, const char *field);
 JNUMBER JNumberValue(J *item);
 char *JStringValue(J *item);
 bool JBoolValue(J *item);
 JINTEGER JIntValue(J *item);
-bool JIsNullString(J *rsp, const char *field);
-bool JIsExactString(J *rsp, const char *field, const char *teststr);
-bool JContainsString(J *rsp, const char *field, const char *substr);
-bool JAddBinaryToObject(J *req, const char *fieldName, const void *binaryData, uint32_t binaryDataLen);
-bool JGetBinaryFromObject(J *rsp, const char *fieldName, uint8_t **retBinaryData, uint32_t *retBinaryDataLen);
+bool JIsNullString(J *json, const char *field);
+bool JIsExactString(J *json, const char *field, const char *teststr);
+bool JContainsString(J *json, const char *field, const char *substr);
+bool JAddBinaryToObject(J *json, const char *fieldName, const void *binaryData, uint32_t binaryDataLen);
+bool JGetBinaryFromObject(J *json, const char *fieldName, uint8_t **retBinaryData, uint32_t *retBinaryDataLen);
 const char *JGetItemName(const J * item);
 char *JAllocString(uint8_t *buffer, uint32_t len);
 const char *JType(J *item);
@@ -432,7 +432,7 @@ const char *JType(J *item);
 #define JTYPE_STRING			11
 #define JTYPE_OBJECT			12
 #define JTYPE_ARRAY				13
-int JGetType(J *rsp, const char *field);
+int JGetType(J *json, const char *field);
 int JGetItemType(J *item);
 int JBaseItemType(int type);
 #define JGetObjectItemName(j) (j->string)
