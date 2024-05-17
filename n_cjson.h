@@ -200,6 +200,7 @@ N_CJSON_PUBLIC(char *) JPrintBuffered(const J *item, int prebuffer, Jbool fmt);
 /* Render a J entity to text using a buffer already allocated in memory with given length. Returns 1 on success and 0 on failure. */
 /* NOTE: J is not always 100% accurate in estimating how much memory it will use, so to be safe allocate 5 bytes more than you actually need */
 N_CJSON_PUBLIC(Jbool) JPrintPreallocated(J *item, char *buffer, const int length, const Jbool format);
+N_CJSON_PUBLIC(Jbool) JPrintPreallocatedOmitEmpty(J *item, char *buffer, const int length, const Jbool format);
 /* Delete a J entity and all subentities. */
 N_CJSON_PUBLIC(void) JDelete(J *c);
 
