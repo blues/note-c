@@ -1102,7 +1102,7 @@ N_CJSON_PUBLIC(char *) JPrintBuffered(const J *item, int prebuffer, Jbool fmt)
     return (char*)p.buffer;
 }
 
-N_CJSON_PUBLIC(Jbool) JPrintPreallocated(J *item, char *buf, const int len, const Jbool fmt)
+static Jbool printPreallocated(J *item, char *buf, const int len, const Jbool fmt, const Jbool omit)
 {
     printbuffer p = { 0, 0, 0, 0, 0, 0, 0 };
 
@@ -1118,8 +1118,19 @@ N_CJSON_PUBLIC(Jbool) JPrintPreallocated(J *item, char *buf, const int len, cons
     p.offset = 0;
     p.noalloc = true;
     p.format = fmt;
+    p.omitempty = omit;
 
     return print_value(item, &p);
+}
+
+N_CJSON_PUBLIC(Jbool) JPrintPreallocatedOmitEmpty(J *item, char *buf, const int len, const Jbool fmt)
+{
+    return printPreallocated(item, buf, len, fmt, true);
+}
+
+N_CJSON_PUBLIC(Jbool) JPrintPreallocated(J *item, char *buf, const int len, const Jbool fmt)
+{
+    return printPreallocated(item, buf, len, fmt, false);
 }
 
 /* Parser core - when encountering text, process appropriately. */
