@@ -406,9 +406,16 @@ bool JAddBinaryToObject(J *json, const char *fieldName, const void *binaryData, 
 
  @note The returned binary buffer must be freed by the user with `JFree` when it
        is no longer needed.
+
+ @note On error, the returned binary buffer and data length shall be set to
+       `NULL` and zero (0), respectively.
  */
 bool JGetBinaryFromObject(J *json, const char *fieldName, uint8_t **retBinaryData, uint32_t *retBinaryDataLen)
 {
+    // Initialize the return values to NULL and zero.
+    *retBinaryData = NULL;
+    *retBinaryDataLen = 0;
+
     if (json == NULL) {
         return false;
     }
