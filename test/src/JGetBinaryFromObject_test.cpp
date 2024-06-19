@@ -11,8 +11,6 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
 #include "fff.h"
 
@@ -33,36 +31,47 @@ SCENARIO("JGetBinaryFromObject")
     const char val[] = "Here's a string to base64 encode";
     uint8_t *binData;
     uint32_t binDataLen;
+
     J *json = JCreateObject();
     REQUIRE(json != NULL);
 
-    SECTION("NULL JSON") {
-        CHECK(!JGetBinaryFromObject(NULL, field, &binData, &binDataLen));
+    GIVEN("Bad parameters") {
+        WHEN("NULL JSON") {
+            CHECK(!JGetBinaryFromObject(NULL, field, &binData, &binDataLen));
+        }
+
+        WHEN("Empty string") {
+            JAddStringToObject(json, field, "");
+
+            CHECK(!JGetBinaryFromObject(json, field, &binData, &binDataLen));
+        }
+
+        CHECK(binData == NULL);
+        CHECK(binDataLen == 0);
     }
 
-    SECTION("Empty string") {
-        JAddStringToObject(json, field, "");
+    GIVEN("Internal failure") {
+        WHEN("NoteMalloc fails") {
+            JAddStringToObject(json, field, "string");
 
-        CHECK(!JGetBinaryFromObject(json, field, &binData, &binDataLen));
+            NoteMalloc_fake.custom_fake = NULL;
+            NoteMalloc_fake.return_val = NULL;
+
+            CHECK(!JGetBinaryFromObject(json, field, &binData, &binDataLen));
+        }
+
+        CHECK(binData == NULL);
+        CHECK(binDataLen == 0);
     }
 
-    SECTION("NoteMalloc fails") {
-        JAddStringToObject(json, field, "string");
-
-        NoteMalloc_fake.custom_fake = NULL;
-        NoteMalloc_fake.return_val = NULL;
-
-        CHECK(!JGetBinaryFromObject(json, field, &binData, &binDataLen));
-    }
-
-    SECTION("Success") {
+    GIVEN("Success") {
         REQUIRE(JAddBinaryToObject(json, field, val, sizeof(val)));
 
-        SECTION("With field specifier") {
+        WHEN("With field specifier") {
             REQUIRE(JGetBinaryFromObject(json, field, &binData, &binDataLen));
         }
 
-        SECTION("Without field specifier") {
+        WHEN("Without field specifier") {
             char *str = JGetString(json, field);
             REQUIRE(JGetBinaryFromObject((J *)str, NULL, &binData, &binDataLen));
         }
@@ -79,5 +88,3 @@ SCENARIO("JGetBinaryFromObject")
 }
 
 }
-
-
