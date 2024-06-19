@@ -1868,20 +1868,6 @@ N_CJSON_PUBLIC(void) JAddItemReferenceToObject(J *object, const char *string, J 
     add_item_to_object(object, string, create_reference(item), false);
 }
 
-N_CJSON_PUBLIC(J*) JAddNullToObject(J * const object, const char * const name)
-{
-    if (object == NULL) {
-        return NULL;
-    }
-    J *null = JCreateNull();
-    if (add_item_to_object(object, name, null, false)) {
-        return null;
-    }
-
-    JDelete(null);
-    return NULL;
-}
-
 N_CJSON_PUBLIC(J*) JAddTrueToObject(J * const object, const char * const name)
 {
     if (object == NULL) {
@@ -2248,16 +2234,6 @@ N_CJSON_PUBLIC(void) JReplaceItemInObjectCaseSensitive(J *object, const char *st
         return;
     }
     replace_item_in_object(object, string, newitem, true);
-}
-
-/* Create basic types: */
-N_CJSON_PUBLIC(J *) JCreateNull(void)
-{
-    J *item = JNew_Item();
-    if(item) {
-        item->type = JNULL;
-    }
-    return item;
 }
 
 N_CJSON_PUBLIC(J *) JCreateTrue(void)

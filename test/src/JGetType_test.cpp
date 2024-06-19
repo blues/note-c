@@ -11,8 +11,6 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
 
 #include "n_lib.h"
@@ -47,11 +45,6 @@ SCENARIO("JGetType")
     SECTION("JFalse") {
         JAddBoolToObject(json, field, false);
         CHECK(JGetType(json, field) == JTYPE_BOOL_FALSE);
-    }
-
-    SECTION("JNull") {
-        JAddNullToObject(json, field);
-        CHECK(JGetType(json, field) == JTYPE_NULL);
     }
 
     SECTION("JNumber") {
