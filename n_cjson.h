@@ -232,7 +232,6 @@ N_CJSON_PUBLIC(Jbool) JIsObject(const J * const item);
 N_CJSON_PUBLIC(Jbool) JIsRaw(const J * const item);
 
 /* These calls create a J item of the appropriate type. */
-N_CJSON_PUBLIC(J *) JCreateNull(void);
 N_CJSON_PUBLIC(J *) JCreateTrue(void);
 N_CJSON_PUBLIC(J *) JCreateFalse(void);
 N_CJSON_PUBLIC(J *) JCreateBool(Jbool boolean);
@@ -299,7 +298,6 @@ N_CJSON_PUBLIC(void) JMinify(char *json);
 
 /* Helper functions for creating and adding items to an object at the same time.
  * They return the added item or NULL on failure. */
-N_CJSON_PUBLIC(J*) JAddNullToObject(J * const object, const char * const name);
 N_CJSON_PUBLIC(J*) JAddTrueToObject(J * const object, const char * const name);
 N_CJSON_PUBLIC(J*) JAddFalseToObject(J * const object, const char * const name);
 N_CJSON_PUBLIC(J*) JAddBoolToObject(J * const object, const char * const name, const Jbool boolean);

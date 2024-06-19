@@ -11,8 +11,6 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
 
 #include "n_lib.h"
@@ -33,7 +31,6 @@ SCENARIO("JType")
             (J *)NoteMalloc(sizeof(J)),
             JCreateBool(true),
             JCreateBool(false),
-            JCreateNull(),
             JCreateNumber(1.5),
             JCreateString("string"),
             JCreateRaw("raw"),
@@ -47,7 +44,6 @@ SCENARIO("JType")
             "invalid",
             "bool",
             "bool",
-            "null",
             "number",
             "string",
             "string",
