@@ -21,9 +21,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#define _NOTE_C_STRINGIZE(x) #x
+#define NOTE_C_STRINGIZE(x) _NOTE_C_STRINGIZE(x)
+
 #define NOTE_C_VERSION_MAJOR 2
 #define NOTE_C_VERSION_MINOR 1
 #define NOTE_C_VERSION_PATCH 3
+
+#define NOTE_C_VERSION NOTE_C_STRINGIZE(NOTE_C_VERSION_MAJOR) "." NOTE_C_STRINGIZE(NOTE_C_VERSION_MINOR) "." NOTE_C_STRINGIZE(NOTE_C_VERSION_PATCH)
 
 // If double and float are the same size, then we must be on a small MCU. Turn
 // on NOTE_C_LOW_MEM to conserve memory.
@@ -332,9 +337,6 @@ void NoteDebugf(const char *format, ...);
 
 void NoteDebugWithLevel(uint8_t level, const char *msg);
 void NoteDebugWithLevelLn(uint8_t level, const char *msg);
-
-#define _NOTE_C_STRINGIZE(x) #x
-#define NOTE_C_STRINGIZE(x) _NOTE_C_STRINGIZE(x)
 
 #ifdef NOTE_C_LOG_SHOW_FILE_AND_LINE
 #define NOTE_C_LOG_FILE_AND_LINE(lvl) do { \
