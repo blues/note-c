@@ -35,9 +35,6 @@ jobs:
         DELETE_NOTEHUB_ROUTES: true
         # CREATE_NOTEHUB_ROUTES set to false to use the already created routes on notehub
         CREATE_NOTEHUB_ROUTES: true
-        # FLASH_TEST_FIRMWARE set to false to skip flashing firmware to the Host (Swan).
-        # Be sure to press reset on Swan before running the workflow unless you deliberately want to skip running the tests.
-        FLASH_TEST_FIRMWARE: true
         # START_MD5SRV set to false to skip starting the MD5 server. There should be one
         # already running locally with MD5SRV_PORT/ADDRESS/TOKEN set correspondingly.
         START_MD5SRV: true
@@ -61,7 +58,6 @@ jobs:
           echo NOTEHUB_PROXY_ROUTE_ALIAS=$NOTEHUB_PROXY_ROUTE_ALIAS
 
       - name: Install PlatformIO dependencies
-        if: env.FLASH_TEST_FIRMWARE!='false'
         run: |
           python3 -m venv venv    # python venv is also used by the md5server, so this comes first.
           source venv/bin/activate
@@ -80,21 +76,11 @@ jobs:
           mkdir md5srv-files
           ./scripts/run_md5srv.sh
 
-      - name: Build and upload test firmware
-        if: env.FLASH_TEST_FIRMWARE!='false'
-        run: |
-          source venv/bin/activate
-          export PLATFORMIO_BUILD_FLAGS="'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"$NOTEHUB_PROXY_ROUTE_ALIAS\"' '-D PRODUCT_UID=\"$NOTEHUB_PRODUCT_UID\"'"
-          echo "build flags $PLATFORMIO_BUILD_FLAGS"
-          timeout 10 ./scripts/wait_for_file.sh "$STLINK_PROGRAMMER_PORT"
-          platformio test -e debug --without-testing --upload-port "$STLINK_PROGRAMMER_PORT" --project-dir "$PIO_PROJECT_DIR"
-          timeout 10 ./scripts/wait_for_file.sh "$SWAN_SERIAL"
-
       - name: Start tunnelmole
         if: env.START_TUNNELMOLE!='false'
         run: |
           rm -f tmole.log
-          ./scripts/run_tunnelmole.sh
+          ./scripts/run_tmole.sh
 
       - name: Check MD5 server is available
         run: |
@@ -155,13 +141,13 @@ jobs:
             exit 1
           fi
 
-      - name: Run tests
+      - name: Build and upload test firmware and run tests
         run: |
           source venv/bin/activate
+          export PLATFORMIO_BUILD_FLAGS="'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"$NOTEHUB_PROXY_ROUTE_ALIAS\"' '-D PRODUCT_UID=\"$NOTEHUB_PRODUCT_UID\"'"
+          echo "build flags $PLATFORMIO_BUILD_FLAGS"
           cd $PIO_PROJECT_DIR
           platformio test -v -e debug \
-             --without-building --without-uploading \
-             --test-port "$SWAN_SERIAL" \
              --json-output-path test.json \
              --junit-output-path test.xml
 
@@ -178,7 +164,7 @@ jobs:
       - name: Cleanup Notehub proxy route
         if: always()
         run: |
-          if [ "$DELETE_NOTEHUB_ROUTES" == "true" && -n "$NOTEHUB_PROXY_ROUTE_UID" ]; then
+          if [ "$DELETE_NOTEHUB_ROUTES" == "true" ] && [ -n "$NOTEHUB_PROXY_ROUTE_UID" ]; then
             echo "Deleting Notehub proxy route."
             curl -f -s -X DELETE \
               -L "https://api.notefile.net/v1/projects/$NOTEHUB_PROJECT_UID/routes/$NOTEHUB_PROXY_ROUTE_UID" \
@@ -196,14 +182,14 @@ jobs:
           fi
 
 
-      - name: Cleanup tunnelmole
+      - name: Cleanup tmole
         if: always()
         run: |
           if [ -n "$TMOLE_PID" ]; then
-            echo "Stopping tunnelmole."
+            echo "Stopping tmole."
             kill $TMOLE_PID
           else
-            echo "Tunnelmole not running (TMOLE_PID is empty)."
+            echo "tmole not running (TMOLE_PID is empty)."
           fi
 
       - name: Cleanup MD5 server

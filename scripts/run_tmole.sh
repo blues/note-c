@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export NVM_DIR=~/.nvm
+source ~/.nvm/nvm.sh
+
 if [ -n "$MD5SRV_PORT" ]; then
     echo "INFO: Using MD5 server port $MD5SRV_PORT." >&2
 else
