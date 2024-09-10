@@ -194,11 +194,11 @@ SCENARIO("NoteTransaction")
         JDelete(resp);
     }
 
-    WHEN("The transaction is successful, and contains UTF-8 encoded characters in valid JSON"){
-        J* req = NoteNewRequest("web.get");
+    WHEN("The transaction is successful, and contains UTF-8 encoded characters in valid JSON") {
+        J* req = NoteNewRequest("card.time");
         REQUIRE(req != NULL);
         noteJSONTransaction_fake.custom_fake = [] (const char *, size_t, char **response, uint32_t) -> const char * {
-            const char rsp_str[] = "{\"area\":\"bí\"}";
+            const char rsp_str[] = "{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de México\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
             *response = (char *)malloc(sizeof(rsp_str));
             strncpy(*response, rsp_str, sizeof(rsp_str));
             return nullptr;
@@ -213,11 +213,11 @@ SCENARIO("NoteTransaction")
         JDelete(resp);
     }
 
-    WHEN("The transaction is successful, and contains UTF-16 encoded characters in valid JSON"){
-        J* req = NoteNewRequest("web.get");
+    WHEN("The transaction is successful, and contains UTF-16 encoded characters in valid JSON") {
+        J* req = NoteNewRequest("card.time");
         REQUIRE(req != NULL);
         noteJSONTransaction_fake.custom_fake = [] (const char *, size_t, char **response, uint32_t) -> const char * {
-            const uint8_t rsp_str[] = {0xff, 0xfe, 0x7b, 0x00, 0x22, 0x00, 0x61, 0x00, 0x72, 0x00, 0x65, 0x00, 0x61, 0x00, 0x22, 0x00, 0x3a, 0x00, 0x22, 0x00, 0x62, 0x00, 0xed, 0x00, 0x22, 0x00, 0x7d, 0x00};
+            const char16_t rsp_str[] = u"{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de México\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
             *response = (char *)malloc(sizeof(rsp_str));
             memcpy(*response, rsp_str, sizeof(rsp_str));
             return nullptr;
