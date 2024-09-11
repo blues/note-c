@@ -44,12 +44,10 @@
             "options": {
                 "cwd": "${workspaceFolder}",
                 "env": {
-                    "LC_ALL":"C"
+                    "LC_ALL": "C"
                 }
             },
-            "problemMatcher": [
-                "$gcc"
-            ],
+            "problemMatcher": [],
             "group": {
                 "kind": "none"
             }
