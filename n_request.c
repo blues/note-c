@@ -212,10 +212,6 @@ J *NoteRequestResponse(J *req)
     }
     // Execute the transaction
     J *rsp = NoteTransaction(req);
-    if (rsp == NULL) {
-        JDelete(req);
-        return NULL;
-    }
     // Free the request and exit
     JDelete(req);
     return rsp;
