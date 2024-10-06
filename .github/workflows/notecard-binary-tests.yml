@@ -1,4 +1,4 @@
-name: Note Binary CI
+name: note-c card.binary HIL tests
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '45 4 * * 1'  # 4.45am every Monday
+    - cron: '45 4 * * 1'  # 4.45am every Monday
 
 permissions:
   checks: write
@@ -16,14 +16,17 @@ jobs:
      uses: ./.github/workflows/md5srv-tests.yml
 
   notecard-binary-test:
-    # needs: md5srv-test
-    runs-on: [self-hosted, swan, notecard, stlink, notecard-serial, md5srv, notehub-client]
+    needs: md5srv-test
+    runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
     env:
+        MD5SRV_PORT: 9178
         NOTEHUB: "notehub.io"
         NOTEHUB_API: "api.notefile.net"
+        NOTEHUB_PROJECT_UID: "app:458d7b93-8e19-45f8-b030-fb96d03eb1cc"
+        NOTEHUB_PRODUCT_UID: "com.blues.hitl"
         NOTEHUB_ROUTE_TIMEOUT: 180
         PIO_PROJECT_DIR: ./test/hitl/card.binary
         NOTEHUB_PROXY_ROUTE_ALIAS: card.binary.${{github.run_id}}
@@ -35,32 +38,69 @@ jobs:
         DELETE_NOTEHUB_ROUTES: true
         # CREATE_NOTEHUB_ROUTES set to false to use the already created routes on notehub
         CREATE_NOTEHUB_ROUTES: true
-        # START_MD5SRV set to false to skip starting the MD5 server. There should be one
-        # already running locally with MD5SRV_PORT/ADDRESS/TOKEN set correspondingly.
-        START_MD5SRV: true
-        # START_TUNNELMOLE: set to false to skip starting tunnel mole.
-        START_TUNNELMOLE: true
-        # When neither tunneling solution is used (because they're already instantiated outside of the workflow)
-        # be sure to set MD5SRV_URL in the environment
     steps:
+      - name: Connect to Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_CLIENT_SECRET }}
+          tags: tag:ci
+
+      # Needed for asyncio.TaskGroup, which the card_client code uses.
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: Checkout note-c repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Checkout hil_lab repo
+        uses: actions/checkout@v4
+        with:
+          repository: blues/hil_lab
+          ref: master
+          path: hil_lab
+          # Since hil_lab is a private repo, we need to authenticate. This uses
+          # the "deploy keys" approach described here:
+          # https://stackoverflow.com/a/70283191
+          ssh-key: ${{ secrets.HIL_LAB_CLONE_PRIV_KEY }}
 
       - name: Generate MD5 Server Token
         run: |
           [ -n "$MD5SRV_TOKEN" ] || echo "MD5SRV_TOKEN=`uuidgen`" >> $GITHUB_ENV
-          # propagate the environment variable so that it's available in the `env` context
-          echo "MD5SRV_PORT=$MD5SRV_PORT" >> $GITHUB_ENV
 
-      - name: Check env vars
+      # gdb-multiarch: We used gdb to remotely flash the test firmware onto the
+      # Swan attached to the Notestation. Apparently "regular" gdb (i.e.
+      # installed via apt install gdb) can't cope with the fact that the target
+      # is ARM.
+      # ngrok: Used to get a public IP for the MD5 server.
+      # jq: Used for JSON parsing.
+      - name: Install apt dependencies
         run: |
-          . scripts/check_runner_config.sh
-          echo NOTEHUB_PROXY_ROUTE_ALIAS=$NOTEHUB_PROXY_ROUTE_ALIAS
+          curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc | \
+            sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null
+          echo "deb https://ngrok-agent.s3.amazonaws.com buster main" | \
+            sudo tee /etc/apt/sources.list.d/ngrok.list
+
+          sudo apt update
+          sudo apt install gdb-multiarch ngrok jq
+
+      # We need socat 1.7.4.4 because prior to that there are some issues with
+      # setting the baud rate properly. socat is used by the card_client code
+      # for various tunnels (e.g. Swan USB port, Swan OpenOCD server, etc.).
+      - name: Install socat 1.7.4.4
+        run: |
+          wget http://www.dest-unreach.org/socat/download/socat-1.7.4.4.tar.gz
+          tar xvf socat-1.7.4.4.tar.gz
+          cd socat-1.7.4.4
+          ./configure
+          make -j
+          sudo make install
 
       - name: Install PlatformIO dependencies
         run: |
-          python3 -m venv venv    # python venv is also used by the md5server, so this comes first.
-          source venv/bin/activate
+          python -m pip install --upgrade pip
           pip install platformio
           cd $PIO_PROJECT_DIR
           pio pkg install -l "Blues Wireless Notecard" -e debug
@@ -76,15 +116,14 @@ jobs:
           mkdir md5srv-files
           ./scripts/run_md5srv.sh
 
-      - name: Start tunnelmole
-        if: env.START_TUNNELMOLE!='false'
+      - name: Start ngrok
         run: |
-          rm -f tmole.log
-          ./scripts/run_tmole.sh
+          ngrok config add-authtoken ${{ secrets.NGROK_AUTH_TOKEN }}
+          ./scripts/run_ngrok.sh
 
       - name: Check MD5 server is available
         run: |
-          # the request will return a 401 from md5srv, but that's expected without the access token
+          # The request will return a 401 from md5srv, but that's expected without the access token
           # Curl still returns success because it could contact the server
           code=`curl -s -o /dev/null -w "%{http_code}" $MD5SRV_URL`
           if [ "$code" -ge "500" ]; then
@@ -98,11 +137,11 @@ jobs:
         if: env.CREATE_NOTEHUB_ROUTES!='false'
         run: |
           curl -f -X POST \
-            -L 'https://${{env.NOTEHUB}}/oauth2/token' \
+            -L 'https://${{ env.NOTEHUB }}/oauth2/token' \
             -H 'content-type: application/x-www-form-urlencoded' \
             -d grant_type=client_credentials \
-            -d client_id=$NOTEHUB_CLIENT_ID \
-            -d client_secret=$NOTEHUB_CLIENT_SECRET | \
+            -d client_id=${{ secrets.NOTEHUB_HIL_CLIENT_ID }} \
+            -d client_secret=${{ secrets.NOTEHUB_HIL_CLIENT_SECRET }} | \
             { token=$(jq -r .access_token); echo "NOTEHUB_ACCESS_TOKEN=$token" >> $GITHUB_ENV; }
 
       - name: Create Notehub HTTP route
@@ -125,6 +164,7 @@ jobs:
           fi
 
       - name: Create Notehub proxy route
+        if: env.CREATE_NOTEHUB_ROUTES!='false'
         run: |
           ALIAS="$NOTEHUB_PROXY_ROUTE_ALIAS"
           route=`jq -n --arg TOKEN "$MD5SRV_TOKEN" --arg LABEL "$NOTEHUB_PROXY_ROUTE_LABEL" --arg URL "$MD5SRV_URL" --arg ALIAS "$ALIAS" --argjson TIMEOUT $NOTEHUB_ROUTE_TIMEOUT \
@@ -143,13 +183,78 @@ jobs:
 
       - name: Build and upload test firmware and run tests
         run: |
-          source venv/bin/activate
+          cd hil_lab/
+          pip install -r requirements.txt
+
+          # Reserve a Notestation with the label "note_c_card_binary_test",
+          # which means it has everything needed to run the note-c card.binary
+          # tests.
+          cd notestation/
+          nohup python -m core.card_client \
+            --mcu-debug \
+            --labels '["note_c_card_binary_test"]' \
+            --res-file ./reservation.json &> card_client.log &
+
+          PID=$!
+
+          timeout=600  # 10 minutes in seconds
+          interval=1   # Check every second
+          elapsed=0
+
+          # If we aren't able to reserve a Notestation after 10 minutes, or if
+          # the card_client fails, bail.
+          while [ ! -f ./reservation.json ]; do
+              sleep $interval
+              elapsed=$((elapsed + interval))
+
+              # Check if the Python process is still running
+              if ! kill -0 $PID 2>/dev/null; then
+                  echo "Error: Process $PID has terminated unexpectedly."
+                  echo "$(cat card_client.log)"
+                  exit 1
+              fi
+
+              if [ $elapsed -ge $timeout ]; then
+                  echo "Timeout reached: reservation.json did not appear."
+                  kill $PID 2>/dev/null
+                  exit 1
+              fi
+          done
+
+          echo "Notestation reserved."
+
+          # Set these environment variables, which are read in platformio.ini in
+          # order to flash the Swan with the test firmware.
+          export MCU_GDB_SERVER_IP="$(jq -r '.notestation' ./reservation.json)"
+          export MCU_GDB_SERVER_PORT="$(jq -r '.mcu_openocd.gdb' ./reservation.json)"
+          export GDB_CMD="gdb-multiarch"
+
+          if [ -z "$MCU_GDB_SERVER_IP" ] || [ "$MCU_GDB_SERVER_IP" == "null" ]; then
+              echo "Error: MCU_GDB_SERVER_IP is empty or not defined."
+              exit 1
+          fi
+
+          if [ -z "$MCU_GDB_SERVER_PORT" ] || [ "$MCU_GDB_SERVER_PORT" -eq 0 ]; then
+              echo "Error: MCU_GDB_SERVER_PORT is empty or zero."
+              exit 1
+          fi
+
           export PLATFORMIO_BUILD_FLAGS="'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"$NOTEHUB_PROXY_ROUTE_ALIAS\"' '-D PRODUCT_UID=\"$NOTEHUB_PRODUCT_UID\"'"
           echo "build flags $PLATFORMIO_BUILD_FLAGS"
-          cd $PIO_PROJECT_DIR
+          cd $GITHUB_WORKSPACE/$PIO_PROJECT_DIR
+
+          # Run the tests. It's important that we provided --no-reset here. If
+          # we don't, PlatformIO tries to fiddle with DTR and RTS, and that
+          # causes an exception because the serial port for the Swan isn't a
+          # local serial port. It's a virtual serial device hooked up to the
+          # Notestation over TCP, and from there it's connected to the actual
+          # Swan USB port. Trying to do DTR/RTS on the port causes an ioctl
+          # error, because PlatformIO is expecting a genuine serial device that
+          # plays nicely with the ioctl stuff it wants to use.
           platformio test -v -e debug \
-             --json-output-path test.json \
-             --junit-output-path test.xml
+            --no-reset \
+            --json-output-path test.json \
+            --junit-output-path test.xml
 
       - name: Publish test report
         uses: mikepenz/action-junit-report@v3
@@ -179,29 +284,4 @@ jobs:
             curl -f -s -X DELETE \
               -L "https://$NOTEHUB_API/v1/projects/$NOTEHUB_PROJECT_UID/routes/$NOTEHUB_HTTP_ROUTE_UID" \
               -H "Authorization: Bearer $NOTEHUB_ACCESS_TOKEN"
-          fi
-
-
-      - name: Cleanup tmole
-        if: always()
-        run: |
-          if [ -n "$TMOLE_PID" ]; then
-            echo "Stopping tmole."
-            kill $TMOLE_PID
-          else
-            echo "tmole not running (TMOLE_PID is empty)."
-          fi
-
-      - name: Cleanup MD5 server
-        if: always()
-        run: |
-          if [ -d md5srv-files ]; then
-            echo "Deleting md5srv-files directory."
-            rm -rf md5srv-files
-          fi
-          if [ -n "$MD5SRV_PID" ]; then
-            echo "Stopping MD5 server."
-            kill $MD5SRV_PID
-          else
-            echo "MD5 server not running (MD5SRV_PID is empty)."
           fi

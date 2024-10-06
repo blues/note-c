@@ -23,6 +23,7 @@ def log_sensitive(s: str):
 
 
 class HTTPException(Exception):
+
     def __init__(self, status_code, message, detail=None):
         self.status_code = status_code
         self.message = message
@@ -81,19 +82,26 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def do_PUT(self):
         self.do(self.write_file_or_note)
 
-    def send_status(self, code: int, message: str, detail: str | dict | bytes, headers: dict = {}):
+    def send_status(self,
+                    code: int,
+                    message: str,
+                    detail: str | dict | bytes,
+                    headers: dict = {}):
         """ Send a status code with a message and optional detail, which is returned as JSON in the response body. """
         self.send_response(code, message)
         for header in headers.items():
             self.send_header(*header)
-        self.send_header("Content-Type", "application/json" if type(detail) is not bytes else "application/octet-stream")
+        self.send_header(
+            "Content-Type", "application/json"
+            if type(detail) is not bytes else "application/octet-stream")
         self.end_headers()
         detail = detail or message
         if detail is not None:
             if type(detail) is bytes:
                 self.wfile.write(detail)
             else:
-                key = "err" if code > 400 else "text" if not type(detail) is dict else None
+                key = "err" if code > 400 else "text" if not type(
+                    detail) is dict else None
                 json_str = json.dumps(detail)
                 reply_body = json_str if key is None else f'{{"{key}":{json_str},"code":{code}}}'
                 reply_body = reply_body + '\n'
@@ -115,12 +123,15 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         requested = self.headers['X-Access-Token'] or ''
         token = self.args.token or ''
         if token and requested != token:
-            raise HTTPException(403, "Forbidden") if requested else HTTPException(401, "Unauthorized")
+            raise HTTPException(403,
+                                "Forbidden") if requested else HTTPException(
+                                    401, "Unauthorized")
 
     def get_md5(self):
         dirname = self.validate_url_path(self.url.path)
         if not os.path.exists(dirname):
-            raise HTTPException(404, "Not Found", f"Directory {self.url.path} not found.")
+            raise HTTPException(404, "Not Found",
+                                f"Directory {self.url.path} not found.")
 
         chunk = self.query_data.get('chunk')
         headers = {}
@@ -144,7 +155,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
             abs_filename = os.path.join(dirname, filename)
             self.validate_path(abs_filename)
             if not os.path.isfile(abs_filename):
-                raise HTTPException(403, "Not a file.", f"{os.path.join(self.url.path,filename)} is not a file")
+                raise HTTPException(
+                    403, "Not a file.",
+                    f"{os.path.join(self.url.path,filename)} is not a file")
 
             with open(abs_filename, 'rb') as file:
                 data = file.read()
@@ -171,14 +184,15 @@ class WebRequestHandler(BaseHTTPRequestHandler):
     def write_note(self):
         content_type = self.headers['Content-Type']
         if content_type != 'application/json':
-            raise HTTPException(400, f"Unsupported content type: {content_type}")
+            raise HTTPException(400,
+                                f"Unsupported content type: {content_type}")
         data = self.post_data
         try:
             event = json.loads(data)
         except json.decoder.JSONDecodeError as e:
             print(f"JSON decode error: {data} {e}")
             raise e
-        body = event['body']     # non-optional keys
+        body = event['body']  # non-optional keys
         name = body['name']
         length = body['length']
         md5 = body['md5']
@@ -186,8 +200,10 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         payload = base64.b64decode(event['payload'])
         payload_length = event.get('payload_length')
         if payload_length is not None and payload_length != length:
-            raise HTTPException(400, "Payload length mismatch", f"payload_length {payload_length}!=length {length}")
-        chunk = body.get('chunk') # optional
+            raise HTTPException(
+                400, "Payload length mismatch",
+                f"payload_length {payload_length}!=length {length}")
+        chunk = body.get('chunk')  # optional
         self._write_file(name, chunk, length, payload, md5)
 
     def write_file(self):
@@ -195,7 +211,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         if not length:
             raise HTTPException(400, "Request body is empty.")
         chunk = self.query_data.get("chunk", None)
-        return self._write_file(self.url.path, chunk, length, self.post_data, None)
+        return self._write_file(self.url.path, chunk, length, self.post_data,
+                                None)
 
     def _read_file(self, path, chunk):
         filename = self._chunk_file(path, chunk)
@@ -207,7 +224,9 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
     def _chunk_file(self, dirname, chunk):
         chunk_index = None if chunk is None else int(chunk)
-        filename = os.path.join(dirname, f"payload{chunk_index:05d}.bin" if chunk_index is not None else "payload.bin")
+        filename = os.path.join(
+            dirname, f"payload{chunk_index:05d}.bin"
+            if chunk_index is not None else "payload.bin")
         self.validate_path(filename)
         return filename
 
@@ -222,19 +241,24 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
             filename = self._chunk_file(dirname, chunk)
             if os.path.exists(filename):
-                raise HTTPException(409, "Conflict", f"Chunk {chunk} already exists for {self.url.path}"
-                                    if chunk else f"File {self.url.path} already exists.")
+                raise HTTPException(
+                    409, "Conflict",
+                    f"Chunk {chunk} already exists for {self.url.path}"
+                    if chunk else f"File {self.url.path} already exists.")
 
         if len(data) != length:
-            raise HTTPException(400, "Invalid content length.",
-                                f"Payload length does not equal given length {len(data)}!={length}")
+            raise HTTPException(
+                400, "Invalid content length.",
+                f"Payload length does not equal given length {len(data)}!={length}"
+            )
 
         if self.args.save:
             with open(filename, 'wb') as output_file:
                 output_file.write(data)
         md5str = hashlib.md5(data).hexdigest()
         if md5 and md5str != md5:
-            raise HTTPException(400, f"MD5 mismatch. actual {md5str}!=expected {md5}")
+            raise HTTPException(
+                400, f"MD5 mismatch. actual {md5str}!=expected {md5}")
         response = {"md5": md5str, "length": length}
         content_type = self.headers['Content-Type']
         if content_type is not None:
@@ -242,7 +266,8 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         self.send_status(200, "Ok", response)
 
     def validate_url_path(self, urlpath):
-        return self.validate_path(os.path.join(self.args.directory, urlpath.lstrip('/')))
+        return self.validate_path(
+            os.path.join(self.args.directory, urlpath.lstrip('/')))
 
     def validate_path(self, path):
         abs_path = os.path.realpath(os.path.abspath(path))
@@ -252,14 +277,12 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         return abs_path
 
     def dump_request(self) -> str:
-        return json.dumps(
-            {
-                "path": self.url.path,
-                "query_data": self.query_data,
-                "post_data": self.post_data.decode("utf-8"),
-                "form_data": self.form_data
-            }
-        )
+        return json.dumps({
+            "path": self.url.path,
+            "query_data": self.query_data,
+            "post_data": self.post_data.decode("utf-8"),
+            "form_data": self.form_data
+        })
 
 
 def main(args):
@@ -284,20 +307,22 @@ if __name__ == "__main__":
     token = os.environ.get("MD5SRV_TOKEN")
 
     parser = argparse.ArgumentParser(
-        description='Run a simple webserver to save and validate web.post requests.')
-    parser.add_argument(
-        '--port',
-        default=port or "8080",
-        required=False,
-        help='The TCP port to bind to.')
+        description=
+        'Run a simple webserver to save and validate web.post requests.')
+    parser.add_argument('--port',
+                        default=port or "8080",
+                        required=False,
+                        help='The TCP port to bind to.')
     parser.add_argument('--address',
                         default=address or "0.0.0.0",
                         required=False,
                         help='The IP address to bind to.')
-    parser.add_argument('--dir',
-                        dest="directory",
-                        required=False,
-                        help='The working directory. All files are stored and retrieved from here.')
+    parser.add_argument(
+        '--dir',
+        dest="directory",
+        required=False,
+        help=
+        'The working directory. All files are stored and retrieved from here.')
     # parser.add_argument('--timeout',
     #                     default=5,
     #                     required=False,
@@ -307,12 +332,14 @@ if __name__ == "__main__":
                         required=False,
                         action='store_true',
                         help='Save the content received to the filesystem.')
-    parser.add_argument('--token',
-                        default=None,
-                        required=False,
-                        help='The authorization token required in X-Access-Token header.')
+    parser.add_argument(
+        '--token',
+        default=None,
+        required=False,
+        help='The authorization token required in X-Access-Token header.')
 
     args = parser.parse_args()
     args.token = args.token or token
-    args.directory = os.getcwd() if not args.directory else os.path.abspath(args.directory)
+    args.directory = os.getcwd() if not args.directory else os.path.abspath(
+        args.directory)
     main(args)
