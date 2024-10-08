@@ -15,28 +15,26 @@ jobs:
         MD5SRV_TIMEOUT: 5
         MD5SRV_DIR: ./test/hitl/scripts
         BATS_VERSION: 1.10.0
-        BATS_LIB_PATH: /usr/lib
-        # /usr/local/lib on OSX
     steps:
       - name: Setup Bats and bats libs
-        uses: brokenpip3/setup-bats-libs@1.0.0
+        id: setup-bats
+        uses: bats-core/bats-action@3.0.0
         with:
             bats-install: true
             file-install: false
             detik-install: false
-      - name: Setup BATS_LIB_PATH
-        run: |
-          if [ -e /usr/local/lib/bats-support ]; then
-            echo "BATS_LIB_PATH=/usr/local/lib" >> $GITHUB_ENV
-          fi
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Run Tests
+        env:
+          BATS_LIB_PATH: ${{ steps.setup-bats.outputs.lib-path }}
         run: |
             cd ${{env.MD5SRV_DIR}}
-            $HOME/.local/bin/bats -p --print-output-on-failure .
-      - name: Rerun Tests
+            bats -p --print-output-on-failure .
+      - name: Re-run Tests
         if: failure()
+        env:
+          BATS_LIB_PATH: ${{ steps.setup-bats.outputs.lib-path }}
         run: |
           cd ${{env.MD5SRV_DIR}}
           $HOME/.local/bin/bats -p --print-output-on-failure -x .
