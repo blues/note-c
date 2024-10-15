@@ -1,5 +1,6 @@
 Import("env")
 
+
 def after_upload(source, target, env):
     port = env.GetProjectOption("test_port")
     print("waiting for " + port + " ...")
@@ -10,5 +11,6 @@ def after_upload(source, target, env):
             break
         except:
             pass
+
 
 env.AddPostAction("upload", after_upload)
