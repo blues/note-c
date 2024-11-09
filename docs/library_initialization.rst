@@ -149,7 +149,7 @@ The code below from `Src/main.c <https://github.com/blues/note-stm32l4/blob/mast
       NoteSetFnSerial(_noteSerialReset, _noteSerialTransmit, _noteSerialAvailable, _noteSerialReceive);
    #endif
 
-``_noteSerialReset``
+`_noteSerialReset`
 ^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
@@ -163,7 +163,7 @@ The code below from `Src/main.c <https://github.com/blues/note-stm32l4/blob/mast
 
 The serial reset hook reinitializes the serial peripheral connected to the Notecard.
 
-``_noteSerialTransmit``
+`_noteSerialTransmit`
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
@@ -174,7 +174,7 @@ The serial reset hook reinitializes the serial peripheral connected to the Notec
 
 The serial transmit hook uses the HAL to write the data in the buffer to the serial peripheral connected to the Notecard.
 
-``_noteSerialAvailable``
+`_noteSerialAvailable`
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
@@ -185,7 +185,7 @@ The serial transmit hook uses the HAL to write the data in the buffer to the ser
 
 For receiving serial data from the Notecard, note-stm32l4 uses a circular buffer. In the receive interrupt handler for the UART peripheral, this buffer gets populated with the received data. ``serialFillIndex`` is the write index into that buffer, and ``serialDrainIndex`` is the read index. If the two indices are equal, there's nothing new to read. If they aren't equal, there is something to read.
 
-``_noteSerialReceive``
+`_noteSerialReceive`
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
@@ -204,7 +204,7 @@ For receiving serial data from the Notecard, note-stm32l4 uses a circular buffer
 
 The serial receive hook returns the byte from the circular receive buffer at the read index, handling the case where the index wraps around to 0.
 
-``_noteI2CReset``
+`_noteI2CReset`
 ^^^^^^^^^^^^^^^^
 
 .. code-block:: c
@@ -218,7 +218,7 @@ The serial receive hook returns the byte from the circular receive buffer at the
 
 The I2C reset hook reinitializes the I2C peripheral used to communicate with the Notecard.
 
-``_noteI2CTransmit``
+`_noteI2CTransmit`
 ^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
@@ -255,7 +255,7 @@ Then, it adds on the payload of ``Size`` bytes, which is pointed to by ``pBuffer
 
 Then the host calls the platform-specific method to send those bytes over I2C, which is ``HAL_I2C_Master_Transmit`` in this case.
 
-``_noteI2CReceive``
+`_noteI2CReceive`
 ^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c

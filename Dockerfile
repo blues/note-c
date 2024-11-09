@@ -21,6 +21,9 @@ ARG USER
 
 # Local Argument(s)
 
+# Local Environment Variable(s)
+ENV LC_ALL="C.UTF-8"
+
 # Create Non-Root User
 RUN ["dash", "-c", "\
     addgroup \
