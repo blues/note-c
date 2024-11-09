@@ -47,7 +47,7 @@ SCENARIO("NoteDebug")
     memset(&state, 0, sizeof(state));
 
     SECTION("Hook not set") {
-        CHECK(!noteIsDebugOutputActive());
+        CHECK(!_noteIsDebugOutputActive());
 
         NoteDebug(NULL);
         CHECK(!state.debugOutputCalled);
@@ -57,7 +57,7 @@ SCENARIO("NoteDebug")
         NoteSetFnDebugOutput(MyDebugOutput);
 
         SECTION("Active") {
-            CHECK(noteIsDebugOutputActive());
+            CHECK(_noteIsDebugOutputActive());
         }
 
         SECTION("Hook called") {

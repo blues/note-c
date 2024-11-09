@@ -11,16 +11,14 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
 #include "fff.h"
 
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(bool, serialNoteReset)
-FAKE_VALUE_FUNC(const char *, serialNoteTransaction, const char *, size_t, char **, uint32_t)
+FAKE_VALUE_FUNC(bool, _serialNoteReset)
+FAKE_VALUE_FUNC(const char *, _serialNoteTransaction, const char *, size_t, char **, uint32_t)
 
 namespace
 {
@@ -53,65 +51,62 @@ char serialReceive()
     return 'a';
 }
 
-
 SCENARIO("NoteSetFnSerial")
 {
     char req[] = "{ \"req\": \"note.add\" }\n";
     char *resp = NULL;
-    serialNoteReset_fake.return_val = true;
-    serialNoteTransaction_fake.return_val = NULL;
+    _serialNoteReset_fake.return_val = true;
+    _serialNoteTransaction_fake.return_val = NULL;
 
     NoteSetFnSerial(serialReset, serialTransmit, serialAvailable,
                     serialReceive);
 
-    CHECK(noteSerialReset());
+    CHECK(_noteSerialReset());
     CHECK(serialResetCalled == 1);
 
-    noteSerialTransmit((uint8_t *)req, strlen(req), false);
+    _noteSerialTransmit((uint8_t *)req, strlen(req), false);
     CHECK(serialTransmitCalled == 1);
 
-    CHECK(noteSerialAvailable());
+    CHECK(_noteSerialAvailable());
     CHECK(serialAvailableCalled == 1);
 
-    CHECK(noteSerialReceive() == 'a');
+    CHECK(_noteSerialReceive() == 'a');
     CHECK(serialReceiveCalled == 1);
 
-    CHECK(strcmp(noteActiveInterface(), "serial") == 0);
+    CHECK(strcmp(_noteActiveInterface(), "serial") == 0);
 
-    CHECK(noteHardReset());
-    CHECK(serialNoteReset_fake.call_count == 1);
+    CHECK(_noteHardReset());
+    CHECK(_serialNoteReset_fake.call_count == 1);
 
-    CHECK(noteJSONTransaction(req, strlen(req), &resp, CARD_INTER_TRANSACTION_TIMEOUT_SEC) == NULL);
-    CHECK(serialNoteTransaction_fake.call_count == 1);
+    CHECK(_noteJSONTransaction(req, strlen(req), &resp, CARD_INTER_TRANSACTION_TIMEOUT_SEC) == NULL);
+    CHECK(_serialNoteTransaction_fake.call_count == 1);
 
     // Unset the callbacks and ensure they aren't called again.
     NoteSetFnSerial(NULL, NULL, NULL, NULL);
     NoteSetFnDisabled();
 
-    CHECK(noteSerialReset());
+    CHECK(_noteSerialReset());
     CHECK(serialResetCalled == 1);
 
-    noteSerialTransmit((uint8_t *)req, strlen(req), false);
+    _noteSerialTransmit((uint8_t *)req, strlen(req), false);
     CHECK(serialTransmitCalled == 1);
 
-    CHECK(!noteSerialAvailable());
+    CHECK(!_noteSerialAvailable());
     CHECK(serialAvailableCalled == 1);
 
-    CHECK(noteSerialReceive() == 0);
+    CHECK(_noteSerialReceive() == 0);
     CHECK(serialReceiveCalled == 1);
 
-    CHECK(strcmp(noteActiveInterface(), "unknown") == 0);
+    CHECK(strcmp(_noteActiveInterface(), "unknown") == 0);
 
-    CHECK(noteHardReset());
-    CHECK(serialNoteReset_fake.call_count == 1);
+    CHECK(_noteHardReset());
+    CHECK(_serialNoteReset_fake.call_count == 1);
 
-    CHECK(noteJSONTransaction(req, strlen(req), &resp, CARD_INTER_TRANSACTION_TIMEOUT_SEC) != NULL);
-    CHECK(serialNoteTransaction_fake.call_count == 1);
+    CHECK(_noteJSONTransaction(req, strlen(req), &resp, CARD_INTER_TRANSACTION_TIMEOUT_SEC) != NULL);
+    CHECK(_serialNoteTransaction_fake.call_count == 1);
 
-    RESET_FAKE(serialNoteReset);
-    RESET_FAKE(serialNoteTransaction);
+    RESET_FAKE(_serialNoteReset);
+    RESET_FAKE(_serialNoteTransaction);
 }
 
 }
-
-

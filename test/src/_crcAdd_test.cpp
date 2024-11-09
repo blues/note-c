@@ -1,5 +1,5 @@
 /*!
- * @file crcAdd_test.cpp
+ * @file _crcAdd_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -25,7 +25,7 @@ FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
 namespace
 {
 
-SCENARIO("crcAdd")
+SCENARIO("_crcAdd")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
@@ -35,7 +35,7 @@ SCENARIO("crcAdd")
     SECTION("NoteMalloc fails") {
         NoteMalloc_fake.return_val = NULL;
 
-        CHECK(crcAdd(validReq, seqNo) == NULL);
+        CHECK(_crcAdd(validReq, seqNo) == NULL);
     }
 
     SECTION("NoteMalloc succeeds") {
@@ -45,16 +45,16 @@ SCENARIO("crcAdd")
         char invalidJsonReq[] = "{\"req\":";
 
         SECTION("Empty string") {
-            CHECK(crcAdd(emptyStringReq, seqNo) == NULL);
+            CHECK(_crcAdd(emptyStringReq, seqNo) == NULL);
         }
 
         SECTION("Invalid JSON") {
-            CHECK(crcAdd(invalidJsonReq, seqNo) == NULL);
+            CHECK(_crcAdd(invalidJsonReq, seqNo) == NULL);
         }
 
         SECTION("Valid JSON") {
             const char expectedNewJson[] = "{\"req\": \"hub.sync\",\"crc\":\"0001:DF2B9115\"}";
-            char *newJson = crcAdd(validReq, seqNo);
+            char *newJson = _crcAdd(validReq, seqNo);
 
             REQUIRE(newJson != NULL);
             CHECK(strcmp(expectedNewJson, newJson) == 0);

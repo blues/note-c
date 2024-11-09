@@ -19,15 +19,15 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
+FAKE_VALUE_FUNC(const char *, _noteChunkedReceive, uint8_t *, uint32_t *, bool,
+                uint32_t, uint32_t *)
+FAKE_VOID_FUNC(_noteLockNote)
+FAKE_VALUE_FUNC(J *, _noteTransactionShouldLock, J *, bool)
+FAKE_VOID_FUNC(_noteUnlockNote)
 FAKE_VALUE_FUNC(uint32_t, NoteBinaryCodecDecode, const uint8_t *, uint32_t, uint8_t *,
                 uint32_t)
 FAKE_VALUE_FUNC(const char *, NoteBinaryStoreEncodedLength, uint32_t *)
-FAKE_VALUE_FUNC(J *, noteTransactionShouldLock, J *, bool)
-FAKE_VALUE_FUNC(const char *, noteChunkedReceive, uint8_t *, uint32_t *, bool,
-                uint32_t, uint32_t *)
-FAKE_VOID_FUNC(noteLockNote)
-FAKE_VOID_FUNC(noteUnlockNote)
+FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
 
 // Most of these variables have to be global because they're accessed in
 // lambda functions used as fakes for various note-c functions. They can't be
@@ -61,7 +61,7 @@ SCENARIO("NoteBinaryStoreReceive")
 
         return NULL;
     };
-    noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
+    _noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
         J *rsp = JCreateObject();
         char hash[NOTE_MD5_HASH_STRING_SIZE] = {0};
         NoteMD5HashString((unsigned char *)rawMsg, rawMsgLen, hash,
@@ -110,7 +110,7 @@ SCENARIO("NoteBinaryStoreReceive")
     }
 
     GIVEN("The response to the card.binary.get request has an error") {
-        noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
+        _noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
             J *rsp = JCreateObject();
             JAddStringToObject(rsp, "err", "some error");
 
@@ -120,29 +120,29 @@ SCENARIO("NoteBinaryStoreReceive")
         WHEN("NoteBinaryStoreReceive is called") {
             const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
 
-            REQUIRE(noteTransactionShouldLock_fake.call_count > 0);
+            REQUIRE(_noteTransactionShouldLock_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
         }
     }
 
-    GIVEN("noteChunkedReceive returns an error") {
-        noteChunkedReceive_fake.return_val = "some error";
+    GIVEN("_noteChunkedReceive returns an error") {
+        _noteChunkedReceive_fake.return_val = "some error";
 
         WHEN("NoteBinaryStoreReceive is called") {
             const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
 
-            REQUIRE(noteChunkedReceive_fake.call_count > 0);
+            REQUIRE(_noteChunkedReceive_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
         }
     }
 
-    GIVEN("noteChunkedReceive indicates there's unexpectedly more data "
+    GIVEN("_noteChunkedReceive indicates there's unexpectedly more data "
           "available") {
-        noteChunkedReceive_fake.custom_fake = [](uint8_t *, uint32_t *, bool,
+        _noteChunkedReceive_fake.custom_fake = [](uint8_t *, uint32_t *, bool,
         uint32_t, uint32_t *available) -> const char* {
             *available = 1;
 
@@ -152,7 +152,7 @@ SCENARIO("NoteBinaryStoreReceive")
         WHEN("NoteBinaryStoreReceive is called") {
             const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
 
-            REQUIRE(noteChunkedReceive_fake.call_count > 0);
+            REQUIRE(_noteChunkedReceive_fake.call_count > 0);
             THEN("An error is returned") {
                 CHECK(err != NULL);
             }
@@ -161,9 +161,9 @@ SCENARIO("NoteBinaryStoreReceive")
 
     GIVEN("The binary payload is received") {
         NoteBinaryCodecDecode_fake.custom_fake = [](const uint8_t *encData, uint32_t encDataLen, uint8_t *decBuf, uint32_t) -> uint32_t {
-            return cobsDecode((uint8_t *)encData, encDataLen, '\n', decBuf);
+            return _cobsDecode((uint8_t *)encData, encDataLen, '\n', decBuf);
         };
-        noteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, uint32_t *size,
+        _noteChunkedReceive_fake.custom_fake = [](uint8_t *buffer, uint32_t *size,
         bool, uint32_t, uint32_t *available) -> const char* {
             uint32_t outLen = NoteBinaryCodecEncode((uint8_t *)rawMsg, rawMsgLen, buffer, *size);
 
@@ -175,7 +175,7 @@ SCENARIO("NoteBinaryStoreReceive")
         };
 
         AND_GIVEN("The computed MD5 hash doesn't match the status field") {
-            noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
+            _noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
                 J *rsp = JCreateObject();
                 JAddStringToObject(rsp, "status", "garbage");
 
@@ -186,8 +186,8 @@ SCENARIO("NoteBinaryStoreReceive")
             WHEN("NoteBinaryStoreReceive is called") {
                 const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
 
-                REQUIRE(noteChunkedReceive_fake.call_count > 0);
-                REQUIRE(noteTransactionShouldLock_fake.call_count > 0);
+                REQUIRE(_noteChunkedReceive_fake.call_count > 0);
+                REQUIRE(_noteTransactionShouldLock_fake.call_count > 0);
                 THEN("An error is returned") {
                     CHECK(err != NULL);
                 }
@@ -197,14 +197,14 @@ SCENARIO("NoteBinaryStoreReceive")
         AND_GIVEN("The decoded length does not match the reqeusted length") {
             decodedLen = rawMsgLen;
             NoteBinaryCodecDecode_fake.custom_fake = [](const uint8_t *encData, uint32_t encDataLen, uint8_t *decBuf, uint32_t) -> uint32_t {
-                return (cobsDecode((uint8_t *)encData, encDataLen, '\n', decBuf) - 1);
+                return (_cobsDecode((uint8_t *)encData, encDataLen, '\n', decBuf) - 1);
             };
 
             WHEN("NoteBinaryStoreReceive is called") {
                 const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
 
-                REQUIRE(noteChunkedReceive_fake.call_count > 0);
-                REQUIRE(noteTransactionShouldLock_fake.call_count > 0);
+                REQUIRE(_noteChunkedReceive_fake.call_count > 0);
+                REQUIRE(_noteTransactionShouldLock_fake.call_count > 0);
                 THEN("An error is returned") {
                     CHECK(err != NULL);
                 }
@@ -216,7 +216,7 @@ SCENARIO("NoteBinaryStoreReceive")
                 uint32_t decodedLen = rawMsgLen;
                 const char *err = NoteBinaryStoreReceive(buf, bufLen, decodedOffset, decodedLen);
 
-                REQUIRE(noteChunkedReceive_fake.call_count > 0);
+                REQUIRE(_noteChunkedReceive_fake.call_count > 0);
                 THEN("No error is returned") {
                     CHECK(err == NULL);
                 }
@@ -229,15 +229,15 @@ SCENARIO("NoteBinaryStoreReceive")
         }
     }
 
-    CHECK(noteLockNote_fake.call_count == noteUnlockNote_fake.call_count);
+    CHECK(_noteLockNote_fake.call_count == _noteUnlockNote_fake.call_count);
 
-    RESET_FAKE(noteTransactionShouldLock);
+    RESET_FAKE(_noteChunkedReceive);
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteTransactionShouldLock);
+    RESET_FAKE(_noteUnlockNote);
     RESET_FAKE(NoteBinaryCodecDecode);
     RESET_FAKE(NoteBinaryStoreEncodedLength);
-    RESET_FAKE(noteChunkedReceive);
-    RESET_FAKE(noteLockNote);
     RESET_FAKE(NoteNewRequest);
-    RESET_FAKE(noteUnlockNote);
 }
 
 }

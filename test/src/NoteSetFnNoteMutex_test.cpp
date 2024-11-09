@@ -11,8 +11,6 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
 
 #include "n_lib.h"
@@ -37,22 +35,20 @@ SCENARIO("NoteSetFnNoteMutex")
 {
     NoteSetFnNoteMutex(LockNote, UnlockNote);
 
-    noteLockNote();
+    _noteLockNote();
     CHECK(lockNoteCalled == 1);
 
-    noteUnlockNote();
+    _noteUnlockNote();
     CHECK(unlockNoteCalled == 1);
 
     // Unset the callbacks and ensure they aren't called again.
     NoteSetFnNoteMutex(NULL, NULL);
 
-    noteLockNote();
+    _noteLockNote();
     CHECK(lockNoteCalled == 1);
 
-    noteUnlockNote();
+    _noteUnlockNote();
     CHECK(unlockNoteCalled == 1);
 }
 
 }
-
-

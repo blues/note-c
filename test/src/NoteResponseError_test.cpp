@@ -19,11 +19,10 @@
 
 // DEFINE_FFF_GLOBALS
 // FAKE_VALUE_FUNC(bool, NoteReset)
-// FAKE_VALUE_FUNC(const char *, noteJSONTransaction, const char *, size_t, char **, uint32_t)
-// FAKE_VALUE_FUNC(bool, noteTransactionStart, uint32_t)
+// FAKE_VALUE_FUNC(const char *, _noteJSONTransaction, const char *, size_t, char **, uint32_t)
+// FAKE_VALUE_FUNC(bool, _noteTransactionStart, uint32_t)
 // FAKE_VALUE_FUNC(J *, NoteUserAgent)
-// FAKE_VALUE_FUNC(bool, crcError, char *, uint16_t)
-
+// FAKE_VALUE_FUNC(bool, _crcError, char *, uint16_t)
 
 SCENARIO("NoteResponseError")
 {
@@ -32,8 +31,8 @@ SCENARIO("NoteResponseError")
     // // NoteReset's mock should succeed unless the test explicitly instructs
     // // it to fail.
     // NoteReset_fake.return_val = true;
-    // noteTransactionStart_fake.return_val = true;
-    // crcError_fake.return_val = false;
+    // _noteTransactionStart_fake.return_val = true;
+    // _crcError_fake.return_val = false;
 
     SECTION("No err field, returns false") {
         J* rsp = JParse("{\"test\":\"me\"}");
@@ -48,6 +47,5 @@ SCENARIO("NoteResponseError")
         CHECK((hasError ==true && rsp != NULL));
         JDelete(rsp);
     }
-
 }
 

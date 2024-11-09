@@ -144,17 +144,17 @@ The code below from `Src/main.c <https://github.com/blues/note-stm32l4/blob/mast
 .. code-block:: c
 
    #if NOTECARD_USE_I2C
-      NoteSetFnI2C(NOTE_I2C_ADDR_DEFAULT, NOTE_I2C_MAX_DEFAULT, noteI2CReset, noteI2CTransmit, noteI2CReceive);
+      NoteSetFnI2C(NOTE_I2C_ADDR_DEFAULT, NOTE_I2C_MAX_DEFAULT, _noteI2CReset, _noteI2CTransmit, _noteI2CReceive);
    #else
-      NoteSetFnSerial(noteSerialReset, noteSerialTransmit, noteSerialAvailable, noteSerialReceive);
+      NoteSetFnSerial(_noteSerialReset, _noteSerialTransmit, _noteSerialAvailable, _noteSerialReceive);
    #endif
 
-``noteSerialReset``
+``_noteSerialReset``
 ^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
 
-   bool noteSerialReset() {
+   bool _noteSerialReset() {
       MX_USART1_UART_DeInit();
       MX_USART1_UART_Init();
 
@@ -163,36 +163,36 @@ The code below from `Src/main.c <https://github.com/blues/note-stm32l4/blob/mast
 
 The serial reset hook reinitializes the serial peripheral connected to the Notecard.
 
-``noteSerialTransmit``
+``_noteSerialTransmit``
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
 
-   void noteSerialTransmit(uint8_t *text, size_t len, bool flush) {
+   void _noteSerialTransmit(uint8_t *text, size_t len, bool flush) {
        HAL_UART_Transmit(&huart1, text, len, 5000);
    }
 
 The serial transmit hook uses the HAL to write the data in the buffer to the serial peripheral connected to the Notecard.
 
-``noteSerialAvailable``
+``_noteSerialAvailable``
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
 
-   bool noteSerialAvailable() {
+   bool _noteSerialAvailable() {
       return (serialFillIndex != serialDrainIndex);
    }
 
 For receiving serial data from the Notecard, note-stm32l4 uses a circular buffer. In the receive interrupt handler for the UART peripheral, this buffer gets populated with the received data. ``serialFillIndex`` is the write index into that buffer, and ``serialDrainIndex`` is the read index. If the two indices are equal, there's nothing new to read. If they aren't equal, there is something to read.
 
-``noteSerialReceive``
+``_noteSerialReceive``
 ^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
 
-   char noteSerialReceive() {
+   char _noteSerialReceive() {
        char data;
-       while (!noteSerialAvailable()) ;
+       while (!_noteSerialAvailable()) ;
        if (serialDrainIndex < sizeof(serialBuffer))
            data = serialBuffer[serialDrainIndex++];
        else {
@@ -204,12 +204,12 @@ For receiving serial data from the Notecard, note-stm32l4 uses a circular buffer
 
 The serial receive hook returns the byte from the circular receive buffer at the read index, handling the case where the index wraps around to 0.
 
-``noteI2CReset``
+``_noteI2CReset``
 ^^^^^^^^^^^^^^^^
 
 .. code-block:: c
 
-   bool noteI2CReset(uint16_t DevAddress) {
+   bool _noteI2CReset(uint16_t DevAddress) {
        MX_I2C1_DeInit();
        MX_I2C1_Init();
 
@@ -218,12 +218,12 @@ The serial receive hook returns the byte from the circular receive buffer at the
 
 The I2C reset hook reinitializes the I2C peripheral used to communicate with the Notecard.
 
-``noteI2CTransmit``
+``_noteI2CTransmit``
 ^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
 
-   const char *noteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size) {
+   const char *_noteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size) {
        char *errstr = NULL;
        int writelen = sizeof(uint8_t) + Size;
        uint8_t *writebuf = malloc(writelen);
@@ -255,12 +255,12 @@ Then, it adds on the payload of ``Size`` bytes, which is pointed to by ``pBuffer
 
 Then the host calls the platform-specific method to send those bytes over I2C, which is ``HAL_I2C_Master_Transmit`` in this case.
 
-``noteI2CReceive``
+``_noteI2CReceive``
 ^^^^^^^^^^^^^^^^^^
 
 .. code-block:: c
 
-   const char *noteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *available) {
+   const char *_noteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *available) {
        const char *errstr = NULL;
        HAL_StatusTypeDef err_code;
 

@@ -1,5 +1,5 @@
 /*!
- * @file i2cNoteTransaction_test.cpp
+ * @file _i2cNoteTransaction_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -23,15 +23,15 @@ DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
 FAKE_VOID_FUNC(NoteLockI2C)
 FAKE_VOID_FUNC(NoteUnlockI2C)
-FAKE_VALUE_FUNC(const char *, i2cChunkedTransmit, uint8_t *, uint32_t, bool)
-FAKE_VALUE_FUNC(const char *, i2cNoteQueryLength, uint32_t *, uint32_t)
-FAKE_VALUE_FUNC(const char *, i2cChunkedReceive, uint8_t *, uint32_t *, bool,
+FAKE_VALUE_FUNC(const char *, _i2cChunkedTransmit, uint8_t *, uint32_t, bool)
+FAKE_VALUE_FUNC(const char *, _i2cNoteQueryLength, uint32_t *, uint32_t)
+FAKE_VALUE_FUNC(const char *, _i2cChunkedReceive, uint8_t *, uint32_t *, bool,
                 uint32_t, uint32_t *)
 
 namespace
 {
 
-SCENARIO("i2cNoteTransaction")
+SCENARIO("_i2cNoteTransaction")
 {
     NoteSetFnDefault(NULL, free, NULL, NULL);
 
@@ -43,14 +43,14 @@ SCENARIO("i2cNoteTransaction")
     NoteMalloc_fake.custom_fake = malloc;
     uint32_t timeoutMs = CARD_INTER_TRANSACTION_TIMEOUT_SEC;
 
-    GIVEN("i2cChunkedTransmit returns an error") {
-        i2cChunkedTransmit_fake.return_val = "some error";
+    GIVEN("_i2cChunkedTransmit returns an error") {
+        _i2cChunkedTransmit_fake.return_val = "some error";
 
-        WHEN("i2cNoteTransaction is called") {
-            err = i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
+        WHEN("_i2cNoteTransaction is called") {
+            err = _i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
 
             THEN("An error is returned") {
-                REQUIRE(i2cChunkedTransmit_fake.call_count > 0);
+                REQUIRE(_i2cChunkedTransmit_fake.call_count > 0);
                 CHECK(err != NULL);
             }
         }
@@ -58,8 +58,8 @@ SCENARIO("i2cNoteTransaction")
 
     GIVEN("The response parameter is NULL so no Notecard response is "
           "expected") {
-        WHEN("i2cNoteTransaction is called") {
-            err = i2cNoteTransaction(req, strlen(req), NULL, timeoutMs);
+        WHEN("_i2cNoteTransaction is called") {
+            err = _i2cNoteTransaction(req, strlen(req), NULL, timeoutMs);
 
             THEN("No error is returned") {
                 CHECK(err == NULL);
@@ -67,22 +67,22 @@ SCENARIO("i2cNoteTransaction")
         }
     }
 
-    GIVEN("i2cNoteQueryLength returns an error") {
-        i2cNoteQueryLength_fake.return_val = "some error";
+    GIVEN("_i2cNoteQueryLength returns an error") {
+        _i2cNoteQueryLength_fake.return_val = "some error";
 
-        WHEN("i2cNoteTransaction is called") {
-            err = i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
+        WHEN("_i2cNoteTransaction is called") {
+            err = _i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
 
             THEN("An error is returned") {
-                REQUIRE(i2cNoteQueryLength_fake.call_count > 0);
+                REQUIRE(_i2cNoteQueryLength_fake.call_count > 0);
                 CHECK(err != NULL);
             }
         }
     }
 
-    GIVEN("i2cNoteQueryLength reports bytes are available to read from the"
+    GIVEN("_i2cNoteQueryLength reports bytes are available to read from the"
           " Notecard") {
-        i2cNoteQueryLength_fake.custom_fake = [](uint32_t * available,
+        _i2cNoteQueryLength_fake.custom_fake = [](uint32_t * available,
         uint32_t) -> const char* {
             *available = ALLOC_CHUNK;
 
@@ -93,8 +93,8 @@ SCENARIO("i2cNoteTransaction")
             NoteMalloc_fake.custom_fake = NULL;
             NoteMalloc_fake.return_val = NULL;
 
-            WHEN("i2cNoteTransaction is called") {
-                err = i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
+            WHEN("_i2cNoteTransaction is called") {
+                err = _i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
 
                 THEN("An error is returned") {
                     REQUIRE(NoteMalloc_fake.call_count > 0);
@@ -103,14 +103,14 @@ SCENARIO("i2cNoteTransaction")
             }
         }
 
-        AND_GIVEN("i2cChunkedReceive returns an error") {
-            i2cChunkedReceive_fake.return_val = "some error";
+        AND_GIVEN("_i2cChunkedReceive returns an error") {
+            _i2cChunkedReceive_fake.return_val = "some error";
 
-            WHEN("i2cNoteTransaction is called") {
-                err = i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
+            WHEN("_i2cNoteTransaction is called") {
+                err = _i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
 
                 THEN("An error is returned") {
-                    REQUIRE(i2cChunkedReceive_fake.call_count > 0);
+                    REQUIRE(_i2cChunkedReceive_fake.call_count > 0);
                     CHECK(err != NULL);
                 }
             }
@@ -119,8 +119,8 @@ SCENARIO("i2cNoteTransaction")
         AND_GIVEN("A single chunk is required to read the full response from "
                   "the Notecard") {
             // Write out the number of bytes reported available on the prior
-            // call to i2cNoteQueryLength and report no more bytes available.
-            i2cChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool, uint32_t,
+            // call to _i2cNoteQueryLength and report no more bytes available.
+            _i2cChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool, uint32_t,
             uint32_t *available) -> const char* {
                 memset(buf, 'a', *available - 1);
                 buf[*available - 1] = '\n';
@@ -130,20 +130,20 @@ SCENARIO("i2cNoteTransaction")
                 return NULL;
             };
 
-            WHEN("i2cNoteTransaction is called") {
-                err = i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
+            WHEN("_i2cNoteTransaction is called") {
+                err = _i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
 
-                // If i2cChunkedReceive is called more than once, the response
+                // If _i2cChunkedReceive is called more than once, the response
                 // took more than one chunk, and this test is no longer testing
                 // what it intends to.
-                REQUIRE(i2cChunkedReceive_fake.call_count == 1);
+                REQUIRE(_i2cChunkedReceive_fake.call_count == 1);
 
                 THEN("No error is returned") {
                     CHECK(err == NULL);
                 }
 
                 THEN("The response buffer contains exactly what was returned by"
-                     " i2cChunkedReceive") {
+                     " _i2cChunkedReceive") {
                     char expectedRsp[ALLOC_CHUNK + 1];
                     size_t expectedSize = sizeof(expectedRsp);
                     memset(expectedRsp, 'a', expectedSize - 2);
@@ -159,7 +159,7 @@ SCENARIO("i2cNoteTransaction")
 
         AND_GIVEN("Multiple chunks are required to read the full response from "
                   "the Notecard") {
-            // On the first call to i2cChunkedReceive, a string of a's is
+            // On the first call to _i2cChunkedReceive, a string of a's is
             // written to the output buffer, and the Notecard reports that there
             // are still ALLOC_CHUNK bytes to read.
             auto firstChunk = [](uint8_t *buf, uint32_t *size, bool, uint32_t,
@@ -187,23 +187,23 @@ SCENARIO("i2cNoteTransaction")
                 firstChunk,
                 secondChunk
             };
-            SET_CUSTOM_FAKE_SEQ(i2cChunkedReceive, recvFakeSequence, 2);
+            SET_CUSTOM_FAKE_SEQ(_i2cChunkedReceive, recvFakeSequence, 2);
 
-            WHEN("i2cNoteTransaction is called") {
-                err = i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
+            WHEN("_i2cNoteTransaction is called") {
+                err = _i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
 
-                // Ensure that i2cChunkedReceive was actually called more than
+                // Ensure that _i2cChunkedReceive was actually called more than
                 // once. If it isn't, then something has gone awry and this test
                 // is no longer testing what it intends to, or there's been a
                 // regression/bug.
-                REQUIRE(i2cChunkedReceive_fake.call_count > 1);
+                REQUIRE(_i2cChunkedReceive_fake.call_count > 1);
 
                 THEN("No error is returned") {
                     CHECK(err == NULL);
                 }
 
                 THEN("The response buffer contains exactly what was returned by"
-                     " i2cChunkedReceive") {
+                     " _i2cChunkedReceive") {
                     char expectedRsp[ALLOC_CHUNK * 2 + 1];
                     size_t expectedSize = sizeof(expectedRsp);
                     memset(expectedRsp, 'a', expectedSize - 2);
@@ -233,8 +233,8 @@ SCENARIO("i2cNoteTransaction")
                 };
                 SET_CUSTOM_FAKE_SEQ(NoteMalloc, mallocFakeSequence, 2);
 
-                WHEN("i2cNoteTransaction is called") {
-                    err = i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
+                WHEN("_i2cNoteTransaction is called") {
+                    err = _i2cNoteTransaction(req, strlen(req), &rsp, timeoutMs);
 
                     THEN("An error is returned") {
                         CHECK(err != NULL);
@@ -253,9 +253,9 @@ SCENARIO("i2cNoteTransaction")
     RESET_FAKE(NoteMalloc);
     RESET_FAKE(NoteLockI2C);
     RESET_FAKE(NoteUnlockI2C);
-    RESET_FAKE(i2cChunkedTransmit);
-    RESET_FAKE(i2cNoteQueryLength);
-    RESET_FAKE(i2cChunkedReceive);
+    RESET_FAKE(_i2cChunkedTransmit);
+    RESET_FAKE(_i2cNoteQueryLength);
+    RESET_FAKE(_i2cChunkedReceive);
 }
 
 }

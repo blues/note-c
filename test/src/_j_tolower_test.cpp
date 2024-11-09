@@ -1,5 +1,5 @@
 /*!
- * @file Jtolower_test.cpp
+ * @file _j_tolower_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -21,16 +21,16 @@
 namespace
 {
 
-SCENARIO("Jtolower")
+SCENARIO("_j_tolower")
 {
     const char alphabetUpper[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const char alphabetLower[] = "abcdefghijklmnopqrstuvwxyz";
     char result[sizeof(alphabetUpper)] = {0};
 
     GIVEN("The uppercase characters of the alphabet") {
-        WHEN("Jtolower is called on each letter") {
+        WHEN("_j_tolower is called on each letter") {
             for (size_t i = 0; i < sizeof(alphabetUpper); ++i) {
-                result[i] = Jtolower(alphabetUpper[i]);
+                result[i] = _j_tolower(alphabetUpper[i]);
             }
 
             THEN("The corresponding lowercase letter is returned") {
@@ -42,9 +42,9 @@ SCENARIO("Jtolower")
     }
 
     GIVEN("The lowercase characters of the alphabet") {
-        WHEN("Jtolower is called on each letter") {
+        WHEN("_j_tolower is called on each letter") {
             for (size_t i = 0; i < sizeof(alphabetLower); ++i) {
-                result[i] = Jtolower(alphabetLower[i]);
+                result[i] = _j_tolower(alphabetLower[i]);
             }
 
             THEN("The same lowercase letter is returned") {
@@ -58,8 +58,8 @@ SCENARIO("Jtolower")
     GIVEN("A non-letter char") {
         char invalid = '.';
 
-        WHEN("Jtolower is called on that char") {
-            char invalidResult = Jtolower(invalid);
+        WHEN("_j_tolower is called on that char") {
+            char invalidResult = _j_tolower(invalid);
 
             THEN("The non-letter char is returned") {
                 CHECK(invalidResult == invalid);

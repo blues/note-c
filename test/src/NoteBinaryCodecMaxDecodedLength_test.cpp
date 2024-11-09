@@ -19,7 +19,7 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(uint32_t, cobsGuaranteedFit, uint32_t)
+FAKE_VALUE_FUNC(uint32_t, _cobsGuaranteedFit, uint32_t)
 
 const uint32_t bufferSize = 10;
 
@@ -30,16 +30,16 @@ SCENARIO("NoteBinaryCodecMaxDecodedLength")
 {
     GIVEN("Parameters are in order") {
         const uint32_t EXPECTED_RESULT = 79;
-        cobsGuaranteedFit_fake.return_val = EXPECTED_RESULT;
+        _cobsGuaranteedFit_fake.return_val = EXPECTED_RESULT;
         const uint32_t result = NoteBinaryCodecMaxDecodedLength(bufferSize);
 
-        THEN("cobsGuaranteedFit is invoked") {
-            CHECK(cobsGuaranteedFit_fake.call_count > 0);
+        THEN("_cobsGuaranteedFit is invoked") {
+            CHECK(_cobsGuaranteedFit_fake.call_count > 0);
         }
 
-        WHEN("cobsGuaranteedFit is invoked") {
+        WHEN("_cobsGuaranteedFit is invoked") {
             THEN("The parameters are passed without modification") {
-                CHECK(cobsGuaranteedFit_fake.arg0_val == bufferSize);
+                CHECK(_cobsGuaranteedFit_fake.arg0_val == bufferSize);
             }
 
             THEN("The result is returned without modification") {
@@ -48,7 +48,7 @@ SCENARIO("NoteBinaryCodecMaxDecodedLength")
         }
     }
 
-    RESET_FAKE(cobsGuaranteedFit);
+    RESET_FAKE(_cobsGuaranteedFit);
 }
 
 }

@@ -18,16 +18,16 @@
 #include "test_static.h"
 
 DEFINE_FFF_GLOBALS
+FAKE_VALUE_FUNC(bool, _crcError, char *, uint16_t)
+FAKE_VALUE_FUNC(const char *, _noteJSONTransaction, const char *, size_t, char **, uint32_t)
+FAKE_VALUE_FUNC(bool, _noteTransactionStart, uint32_t)
 FAKE_VALUE_FUNC(bool, NoteReset)
-FAKE_VALUE_FUNC(const char *, noteJSONTransaction, const char *, size_t, char **, uint32_t)
-FAKE_VALUE_FUNC(bool, noteTransactionStart, uint32_t)
 FAKE_VALUE_FUNC(J *, NoteUserAgent)
-FAKE_VALUE_FUNC(bool, crcError, char *, uint16_t)
 
 namespace
 {
 
-const char *noteJSONTransactionValid(const char *, size_t, char **resp, uint32_t)
+const char *_noteJSONTransactionValid(const char *, size_t, char **resp, uint32_t)
 {
     static char respString[] = "{ \"total\": 1 }";
 
@@ -40,7 +40,7 @@ const char *noteJSONTransactionValid(const char *, size_t, char **resp, uint32_t
     return NULL;
 }
 
-const char *noteJSONTransactionBadJSON(const char *, size_t, char **resp, uint32_t)
+const char *_noteJSONTransactionBadJSON(const char *, size_t, char **resp, uint32_t)
 {
     static char respString[] = "Bad JSON";
 
@@ -53,7 +53,7 @@ const char *noteJSONTransactionBadJSON(const char *, size_t, char **resp, uint32
     return NULL;
 }
 
-const char *noteJSONTransactionIOError(const char *, size_t, char **resp, uint32_t)
+const char *_noteJSONTransactionIOError(const char *, size_t, char **resp, uint32_t)
 {
     static char respString[] = "{\"err\": \"{io}\"}";
 
@@ -66,7 +66,7 @@ const char *noteJSONTransactionIOError(const char *, size_t, char **resp, uint32
     return NULL;
 }
 
-const char *noteJSONTransactionNotSupportedError(const char *, size_t, char **resp, uint32_t)
+const char *_noteJSONTransactionNotSupportedError(const char *, size_t, char **resp, uint32_t)
 {
     static char respString[] = "{\"err\": \"{not-supported}\"}";
 
@@ -86,15 +86,15 @@ SCENARIO("NoteTransaction")
     // NoteReset's mock should succeed unless the test explicitly instructs
     // it to fail.
     NoteReset_fake.return_val = true;
-    noteTransactionStart_fake.return_val = true;
-    crcError_fake.return_val = false;
+    _noteTransactionStart_fake.return_val = true;
+    _crcError_fake.return_val = false;
 
     SECTION("Passing a NULL request returns NULL") {
         CHECK(NoteTransaction(NULL) == NULL);
     }
 
-    SECTION("noteTransactionStart fails") {
-        noteTransactionStart_fake.return_val = false;
+    SECTION("_noteTransactionStart fails") {
+        _noteTransactionStart_fake.return_val = false;
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
 
@@ -106,11 +106,11 @@ SCENARIO("NoteTransaction")
     SECTION("A response is expected and the response is valid") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = noteJSONTransactionValid;
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
 
         J *resp = NoteTransaction(req);
 
-        CHECK(noteJSONTransaction_fake.call_count == 1);
+        CHECK(_noteJSONTransaction_fake.call_count == 1);
         CHECK(resp != NULL);
         // Ensure there's no error in the response.
         CHECK(!NoteResponseError(resp));
@@ -122,13 +122,13 @@ SCENARIO("NoteTransaction")
     SECTION("A response is expected and the response has an error") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.return_val = "This is an error.";
+        _noteJSONTransaction_fake.return_val = "This is an error.";
 
         J *resp = NoteTransaction(req);
 
         // Ensure the mock is called at least once
         // Here the error causes multiple invocations by retries
-        CHECK(noteJSONTransaction_fake.call_count >= 1);
+        CHECK(_noteJSONTransaction_fake.call_count >= 1);
 
         // Ensure there's an error in the response.
         CHECK(resp != NULL);
@@ -141,7 +141,7 @@ SCENARIO("NoteTransaction")
     WHEN("The transaction is successful and the response has a {bad-bin} error") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **response, uint32_t) -> const char * {
+        _noteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **response, uint32_t) -> const char * {
             const char rsp_str[] = "{\"err\":\"{bad-bin}\"}";
             *response = (char *)malloc(sizeof(rsp_str));
             strncpy(*response, rsp_str, sizeof(rsp_str));
@@ -152,14 +152,14 @@ SCENARIO("NoteTransaction")
 
         // Ensure the mock is called at least once
         // Here the error causes multiple invocations by retries
-        REQUIRE(noteJSONTransaction_fake.call_count >= 1);
+        REQUIRE(_noteJSONTransaction_fake.call_count >= 1);
 
         THEN("An error is returned") {
             CHECK(resp != NULL);
         }
 
         THEN("The transaction is not retried") {
-            CHECK(noteJSONTransaction_fake.call_count == 1);
+            CHECK(_noteJSONTransaction_fake.call_count == 1);
         }
 
         JDelete(req);
@@ -169,7 +169,7 @@ SCENARIO("NoteTransaction")
     WHEN("The transaction is successful and the response contains invalid JSON") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **response, uint32_t) -> const char * {
+        _noteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **response, uint32_t) -> const char * {
             const char rsp_str[] = "{Looks like JSON, but won't parse}";
             *response = (char *)malloc(sizeof(rsp_str));
             strncpy(*response, rsp_str, sizeof(rsp_str));
@@ -180,14 +180,14 @@ SCENARIO("NoteTransaction")
 
         // Ensure the mock is called at least once
         // Here the error causes multiple invocations by retries
-        REQUIRE(noteJSONTransaction_fake.call_count >= 1);
+        REQUIRE(_noteJSONTransaction_fake.call_count >= 1);
 
         THEN("An error is returned") {
             CHECK(resp != NULL);
         }
 
         THEN("The transaction is retried") {
-            CHECK(noteJSONTransaction_fake.call_count == (1 + CARD_REQUEST_RETRIES_ALLOWED));
+            CHECK(_noteJSONTransaction_fake.call_count == (1 + CARD_REQUEST_RETRIES_ALLOWED));
         }
 
         JDelete(req);
@@ -197,7 +197,7 @@ SCENARIO("NoteTransaction")
     WHEN("The transaction is successful, and contains UTF-8 encoded characters in valid JSON") {
         J* req = NoteNewRequest("card.time");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = [] (const char *, size_t, char **response, uint32_t) -> const char * {
+        _noteJSONTransaction_fake.custom_fake = [] (const char *, size_t, char **response, uint32_t) -> const char * {
             const char rsp_str[] = "{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de México\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
             *response = (char *)malloc(sizeof(rsp_str));
             strncpy(*response, rsp_str, sizeof(rsp_str));
@@ -216,7 +216,7 @@ SCENARIO("NoteTransaction")
     WHEN("The transaction is successful, and contains UTF-16 encoded characters in valid JSON") {
         J* req = NoteNewRequest("card.time");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = [] (const char *, size_t, char **response, uint32_t) -> const char * {
+        _noteJSONTransaction_fake.custom_fake = [] (const char *, size_t, char **response, uint32_t) -> const char * {
             const char16_t rsp_str[] = u"{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de México\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
             *response = (char *)malloc(sizeof(rsp_str));
             memcpy(*response, rsp_str, sizeof(rsp_str));
@@ -239,8 +239,8 @@ SCENARIO("NoteTransaction")
     SECTION("Bad CRC") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = noteJSONTransactionValid;
-        crcError_fake.return_val = true;
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
+        _crcError_fake.return_val = true;
 
         J *resp = NoteTransaction(req);
 
@@ -255,7 +255,7 @@ SCENARIO("NoteTransaction")
     SECTION("I/O error") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = noteJSONTransactionIOError;
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionIOError;
 
         J *resp = NoteTransaction(req);
 
@@ -270,9 +270,9 @@ SCENARIO("NoteTransaction")
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
 
-        AND_GIVEN("noteJSONTransaction returns a response with a \"not "
+        AND_GIVEN("_noteJSONTransaction returns a response with a \"not "
                   "supported\" error") {
-            noteJSONTransaction_fake.custom_fake = noteJSONTransactionNotSupportedError;
+            _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionNotSupportedError;
 
             WHEN("NoteTransaction is called") {
                 J *rsp = NoteTransaction(req);
@@ -281,8 +281,8 @@ SCENARIO("NoteTransaction")
                     CHECK(JContainsString(rsp, c_err, c_unsupported));
                 }
 
-                THEN("noteJSONTransaction is only called once (no retries)") {
-                    CHECK(noteJSONTransaction_fake.call_count == 1);
+                THEN("_noteJSONTransaction is only called once (no retries)") {
+                    CHECK(_noteJSONTransaction_fake.call_count == 1);
                 }
 
                 JDelete(rsp);
@@ -303,7 +303,7 @@ SCENARIO("NoteTransaction")
 
         CHECK(NoteReset_fake.call_count == 1);
         // The transaction shouldn't be attempted if reset failed.
-        CHECK(noteJSONTransaction_fake.call_count == 0);
+        CHECK(_noteJSONTransaction_fake.call_count == 0);
         // The response should be null if reset failed.
         CHECK(resp == NULL);
 
@@ -320,7 +320,7 @@ SCENARIO("NoteTransaction")
 
         // The transaction shouldn't be attempted if the request couldn't be
         // serialized.
-        CHECK(noteJSONTransaction_fake.call_count == 0);
+        CHECK(_noteJSONTransaction_fake.call_count == 0);
         // Ensure there's an error in the response.
         CHECK(resp != NULL);
         CHECK(NoteResponseError(resp));
@@ -332,11 +332,11 @@ SCENARIO("NoteTransaction")
     SECTION("No response is expected") {
         J *req = NoteNewCommand("note.add");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = noteJSONTransactionValid;
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
 
         J *resp = NoteTransaction(req);
 
-        CHECK(noteJSONTransaction_fake.call_count == 1);
+        CHECK(_noteJSONTransaction_fake.call_count == 1);
         CHECK(resp != NULL);
         // Ensure there's no error in the response.
         CHECK(!NoteResponseError(resp));
@@ -352,11 +352,11 @@ SCENARIO("NoteTransaction")
     SECTION("Parsing the JSON response fails") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
-        noteJSONTransaction_fake.custom_fake = noteJSONTransactionBadJSON;
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionBadJSON;
 
         J *resp = NoteTransaction(req);
 
-        CHECK(noteJSONTransaction_fake.call_count >= 1);
+        CHECK(_noteJSONTransaction_fake.call_count >= 1);
         CHECK(resp != NULL);
         // Ensure there's an error in the response.
         CHECK(NoteResponseError(resp));
@@ -370,7 +370,7 @@ SCENARIO("NoteTransaction")
         J *req = NoteNewRequest("hub.set");
         REQUIRE(req != NULL);
         JAddStringToObject(req, "product", "a.b.c:d");
-        noteJSONTransaction_fake.custom_fake = noteJSONTransactionValid;
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
         NoteUserAgent_fake.return_val = JCreateObject();
 
         J *resp = NoteTransaction(req);
@@ -387,7 +387,7 @@ SCENARIO("NoteTransaction")
         REQUIRE(req != NULL);
 
         J *resp = NoteTransaction(req);
-        CHECK(noteJSONTransaction_fake.arg3_val == (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000));
+        CHECK(_noteJSONTransaction_fake.arg3_val == (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000));
 
         JDelete(req);
         JDelete(resp);
@@ -399,7 +399,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "milliseconds", 9171979);
 
         J *resp = NoteTransaction(req);
-        CHECK(noteJSONTransaction_fake.arg3_val == 9171979);
+        CHECK(_noteJSONTransaction_fake.arg3_val == 9171979);
 
         JDelete(req);
         JDelete(resp);
@@ -411,7 +411,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "seconds", 917);
 
         J *resp = NoteTransaction(req);
-        CHECK(noteJSONTransaction_fake.arg3_val == (917 * 1000));
+        CHECK(_noteJSONTransaction_fake.arg3_val == (917 * 1000));
 
         JDelete(req);
         JDelete(resp);
@@ -424,7 +424,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "milliseconds", 9171979);
 
         J *resp = NoteTransaction(req);
-        CHECK(noteJSONTransaction_fake.arg3_val == 9171979);
+        CHECK(_noteJSONTransaction_fake.arg3_val == 9171979);
 
         JDelete(req);
         JDelete(resp);
@@ -436,7 +436,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "milliseconds", 9171979);
 
         J *resp = NoteTransaction(req);
-        CHECK(noteJSONTransaction_fake.arg3_val == 9171979);
+        CHECK(_noteJSONTransaction_fake.arg3_val == 9171979);
 
         JDelete(req);
         JDelete(resp);
@@ -448,7 +448,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "seconds", 1979);
 
         J *resp = NoteTransaction(req);
-        CHECK(noteJSONTransaction_fake.arg3_val == (1979 * 1000));
+        CHECK(_noteJSONTransaction_fake.arg3_val == (1979 * 1000));
 
         JDelete(req);
         JDelete(resp);
@@ -461,7 +461,7 @@ SCENARIO("NoteTransaction")
         JAddIntToObject(req, "milliseconds", 9171979);
 
         J *resp = NoteTransaction(req);
-        CHECK(noteJSONTransaction_fake.arg3_val == 9171979);
+        CHECK(_noteJSONTransaction_fake.arg3_val == 9171979);
 
         JDelete(req);
         JDelete(resp);
@@ -472,16 +472,17 @@ SCENARIO("NoteTransaction")
         REQUIRE(req != NULL);
 
         J *resp = NoteTransaction(req);
-        CHECK(noteJSONTransaction_fake.arg3_val == (90 * 1000));
+        CHECK(_noteJSONTransaction_fake.arg3_val == (90 * 1000));
 
         JDelete(req);
         JDelete(resp);
     }
 
+    RESET_FAKE(_crcError);
+    RESET_FAKE(_noteJSONTransaction);
+    RESET_FAKE(_noteTransactionStart);
     RESET_FAKE(NoteReset);
-    RESET_FAKE(noteJSONTransaction);
-    RESET_FAKE(noteTransactionStart);
-    RESET_FAKE(crcError);
+    RESET_FAKE(NoteUserAgent);
 }
 
 }

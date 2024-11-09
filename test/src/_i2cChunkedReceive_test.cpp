@@ -1,5 +1,5 @@
 /*!
- * @file i2cChunkedReceive_test.cpp
+ * @file _i2cChunkedReceive_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -21,7 +21,7 @@
 #include "time_mocks.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(const char *, noteI2CReceive, uint16_t, uint8_t *, uint16_t,
+FAKE_VALUE_FUNC(const char *, _noteI2CReceive, uint16_t, uint8_t *, uint16_t,
                 uint32_t *)
 FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
@@ -29,7 +29,7 @@ FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
 namespace
 {
 
-const char *noteI2CReceiveInfinite(uint16_t, uint8_t *buf, uint16_t size,
+const char *_noteI2CReceiveInfinite(uint16_t, uint8_t *buf, uint16_t size,
                                    uint32_t *available)
 {
     memset(buf, 'a', size);
@@ -38,7 +38,7 @@ const char *noteI2CReceiveInfinite(uint16_t, uint8_t *buf, uint16_t size,
     return NULL;
 }
 
-SCENARIO("i2cChunkedReceive")
+SCENARIO("_i2cChunkedReceive")
 {
     NoteGetMs_fake.custom_fake = NoteGetMsIncrement;
 
@@ -49,13 +49,13 @@ SCENARIO("i2cChunkedReceive")
         uint8_t buf[] = {0xAB};
         uint32_t zeroSize = 0;
 
-        AND_GIVEN("noteI2CReceive reports that here are bytes available from "
+        AND_GIVEN("_noteI2CReceive reports that here are bytes available from "
                   "the Notecard") {
-            noteI2CReceive_fake.custom_fake = noteI2CReceiveInfinite;
+            _noteI2CReceive_fake.custom_fake = _noteI2CReceiveInfinite;
 
-            WHEN("i2cChunkedReceive is called") {
+            WHEN("_i2cChunkedReceive is called") {
                 uint32_t originalAvailable = available;
-                const char *err = i2cChunkedReceive(buf, &zeroSize, true,
+                const char *err = _i2cChunkedReceive(buf, &zeroSize, true,
                                                     timeoutMs, &available);
 
                 THEN("No error is returned") {
@@ -67,20 +67,20 @@ SCENARIO("i2cChunkedReceive")
                 }
 
                 THEN("available is exactly the number of bytes reported "
-                     "available by noteI2CReceive") {
+                     "available by _noteI2CReceive") {
                     CHECK(available == NOTE_I2C_MAX_DEFAULT);
                 }
             }
         }
     }
 
-    GIVEN("noteI2CReceive returns an error") {
+    GIVEN("_noteI2CReceive returns an error") {
         uint8_t buf[] = {0xAB};
         uint32_t size = sizeof(buf);
-        noteI2CReceive_fake.return_val = "some error";
+        _noteI2CReceive_fake.return_val = "some error";
 
-        WHEN("i2cChunkedReceive is called") {
-            const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
+        WHEN("_i2cChunkedReceive is called") {
+            const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
                                                 &available);
 
             THEN("An error is returned") {
@@ -92,10 +92,10 @@ SCENARIO("i2cChunkedReceive")
     GIVEN("The output buffer is too small") {
         uint8_t buf[NOTE_I2C_MAX_DEFAULT] = {0};
         uint32_t size = sizeof(buf);
-        noteI2CReceive_fake.custom_fake = noteI2CReceiveInfinite;
+        _noteI2CReceive_fake.custom_fake = _noteI2CReceiveInfinite;
 
-        WHEN("i2cChunkedReceive is called") {
-            const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
+        WHEN("_i2cChunkedReceive is called") {
+            const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
                                                 &available);
 
             THEN("No error is returned") {
@@ -103,17 +103,17 @@ SCENARIO("i2cChunkedReceive")
             }
 
             THEN("The output size is exactly the number of bytes returned by "
-                 "noteI2CReceive") {
+                 "_noteI2CReceive") {
                 CHECK(size == NOTE_I2C_MAX_DEFAULT);
             }
 
             THEN("available is exactly the number of bytes reported available "
-                 "by noteI2CReceive") {
+                 "by _noteI2CReceive") {
                 CHECK(available == NOTE_I2C_MAX_DEFAULT);
             }
 
             THEN("The output buffer contains exactly the bytes returned by "
-                 "noteI2CReceive") {
+                 "_noteI2CReceive") {
                 uint8_t expectedBuf[sizeof(buf)];
                 memset(expectedBuf, 'a', sizeof(expectedBuf));
 
@@ -126,9 +126,9 @@ SCENARIO("i2cChunkedReceive")
         uint8_t buf[NOTE_I2C_MAX_DEFAULT * 3] = {0};
         uint32_t size = sizeof(buf);
 
-        noteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *buf,
+        _noteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *buf,
         uint16_t size, uint32_t *available) -> const char* {
-            // If noteI2CReceive is called with size 0, the caller is querying
+            // If _noteI2CReceive is called with size 0, the caller is querying
             // the Notecard for how many bytes are available. Here, we report
             // back that there are NOTE_I2C_MAX_DEFAULT * 2 bytes available.
             if (size == 0)
@@ -161,8 +161,8 @@ SCENARIO("i2cChunkedReceive")
             size_t numBytesExpected = 10;
             available = 10;
 
-            WHEN("i2cChunkedReceive is called") {
-                const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
+            WHEN("_i2cChunkedReceive is called") {
+                const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
                                                     &available);
 
                 THEN("No error is returned") {
@@ -170,7 +170,7 @@ SCENARIO("i2cChunkedReceive")
                 }
 
                 THEN("The output size is exactly the number of bytes returned"
-                     "by noteI2CReceive") {
+                     "by _noteI2CReceive") {
                     CHECK(size == numBytesExpected);
                 }
 
@@ -179,7 +179,7 @@ SCENARIO("i2cChunkedReceive")
                 }
 
                 THEN("The output buffer contains exactly the bytes returned by "
-                     "noteI2CReceive") {
+                     "_noteI2CReceive") {
                     uint8_t expectedBuf[10];
                     memset(expectedBuf, 'a', sizeof(expectedBuf) - 1);
                     expectedBuf[sizeof(expectedBuf) - 1] = '\n';
@@ -193,8 +193,8 @@ SCENARIO("i2cChunkedReceive")
             size_t numBytesExpected = NOTE_I2C_MAX_DEFAULT * 2;
             available = 0;
 
-            WHEN("i2cChunkedReceive is called") {
-                const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
+            WHEN("_i2cChunkedReceive is called") {
+                const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
                                                     &available);
 
                 THEN("No error is returned") {
@@ -202,7 +202,7 @@ SCENARIO("i2cChunkedReceive")
                 }
 
                 THEN("The output size is exactly the number of bytes returned"
-                     "by noteI2CReceive") {
+                     "by _noteI2CReceive") {
                     CHECK(size == numBytesExpected);
                 }
 
@@ -211,7 +211,7 @@ SCENARIO("i2cChunkedReceive")
                 }
 
                 THEN("The output buffer contains exactly the bytes returned by "
-                     "noteI2CReceive") {
+                     "_noteI2CReceive") {
                     uint8_t expectedBuf[NOTE_I2C_MAX_DEFAULT * 2];
                     memset(expectedBuf, 'a', sizeof(expectedBuf) - 1);
                     expectedBuf[sizeof(expectedBuf) - 1] = '\n';
@@ -222,13 +222,13 @@ SCENARIO("i2cChunkedReceive")
         }
     }
 
-    GIVEN("End-of-packet (\\n) is received, but noteI2CReceive indicates more "
+    GIVEN("End-of-packet (\\n) is received, but _noteI2CReceive indicates more "
           "is still available to read") {
         uint8_t buf[NOTE_I2C_MAX_DEFAULT * 3] = {0};
         uint32_t size = sizeof(buf);
         size_t numBytesExpected = NOTE_I2C_MAX_DEFAULT * 2;
 
-        // On the first call, noteI2CReceive reports back that
+        // On the first call, _noteI2CReceive reports back that
         // NOTE_I2C_MAX_DEFAULT are available to read.
         auto bytesAvailable = [](uint16_t, uint8_t *buf, uint16_t size,
         uint32_t *available) -> const char* {
@@ -262,10 +262,10 @@ SCENARIO("i2cChunkedReceive")
             fullPacketButMoreAvailable,
             excessData
         };
-        SET_CUSTOM_FAKE_SEQ(noteI2CReceive, recvFakeSequence, 3);
+        SET_CUSTOM_FAKE_SEQ(_noteI2CReceive, recvFakeSequence, 3);
 
-        WHEN("i2cChunkedReceive is called") {
-            const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
+        WHEN("_i2cChunkedReceive is called") {
+            const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
                                                 &available);
 
             THEN("No error is returned") {
@@ -273,7 +273,7 @@ SCENARIO("i2cChunkedReceive")
             }
 
             THEN("The output size is exactly the number of bytes returned by "
-                 "noteI2CReceive") {
+                 "_noteI2CReceive") {
                 CHECK(size == numBytesExpected);
             }
 
@@ -282,7 +282,7 @@ SCENARIO("i2cChunkedReceive")
             }
 
             THEN("The output buffer contains exactly the bytes returned by "
-                 "noteI2CReceive") {
+                 "_noteI2CReceive") {
                 uint8_t expectedBuf[NOTE_I2C_MAX_DEFAULT * 2];
                 memset(expectedBuf, 'a', NOTE_I2C_MAX_DEFAULT - 1);
                 expectedBuf[NOTE_I2C_MAX_DEFAULT - 1] = '\n';
@@ -295,7 +295,7 @@ SCENARIO("i2cChunkedReceive")
     }
 
     GIVEN("There's nothing to read from the Notecard") {
-        noteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *buf,
+        _noteI2CReceive_fake.custom_fake = [](uint16_t, uint8_t *buf,
         uint16_t size, uint32_t *available) -> const char* {
             *available = 0;
 
@@ -304,8 +304,8 @@ SCENARIO("i2cChunkedReceive")
         uint8_t buf[NOTE_I2C_MAX_DEFAULT] = {0};
         uint32_t size = sizeof(buf);
 
-        WHEN("i2cChunkedReceive is called") {
-            const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
+        WHEN("_i2cChunkedReceive is called") {
+            const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
                                                 &available);
 
             THEN("An error is returned") {
@@ -326,8 +326,8 @@ SCENARIO("i2cChunkedReceive")
         }
 
         AND_GIVEN("The delay parameter is false") {
-            WHEN("i2cChunkedReceive is called") {
-                i2cChunkedReceive(buf, &size, false, timeoutMs, &available);
+            WHEN("_i2cChunkedReceive is called") {
+                _i2cChunkedReceive(buf, &size, false, timeoutMs, &available);
 
                 THEN("NoteDelayMs is never called") {
                     CHECK(NoteDelayMs_fake.call_count == 0);
@@ -336,8 +336,8 @@ SCENARIO("i2cChunkedReceive")
         }
 
         AND_GIVEN("The delay parameter is true") {
-            WHEN("i2cChunkedReceive is called") {
-                i2cChunkedReceive(buf, &size, true, timeoutMs, &available);
+            WHEN("_i2cChunkedReceive is called") {
+                _i2cChunkedReceive(buf, &size, true, timeoutMs, &available);
 
                 THEN("NoteDelayMs is called") {
                     CHECK(NoteDelayMs_fake.call_count > 0);
@@ -348,7 +348,7 @@ SCENARIO("i2cChunkedReceive")
 
     GIVEN("There's initially data to read from the Notecard, but then there's "
           "nothing available and we never receive the \\n") {
-        // First, noteI2CReceive will report that NOTE_I2C_MAX_DEFAULT bytes are
+        // First, _noteI2CReceive will report that NOTE_I2C_MAX_DEFAULT bytes are
         // available to read.
         auto bytesAvailable = [](uint16_t, uint8_t *buf, uint16_t size,
         uint32_t *available) -> const char* {
@@ -368,7 +368,7 @@ SCENARIO("i2cChunkedReceive")
         };
         // Finally, any subsequent calls will just set available to 0 and do
         // nothing else. This will eventually lead to a timeout in
-        // i2cChunkedReceive because it's still waiting for the newline.
+        // _i2cChunkedReceive because it's still waiting for the newline.
         auto nothingAvailable = [](uint16_t, uint8_t *buf, uint16_t size,
         uint32_t *available) -> const char* {
             *available = 0;
@@ -381,13 +381,13 @@ SCENARIO("i2cChunkedReceive")
             partialPacket,
             nothingAvailable
         };
-        SET_CUSTOM_FAKE_SEQ(noteI2CReceive, recvFakeSequence, 3);
+        SET_CUSTOM_FAKE_SEQ(_noteI2CReceive, recvFakeSequence, 3);
 
         uint8_t buf[NOTE_I2C_MAX_DEFAULT] = {0};
         uint32_t size = sizeof(buf);
 
-        WHEN("i2cChunkedReceive is called") {
-            const char *err = i2cChunkedReceive(buf, &size, true, timeoutMs,
+        WHEN("_i2cChunkedReceive is called") {
+            const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
                                                 &available);
 
             THEN("An error is returned") {
@@ -408,7 +408,7 @@ SCENARIO("i2cChunkedReceive")
         }
     }
 
-    RESET_FAKE(noteI2CReceive);
+    RESET_FAKE(_noteI2CReceive);
     RESET_FAKE(NoteGetMs);
     RESET_FAKE(NoteDelayMs);
 }
