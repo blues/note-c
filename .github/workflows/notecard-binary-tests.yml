@@ -186,16 +186,17 @@ jobs:
           cd hil_lab/
           pip install -r requirements.txt
 
-          # Reserve a Notestation with the label "note_c_card_binary_test",
-          # which means it has everything needed to run the note-c card.binary
-          # tests.
+          # For now, we're hardcoding the Notestation to
+          # los-angeles-notestation-1, which is the only one we've set up to run
+          # these tests.
           cd notestation/
           nohup python -m core.card_client \
             --mcu-debug \
-            --labels '["note_c_card_binary_test"]' \
-            --res-file ./reservation.json &> card_client.log &
+            --notestation los-angeles-notestation-1 \
+            --work-dir /tmp &> card_client.log &
 
           PID=$!
+          RES_FILE=/tmp/ns_reservation.json
 
           timeout=600  # 10 minutes in seconds
           interval=1   # Check every second
@@ -203,7 +204,7 @@ jobs:
 
           # If we aren't able to reserve a Notestation after 10 minutes, or if
           # the card_client fails, bail.
-          while [ ! -f ./reservation.json ]; do
+          while [ ! -f $RES_FILE ]; do
               sleep $interval
               elapsed=$((elapsed + interval))
 
@@ -215,7 +216,7 @@ jobs:
               fi
 
               if [ $elapsed -ge $timeout ]; then
-                  echo "Timeout reached: reservation.json did not appear."
+                  echo "Timeout reached: $RES_FILE did not appear."
                   kill $PID 2>/dev/null
                   exit 1
               fi
@@ -225,17 +226,19 @@ jobs:
 
           # Set these environment variables, which are read in platformio.ini in
           # order to flash the Swan with the test firmware.
-          export MCU_GDB_SERVER_IP="$(jq -r '.notestation' ./reservation.json)"
-          export MCU_GDB_SERVER_PORT="$(jq -r '.mcu_openocd.gdb' ./reservation.json)"
+          export MCU_GDB_SERVER_IP="$(jq -r '.notestation' $RES_FILE)"
+          export MCU_GDB_SERVER_PORT="$(jq -r '.mcu_openocd.gdb' $RES_FILE)"
           export GDB_CMD="gdb-multiarch"
 
           if [ -z "$MCU_GDB_SERVER_IP" ] || [ "$MCU_GDB_SERVER_IP" == "null" ]; then
               echo "Error: MCU_GDB_SERVER_IP is empty or not defined."
+              kill $PID 2>/dev/null
               exit 1
           fi
 
           if [ -z "$MCU_GDB_SERVER_PORT" ] || [ "$MCU_GDB_SERVER_PORT" -eq 0 ]; then
               echo "Error: MCU_GDB_SERVER_PORT is empty or zero."
+              kill $PID 2>/dev/null
               exit 1
           fi
 
@@ -255,6 +258,8 @@ jobs:
             --no-reset \
             --json-output-path test.json \
             --junit-output-path test.xml
+
+          kill $PID 2>/dev/null
 
       - name: Publish test report
         uses: mikepenz/action-junit-report@v3
