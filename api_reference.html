@@ -1,0 +1,1084 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Reference &mdash; note-c  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Ports" href="ports.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/blues_logo_no_text.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_initialization.html">Library Initialization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="calling_the_notecard_api.html">Calling the Notecard API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ports.html">Ports</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dynamic-memory-and-timing-hooks">Dynamic Memory and Timing Hooks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#types">Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#i-o-hooks">I/O Hooks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#serial-hooks">Serial Hooks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">Types</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#i2c">I2C</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id3">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4">Types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#macros">Macros</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mutex-hooks">Mutex Hooks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notecard-mutex">Notecard Mutex</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id5">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6">Types</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#i2c-mutex">I2C Mutex</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id7">Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id8">Types</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#notecard-api-calls">Notecard API Calls</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id9">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#json-manipulation">JSON Manipulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">Macros</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">note-c</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/api_reference.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-reference">
+<h1><a class="toc-backref" href="#id13" role="doc-backlink">API Reference</a><a class="headerlink" href="#api-reference" title="Link to this heading"></a></h1>
+<nav class="contents" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#api-reference" id="id13">API Reference</a></p>
+<ul>
+<li><p><a class="reference internal" href="#dynamic-memory-and-timing-hooks" id="id14">Dynamic Memory and Timing Hooks</a></p></li>
+<li><p><a class="reference internal" href="#i-o-hooks" id="id15">I/O Hooks</a></p></li>
+<li><p><a class="reference internal" href="#mutex-hooks" id="id16">Mutex Hooks</a></p></li>
+<li><p><a class="reference internal" href="#notecard-api-calls" id="id17">Notecard API Calls</a></p></li>
+<li><p><a class="reference internal" href="#json-manipulation" id="id18">JSON Manipulation</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>These pages cover the core functions and types that make up the note-c API.</p>
+<section id="dynamic-memory-and-timing-hooks">
+<h2><a class="toc-backref" href="#id14" role="doc-backlink">Dynamic Memory and Timing Hooks</a><a class="headerlink" href="#dynamic-memory-and-timing-hooks" title="Link to this heading"></a></h2>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteSetFn">
+<span class="target" id="note_8h_1ad334248744d5387da78ca09c3498f397"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NoteSetFn</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.mallocFn" title="mallocFn"><span class="n"><span class="pre">mallocFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">mallocHook</span></span>, <a class="reference internal" href="#c.freeFn" title="freeFn"><span class="n"><span class="pre">freeFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">freeHook</span></span>, <a class="reference internal" href="#c.delayMsFn" title="delayMsFn"><span class="n"><span class="pre">delayMsFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">delayMsHook</span></span>, <a class="reference internal" href="#c.getMsFn" title="getMsFn"><span class="n"><span class="pre">getMsFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">getMsHook</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteSetFn" title="Link to this definition"></a><br /></dt>
+<dd><p>Set the platform-specific memory and timing hooks. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mallocHook</strong> – The platform-specific memory allocation function (i.e. <code class="docutils literal notranslate"><span class="pre">malloc</span></code>). </p></li>
+<li><p><strong>freeHook</strong> – The platform-specific memory free function (i.e. <code class="docutils literal notranslate"><span class="pre">free</span></code>). </p></li>
+<li><p><strong>delayMsHook</strong> – The platform-specific millisecond delay function. </p></li>
+<li><p><strong>getMsHook</strong> – The platform-specific millisecond counter function. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="types">
+<h3>Types<a class="headerlink" href="#types" title="Link to this heading"></a></h3>
+<dl class="c type">
+<dt class="sig sig-object c" id="c.mallocFn">
+<span class="target" id="note_8h_1af700faf8575fb2f45c3881786624b4d6"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">mallocFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.mallocFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the memory allocation hook. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Param size<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of bytes to allocate.</p>
+</dd>
+<dt class="field-even">Return<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the newly allocated memory or NULL on failure. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.freeFn">
+<span class="target" id="note_8h_1a570f0444ac7f08f8d66bd12cf49b662c"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">freeFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">mem</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.freeFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the memory freeing hook. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Param mem<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Pointer to the memory to free. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.delayMsFn">
+<span class="target" id="note_8h_1a323baf90f21427329bfb7ef9a61c83d7"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">delayMsFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n"><span class="pre">ms</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.delayMsFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the millisecond delay hook. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Param ms<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of milliseconds to delay for. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.getMsFn">
+<span class="target" id="note_8h_1a4717d9986b1e1b5db55590abd6fc9910"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">getMsFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.getMsFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the millisecond counter hook. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Return<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The value of the millisecond counter. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="i-o-hooks">
+<h2><a class="toc-backref" href="#id15" role="doc-backlink">I/O Hooks</a><a class="headerlink" href="#i-o-hooks" title="Link to this heading"></a></h2>
+<section id="serial-hooks">
+<h3>Serial Hooks<a class="headerlink" href="#serial-hooks" title="Link to this heading"></a></h3>
+<section id="id1">
+<h4>Functions<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteSetFnSerial">
+<span class="target" id="note_8h_1a85c66fdcef6d9ea044a9adc37af5afa7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NoteSetFnSerial</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.serialResetFn" title="serialResetFn"><span class="n"><span class="pre">serialResetFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">resetFn</span></span>, <a class="reference internal" href="#c.serialTransmitFn" title="serialTransmitFn"><span class="n"><span class="pre">serialTransmitFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">transmitFn</span></span>, <a class="reference internal" href="#c.serialAvailableFn" title="serialAvailableFn"><span class="n"><span class="pre">serialAvailableFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">availFn</span></span>, <a class="reference internal" href="#c.serialReceiveFn" title="serialReceiveFn"><span class="n"><span class="pre">serialReceiveFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">receiveFn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteSetFnSerial" title="Link to this definition"></a><br /></dt>
+<dd><p>Set the platform-specific hooks for communicating with the Notecard over serial. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>resetFn</strong> – The platform-specific serial reset function. </p></li>
+<li><p><strong>transmitFn</strong> – The platform-specific serial transmit function. </p></li>
+<li><p><strong>availFn</strong> – The platform-specific serial available function. </p></li>
+<li><p><strong>receiveFn</strong> – The platform-specific serial receive function. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="id2">
+<h4>Types<a class="headerlink" href="#id2" title="Link to this heading"></a></h4>
+<dl class="c type">
+<dt class="sig sig-object c" id="c.serialResetFn">
+<span class="target" id="note_8h_1a75873a7790764116d88f80aaaf23263b"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">serialResetFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.serialResetFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the serial reset hook. </p>
+<p>This hook is used to reset the serial peripheral used to communicate with the Notecard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> on success and <code class="docutils literal notranslate"><span class="pre">false</span></code> on failure. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.serialTransmitFn">
+<span class="target" id="note_8h_1a02dd02c70f8ef01f9ded212d5630f5e0"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">serialTransmitFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">txBuf</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">txBufSize</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n"><span class="pre">flush</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.serialTransmitFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the serial transmit hook. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Param txBuf<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A buffer of bytes to transmit to the Notecard. </p>
+</dd>
+<dt class="field-even">Param txBufSize<span class="colon">:</span></dt>
+<dd class="field-even"><p>The size, in bytes, of <code class="docutils literal notranslate"><span class="pre">txBuf</span></code>. </p>
+</dd>
+<dt class="field-odd">Param flush<span class="colon">:</span></dt>
+<dd class="field-odd"><p>If true, flush the serial peripheral’s transmit buffer. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.serialAvailableFn">
+<span class="target" id="note_8h_1a58f8d48fe891877b7702a013e63e6991"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">serialAvailableFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.serialAvailableFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the serial available hook. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Return<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if there’s data to read and <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.serialReceiveFn">
+<span class="target" id="note_8h_1a9a014c2bc8e94f611f98415b3d6b9569"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">serialReceiveFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.serialReceiveFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the serial receive hook. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Return<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The received byte. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="i2c">
+<h3>I2C<a class="headerlink" href="#i2c" title="Link to this heading"></a></h3>
+<section id="id3">
+<h4>Functions<a class="headerlink" href="#id3" title="Link to this heading"></a></h4>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteSetFnI2C">
+<span class="target" id="note_8h_1abeb555883ff039880048164763c3b9f0"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NoteSetFnI2C</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n"><span class="pre">notecardAddr</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n"><span class="pre">maxTransmitSize</span></span>, <a class="reference internal" href="#c.i2cResetFn" title="i2cResetFn"><span class="n"><span class="pre">i2cResetFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">resetFn</span></span>, <a class="reference internal" href="#c.i2cTransmitFn" title="i2cTransmitFn"><span class="n"><span class="pre">i2cTransmitFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">transmitFn</span></span>, <a class="reference internal" href="#c.i2cReceiveFn" title="i2cReceiveFn"><span class="n"><span class="pre">i2cReceiveFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">receiveFn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteSetFnI2C" title="Link to this definition"></a><br /></dt>
+<dd><p>Set the platform-specific hooks for communicating with the Notecard over I2C, as well as the I2C address of the Notecard and maximum transmission size. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>notecardAddr</strong> – The I2C address of the Notecard. Pass 0 to use the default address. </p></li>
+<li><p><strong>maxTransmitSize</strong> – The max number of bytes to send to the Notecard in a single I2C segment. Pass 0 to use the default maximum transmission size. </p></li>
+<li><p><strong>resetFn</strong> – The platform-specific I2C reset function. </p></li>
+<li><p><strong>transmitFn</strong> – The platform-specific I2C transmit function. </p></li>
+<li><p><strong>receiveFn</strong> – The platform-specific I2C receive function. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="id4">
+<h4>Types<a class="headerlink" href="#id4" title="Link to this heading"></a></h4>
+<dl class="c type">
+<dt class="sig sig-object c" id="c.i2cResetFn">
+<span class="target" id="note_8h_1ab18cc9957da000e5a05db53d4543d26b"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">i2cResetFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.i2cResetFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the I2C reset hook. </p>
+<p>This hook is used to reset the I2C peripheral used to communicate with the Notecard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param address<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The I2C address of the Notecard. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.i2cTransmitFn">
+<span class="target" id="note_8h_1a841b338ac017194680b08ec57c179efc"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">i2cTransmitFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">txBuf</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n"><span class="pre">txBufSize</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.i2cTransmitFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the I2C transmit hook. </p>
+<p>This hook is used to send a buffer of bytes to the Notecard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param address<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The I2C address of the Notecard to transmit the data to. </p>
+</dd>
+<dt class="field-even">Param txBuf<span class="colon">:</span></dt>
+<dd class="field-even"><p>A buffer of bytes to transmit to the Notecard. </p>
+</dd>
+<dt class="field-odd">Param txBufSize<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The size, in bytes, of <code class="docutils literal notranslate"><span class="pre">txBuf</span></code>.</p>
+</dd>
+<dt class="field-even">Return<span class="colon">:</span></dt>
+<dd class="field-even"><p>NULL on success and an error string on failure. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.i2cReceiveFn">
+<span class="target" id="note_8h_1aef5eac1396470d4d872d979aaf95cbb2"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">i2cReceiveFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">rxBuf</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="n"><span class="pre">rxBufSize</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">available</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.i2cReceiveFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the I2C receive hook. </p>
+<p>This hook is used to receive a buffer of bytes from the Notecard.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Param address<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The I2C address of the Notecard sending the data to receive. </p>
+</dd>
+<dt class="field-even">Param rxBuf<span class="colon">:</span></dt>
+<dd class="field-even"><p>A buffer to hold the data received from the Notecard. </p>
+</dd>
+<dt class="field-odd">Param rxBufSize<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The size, in bytes, of rxBuf. </p>
+</dd>
+<dt class="field-even">Param available<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of bytes remaining to be received, if any.</p>
+</dd>
+<dt class="field-odd">Return<span class="colon">:</span></dt>
+<dd class="field-odd"><p>NULL on success and an error string on failure. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="macros">
+<h4>Macros<a class="headerlink" href="#macros" title="Link to this heading"></a></h4>
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.NOTE_I2C_ADDR_DEFAULT">
+<span class="target" id="note_8h_1a3107c5344909029555deedfacb21b43a"></span><span class="sig-name descname"><span class="n"><span class="pre">NOTE_I2C_ADDR_DEFAULT</span></span></span><a class="headerlink" href="#c.NOTE_I2C_ADDR_DEFAULT" title="Link to this definition"></a><br /></dt>
+<dd><p>The default I2C address of the Notecard. </p>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.NOTE_I2C_MAX_DEFAULT">
+<span class="target" id="note_8h_1a029462dd63c2f85402fa69f5466082f2"></span><span class="sig-name descname"><span class="n"><span class="pre">NOTE_I2C_MAX_DEFAULT</span></span></span><a class="headerlink" href="#c.NOTE_I2C_MAX_DEFAULT" title="Link to this definition"></a><br /></dt>
+<dd><p>The maximum number of bytes to request from or transmit to the Notecard in a single chunk. </p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+<section id="mutex-hooks">
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Mutex Hooks</a><a class="headerlink" href="#mutex-hooks" title="Link to this heading"></a></h2>
+<section id="notecard-mutex">
+<h3>Notecard Mutex<a class="headerlink" href="#notecard-mutex" title="Link to this heading"></a></h3>
+<section id="id5">
+<h4>Functions<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteSetFnNoteMutex">
+<span class="target" id="note_8h_1a534aa37f7e753dd06a847f429f8e743f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NoteSetFnNoteMutex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.mutexFn" title="mutexFn"><span class="n"><span class="pre">mutexFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">lockFn</span></span>, <a class="reference internal" href="#c.mutexFn" title="mutexFn"><span class="n"><span class="pre">mutexFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">unlockFn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteSetFnNoteMutex" title="Link to this definition"></a><br /></dt>
+<dd><p>Set the platform-specific mutex functions for the Notecard. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lockFn</strong> – The platform-specific Notecard lock function. </p></li>
+<li><p><strong>unlockFn</strong> – The platform-specific Notecard unlock function. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="id6">
+<h4>Types<a class="headerlink" href="#id6" title="Link to this heading"></a></h4>
+<dl class="c type">
+<dt class="sig sig-object c" id="c.mutexFn">
+<span class="target" id="note_8h_1ac9d4324784f851631c22f78099225463"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">mutexFn</span></span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">(</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">)</span></span><a class="headerlink" href="#c.mutexFn" title="Link to this definition"></a><br /></dt>
+<dd><p>The type for the various mutex (i.e. lock/unlock) hooks. </p>
+</dd></dl>
+
+</section>
+</section>
+<section id="i2c-mutex">
+<h3>I2C Mutex<a class="headerlink" href="#i2c-mutex" title="Link to this heading"></a></h3>
+<section id="id7">
+<h4>Functions<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteSetFnI2CMutex">
+<span class="target" id="note_8h_1a6879f42e34e075aec82b499fd5ddd12a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NoteSetFnI2CMutex</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.mutexFn" title="mutexFn"><span class="n"><span class="pre">mutexFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">lockI2Cfn</span></span>, <a class="reference internal" href="#c.mutexFn" title="mutexFn"><span class="n"><span class="pre">mutexFn</span></span></a><span class="w"> </span><span class="n"><span class="pre">unlockI2Cfn</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteSetFnI2CMutex" title="Link to this definition"></a><br /></dt>
+<dd><p>Set the platform-specific mutex functions for I2C. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lockI2Cfn</strong> – The platform-specific I2C lock function. </p></li>
+<li><p><strong>unlockI2Cfn</strong> – The platform-specific I2C unlock function. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="id8">
+<h4>Types<a class="headerlink" href="#id8" title="Link to this heading"></a></h4>
+<p>See <a class="reference internal" href="#c.mutexFn" title="mutexFn"><code class="xref c c-type docutils literal notranslate"><span class="pre">mutexFn</span></code></a>.</p>
+</section>
+</section>
+</section>
+<section id="notecard-api-calls">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Notecard API Calls</a><a class="headerlink" href="#notecard-api-calls" title="Link to this heading"></a></h2>
+<section id="id9">
+<h3>Functions<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteNewRequest">
+<span class="target" id="note_8h_1a76f6fa9b4401f7ba8563bc3a548ad59b"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">NoteNewRequest</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">request</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteNewRequest" title="Link to this definition"></a><br /></dt>
+<dd><p>Create a new JSON request. </p>
+<p>Creates a dynamically allocated <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object with one field <code class="docutils literal notranslate"><span class="pre">&quot;req&quot;</span></code> whose value is the passed in request string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>request</strong> – The name of the request, for example <code class="docutils literal notranslate"><span class="pre">hub.set</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object with the “req” field populated. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteRequestResponse">
+<span class="target" id="note_8h_1a234931d7639db0c292c27308aafbae75"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">NoteRequestResponse</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">req</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteRequestResponse" title="Link to this definition"></a><br /></dt>
+<dd><p>Send a request to the Notecard and return the response. </p>
+<p>The passed in request object is always freed, regardless of if the request was successful or not.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><a class="reference internal" href="#note_8h_1acd6f73358d95a8188495babd142c5977"><span class="std std-ref"><span class="pre">NoteResponseError</span></span></a></code> to check the response for errors. </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>req</strong> – Pointer to a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> request object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object with the response or NULL if there was an error sending the request.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteRequestResponseWithRetry">
+<span class="target" id="note_8h_1aef1204c75ca0b2300f5ea55bb52586c5"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">NoteRequestResponseWithRetry</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">req</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n"><span class="pre">timeoutSeconds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteRequestResponseWithRetry" title="Link to this definition"></a><br /></dt>
+<dd><p>Send a request to the Notecard, retrying it until it succeeds or it times out, and return the response. </p>
+<p>The passed in request object is always freed, regardless of if the request was successful or not.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><a class="reference internal" href="#note_8h_1acd6f73358d95a8188495babd142c5977"><span class="std std-ref"><span class="pre">NoteResponseError</span></span></a></code> to check the response for errors. </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>req</strong> – Pointer to a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> request object. </p></li>
+<li><p><strong>timeoutSeconds</strong> – Time limit for retires, in seconds, if there is no response, or if the response contains an I/O error.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object with the response or NULL if there was an error sending the request.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteRequest">
+<span class="target" id="note_8h_1ab1227db7501f0b979ed894fb764790e3"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NoteRequest</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">req</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteRequest" title="Link to this definition"></a><br /></dt>
+<dd><p>Send a request to the Notecard. </p>
+<p>The passed in request object is always freed, regardless of if the request was successful or not. The response from the Notecard, if any, is freed and not returned to the caller.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><span class="pre">NoteRequestResponse</span></code> if you need to work with the response. </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>req</strong> – Pointer to a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> request object.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if successful and <code class="docutils literal notranslate"><span class="pre">false</span></code> if an error occurs (e.g. out of memory or the response from the Notecard has an “err” field). If req is a command rather than a request, a <code class="docutils literal notranslate"><span class="pre">true</span></code> return value indicates that the command was sent without error. However, since the Notecard sends no response to commands, it does not guarantee that the command was received and processed by the Notecard.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteRequestWithRetry">
+<span class="target" id="note_8h_1a7eef6ff395f1e94934d3f9eb99bbcb9a"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NoteRequestWithRetry</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">req</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n"><span class="pre">timeoutSeconds</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteRequestWithRetry" title="Link to this definition"></a><br /></dt>
+<dd><p>Send a request to the Notecard, retrying it until it succeeds or it times out. </p>
+<p>The passed in request object is always freed, regardless of if the request was successful or not. The response from the Notecard, if any, is freed and not returned to the caller.</p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><span class="pre">NoteRequestResponseWithRetry</span></code> if you need to work with the response. </p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>req</strong> – Pointer to a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> request object. </p></li>
+<li><p><strong>timeoutSeconds</strong> – Time limit for retires, in seconds, if there is no response, or if the response contains an I/O error.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if successful and <code class="docutils literal notranslate"><span class="pre">false</span></code> if an error occurs (e.g. out of memory or the response from the Notecard has an “err” field).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.NoteResponseError">
+<span class="target" id="note_8h_1acd6f73358d95a8188495babd142c5977"></span><span class="sig-name descname"><span class="n"><span class="pre">NoteResponseError</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">rsp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteResponseError" title="Link to this definition"></a><br /></dt>
+<dd><p>Check if the Notecard response contains an error. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rsp</strong> – The response to check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">true</span></code> if there’s an error and <code class="docutils literal notranslate"><span class="pre">false</span></code> if there’s not. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.NoteDeleteResponse">
+<span class="target" id="note_8h_1a5e957ef70b05d1b5173ba34ea7b60588"></span><span class="sig-name descname"><span class="n"><span class="pre">NoteDeleteResponse</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">rsp</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteDeleteResponse" title="Link to this definition"></a><br /></dt>
+<dd><p>Free a response from the Notecard. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rsp</strong> – The response to free. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.NoteRequestResponseJSON">
+<span class="target" id="note_8h_1a8b39b3aa0c27493a4fa81509cc8d527d"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">NoteRequestResponseJSON</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">reqJSON</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.NoteRequestResponseJSON" title="Link to this definition"></a><br /></dt>
+<dd><p>Send a request to the Notecard and return the response. </p>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">NoteRequestResponse</span></code>, this function expects the request to be a valid JSON C-string, rather than a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object. The string is expected to be newline-terminated, otherwise the call produces undefined behavior. The response is returned as a dynamically allocated JSON C-string. The response string is verbatim what was sent by the Notecard, which IS newline-terminated. The caller is responsible for freeing the response string. If the request was a command (i.e. it uses “cmd” instead of “req”), this function returns NULL, because the Notecard does not send a response to commands.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When a “cmd” is sent, it is not possible to determine if an error occurred. </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reqJSON</strong> – A valid newline-terminated JSON C-string containing the request.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A newline-terminated JSON C-string with the response, or NULL if there was no response or if there was an error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+<section id="json-manipulation">
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">JSON Manipulation</a><a class="headerlink" href="#json-manipulation" title="Link to this heading"></a></h2>
+<section id="id10">
+<h3>Functions<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JAddBinaryToObject">
+<span class="target" id="note_8h_1a9378ea8eddda1f23c815b69591747846"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JAddBinaryToObject</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">json</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">fieldName</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">binaryData</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n"><span class="pre">binaryDataLen</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JAddBinaryToObject" title="Link to this definition"></a><br /></dt>
+<dd><p>Add binary data as a Base64-encoded string field to a JSON object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json</strong> – The JSON object. </p></li>
+<li><p><strong>fieldName</strong> – The name to use for the field. </p></li>
+<li><p><strong>binaryData</strong> – A buffer of binary data to encode. </p></li>
+<li><p><strong>binaryDataLen</strong> – The length of the binary data in bytes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the string was successfully encoded and added to the object, otherwise false. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JAddBoolToObject">
+<span class="target" id="n__cjson_8h_1aac14b1ce4ebcdb04ddc5a73c3805c012"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JAddBoolToObject</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Jbool</span></span><span class="w"> </span><span class="n"><span class="pre">boolean</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JAddBoolToObject" title="Link to this definition"></a><br /></dt>
+<dd><p>Add a boolean field to a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> – The object to add the field to. </p></li>
+<li><p><strong>name</strong> – The name of the field. </p></li>
+<li><p><strong>boolean</strong> – The value of the field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the newly-added boolean field or NULL on error. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JAddNumberToObject">
+<span class="target" id="n__cjson_8h_1a0b06c809934990aaf3b4d77db5bab617"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JAddNumberToObject</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.JNUMBER" title="JNUMBER"><span class="n"><span class="pre">JNUMBER</span></span></a><span class="w"> </span><span class="n"><span class="pre">number</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JAddNumberToObject" title="Link to this definition"></a><br /></dt>
+<dd><p>Add a number field to a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> – The object to add the field to. </p></li>
+<li><p><strong>name</strong> – The name of the field. </p></li>
+<li><p><strong>number</strong> – The value of the field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the newly-added number field or NULL on error. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JAddStringToObject">
+<span class="target" id="n__cjson_8h_1acd34fa0f3d7bf8e5c50ed49c07382b03"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JAddStringToObject</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">string</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JAddStringToObject" title="Link to this definition"></a><br /></dt>
+<dd><p>Add a string field to a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> – The object to add the field to. </p></li>
+<li><p><strong>name</strong> – The name of the field. </p></li>
+<li><p><strong>string</strong> – The value of the field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the newly-added string field or NULL on error. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JAddObjectToObject">
+<span class="target" id="n__cjson_8h_1a68e28f23a0af9c06e3c7d25658887b54"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JAddObjectToObject</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JAddObjectToObject" title="Link to this definition"></a><br /></dt>
+<dd><p>Add an object field to another <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> – The object to add the field to. </p></li>
+<li><p><strong>name</strong> – The name of the field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the newly-added object field or NULL on error. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JAddArrayToObject">
+<span class="target" id="n__cjson_8h_1a25f7474bd06a682973e9e74468739cbd"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JAddArrayToObject</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JAddArrayToObject" title="Link to this definition"></a><br /></dt>
+<dd><p>Add an array field to a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object</strong> – The object to add the field to. </p></li>
+<li><p><strong>name</strong> – The name of the field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the newly-added array field or NULL on error. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JCreateObject">
+<span class="target" id="n__cjson_8h_1a1265d938bfff299c33d208367ec6d7cd"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JCreateObject</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JCreateObject" title="Link to this definition"></a><br /></dt>
+<dd><p>Create a new <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object. </p>
+<p>To free the object, use <code class="docutils literal notranslate"><span class="pre">JDelete</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A pointer to the newly-created object. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JDelete">
+<span class="target" id="n__cjson_8h_1a200e39becef910970302806821377a02"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JDelete</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">c</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JDelete" title="Link to this definition"></a><br /></dt>
+<dd><p>Free a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item</strong> – A pointer to the object. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JFree">
+<span class="target" id="n__cjson_8h_1a65411d47da558e0084a07a773275218b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JFree</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">object</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JFree" title="Link to this definition"></a><br /></dt>
+<dd><p>Free a block of dynamically allocated memory. </p>
+<p>This is simply a wrapper around the memory free function provided by the user via <code class="docutils literal notranslate"><span class="pre">NoteSetFn</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p</strong> – A pointer to the block of memory to free. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JGetArray">
+<span class="target" id="note_8h_1a7422ca821f0402b0c0bd890558cbb254"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JGetArray</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">json</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">field</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JGetArray" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the value of an array field from a JSON object. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The returned JSON object is a pointer to the array contained in the parent JSON object. It is not a copy, so once the parent JSON object is freed, the pointer is no longer valid. </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json</strong> – The JSON object. </p></li>
+<li><p><strong>field</strong> – The array field to query.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the array, which is itself a JSON object (<code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a> <span class="pre">*</span></code>), if the field exists and is an array, otherwise NULL.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JGetBinaryFromObject">
+<span class="target" id="note_8h_1a4c5ca7aa585e06623f2788b86300538d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JGetBinaryFromObject</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">json</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">fieldName</span></span>, <span class="n"><span class="pre">uint8_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">retBinaryData</span></span>, <span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">retBinaryDataLen</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JGetBinaryFromObject" title="Link to this definition"></a><br /></dt>
+<dd><p>Decode a Base64-encoded string field in a JSON object and return the decoded bytes. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The returned binary buffer must be freed by the user with <code class="docutils literal notranslate"><span class="pre">JFree</span></code> when it is no longer needed.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On error, the returned binary buffer and data length shall be set to <code class="docutils literal notranslate"><span class="pre">NULL</span></code> and zero (0), respectively. </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json</strong> – The JSON object. </p></li>
+<li><p><strong>fieldName</strong> – The name of the field. </p></li>
+<li><p><strong>retBinaryData</strong> – A pointer to a pointer, used to hold the pointer to the decoded bytes. </p></li>
+<li><p><strong>retBinaryDataLen</strong> – A pointer to an unsigned integer, used to hold the length of the decoded bytes.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the string was successfully decoded and returned, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JGetBool">
+<span class="target" id="note_8h_1a51518894ee545340a884089f64e34671"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JGetBool</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">json</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">field</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JGetBool" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the value of a boolean field from a JSON object. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><span class="pre">JGetInt</span></code></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><span class="pre">JGetNumber</span></code></p>
+</div>
+</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json</strong> – The JSON object. </p></li>
+<li><p><strong>field</strong> – The boolean field to query.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the boolean field if it exists and is a boolean, otherwise false.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JGetInt">
+<span class="target" id="note_8h_1a00b1ca83bdb8cc849114b973dd862d65"></span><a class="reference internal" href="#c.JINTEGER" title="JINTEGER"><span class="n"><span class="pre">JINTEGER</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JGetInt</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">json</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">field</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JGetInt" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the integer value of a number field from a JSON object. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><span class="pre">JGetBool</span></code></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><span class="pre">JGetNumber</span></code></p>
+</div>
+</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The returned value is the integer representation of the number.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json</strong> – The JSON object. </p></li>
+<li><p><strong>field</strong> – The number field to query.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the number field if the field exists and is a number, otherwise 0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JGetNumber">
+<span class="target" id="note_8h_1a7e30c9120dbe63db3fbedd568f76ecf7"></span><a class="reference internal" href="#c.JNUMBER" title="JNUMBER"><span class="n"><span class="pre">JNUMBER</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JGetNumber</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">json</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">field</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JGetNumber" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the floating point value of a number field from a JSON object. </p>
+<p><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><span class="pre">JGetInt</span></code></p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="docutils literal notranslate"><span class="pre">JGetBool</span></code></p>
+</div>
+</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The returned value is the floating point representation of the number.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json</strong> – The JSON object. </p></li>
+<li><p><strong>field</strong> – The number field to query.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the number field if the field exists and is a number, otherwise 0.0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JGetObject">
+<span class="target" id="note_8h_1a0fd01d5fe6235d3b194449a8e6ce4f9c"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JGetObject</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">json</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">field</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JGetObject" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the value of an object field from a JSON object. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The returned JSON object is a pointer to the object contained in the parent JSON object. It is not a copy, so once the parent JSON object is freed, the pointer is no longer valid. </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json</strong> – The JSON object. </p></li>
+<li><p><strong>field</strong> – The object field to query.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the object, which is itself a JSON object (<code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a> <span class="pre">*</span></code>), if the field exists and is an object, otherwise NULL.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JGetString">
+<span class="target" id="note_8h_1a66cca753ac78c92d0904ad74a33b8c92"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JGetString</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">json</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">field</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JGetString" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the value of a string field from a JSON object. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The returned string is a pointer to the string contained in the JSON object. It is not a copy of the string, so once the JSON object is freed, the pointer is no longer valid. </p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json</strong> – The JSON object. </p></li>
+<li><p><strong>field</strong> – The string field to query.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the string if the field exists and is a string, otherwise the empty string (“”).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JIsPresent">
+<span class="target" id="note_8h_1a6cfeede8f787bbfd890ec7deae8aca24"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JIsPresent</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">json</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">field</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JIsPresent" title="Link to this definition"></a><br /></dt>
+<dd><p>Determine if a field is present in a JSON object. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>json</strong> – The JSON object. </p></li>
+<li><p><strong>field</strong> – The field to find.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the field is present, or false if the field is not present or the JSON object is NULL. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JMalloc">
+<span class="target" id="n__cjson_8h_1a1ddc4bc3ebb9aa4e244de12e2083575f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JMalloc</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n"><span class="pre">size</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JMalloc" title="Link to this definition"></a><br /></dt>
+<dd><p>Dynamically allocate a block of memory of the given size. </p>
+<p>This is simply a wrapper around the memory allocation function provided by the user via <code class="docutils literal notranslate"><span class="pre">NoteSetFn</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> – The number of bytes to allocate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A pointer to the first byte of the allocated memory or NULL on error. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JParse">
+<span class="target" id="n__cjson_8h_1a0ddc9f5b66eb47b37db980a1ac6748be"></span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JParse</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JParse" title="Link to this definition"></a><br /></dt>
+<dd><p>Parse the passed in C-string as JSON and return a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object representing it. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – The JSON object as a C-string.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object or NULL on error (e.g. the string was invalid JSON). </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="c function">
+<dt class="sig sig-object c" id="c.JPrintUnformatted">
+<span class="target" id="n__cjson_8h_1a8c7f9de70140d9af951c5b972aabf863"></span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">JPrintUnformatted</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#c.J" title="J"><span class="n"><span class="pre">J</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n"><span class="pre">item</span></span><span class="sig-paren">)</span><a class="headerlink" href="#c.JPrintUnformatted" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the unformatted string representation of a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a></code> object. </p>
+<p>The string returned by this function is dynamically allocated and MUST be freed by the caller with <code class="docutils literal notranslate"><span class="pre">JFree</span></code>. Unformatted means that the minimum JSON string is produced, without any additional whitespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>item</strong> – The JSON object to get the unformatted string representation of.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The string or NULL on error. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="id11">
+<h3>Types<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<dl class="c struct">
+<dt class="sig sig-object c" id="c.J">
+<span class="target" id="struct_j"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">J</span></span></span><a class="headerlink" href="#c.J" title="Link to this definition"></a><br /></dt>
+<dd><p>The core JSON object type used by note-c. </p>
+<p>When using note-c, treat this struct as opaque. You should never have to work directly with its members. </p>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.JNUMBER">
+<span class="target" id="note_8h_1a9c9eb17c00d2f5af0a9fd4f3bc43bdc6"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JNUMBER</span></span></span><a class="headerlink" href="#c.JNUMBER" title="Link to this definition"></a><br /></dt>
+<dd><p>The floating point type used for JSON handling in note-c. </p>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.JINTEGER">
+<span class="target" id="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JINTEGER</span></span></span><a class="headerlink" href="#c.JINTEGER" title="Link to this definition"></a><br /></dt>
+<dd><p>The signed integer type used for JSON handling in note-c. </p>
+</dd></dl>
+
+<dl class="c type">
+<dt class="sig sig-object c" id="c.JUINTEGER">
+<span class="target" id="note_8h_1aa40439c159fdacb5de8314453a6cc241"></span><span class="k"><span class="pre">typedef</span></span><span class="w"> </span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">JUINTEGER</span></span></span><a class="headerlink" href="#c.JUINTEGER" title="Link to this definition"></a><br /></dt>
+<dd><p>The unsigned integer type used for JSON handling in note-c. </p>
+</dd></dl>
+
+</section>
+<section id="id12">
+<h3>Macros<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<dl class="c macro">
+<dt class="sig sig-object c" id="c.N_CJSON_NESTING_LIMIT">
+<span class="target" id="n__cjson_8h_1a4b45cf89b4c917ceca2e2389c4f723e4"></span><span class="sig-name descname"><span class="n"><span class="pre">N_CJSON_NESTING_LIMIT</span></span></span><a class="headerlink" href="#c.N_CJSON_NESTING_LIMIT" title="Link to this definition"></a><br /></dt>
+<dd><p>The maximum nesting level for JSON objects before a parsing error. </p>
+<p>Default value: <code class="docutils literal notranslate"><span class="pre">100</span></code></p>
+<p>For example, if you have a JSON object that contains multiple, nested objects like this <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;x:&quot;</span>
+        <span class="p">{</span>
+            <span class="o">.</span>
+            <span class="o">.</span>
+            <span class="o">.</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+ And the nesting level exceeds <code class="docutils literal notranslate"><span class="pre">N_CJSON_NESTING_LIMIT</span></code>, then calling <code class="docutils literal notranslate"><span class="pre">JParse</span></code> on a <code class="docutils literal notranslate"><a class="reference internal" href="#struct_j"><span class="std std-ref"><span class="pre">J</span></span></a> <span class="pre">*</span></code> representing this object will return an error (NULL).</p>
+<p>This exists to prevent the cJSON parser from causing a stack overflow. The user may override this macro at build time (e.g. -DN_CJSON_NESTING_LIMIT=200) to increase or reduce the limit. </p>
+</dd></dl>
+
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Blues.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
