@@ -19,12 +19,12 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
+FAKE_VALUE_FUNC(const char *, _noteChunkedTransmit, uint8_t *, uint32_t, bool)
+FAKE_VOID_FUNC(_noteLockNote)
+FAKE_VALUE_FUNC(J *, _noteTransactionShouldLock, J *, bool)
+FAKE_VOID_FUNC(_noteUnlockNote)
 FAKE_VALUE_FUNC(J *, NoteNewRequest, const char *)
 FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
-FAKE_VALUE_FUNC(J *, noteTransactionShouldLock, J *, bool)
-FAKE_VALUE_FUNC(const char *, noteChunkedTransmit, uint8_t *, uint32_t, bool)
-FAKE_VOID_FUNC(noteLockNote)
-FAKE_VOID_FUNC(noteUnlockNote)
 
 uint8_t buf[32] = {0xDE, 0xAD, 0xBE, 0xEF};
 uint32_t dataLen = 4;
@@ -183,7 +183,7 @@ SCENARIO("NoteBinaryStoreTransmit")
         };
 
         // Discover the actual encoded length of the data
-        const uint32_t tempBufLen = cobsEncodedMaxLength(dataLen);
+        const uint32_t tempBufLen = _cobsEncodedMaxLength(dataLen);
         uint8_t *tempBuf = (uint8_t *)malloc(tempBufLen);
         uint32_t encLen = NoteBinaryCodecEncode(buf, dataLen, tempBuf, tempBufLen);
         REQUIRE(encLen > 0);
@@ -230,7 +230,7 @@ SCENARIO("NoteBinaryStoreTransmit")
         }
 
         AND_GIVEN("The card.binary.put request fails") {
-            noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
+            _noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
                 return NULL;
             };
 
@@ -247,11 +247,11 @@ SCENARIO("NoteBinaryStoreTransmit")
             }
         }
 
-        AND_GIVEN("noteChunkedTransmit fails") {
-            noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
+        AND_GIVEN("_noteChunkedTransmit fails") {
+            _noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
                 return JCreateObject();
             };
-            noteChunkedTransmit_fake.return_val = "some error";
+            _noteChunkedTransmit_fake.return_val = "some error";
 
             WHEN("NoteBinaryStoreTransmit is called") {
                 const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen, 0);
@@ -268,10 +268,10 @@ SCENARIO("NoteBinaryStoreTransmit")
 
         AND_GIVEN("The response to the card.binary request after the "
                   "transmission indicates a problem") {
-            noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
+            _noteTransactionShouldLock_fake.custom_fake = [](J *req, bool) -> J * {
                 return JCreateObject();
             };
-            noteChunkedTransmit_fake.return_val = NULL;
+            _noteChunkedTransmit_fake.return_val = NULL;
 
             auto initial = [](J *req) -> J * {
                 JDelete(req);
@@ -392,14 +392,14 @@ SCENARIO("NoteBinaryStoreTransmit")
         }
     }
 
-    CHECK(noteLockNote_fake.call_count == noteUnlockNote_fake.call_count);
+    CHECK(_noteLockNote_fake.call_count == _noteUnlockNote_fake.call_count);
 
+    RESET_FAKE(_noteChunkedTransmit);
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteTransactionShouldLock);
+    RESET_FAKE(_noteUnlockNote);
     RESET_FAKE(NoteNewRequest);
     RESET_FAKE(NoteRequestResponse);
-    RESET_FAKE(noteTransactionShouldLock);
-    RESET_FAKE(noteChunkedTransmit);
-    RESET_FAKE(noteLockNote);
-    RESET_FAKE(noteUnlockNote);
 }
 
 }

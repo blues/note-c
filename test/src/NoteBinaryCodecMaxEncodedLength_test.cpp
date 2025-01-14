@@ -19,7 +19,7 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(uint32_t, cobsEncodedMaxLength, uint32_t)
+FAKE_VALUE_FUNC(uint32_t, _cobsEncodedMaxLength, uint32_t)
 
 const uint32_t unencodedLen = 10;
 
@@ -30,16 +30,16 @@ SCENARIO("NoteBinaryCodecMaxEncodedLength")
 {
     GIVEN("Parameters are in order") {
         const uint32_t EXPECTED_RESULT = 79;
-        cobsEncodedMaxLength_fake.return_val = EXPECTED_RESULT;
+        _cobsEncodedMaxLength_fake.return_val = EXPECTED_RESULT;
         const uint32_t result = NoteBinaryCodecMaxEncodedLength(unencodedLen);
 
-        THEN("cobsEncodedMaxLength is invoked") {
-            CHECK(cobsEncodedMaxLength_fake.call_count > 0);
+        THEN("_cobsEncodedMaxLength is invoked") {
+            CHECK(_cobsEncodedMaxLength_fake.call_count > 0);
         }
 
-        WHEN("cobsEncodedMaxLength is invoked") {
+        WHEN("_cobsEncodedMaxLength is invoked") {
             THEN("The parameters are passed without modification") {
-                CHECK(cobsEncodedMaxLength_fake.arg0_val == unencodedLen);
+                CHECK(_cobsEncodedMaxLength_fake.arg0_val == unencodedLen);
             }
 
             THEN("The result is returned without modification") {
@@ -48,7 +48,7 @@ SCENARIO("NoteBinaryCodecMaxEncodedLength")
         }
     }
 
-    RESET_FAKE(cobsEncodedMaxLength);
+    RESET_FAKE(_cobsEncodedMaxLength);
 }
 
 }

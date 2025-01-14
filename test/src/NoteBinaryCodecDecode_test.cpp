@@ -19,7 +19,7 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(uint32_t, cobsDecode, uint8_t *, uint32_t, uint8_t, uint8_t *)
+FAKE_VALUE_FUNC(uint32_t, _cobsDecode, uint8_t *, uint32_t, uint8_t, uint8_t *)
 
 uint8_t encData[12];
 const uint32_t encDataLen = sizeof(encData);
@@ -52,7 +52,7 @@ SCENARIO("NoteBinaryCodecDecode")
             }
         }
         WHEN("decBufLen is less than the size required for the worst-case decoding") {
-            uint32_t badDecLen = (cobsGuaranteedFit(encDataLen) - 1);
+            uint32_t badDecLen = (_cobsGuaranteedFit(encDataLen) - 1);
             decLen = NoteBinaryCodecDecode(encData, encDataLen, decBuf, badDecLen);
 
             THEN("The decoded length is zero") {
@@ -63,18 +63,18 @@ SCENARIO("NoteBinaryCodecDecode")
 
     GIVEN("Parameters are in order") {
         const uint32_t EXPECTED_RESULT = 79;
-        cobsDecode_fake.return_val = EXPECTED_RESULT;
+        _cobsDecode_fake.return_val = EXPECTED_RESULT;
         decLen = NoteBinaryCodecDecode(encData, encDataLen, decBuf, decBufLen);
 
-        THEN("cobsDecode is invoked") {
-            CHECK(cobsDecode_fake.call_count > 0);
+        THEN("_cobsDecode is invoked") {
+            CHECK(_cobsDecode_fake.call_count > 0);
         }
 
-        WHEN("cobsDecode is invoked") {
+        WHEN("_cobsDecode is invoked") {
             THEN("The parameters are passed without modification") {
-                CHECK(cobsDecode_fake.arg0_val == encData);
-                CHECK(cobsDecode_fake.arg1_val == encDataLen);
-                CHECK(cobsDecode_fake.arg3_val == decBuf);
+                CHECK(_cobsDecode_fake.arg0_val == encData);
+                CHECK(_cobsDecode_fake.arg1_val == encDataLen);
+                CHECK(_cobsDecode_fake.arg3_val == decBuf);
             }
 
             THEN("The result is returned without modification") {
@@ -83,7 +83,7 @@ SCENARIO("NoteBinaryCodecDecode")
         }
     }
 
-    RESET_FAKE(cobsDecode);
+    RESET_FAKE(_cobsDecode);
 }
 
 }

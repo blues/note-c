@@ -15,6 +15,7 @@
 
     // Add the IDs of extensions you want installed when the container is created.
     "extensions": [
+        "matepek.vscode-catch2-test-adapter",
         "ms-vscode.cpptools",
         "shardulm94.trailing-spaces",
         "twxs.cmake"

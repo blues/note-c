@@ -18,7 +18,7 @@
 // We treat most of the JSON code as "tested" in the sense that it comes from a
 // tested third party library. However, we have made some changes to the
 // underlying code. For example, we've tweaked the number parsing code (see
-// parse_number and print_number in n_cjson.c).
+// _parse_number and _print_number in n_cjson.c).
 
 namespace
 {

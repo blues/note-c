@@ -11,8 +11,6 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
 
 #include "n_lib.h"
@@ -38,8 +36,8 @@ void MyTxnStop()
 SCENARIO("NoteTransactionHooks")
 {
     SECTION("Hooks not set") {
-        noteTransactionStart(0);
-        noteTransactionStop();
+        _noteTransactionStart(0);
+        _noteTransactionStop();
 
         CHECK(!txnStartCalled);
         CHECK(!txnStopCalled);
@@ -47,8 +45,8 @@ SCENARIO("NoteTransactionHooks")
 
     SECTION("Hooks set") {
         NoteSetFnTransaction(MyTxnStart, MyTxnStop);
-        noteTransactionStart(0);
-        noteTransactionStop();
+        _noteTransactionStart(0);
+        _noteTransactionStop();
 
         CHECK(txnStartCalled);
         CHECK(txnStopCalled);
@@ -59,5 +57,3 @@ SCENARIO("NoteTransactionHooks")
 }
 
 }
-
-

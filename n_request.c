@@ -30,9 +30,9 @@ static uint16_t lastRequestSeqno = 0;
 #define CRC_FIELD_LENGTH        22  // ,"crc":"SSSS:CCCCCCCC"
 #define CRC_FIELD_NAME_OFFSET   1
 #define CRC_FIELD_NAME_TEST     "\"crc\":\""
-NOTE_C_STATIC int32_t crc32(const void* data, size_t length);
-NOTE_C_STATIC char * crcAdd(char *json, uint16_t seqno);
-NOTE_C_STATIC bool crcError(char *json, uint16_t shouldBeSeqno);
+NOTE_C_STATIC int32_t _crc32(const void* data, size_t length);
+NOTE_C_STATIC char * _crcAdd(char *json, uint16_t seqno);
+NOTE_C_STATIC bool _crcError(char *json, uint16_t shouldBeSeqno);
 
 static bool notecardSupportsCrc = false;
 #endif
@@ -430,7 +430,7 @@ char * NoteRequestResponseJSON(const char *reqJSON)
  */
 J *NoteTransaction(J *req)
 {
-    return noteTransactionShouldLock(req, true);
+    return _noteTransactionShouldLock(req, true);
 }
 
 /**************************************************************************/
@@ -445,7 +445,7 @@ J *NoteTransaction(J *req)
   insufficient memory.
 */
 /**************************************************************************/
-J *noteTransactionShouldLock(J *req, bool lockNotecard)
+J *_noteTransactionShouldLock(J *req, bool lockNotecard)
 {
     // Validate in case of memory failure of the requestor
     if (req == NULL) {
@@ -512,13 +512,13 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
     // modulus of seqno never are mistaken as being the same request being retried.
     uint8_t lastRequestRetries = 0;
 #ifndef NOTE_C_LOW_MEM
-    bool lastRequestCrcAdded = false;
+    bool lastRequest_crcAdded = false;
     if (!noResponseExpected) {
-        char *newJson = crcAdd(json, lastRequestSeqno);
+        char *newJson = _crcAdd(json, lastRequestSeqno);
         if (newJson != NULL) {
             JFree(json);
             json = newJson;
-            lastRequestCrcAdded = true;
+            lastRequest_crcAdded = true;
         }
     }
 #endif // !NOTE_C_LOW_MEM
@@ -614,7 +614,7 @@ J *noteTransactionShouldLock(J *req, bool lockNotecard)
         // If we sent a CRC in the request, examine the response JSON to see if
         // it has a CRC error.  Note that the CRC is stripped from the
         // responseJSON as a side-effect of this method.
-        if (lastRequestCrcAdded && crcError(responseJSON, lastRequestSeqno)) {
+        if (lastRequest_crcAdded && _crcError(responseJSON, lastRequestSeqno)) {
             JFree(responseJSON);
             errStr = "crc error {io}";
             lastRequestRetries++;
@@ -793,10 +793,11 @@ void NoteErrorClean(char *begin)
 
  @returns The converted number.
  */
-uint64_t n_atoh(char *p, int maxLen)
+uint64_t _n_atoh(char *p, int maxLen)
 {
     uint64_t n = 0;
     char *ep = p+maxLen;
+
     while (p < ep) {
         char ch = *p++;
         bool digit = (ch >= '0' && ch <= '9');
@@ -815,6 +816,7 @@ uint64_t n_atoh(char *p, int maxLen)
             n += 10 + (ch - 'A');
         }
     }
+
     return (n);
 }
 
@@ -835,16 +837,18 @@ static uint32_t lut[16] = {
 
  @returns The CRC32 of the buffer.
  */
-NOTE_C_STATIC int32_t crc32(const void* data, size_t length)
+NOTE_C_STATIC int32_t _crc32(const void* data, size_t length)
 {
     uint32_t previousCrc32 = 0;
     uint32_t crc = ~previousCrc32;
     unsigned char* current = (unsigned char*) data;
+
     while (length--) {
         crc = lut[(crc ^  *current      ) & 0x0F] ^ (crc >> 4);
         crc = lut[(crc ^ (*current >> 4)) & 0x0F] ^ (crc >> 4);
         current++;
     }
+
     return ~crc;
 }
 
@@ -861,7 +865,7 @@ NOTE_C_STATIC int32_t crc32(const void* data, size_t length)
  @returns A dynamically-allocated version of the passed in buffer with the CRC
           field added or NULL on error.
  */
-NOTE_C_STATIC char *crcAdd(char *json, uint16_t seqno)
+NOTE_C_STATIC char *_crcAdd(char *json, uint16_t seqno)
 {
 
     // Allocate a block the size of the input json plus the size of
@@ -869,10 +873,12 @@ NOTE_C_STATIC char *crcAdd(char *json, uint16_t seqno)
     // this will be replaced with a combination of 4 hex digits of the
     // seqno plus 8 hex digits of the CRC32, and the '}' will be
     // transformed into ',"crc":"SSSS:CCCCCCCC"}' where SSSS is the
-    // seqno and CCCCCCCC is the crc32.  Note that the comma is
+    // seqno and CCCCCCCC is the CRC32.  Note that the comma is
     // replaced with a space if the input json doesn't contain
     // any fields, so that we always return compliant JSON.
+
     size_t jsonLen = strlen(json);
+
     // Minimum JSON is "{}" and must end with a closing "}".
     if (jsonLen < 2 || json[jsonLen-1] != '}') {
         return NULL;
@@ -881,8 +887,10 @@ NOTE_C_STATIC char *crcAdd(char *json, uint16_t seqno)
     if (newJson == NULL) {
         return NULL;
     }
+
     bool isEmptyObject = (memchr(json, ':', jsonLen) == NULL);
     size_t newJsonLen = jsonLen-1;
+
     memcpy(newJson, json, newJsonLen);
     newJson[newJsonLen++] = (isEmptyObject ? ' ' : ',');    // Replace }
     newJson[newJsonLen++] = '"';                            // +1
@@ -892,14 +900,15 @@ NOTE_C_STATIC char *crcAdd(char *json, uint16_t seqno)
     newJson[newJsonLen++] = '"';                            // +5
     newJson[newJsonLen++] = ':';                            // +6
     newJson[newJsonLen++] = '"';                            // +7
-    n_htoa16(seqno, (uint8_t *) &newJson[newJsonLen]);
+    _n_htoa16(seqno, (uint8_t *) &newJson[newJsonLen]);
     newJsonLen += 4;                                        // +11
     newJson[newJsonLen++] = ':';                            // +12
-    n_htoa32(crc32(json, jsonLen), &newJson[newJsonLen]);
+    _n_htoa32(_crc32(json, jsonLen), &newJson[newJsonLen]);
     newJsonLen += 8;                                        // +20
     newJson[newJsonLen++] = '"';                            // +21
     newJson[newJsonLen++] = '}';                            // +22 == CRC_FIELD_LENGTH
     newJson[newJsonLen] = '\0';                             // null-terminated as it came in
+
     return newJson;
 }
 
@@ -919,31 +928,35 @@ NOTE_C_STATIC char *crcAdd(char *json, uint16_t seqno)
 
  @returns `true` if there's an error and `false` otherwise.
  */
-NOTE_C_STATIC bool crcError(char *json, uint16_t shouldBeSeqno)
+NOTE_C_STATIC bool _crcError(char *json, uint16_t shouldBeSeqno)
 {
     // Strip off any crlf for crc calculation
     size_t jsonLen = strlen(json);
     while (jsonLen > 0 && json[jsonLen-1] <= ' ') {
         jsonLen--;
     }
+
     // Minimum valid JSON is "{}" (2 bytes) and must end with a closing "}".
     if (jsonLen < CRC_FIELD_LENGTH+2 || json[jsonLen-1] != '}') {
         return false;
     }
+
     // See if it has a compliant CRC field
     size_t fieldOffset = ((jsonLen-1) - CRC_FIELD_LENGTH);
     if (memcmp(&json[fieldOffset+CRC_FIELD_NAME_OFFSET], CRC_FIELD_NAME_TEST, sizeof(CRC_FIELD_NAME_TEST)-1) != 0) {
         // If we've seen a CRC before, we should see one every time
         return notecardSupportsCrc ? true : false;
     }
+
     // If we get here, we've seen at least one CRC from the Notecard, so we should expect it.
     notecardSupportsCrc = true;
     char *p = &json[fieldOffset + CRC_FIELD_NAME_OFFSET + (sizeof(CRC_FIELD_NAME_TEST)-1)];
-    uint16_t actualSeqno = (uint16_t) n_atoh(p, 4);
-    uint32_t actualCrc32 = (uint32_t) n_atoh(p+5, 8);
+    uint16_t actualSeqno = (uint16_t) _n_atoh(p, 4);
+    uint32_t actualCrc32 = (uint32_t) _n_atoh(p+5, 8);
     json[fieldOffset++] = '}';
     json[fieldOffset] = '\0';
-    uint32_t shouldBeCrc32 = crc32(json, fieldOffset);
+    uint32_t shouldBeCrc32 = _crc32(json, fieldOffset);
+
     return (shouldBeSeqno != actualSeqno || shouldBeCrc32 != actualCrc32);
 }
 

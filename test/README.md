@@ -53,7 +53,7 @@ coverage`, and are in the build directory, you can view the coverage report as
 HTML with:
 
 ```sh
-cd test/coverage
+cd build/test/coverage
 genhtml lcov.info -o tmp
 ```
 

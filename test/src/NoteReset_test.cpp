@@ -19,7 +19,7 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(bool, noteHardReset)
+FAKE_VALUE_FUNC(bool, _noteHardReset)
 
 namespace
 {
@@ -29,20 +29,20 @@ SCENARIO("NoteReset")
     GIVEN("NoteReset is called") {
         NoteReset();
 
-        THEN("noteHardReset is invoked") {
-            CHECK(noteHardReset_fake.call_count > 0);
+        THEN("_noteHardReset is invoked") {
+            CHECK(_noteHardReset_fake.call_count > 0);
         }
 
-        WHEN("`noteHardReset` returns `false`") {
-            noteHardReset_fake.return_val = false;
+        WHEN("`_noteHardReset` returns `false`") {
+            _noteHardReset_fake.return_val = false;
             THEN("`NoteReset` also returns `false`") {
                 bool result = NoteReset();
                 CHECK(result == false);
             }
         }
 
-        WHEN("`noteHardReset` returns `true`") {
-            noteHardReset_fake.return_val = true;
+        WHEN("`_noteHardReset` returns `true`") {
+            _noteHardReset_fake.return_val = true;
             THEN("`NoteReset` also returns `true`") {
                 bool result = NoteReset();
                 CHECK(result == true);
@@ -50,7 +50,7 @@ SCENARIO("NoteReset")
         }
     }
 
-    RESET_FAKE(noteHardReset);
+    RESET_FAKE(_noteHardReset);
 }
 
 }

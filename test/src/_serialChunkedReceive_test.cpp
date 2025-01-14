@@ -1,5 +1,5 @@
 /*!
- * @file serialChunkedReceive_test.cpp
+ * @file _serialChunkedReceive_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -20,8 +20,8 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(bool, noteSerialAvailable)
-FAKE_VALUE_FUNC(char, noteSerialReceive)
+FAKE_VALUE_FUNC(bool, _noteSerialAvailable)
+FAKE_VALUE_FUNC(char, _noteSerialReceive)
 FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
 
@@ -34,12 +34,12 @@ char *populateRecvBuf(size_t size)
     char *buf = (char *)malloc(size);
     memset(buf, 'a', size - 1);
     buf[size - 1] = '\n';
-    SET_RETURN_SEQ(noteSerialReceive, buf, size);
+    SET_RETURN_SEQ(_noteSerialReceive, buf, size);
 
     return buf;
 }
 
-SCENARIO("serialChunkedReceive")
+SCENARIO("_serialChunkedReceive")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
@@ -55,17 +55,17 @@ SCENARIO("serialChunkedReceive")
     uint32_t size = sizeof(buf);
     bool delay = false;
     const uint32_t timeoutMs = 3000;
-    // 37 is not significant. serialChunkedReceive will return either a 1 or 0
+    // 37 is not significant. _serialChunkedReceive will return either a 1 or 0
     // in the "available" parameter. 37 is simply "not 1 or 0" -- that means we
     // can validate that available is changed to the correct value where
     // appropriate.
     uint32_t available = 37;
 
-    GIVEN("noteSerialAvailable indicates nothing is available to read") {
-        noteSerialAvailable_fake.return_val = false;
+    GIVEN("_noteSerialAvailable indicates nothing is available to read") {
+        _noteSerialAvailable_fake.return_val = false;
 
-        WHEN("serialChunkedReceive is called") {
-            const char *err = serialChunkedReceive(buf, &size, delay, timeoutMs,
+        WHEN("_serialChunkedReceive is called") {
+            const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
                                                    &available);
 
             THEN("An error is returned") {
@@ -83,11 +83,11 @@ SCENARIO("serialChunkedReceive")
     }
 
     GIVEN("The Notecard has 1 fewer bytes than the size of the output buffer") {
-        noteSerialAvailable_fake.return_val = true;
+        _noteSerialAvailable_fake.return_val = true;
         char *recvBuf = populateRecvBuf(sizeof(buf) - 1);
 
-        WHEN("serialChunkedReceive is called") {
-            const char *err = serialChunkedReceive(buf, &size, delay, timeoutMs,
+        WHEN("_serialChunkedReceive is called") {
+            const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
                                                    &available);
 
             THEN("No error is returned") {
@@ -95,12 +95,12 @@ SCENARIO("serialChunkedReceive")
             }
 
             THEN("The returned size is exactly the number of bytes received "
-                 "with noteSerialReceive") {
+                 "with _noteSerialReceive") {
                 CHECK(size == sizeof(buf) - 1);
             }
 
             THEN("The output buffer has exactly the bytes returned by "
-                 "noteSerialReceive") {
+                 "_noteSerialReceive") {
                 CHECK(memcmp(buf, recvBuf, size) == 0);
             }
 
@@ -114,11 +114,11 @@ SCENARIO("serialChunkedReceive")
 
     GIVEN("The Notecard has exactly the same number of bytes as the output "
           "buffer") {
-        noteSerialAvailable_fake.return_val = true;
+        _noteSerialAvailable_fake.return_val = true;
         char *recvBuf = populateRecvBuf(sizeof(buf));
 
-        WHEN("serialChunkedReceive is called") {
-            const char *err = serialChunkedReceive(buf, &size, delay, timeoutMs,
+        WHEN("_serialChunkedReceive is called") {
+            const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
                                                    &available);
 
             THEN("No error is returned") {
@@ -126,12 +126,12 @@ SCENARIO("serialChunkedReceive")
             }
 
             THEN("The returned size is exactly the number of bytes received "
-                 "with noteSerialReceive") {
+                 "with _noteSerialReceive") {
                 CHECK(size == sizeof(buf));
             }
 
             THEN("The output buffer has exactly the bytes returned by "
-                 "noteSerialReceive") {
+                 "_noteSerialReceive") {
                 CHECK(memcmp(buf, recvBuf, size) == 0);
             }
 
@@ -144,11 +144,11 @@ SCENARIO("serialChunkedReceive")
     }
 
     GIVEN("The Notecard has 3 more bytes than the size of the output buffer") {
-        noteSerialAvailable_fake.return_val = true;
+        _noteSerialAvailable_fake.return_val = true;
         char *recvBuf = populateRecvBuf(sizeof(buf) + 3);
 
-        WHEN("serialChunkedReceive is called") {
-            const char *err = serialChunkedReceive(buf, &size, delay, timeoutMs,
+        WHEN("_serialChunkedReceive is called") {
+            const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
                                                    &available);
 
             THEN("No error is returned") {
@@ -156,12 +156,12 @@ SCENARIO("serialChunkedReceive")
             }
 
             THEN("The returned size is exactly the number of bytes received "
-                 "with noteSerialReceive") {
+                 "with _noteSerialReceive") {
                 CHECK(size == sizeof(buf));
             }
 
             THEN("The output buffer has exactly the bytes returned by "
-                 "noteSerialReceive") {
+                 "_noteSerialReceive") {
                 CHECK(memcmp(buf, recvBuf, size) == 0);
             }
 
@@ -174,10 +174,10 @@ SCENARIO("serialChunkedReceive")
     }
 
     GIVEN("A 0-length output buffer is provided") {
-        WHEN("serialChunkedReceive is called") {
+        WHEN("_serialChunkedReceive is called") {
             uint32_t originalAvailable = available;
             uint32_t zeroSize = 0;
-            const char *err = serialChunkedReceive(buf, &zeroSize, delay,
+            const char *err = _serialChunkedReceive(buf, &zeroSize, delay,
                                                    timeoutMs, &available);
 
             THEN("No error is returned") {
@@ -200,12 +200,12 @@ SCENARIO("serialChunkedReceive")
         memset(serialAvailableReturnVals, true, numAvailableBytes);
         size_t numAvailRetVals = sizeof(serialAvailableReturnVals) /
                                  sizeof(*serialAvailableReturnVals);
-        SET_RETURN_SEQ(noteSerialAvailable, serialAvailableReturnVals,
+        SET_RETURN_SEQ(_noteSerialAvailable, serialAvailableReturnVals,
                        numAvailRetVals);
         char *recvBuf = populateRecvBuf(sizeof(buf));
 
-        WHEN("serialChunkedReceive is called") {
-            const char *err = serialChunkedReceive(buf, &size, delay, timeoutMs,
+        WHEN("_serialChunkedReceive is called") {
+            const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
                                                    &available);
 
             THEN("An error is returned") {
@@ -235,12 +235,12 @@ SCENARIO("serialChunkedReceive")
         size_t numAvailRetVals = sizeof(serialAvailableReturnVals) /
                                  sizeof(*serialAvailableReturnVals);
         size_t numAvailableBytes = 4;
-        SET_RETURN_SEQ(noteSerialAvailable, serialAvailableReturnVals,
+        SET_RETURN_SEQ(_noteSerialAvailable, serialAvailableReturnVals,
                        numAvailRetVals);
         char *recvBuf = populateRecvBuf(numAvailableBytes);
 
-        WHEN("serialChunkedReceive is called") {
-            const char *err = serialChunkedReceive(buf, &size, delay, timeoutMs,
+        WHEN("_serialChunkedReceive is called") {
+            const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
                                                    &available);
 
             THEN("No error is returned") {
@@ -248,12 +248,12 @@ SCENARIO("serialChunkedReceive")
             }
 
             THEN("The returned size is exactly the number of bytes received "
-                 "with noteSerialReceive") {
+                 "with _noteSerialReceive") {
                 CHECK(size == numAvailableBytes);
             }
 
             THEN("The output buffer has exactly the bytes returned by "
-                 "noteSerialReceive") {
+                 "_noteSerialReceive") {
                 CHECK(memcmp(buf, recvBuf, size) == 0);
             }
 
@@ -266,10 +266,10 @@ SCENARIO("serialChunkedReceive")
     }
 
     GIVEN("The delay parameter is false") {
-        noteSerialAvailable_fake.return_val = false;
+        _noteSerialAvailable_fake.return_val = false;
 
-        WHEN("serialChunkedReceive is called") {
-            serialChunkedReceive(buf, &size, false, timeoutMs, &available);
+        WHEN("_serialChunkedReceive is called") {
+            _serialChunkedReceive(buf, &size, false, timeoutMs, &available);
 
             THEN("NoteDelayMs is never called while waiting for bytes to become"
                  " available to read") {
@@ -279,10 +279,10 @@ SCENARIO("serialChunkedReceive")
     }
 
     GIVEN("The delay parameter is true") {
-        noteSerialAvailable_fake.return_val = false;
+        _noteSerialAvailable_fake.return_val = false;
 
-        WHEN("serialChunkedReceive is called") {
-            serialChunkedReceive(buf, &size, true, timeoutMs, &available);
+        WHEN("_serialChunkedReceive is called") {
+            _serialChunkedReceive(buf, &size, true, timeoutMs, &available);
 
             THEN("NoteDelayMs is called while waiting for bytes to become"
                  " available to read") {
@@ -291,8 +291,8 @@ SCENARIO("serialChunkedReceive")
         }
     }
 
-    RESET_FAKE(noteSerialAvailable);
-    RESET_FAKE(noteSerialReceive);
+    RESET_FAKE(_noteSerialAvailable);
+    RESET_FAKE(_noteSerialReceive);
     RESET_FAKE(NoteGetMs);
     RESET_FAKE(NoteDelayMs);
 }

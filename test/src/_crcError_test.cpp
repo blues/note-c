@@ -1,5 +1,5 @@
 /*!
- * @file crcError_test.cpp
+ * @file _crcError_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -20,7 +20,7 @@
 namespace
 {
 
-SCENARIO("crcError")
+SCENARIO("_crcError")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
@@ -29,25 +29,25 @@ SCENARIO("crcError")
     SECTION("Empty string") {
         char json[] = "";
 
-        CHECK(!crcError(json, seqNo));
+        CHECK(!_crcError(json, seqNo));
     }
 
     SECTION("Invalid JSON") {
         char json[] = "{\"req\":";
 
-        CHECK(!crcError(json, seqNo));
+        CHECK(!_crcError(json, seqNo));
     }
 
     SECTION("No CRC field") {
         char json[] = "{\"req\": \"hub.sync\"}";
 
-        CHECK(!crcError(json, seqNo));
+        CHECK(!_crcError(json, seqNo));
     }
 
     SECTION("CRC field at unexpected position") {
         char json[] = "{\"crc\":\"0009:10BAC79A\",\"req\": \"hub.sync\"}";
 
-        CHECK(!crcError(json, seqNo));
+        CHECK(!_crcError(json, seqNo));
     }
 
     SECTION("Valid JSON and CRC field present") {
@@ -55,21 +55,21 @@ SCENARIO("crcError")
         SECTION("CRC doesn't match") {
             char json[] = "{\"req\":\"hub.sync\",\"crc\":\"0001:DEADBEEF\"}";
 
-            CHECK(crcError(json, seqNo));
+            CHECK(_crcError(json, seqNo));
         }
 
         SECTION("Sequence number doesn't match") {
             char json[] = "{\"req\":\"hub.sync\",\"crc\":\"0009:10BAC79A\"}";
 
-            CHECK(crcError(json, seqNo));
+            CHECK(_crcError(json, seqNo));
         }
 
         SECTION("Everything matches") {
             char json[] = "{\"req\":\"hub.sync\"}";
-            char *jsonWithCrc = crcAdd(json, seqNo);
+            char *jsonWithCrc = _crcAdd(json, seqNo);
             REQUIRE(jsonWithCrc != NULL);
 
-            CHECK(!crcError(jsonWithCrc, seqNo));
+            CHECK(!_crcError(jsonWithCrc, seqNo));
 
             NoteFree(jsonWithCrc);
         }
@@ -78,7 +78,7 @@ SCENARIO("crcError")
             char json[] = "{\"req\":\"hub.sync\",\"crc\":\"0001:10BAC79A\"}\r\n";
 
             // Trailing \r\n should be ignored.
-            CHECK(!crcError(json, seqNo));
+            CHECK(!_crcError(json, seqNo));
         }
     }
 }

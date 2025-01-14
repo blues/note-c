@@ -21,7 +21,7 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(uint32_t, cobsEncode, uint8_t *, uint32_t, uint8_t, uint8_t *)
+FAKE_VALUE_FUNC(uint32_t, _cobsEncode, uint8_t *, uint32_t, uint8_t, uint8_t *)
 
 uint8_t decData[10] = "Hi Blues!";
 uint32_t decDataLen = strlen((const char *)decData);
@@ -53,7 +53,7 @@ SCENARIO("NoteBinaryCodecEncode")
             }
         }
         WHEN("encBufLen is less than the size required for in place encoding") {
-            uint32_t badOutLen = (cobsEncodedLength(decData, decDataLen) - 1);
+            uint32_t badOutLen = (_cobsEncodedLength(decData, decDataLen) - 1);
             encLen = NoteBinaryCodecEncode(decData, decDataLen, encBuf, badOutLen);
 
             THEN("The encoded length is zero") {
@@ -64,18 +64,18 @@ SCENARIO("NoteBinaryCodecEncode")
 
     GIVEN("Parameters are in order") {
         const uint32_t EXPECTED_RESULT = 79;
-        cobsEncode_fake.return_val = EXPECTED_RESULT;
+        _cobsEncode_fake.return_val = EXPECTED_RESULT;
         encLen = NoteBinaryCodecEncode(decData, decDataLen, encBuf, encBufLen);
 
-        THEN("cobsEncode is invoked") {
-            CHECK(cobsEncode_fake.call_count > 0);
+        THEN("_cobsEncode is invoked") {
+            CHECK(_cobsEncode_fake.call_count > 0);
         }
 
-        WHEN("cobsEncode is invoked") {
+        WHEN("_cobsEncode is invoked") {
             THEN("The parameters are passed without modification") {
-                CHECK(cobsEncode_fake.arg0_val == decData);
-                CHECK(cobsEncode_fake.arg1_val == decDataLen);
-                CHECK(cobsEncode_fake.arg3_val == encBuf);
+                CHECK(_cobsEncode_fake.arg0_val == decData);
+                CHECK(_cobsEncode_fake.arg1_val == decDataLen);
+                CHECK(_cobsEncode_fake.arg3_val == encBuf);
             }
 
             THEN("The result is returned without modification") {
@@ -84,7 +84,7 @@ SCENARIO("NoteBinaryCodecEncode")
         }
     }
 
-    RESET_FAKE(cobsEncode);
+    RESET_FAKE(_cobsEncode);
 }
 
 }

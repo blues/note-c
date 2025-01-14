@@ -98,7 +98,7 @@ bool uninitialize_notecard_interface(NotecardInterface iface)
 #endif
 
 extern "C" {
-    uint32_t cobsEncode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst);
+    uint32_t _cobsEncode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst);
 }
 
 size_t readDataUntilTimeout(Stream& serial, size_t timeout, uint8_t* buf, size_t bufLen, size_t dataLen, size_t& duration)
@@ -107,7 +107,7 @@ size_t readDataUntilTimeout(Stream& serial, size_t timeout, uint8_t* buf, size_t
     // encode the data to match what's on the wire
     const size_t dataShift = (bufLen - dataLen);
     memmove(buf + dataShift, buf, dataLen);
-    size_t encLen = cobsEncode(buf + dataShift, dataLen, '\n', buf);
+    size_t encLen = _cobsEncode(buf + dataShift, dataLen, '\n', buf);
     buf[encLen] = '\n';
 
 
