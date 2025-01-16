@@ -30,7 +30,7 @@ namespace
 {
 
 const char *_noteI2CReceiveInfinite(uint16_t, uint8_t *buf, uint16_t size,
-                                   uint32_t *available)
+                                    uint32_t *available)
 {
     memset(buf, 'a', size);
     *available = NOTE_I2C_MAX_DEFAULT;
@@ -56,7 +56,7 @@ SCENARIO("_i2cChunkedReceive")
             WHEN("_i2cChunkedReceive is called") {
                 uint32_t originalAvailable = available;
                 const char *err = _i2cChunkedReceive(buf, &zeroSize, true,
-                                                    timeoutMs, &available);
+                                                     timeoutMs, &available);
 
                 THEN("No error is returned") {
                     CHECK(err == NULL);
@@ -81,7 +81,7 @@ SCENARIO("_i2cChunkedReceive")
 
         WHEN("_i2cChunkedReceive is called") {
             const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
-                                                &available);
+                                                 &available);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -96,7 +96,7 @@ SCENARIO("_i2cChunkedReceive")
 
         WHEN("_i2cChunkedReceive is called") {
             const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
-                                                &available);
+                                                 &available);
 
             THEN("No error is returned") {
                 CHECK(err == NULL);
@@ -163,7 +163,7 @@ SCENARIO("_i2cChunkedReceive")
 
             WHEN("_i2cChunkedReceive is called") {
                 const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
-                                                    &available);
+                                                     &available);
 
                 THEN("No error is returned") {
                     CHECK(err == NULL);
@@ -195,7 +195,7 @@ SCENARIO("_i2cChunkedReceive")
 
             WHEN("_i2cChunkedReceive is called") {
                 const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
-                                                    &available);
+                                                     &available);
 
                 THEN("No error is returned") {
                     CHECK(err == NULL);
@@ -266,7 +266,7 @@ SCENARIO("_i2cChunkedReceive")
 
         WHEN("_i2cChunkedReceive is called") {
             const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
-                                                &available);
+                                                 &available);
 
             THEN("No error is returned") {
                 CHECK(err == NULL);
@@ -306,7 +306,7 @@ SCENARIO("_i2cChunkedReceive")
 
         WHEN("_i2cChunkedReceive is called") {
             const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
-                                                &available);
+                                                 &available);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -388,7 +388,7 @@ SCENARIO("_i2cChunkedReceive")
 
         WHEN("_i2cChunkedReceive is called") {
             const char *err = _i2cChunkedReceive(buf, &size, true, timeoutMs,
-                                                &available);
+                                                 &available);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);

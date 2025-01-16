@@ -401,9 +401,9 @@ int noteLogLevel = NOTE_C_LOG_LEVEL;
 void NoteSetLogLevel(int level)
 {
 #ifndef NOTE_NODEBUG
-  noteLogLevel = level;
+    noteLogLevel = level;
 #else
-  (void)level;
+    (void)level;
 #endif
 }
 
@@ -899,7 +899,7 @@ const char *_noteJSONTransaction(const char *request, size_t reqLen, char **resp
 */
 /**************************************************************************/
 const char *_noteChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay,
-                               uint32_t timeoutMs, uint32_t *available)
+                                uint32_t timeoutMs, uint32_t *available)
 {
     if (notecardChunkedReceive == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";
