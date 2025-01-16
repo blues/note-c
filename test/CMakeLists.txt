@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 3.17)
+
+project(UnitTests)
+
 include(FetchContent)
 
 # Catch2 v3 requires C++14.
@@ -14,6 +18,15 @@ macro(download_catch2)
       GIT_TAG        v3.2.0
     )
     FetchContent_MakeAvailable(Catch2)
+
+    # Add specific build flags for Catch2
+    if(TARGET Catch2)
+        target_compile_options(Catch2
+            PUBLIC
+                -m32
+        )
+    endif()
+
     list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 endmacro(download_catch2)
 

@@ -17,6 +17,7 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -525,12 +526,13 @@ void NoteDelayMs(uint32_t ms)
   @brief  Convert number to a hex string
   @param  n the number
   @param  p the buffer to return it into
-*/
-/**************************************************************************/
-void _n_htoa32(uint32_t n, char *p)
-{
-    int i;
-    for (i=0; i<8; i++) {
+  */
+ /**************************************************************************/
+ void _n_htoa32(uint32_t n, char *p)
+ {
+   static_assert(sizeof(void *) == sizeof(uint32_t), "Pointer size mismatch");
+
+   for (int i=0; i<8; i++) {
         uint32_t nibble = (n >> 28) & 0xff;
         n = n << 4;
         if (nibble >= 10) {
@@ -582,10 +584,12 @@ void NoteFree(void *p)
 {
     if (hookFree != NULL) {
 #if NOTE_C_SHOW_MALLOC
-        char str[16];
-        _n_htoa32((uint32_t)p, str);
-        hookDebugOutput("free");
-        hookDebugOutput(str);
+        if (_noteIsDebugOutputActive()) {
+            char str[16];
+            _n_htoa32((uint32_t)p, str);
+            hookDebugOutput("free");
+            hookDebugOutput(str);
+        }
 #endif
         hookFree(p);
     }

@@ -41,6 +41,11 @@ RUN ["dash", "-c", "\
      \"${USER}\" \
 "]
 
+# Add 32-bit binaries to the index.
+RUN ["dash", "-c", "\
+    dpkg --add-architecture i386 \
+"]
+
 # Install whatever dependencies we can via apt-get.
 RUN ["dash", "-c", "\
     apt-get update --quiet \
@@ -49,10 +54,13 @@ RUN ["dash", "-c", "\
      ca-certificates \
      curl \
      g++ \
+     g++-multilib \
      gcc \
+     gcc-multilib \
      gdb \
      git \
      lcov \
+     libc6-dbg:i386 \
      make \
      nano \
      python3-pip \

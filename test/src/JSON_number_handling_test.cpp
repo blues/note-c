@@ -59,7 +59,7 @@ namespace
 #define UNIX_TIMESTAMP 1705699768
 #define UNIX_TIMESTAMP_STR "1705699768"
 
-SCENARIO("Unmarshalling")
+SCENARIO("JSON Number Handling (Unmarshalling)")
 {
     J *obj;
     NoteSetFnDefault(malloc, free, NULL, NULL);
@@ -211,7 +211,7 @@ SCENARIO("Unmarshalling")
     }
 }
 
-SCENARIO("Marshalling")
+SCENARIO("JSON Number Handling (Marshalling)")
 {
     J *obj;
     NoteSetFnDefault(malloc, free, NULL, NULL);
