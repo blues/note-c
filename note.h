@@ -340,7 +340,7 @@ void NoteDebugWithLevelLn(uint8_t level, const char *msg);
 
 #ifdef NOTE_C_LOG_SHOW_FILE_AND_LINE
 #define NOTE_C_LOG_FILE_AND_LINE(lvl) do { \
-  NoteDebugWithLevel(lvl, __FILE__ ":" NOTE_C_STRINGIZE(__LINE__) " "); \
+  _DebugWithLevel(lvl, __FILE__ ":" NOTE_C_STRINGIZE(__LINE__) " "); \
 } while (0);
 #else
 #define NOTE_C_LOG_FILE_AND_LINE(lvl)
@@ -348,33 +348,35 @@ void NoteDebugWithLevelLn(uint8_t level, const char *msg);
 
 #define NOTE_C_LOG_ERROR(msg) do { \
   NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_ERROR); \
-  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "[ERROR] "); \
-  NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_ERROR, msg); \
+  _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "[ERROR] "); \
+  _DebugWithLevelLn(NOTE_C_LOG_LEVEL_ERROR, msg); \
 } while (0);
 
 #define NOTE_C_LOG_WARN(msg) do { \
   NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_WARN); \
-  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_WARN, "[WARN] "); \
-  NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_WARN, msg); \
+  _DebugWithLevel(NOTE_C_LOG_LEVEL_WARN, "[WARN] "); \
+  _DebugWithLevelLn(NOTE_C_LOG_LEVEL_WARN, msg); \
 } while (0);
 
 #define NOTE_C_LOG_INFO(msg) do { \
   NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_INFO); \
-  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_INFO, "[INFO] "); \
-  NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_INFO, msg); \
+  _DebugWithLevel(NOTE_C_LOG_LEVEL_INFO, "[INFO] "); \
+  _DebugWithLevelLn(NOTE_C_LOG_LEVEL_INFO, msg); \
 } while (0);
 
 #define NOTE_C_LOG_DEBUG(msg) do { \
   NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_DEBUG); \
-  NoteDebugWithLevel(NOTE_C_LOG_LEVEL_DEBUG, "[DEBUG] "); \
-  NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_DEBUG, msg); \
+  _DebugWithLevel(NOTE_C_LOG_LEVEL_DEBUG, "[DEBUG] "); \
+  _DebugWithLevelLn(NOTE_C_LOG_LEVEL_DEBUG, msg); \
 } while (0);
 
-// The max log level for NoteDebugWithLevel is only configurable at
+// The max log level for _DebugWithLevel may be configured at
 // compile-time, via NOTE_C_LOG_LEVEL.
 #ifndef NOTE_C_LOG_LEVEL
 #define NOTE_C_LOG_LEVEL NOTE_C_LOG_LEVEL_INFO
 #endif
+// Otherwise, it may be set at runtime, via NoteSetLogLevel.
+void NoteSetLogLevel(int level);
 
 void *NoteMalloc(size_t size);
 void NoteFree(void *);

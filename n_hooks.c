@@ -27,10 +27,11 @@
   @brief  Show malloc operations for debugging in very low mem environments.
 */
 /**************************************************************************/
+#ifndef NOTE_SHOW_MALLOC
 #define NOTE_SHOW_MALLOC  false
+#endif
 #if NOTE_SHOW_MALLOC
 #include <string.h>
-void *malloc_show(size_t len);
 #endif
 
 // Which I/O port to use
@@ -384,6 +385,30 @@ void NoteSetFnDisabled(void)
 
 //**************************************************************************/
 /*!
+  @brief Variable used to determine the runtime logging level
+*/
+/**************************************************************************/
+#ifndef NOTE_NODEBUG
+int noteLogLevel = NOTE_C_LOG_LEVEL;
+#endif
+
+//**************************************************************************/
+/*!
+  @brief  Set the log level for the _DebugWithLevel function.
+  @param   level  The log level to set.
+*/
+/**************************************************************************/
+void NoteSetLogLevel(int level)
+{
+#ifndef NOTE_NODEBUG
+  noteLogLevel = level;
+#else
+  (void)level;
+#endif
+}
+
+//**************************************************************************/
+/*!
   @brief  Write a number to the debug stream and output a newline.
   @param   line  A debug string for output.
   @param n The number to write.
@@ -421,10 +446,12 @@ void NoteDebugln(const char *line)
 void NoteDebug(const char *line)
 {
 #ifndef NOTE_NODEBUG
-    if (hookDebugOutput != NULL) {
+    if (_noteIsDebugOutputActive()) {
         hookDebugOutput(line);
     }
-#endif
+#else
+    (void)line;
+#endif // !NOTE_NODEBUG
 }
 
 //**************************************************************************/
@@ -439,13 +466,14 @@ void NoteDebug(const char *line)
 void NoteDebugWithLevel(uint8_t level, const char *msg)
 {
 #ifndef NOTE_NODEBUG
-
-    if (level > NOTE_C_LOG_LEVEL) {
+    if (level > noteLogLevel) {
         return;
     }
 
     _Debug(msg);
-
+#else
+    (void)level;
+    (void)msg;
 #endif // !NOTE_NODEBUG
 }
 
@@ -515,30 +543,6 @@ void _n_htoa32(uint32_t n, char *p)
 }
 #endif
 
-#if NOTE_SHOW_MALLOC
-//**************************************************************************/
-/*!
-  @brief  If set for low-memory platforms, show a malloc call.
-  @param   len the number of bytes of memory allocated by the last call.
-*/
-/**************************************************************************/
-void *malloc_show(size_t len)
-{
-    char str[16];
-    JItoA(len, str);
-    hookDebugOutput("malloc ");
-    hookDebugOutput(str);
-    void *p = hookMalloc(len);
-    if (p == NULL) {
-        hookDebugOutput("FAIL");
-    } else {
-        _n_htoa32((uint32_t)p, str);
-        hookDebugOutput(str);
-    }
-    return p;
-}
-#endif
-
 //**************************************************************************/
 /*!
   @brief  Allocate a memory chunk using the platform-specific hook.
@@ -550,11 +554,22 @@ void *NoteMalloc(size_t size)
     if (hookMalloc == NULL) {
         return NULL;
     }
+    void *p = hookMalloc(size);
 #if NOTE_SHOW_MALLOC
-    return malloc_show(size);
-#else
-    return hookMalloc(size);
+    if (_noteIsDebugOutputActive()) {
+        char str[16];
+        JItoA(size, str);
+        hookDebugOutput("malloc ");
+        hookDebugOutput(str);
+        if (p == NULL) {
+            hookDebugOutput("FAIL");
+        } else {
+            _n_htoa32((uint32_t)p, str);
+            hookDebugOutput(str);
+        }
+    }
 #endif
+    return p;
 }
 
 //**************************************************************************/
