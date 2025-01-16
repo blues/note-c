@@ -27,10 +27,10 @@
   @brief  Show malloc operations for debugging in very low mem environments.
 */
 /**************************************************************************/
-#ifndef NOTE_SHOW_MALLOC
-#define NOTE_SHOW_MALLOC  false
+#ifndef NOTE_C_SHOW_MALLOC
+#define NOTE_C_SHOW_MALLOC  false
 #endif
-#if NOTE_SHOW_MALLOC
+#if NOTE_C_SHOW_MALLOC
 #include <string.h>
 #endif
 
@@ -519,7 +519,7 @@ void NoteDelayMs(uint32_t ms)
     }
 }
 
-#if NOTE_SHOW_MALLOC || !defined(NOTE_C_LOW_MEM)
+#if NOTE_C_SHOW_MALLOC || !defined(NOTE_C_LOW_MEM)
 //**************************************************************************/
 /*!
   @brief  Convert number to a hex string
@@ -555,7 +555,7 @@ void *NoteMalloc(size_t size)
         return NULL;
     }
     void *p = hookMalloc(size);
-#if NOTE_SHOW_MALLOC
+#if NOTE_C_SHOW_MALLOC
     if (_noteIsDebugOutputActive()) {
         char str[16];
         JItoA(size, str);
@@ -581,7 +581,7 @@ void *NoteMalloc(size_t size)
 void NoteFree(void *p)
 {
     if (hookFree != NULL) {
-#if NOTE_SHOW_MALLOC
+#if NOTE_C_SHOW_MALLOC
         char str[16];
         _n_htoa32((uint32_t)p, str);
         hookDebugOutput("free");
