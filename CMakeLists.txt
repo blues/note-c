@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.20)
 cmake_policy(SET CMP0095 NEW)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
@@ -15,12 +15,12 @@ if(NOT EXISTS ${PROJECT_BINARY_DIR}/.gitignore)
     file(WRITE ${PROJECT_BINARY_DIR}/.gitignore "*")
 endif()
 
+option(NOTE_C_BUILD_DOCS "Build docs." OFF)
 option(NOTE_C_BUILD_TESTS "Build tests." OFF)
 option(NOTE_C_COVERAGE "Compile for test NOTE_C_COVERAGE reporting." OFF)
-option(NOTE_C_MEM_CHECK "Run tests with Valgrind." OFF)
-option(NOTE_C_BUILD_DOCS "Build docs." OFF)
-option(NOTE_C_NO_LIBC "Build the library without linking against libc, generating errors for any undefined symbols." OFF)
 option(NOTE_C_LOW_MEM "Build the library tailored for low memory usage." OFF)
+option(NOTE_C_MEM_CHECK "Run tests with Valgrind." OFF)
+option(NOTE_C_NO_LIBC "Build the library without linking against libc, generating errors for any undefined symbols." OFF)
 option(NOTE_C_SHOW_MALLOC "Build the library with flags required to log memory usage." OFF)
 option(NOTE_C_TEST_SINGLE_PRECISION "Use single precision for JSON floating point numbers." OFF)
 

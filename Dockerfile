@@ -94,13 +94,3 @@ RUN ["dash", "-c", "\
  && tar xf cmake-3.25.1-linux-x86_64.tar.gz --strip-components=1 -C /usr \
  && rm cmake-3.25.1-linux-x86_64.tar.gz \
 "]
-
-# Download and install Catch2 v3.2.1.
-RUN ["dash", "-c", "\
-    curl -LO https://github.com/catchorg/Catch2/archive/refs/tags/v3.2.1.tar.gz \
- && tar xf v3.2.1.tar.gz \
- && cd Catch2-3.2.1 \
- && cmake -DCATCH_INSTALL_DOCS=0 -B build/ \
- && cmake --build build/ --target install \
- && rm -rf Catch2-3.2.1  v3.2.1.tar.gz \
-"]

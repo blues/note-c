@@ -10,8 +10,8 @@ VERBOSE=0
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --coverage) COVERAGE=1 ;;
-        --mem-check) MEM_CHECK=1 ;;
         --low-mem) LOW_MEM=1 ;;
+        --mem-check) MEM_CHECK=1 ;;
         --show-malloc) SHOW_MALLOC=1 ;;
         --single-precision) SINGLE_PRECISION=1 ;;
         --verbose) VERBOSE=1 ;;
@@ -30,12 +30,15 @@ fi
 
 pushd $ROOT_SRC_DIR $@ > /dev/null
 
-CMAKE_OPTIONS="-DNOTE_C_BUILD_TESTS=1 -DBUILD_CATCH=1"
+CMAKE_OPTIONS="-DNOTE_C_BUILD_TESTS=1"
 BUILD_OPTIONS=""
 CTEST_OPTIONS=""
 if [[ $COVERAGE -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_COVERAGE=1"
     BUILD_OPTIONS="${BUILD_OPTIONS} coverage"
+fi
+if [[ $LOW_MEM -eq 1 ]]; then
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_LOW_MEM=1"
 fi
 if [[ $MEM_CHECK -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_MEM_CHECK=1"
@@ -44,9 +47,6 @@ if [[ $MEM_CHECK -eq 1 ]]; then
     # This fixes a problem when running valgrind in a Docker container when the
     # host machine is running Fedora. See https://stackoverflow.com/a/75293014.
     ulimit -n 1024
-fi
-if [[ $LOW_MEM -eq 1 ]]; then
-    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_LOW_MEM=1"
 fi
 if [[ $SHOW_MALLOC -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_SHOW_MALLOC=1"

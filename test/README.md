@@ -6,10 +6,9 @@ mocking and is bundled with the test code (see fff.h).
 
 ## Dependencies
 
-- [CMake](https://cmake.org/install), version 3.13+.
+- [CMake](https://cmake.org/install), version 3.20+.
 - [Catch2](https://github.com/catchorg/Catch2), v3.
-  - If Catch2 isn't installed, we'll attempt to download and build Catch2 from
-    source.
+  - CMake will attempt to download and build Catch2 from source.
   - We require C++14, which is the minimum expected by Catch2 v3.
 
 ## Running the Tests
@@ -33,10 +32,20 @@ and building in there is mandatory.
 
 ## CMake Options
 
-- BUILD_CATCH: Download and build Catch2 from source, rather than looking for an
-installed verison. Default: OFF.
 - COVERAGE: Adds the target `coverage` to the build. Requires lcov. To generate
-a coverage report, run `make coverage`.
+a coverage report, run `make coverage` (Default: OFF).
+- LOW_MEM: Runs the unit-tests over code compiled with the `NOTE_C_LOW_MEM`
+flag enabled. This flag modifies the behavior of the library to perform better
+on low memory hosts (Default: OFF).
+- MEM_CHECK: Runs the unit-tests under `valgrind` to test for memory leaks
+(Default: OFF).
+- SHOW_MALLOC: Runs the unit-tests over code compiled with the
+`NOTE_C_SHOW_MALLOC` flag enabled. This flag causes the host to log with each
+memory allocation and free (Default: OFF).
+- SINGLE_PRECISION: Runs the unit-tests over code compiled with the
+`NOTE_C_SINGLE_PRECISION` flag enabled. All doubles are treated as single
+precision, which is commonplace on many MCUs (Default: OFF).
+- VERBOSE: Increase the verbosity of the build system (Default: OFF).
 
 ## Development
 
@@ -47,6 +56,8 @@ one executable (NotePayload_test.cpp, in this case). Any functions that are
 mocked need to be added to the list of mocked functions in the root
 CMakeLists.txt (see MOCKED_FNS). Once written, the test needs to be added to
 test/CMakeLists.txt with a call to the `add_test` macro.
+
+### Generating a Coverage Report
 
 Assuming you ran cmake with coverage enabled (`-DCOVERAGE=1`), ran `make
 coverage`, and are in the build directory, you can view the coverage report as

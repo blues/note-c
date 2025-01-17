@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.20)
 
 project(UnitTests)
 
@@ -8,39 +8,23 @@ include(FetchContent)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-option(BUILD_CATCH "Fetch and build Catch2 from source." OFF)
+message(STATUS "Downloading Catch2...")
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG        v3.2.0
+)
+FetchContent_MakeAvailable(Catch2)
 
-macro(download_catch2)
-    message(STATUS "Downloading Catch2...")
-    FetchContent_Declare(
-      Catch2
-      GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-      GIT_TAG        v3.2.0
+# Add specific build flags for Catch2
+if(TARGET Catch2)
+    target_compile_options(Catch2
+        PUBLIC
+            -m32
     )
-    FetchContent_MakeAvailable(Catch2)
+endif()
 
-    # Add specific build flags for Catch2
-    if(TARGET Catch2)
-        target_compile_options(Catch2
-            PUBLIC
-                -m32
-        )
-    endif()
-
-    list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-endmacro(download_catch2)
-
-if(BUILD_CATCH)
-    download_catch2()
-else()
-    find_package(Catch2 3)
-
-    if(Catch2_FOUND)
-        message(STATUS "Found Catch2: ${Catch2_CONFIG}")
-    else()
-        message(FATAL_ERROR "Couldn't find installed Catch2. To download Catch2 and build from source, re-run cmake with -DBUILD_CATCH=1.")
-    endif(Catch2_FOUND)
-endif(BUILD_CATCH)
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 
 include(Catch)
 
