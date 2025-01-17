@@ -527,12 +527,12 @@ void NoteDelayMs(uint32_t ms)
   @param  n the number
   @param  p the buffer to return it into
   */
- /**************************************************************************/
- void _n_htoa32(uint32_t n, char *p)
- {
-   static_assert(sizeof(void *) == sizeof(uint32_t), "Pointer size mismatch");
+/**************************************************************************/
+void _n_htoa32(uint32_t n, char *p)
+{
+    static_assert(sizeof(void *) == sizeof(uint32_t), "Pointer size mismatch");
 
-   for (int i=0; i<8; i++) {
+    for (int i=0; i<8; i++) {
         uint32_t nibble = (n >> 28) & 0xff;
         n = n << 4;
         if (nibble >= 10) {
