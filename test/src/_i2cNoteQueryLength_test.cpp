@@ -32,7 +32,7 @@ namespace
 // Nothing available at the start, then something becomes available.
 
 const char * _noteI2CReceiveNotAvailable(uint16_t, uint8_t *, uint16_t,
-                                        uint32_t *available)
+        uint32_t *available)
 {
     *available = 0;
 
@@ -44,7 +44,7 @@ enum {
 };
 
 const char * _noteI2CReceiveAvailable(uint16_t, uint8_t *, uint16_t,
-                                     uint32_t *available)
+                                      uint32_t *available)
 {
     *available = NUM_BYTES_AVAILABLE;
 

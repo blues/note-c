@@ -20,6 +20,10 @@ if [[ $? -ne 0 ]]; then
 fi
 
 PERMITTED_FNS=(
+    # These math functions are ok
+    __divdi3    # dividing double-integer (64-bit) values
+    __udivdi3   # unsigned dividing double-integer (64-bit) values
+    __umoddi3   # unsigned modulo double-integer (64-bit) values
     # The mem* functions are ok.
     "memchr"
     "memcmp"
@@ -32,10 +36,8 @@ PERMITTED_FNS=(
     "strlen"
     "strncmp"
     "strstr"
-    # strtol comes from us using atoi in NoteGetEnvInt.
-    "strtol"
-    # Used by NotePrintf.
-    "vsnprintf"
+    "strtol"    # required by atoi in NoteGenEnvInt
+    "vsnprintf" # required by NotePrintf
 )
 
 # Function to check if an element is in an array.

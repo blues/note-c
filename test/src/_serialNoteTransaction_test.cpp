@@ -61,7 +61,7 @@ const char *_serialChunkedTransmitAppend(uint8_t *buf, uint32_t len, bool)
 }
 
 const char *_serialChunkedReceiveNothing(uint8_t *, uint32_t *size, bool,
-                                        uint32_t, uint32_t *available)
+        uint32_t, uint32_t *available)
 {
     *size = 0;
     *available = 0;

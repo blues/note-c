@@ -824,7 +824,7 @@ bool NotePrint(const char *text)
     bool success = false;
 
     if (_noteIsDebugOutputActive()) {
-        NoteDebug(text);
+        _Debug(text);
         return true;
     }
 

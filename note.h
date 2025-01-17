@@ -370,11 +370,13 @@ void NoteDebugWithLevelLn(uint8_t level, const char *msg);
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_DEBUG, msg); \
 } while (0);
 
-// The max log level for NoteDebugWithLevel is only configurable at
+// The max log level for NoteDebugWithLevel may be configured at
 // compile-time, via NOTE_C_LOG_LEVEL.
 #ifndef NOTE_C_LOG_LEVEL
 #define NOTE_C_LOG_LEVEL NOTE_C_LOG_LEVEL_INFO
 #endif
+// Otherwise, it may be set at runtime, via NoteSetLogLevel.
+void NoteSetLogLevel(int level);
 
 void *NoteMalloc(size_t size);
 void NoteFree(void *);

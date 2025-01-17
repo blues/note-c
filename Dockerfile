@@ -41,6 +41,11 @@ RUN ["dash", "-c", "\
      \"${USER}\" \
 "]
 
+# Add 32-bit binaries to the index.
+RUN ["dash", "-c", "\
+    dpkg --add-architecture i386 \
+"]
+
 # Install whatever dependencies we can via apt-get.
 RUN ["dash", "-c", "\
     apt-get update --quiet \
@@ -49,10 +54,13 @@ RUN ["dash", "-c", "\
      ca-certificates \
      curl \
      g++ \
+     g++-multilib \
      gcc \
+     gcc-multilib \
      gdb \
      git \
      lcov \
+     libc6-dbg:i386 \
      make \
      nano \
      python3-pip \
@@ -85,14 +93,4 @@ RUN ["dash", "-c", "\
     curl -LO https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1-linux-x86_64.tar.gz \
  && tar xf cmake-3.25.1-linux-x86_64.tar.gz --strip-components=1 -C /usr \
  && rm cmake-3.25.1-linux-x86_64.tar.gz \
-"]
-
-# Download and install Catch2 v3.2.1.
-RUN ["dash", "-c", "\
-    curl -LO https://github.com/catchorg/Catch2/archive/refs/tags/v3.2.1.tar.gz \
- && tar xf v3.2.1.tar.gz \
- && cd Catch2-3.2.1 \
- && cmake -DCATCH_INSTALL_DOCS=0 -B build/ \
- && cmake --build build/ --target install \
- && rm -rf Catch2-3.2.1  v3.2.1.tar.gz \
 "]

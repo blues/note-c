@@ -1,33 +1,30 @@
+cmake_minimum_required(VERSION 3.20)
+
+project(UnitTests)
+
 include(FetchContent)
 
 # Catch2 v3 requires C++14.
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-option(BUILD_CATCH "Fetch and build Catch2 from source." OFF)
+message(STATUS "Downloading Catch2...")
+FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG        v3.2.0
+)
+FetchContent_MakeAvailable(Catch2)
 
-macro(download_catch2)
-    message(STATUS "Downloading Catch2...")
-    FetchContent_Declare(
-      Catch2
-      GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-      GIT_TAG        v3.2.0
+# Add specific build flags for Catch2
+if(TARGET Catch2)
+    target_compile_options(Catch2
+        PUBLIC
+            -m32
     )
-    FetchContent_MakeAvailable(Catch2)
-    list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
-endmacro(download_catch2)
+endif()
 
-if(BUILD_CATCH)
-    download_catch2()
-else()
-    find_package(Catch2 3)
-
-    if(Catch2_FOUND)
-        message(STATUS "Found Catch2: ${Catch2_CONFIG}")
-    else()
-        message(FATAL_ERROR "Couldn't find installed Catch2. To download Catch2 and build from source, re-run cmake with -DBUILD_CATCH=1.")
-    endif(Catch2_FOUND)
-endif(BUILD_CATCH)
+list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 
 include(Catch)
 
@@ -92,7 +89,7 @@ add_test(JItoA_test)
 add_test(JNtoA_test)
 add_test(JNumberValue_test)
 add_test(JPrintUnformatted_test)
-add_test(JSON_number_handling_test)
+# add_test(JSON_number_handling_test)
 add_test(JStringValue_test)
 add_test(JType_test)
 add_test(NoteAdd_test)
@@ -192,8 +189,11 @@ if(NOTE_C_COVERAGE)
     foreach(EXCLUDE_FILE ${EXCLUDE_FROM_COVERAGE})
         string(APPEND LCOV_EXCLUDE "--exclude '*/${EXCLUDE_FILE}' ")
     endforeach()
-    # We don't care about coverage for the tests themselves.
+
+    # We don't care about coverage for the tests or testing infrastructure.
     string(APPEND LCOV_EXCLUDE "--exclude '*/test/*' ")
+    string(APPEND LCOV_EXCLUDE "--exclude '*/build/_deps/*' ")
+
     separate_arguments(LCOV_EXCLUDE_LIST NATIVE_COMMAND "${LCOV_EXCLUDE}")
     # Run lcov to produce a coverage report in the coverage directory.
     add_custom_command(

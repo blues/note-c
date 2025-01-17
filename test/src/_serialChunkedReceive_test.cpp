@@ -66,7 +66,7 @@ SCENARIO("_serialChunkedReceive")
 
         WHEN("_serialChunkedReceive is called") {
             const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
-                                                   &available);
+                                                    &available);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -88,7 +88,7 @@ SCENARIO("_serialChunkedReceive")
 
         WHEN("_serialChunkedReceive is called") {
             const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
-                                                   &available);
+                                                    &available);
 
             THEN("No error is returned") {
                 CHECK(err == NULL);
@@ -119,7 +119,7 @@ SCENARIO("_serialChunkedReceive")
 
         WHEN("_serialChunkedReceive is called") {
             const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
-                                                   &available);
+                                                    &available);
 
             THEN("No error is returned") {
                 CHECK(err == NULL);
@@ -149,7 +149,7 @@ SCENARIO("_serialChunkedReceive")
 
         WHEN("_serialChunkedReceive is called") {
             const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
-                                                   &available);
+                                                    &available);
 
             THEN("No error is returned") {
                 CHECK(err == NULL);
@@ -178,7 +178,7 @@ SCENARIO("_serialChunkedReceive")
             uint32_t originalAvailable = available;
             uint32_t zeroSize = 0;
             const char *err = _serialChunkedReceive(buf, &zeroSize, delay,
-                                                   timeoutMs, &available);
+                                                    timeoutMs, &available);
 
             THEN("No error is returned") {
                 CHECK(err == NULL);
@@ -206,7 +206,7 @@ SCENARIO("_serialChunkedReceive")
 
         WHEN("_serialChunkedReceive is called") {
             const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
-                                                   &available);
+                                                    &available);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -241,7 +241,7 @@ SCENARIO("_serialChunkedReceive")
 
         WHEN("_serialChunkedReceive is called") {
             const char *err = _serialChunkedReceive(buf, &size, delay, timeoutMs,
-                                                   &available);
+                                                    &available);
 
             THEN("No error is returned") {
                 CHECK(err == NULL);

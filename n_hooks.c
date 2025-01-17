@@ -17,6 +17,7 @@
  *
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -27,10 +28,11 @@
   @brief  Show malloc operations for debugging in very low mem environments.
 */
 /**************************************************************************/
-#define NOTE_SHOW_MALLOC  false
-#if NOTE_SHOW_MALLOC
+#ifndef NOTE_C_SHOW_MALLOC
+#define NOTE_C_SHOW_MALLOC  false
+#endif
+#if NOTE_C_SHOW_MALLOC
 #include <string.h>
-void *malloc_show(size_t len);
 #endif
 
 // Which I/O port to use
@@ -384,6 +386,30 @@ void NoteSetFnDisabled(void)
 
 //**************************************************************************/
 /*!
+  @brief Variable used to determine the runtime logging level
+*/
+/**************************************************************************/
+#ifndef NOTE_NODEBUG
+int noteLogLevel = NOTE_C_LOG_LEVEL;
+#endif
+
+//**************************************************************************/
+/*!
+  @brief  Set the log level for the _DebugWithLevel function.
+  @param   level  The log level to set.
+*/
+/**************************************************************************/
+void NoteSetLogLevel(int level)
+{
+#ifndef NOTE_NODEBUG
+    noteLogLevel = level;
+#else
+    (void)level;
+#endif
+}
+
+//**************************************************************************/
+/*!
   @brief  Write a number to the debug stream and output a newline.
   @param   line  A debug string for output.
   @param n The number to write.
@@ -421,10 +447,12 @@ void NoteDebugln(const char *line)
 void NoteDebug(const char *line)
 {
 #ifndef NOTE_NODEBUG
-    if (hookDebugOutput != NULL) {
+    if (_noteIsDebugOutputActive()) {
         hookDebugOutput(line);
     }
-#endif
+#else
+    (void)line;
+#endif // !NOTE_NODEBUG
 }
 
 //**************************************************************************/
@@ -439,13 +467,14 @@ void NoteDebug(const char *line)
 void NoteDebugWithLevel(uint8_t level, const char *msg)
 {
 #ifndef NOTE_NODEBUG
-
-    if (level > NOTE_C_LOG_LEVEL) {
+    if (level > noteLogLevel) {
         return;
     }
 
     _Debug(msg);
-
+#else
+    (void)level;
+    (void)msg;
 #endif // !NOTE_NODEBUG
 }
 
@@ -491,18 +520,19 @@ void NoteDelayMs(uint32_t ms)
     }
 }
 
-#if NOTE_SHOW_MALLOC || !defined(NOTE_C_LOW_MEM)
+#if NOTE_C_SHOW_MALLOC || !defined(NOTE_C_LOW_MEM)
 //**************************************************************************/
 /*!
   @brief  Convert number to a hex string
   @param  n the number
   @param  p the buffer to return it into
-*/
-/**************************************************************************/
-void _n_htoa32(uint32_t n, char *p)
-{
-    int i;
-    for (i=0; i<8; i++) {
+  */
+ /**************************************************************************/
+ void _n_htoa32(uint32_t n, char *p)
+ {
+   static_assert(sizeof(void *) == sizeof(uint32_t), "Pointer size mismatch");
+
+   for (int i=0; i<8; i++) {
         uint32_t nibble = (n >> 28) & 0xff;
         n = n << 4;
         if (nibble >= 10) {
@@ -512,30 +542,6 @@ void _n_htoa32(uint32_t n, char *p)
         }
     }
     *p = '\0';
-}
-#endif
-
-#if NOTE_SHOW_MALLOC
-//**************************************************************************/
-/*!
-  @brief  If set for low-memory platforms, show a malloc call.
-  @param   len the number of bytes of memory allocated by the last call.
-*/
-/**************************************************************************/
-void *malloc_show(size_t len)
-{
-    char str[16];
-    JItoA(len, str);
-    hookDebugOutput("malloc ");
-    hookDebugOutput(str);
-    void *p = hookMalloc(len);
-    if (p == NULL) {
-        hookDebugOutput("FAIL");
-    } else {
-        _n_htoa32((uint32_t)p, str);
-        hookDebugOutput(str);
-    }
-    return p;
 }
 #endif
 
@@ -550,11 +556,22 @@ void *NoteMalloc(size_t size)
     if (hookMalloc == NULL) {
         return NULL;
     }
-#if NOTE_SHOW_MALLOC
-    return malloc_show(size);
-#else
-    return hookMalloc(size);
+    void *p = hookMalloc(size);
+#if NOTE_C_SHOW_MALLOC
+    if (_noteIsDebugOutputActive()) {
+        char str[16];
+        JItoA(size, str);
+        hookDebugOutput("malloc ");
+        hookDebugOutput(str);
+        if (p == NULL) {
+            hookDebugOutput("FAIL");
+        } else {
+            _n_htoa32((uint32_t)p, str);
+            hookDebugOutput(str);
+        }
+    }
 #endif
+    return p;
 }
 
 //**************************************************************************/
@@ -566,11 +583,13 @@ void *NoteMalloc(size_t size)
 void NoteFree(void *p)
 {
     if (hookFree != NULL) {
-#if NOTE_SHOW_MALLOC
-        char str[16];
-        _n_htoa32((uint32_t)p, str);
-        hookDebugOutput("free");
-        hookDebugOutput(str);
+#if NOTE_C_SHOW_MALLOC
+        if (_noteIsDebugOutputActive()) {
+            char str[16];
+            _n_htoa32((uint32_t)p, str);
+            hookDebugOutput("free");
+            hookDebugOutput(str);
+        }
 #endif
         hookFree(p);
     }
@@ -884,7 +903,7 @@ const char *_noteJSONTransaction(const char *request, size_t reqLen, char **resp
 */
 /**************************************************************************/
 const char *_noteChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay,
-                               uint32_t timeoutMs, uint32_t *available)
+                                uint32_t timeoutMs, uint32_t *available)
 {
     if (notecardChunkedReceive == NULL || hookActiveInterface == interfaceNone) {
         return "i2c or serial interface must be selected";
