@@ -17,72 +17,175 @@
 
 #include "test_static.h"
 
+extern bool notecardFirmwareSupportsCrc;
+
 namespace
 {
 
-SCENARIO("_crcError")
-{
-    NoteSetFnDefault(malloc, free, NULL, NULL);
+    SCENARIO("_crcError")
+    {
+        GIVEN("The Notecard firmware does NOT support CRC") {
+            notecardFirmwareSupportsCrc = false;
 
-    uint16_t seqNo = 1;
+            NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    SECTION("Empty string") {
-        char json[] = "";
+            uint16_t seqNo = 1;
 
-        CHECK(!_crcError(json, seqNo));
-    }
+            AND_GIVEN("An empty string")
+            {
+                char json[] = "";
 
-    SECTION("Invalid JSON") {
-        char json[] = "{\"req\":";
+                THEN("A CRC error SHALL NOT be reported")
+                {
+                    CHECK(!_crcError(json, seqNo));
+                }
+            }
 
-        CHECK(!_crcError(json, seqNo));
-    }
+            AND_GIVEN("Invalid JSON")
+            {
+                char json[] = "{\"req\":";
 
-    SECTION("No CRC field") {
-        char json[] = "{\"req\": \"hub.sync\"}";
+                THEN("A CRC error SHALL NOT be reported")
+                {
+                    CHECK(!_crcError(json, seqNo));
+                }
+            }
 
-        CHECK(!_crcError(json, seqNo));
-    }
+            AND_GIVEN("The Notecard returns an error message") {
+                char json[] = "{\"err\":\"cannot interpret JSON: bool being placed into a non-bool field {io}\"}";
 
-    SECTION("CRC field at unexpected position") {
-        char json[] = "{\"crc\":\"0009:10BAC79A\",\"req\": \"hub.sync\"}";
+                THEN("A CRC error SHALL NOT be reported")
+                {
+                    CHECK(!_crcError(json, seqNo));
+                }
+            }
 
-        CHECK(!_crcError(json, seqNo));
-    }
+            AND_GIVEN("No CRC field")
+            {
+                char json[] = "{\"req\": \"hub.sync\"}";
 
-    SECTION("Valid JSON and CRC field present") {
+                THEN("A CRC error SHALL NOT be reported")
+                {
+                    CHECK(!_crcError(json, seqNo));
+                }
+            }
 
-        SECTION("CRC doesn't match") {
-            char json[] = "{\"req\":\"hub.sync\",\"crc\":\"0001:DEADBEEF\"}";
+            AND_GIVEN("The CRC field exists, but is not at the tail of the response")
+            {
+                char json[] = "{\"crc\":\"0009:10BAC79A\",\"req\": \"hub.sync\"}";
 
-            CHECK(_crcError(json, seqNo));
+                THEN("A CRC error SHALL NOT be reported")
+                {
+                    CHECK(!_crcError(json, seqNo));
+                }
+            }
         }
 
-        SECTION("Sequence number doesn't match") {
-            char json[] = "{\"req\":\"hub.sync\",\"crc\":\"0009:10BAC79A\"}";
+        GIVEN("The Notecard firmware supports CRC") {
+            notecardFirmwareSupportsCrc = true;
 
-            CHECK(_crcError(json, seqNo));
-        }
+            NoteSetFnDefault(malloc, free, NULL, NULL);
 
-        SECTION("Everything matches") {
-            char json[] = "{\"req\":\"hub.sync\"}";
-            char *jsonWithCrc = _crcAdd(json, seqNo);
-            REQUIRE(jsonWithCrc != NULL);
+            uint16_t seqNo = 1;
 
-            CHECK(!_crcError(jsonWithCrc, seqNo));
+            AND_GIVEN("An empty string")
+            {
+                char json[] = "";
 
-            NoteFree(jsonWithCrc);
-        }
+                THEN("A CRC error SHALL NOT be reported")
+                {
+                    CHECK(!_crcError(json, seqNo));
+                }
+            }
 
-        SECTION("Trailing CRLF") {
-            char json[] = "{\"req\":\"hub.sync\",\"crc\":\"0001:10BAC79A\"}\r\n";
+            AND_GIVEN("Invalid JSON")
+            {
+                char json[] = "{\"req\":";
 
-            // Trailing \r\n should be ignored.
-            CHECK(!_crcError(json, seqNo));
+                THEN("A CRC error SHALL NOT be reported")
+                {
+                    CHECK(!_crcError(json, seqNo));
+                }
+            }
+
+            AND_GIVEN("The Notecard returns an error message") {
+                char json[] = "{\"err\":\"cannot interpret JSON: bool being placed into a non-bool field {io}\"}";
+
+                THEN("A CRC error SHALL NOT be reported")
+                {
+                    CHECK(!_crcError(json, seqNo));
+                }
+            }
+
+            AND_GIVEN("No CRC field")
+            {
+                char json[] = "{\"req\": \"hub.sync\"}";
+
+                THEN("A CRC error SHALL NOT be reported")
+                {
+                    CHECK(!_crcError(json, seqNo));
+                }
+            }
+
+            AND_GIVEN("The CRC field exists, but is not at the tail of the response")
+            {
+                char json[] = "{\"crc\":\"0009:10BAC79A\",\"req\": \"hub.sync\"}";
+
+                THEN("A CRC error SHALL be reported")
+                {
+                    CHECK(_crcError(json, seqNo));
+                }
+            }
+
+            AND_GIVEN("Valid JSON and CRC field present")
+            {
+                WHEN("CRC doesn't match")
+                {
+                    char json[] = "{\"req\":\"hub.sync\",\"crc\":\"0001:DEADBEEF\"}";
+
+                    THEN("A CRC error SHALL be reported")
+                    {
+                        CHECK(_crcError(json, seqNo));
+                    }
+                }
+
+                WHEN("Sequence number doesn't match")
+                {
+                    char json[] = "{\"req\":\"hub.sync\",\"crc\":\"0009:10BAC79A\"}";
+
+                    THEN("A CRC error SHALL be reported")
+                    {
+                        CHECK(_crcError(json, seqNo));
+                    }
+                }
+
+                WHEN("Everything matches")
+                {
+                    char json[] = "{\"req\":\"hub.sync\"}";
+                    char *jsonWithCrc = _crcAdd(json, seqNo);
+                    REQUIRE(jsonWithCrc != NULL);
+
+                    THEN("A CRC error SHALL NOT be reported")
+                    {
+                        CHECK(!_crcError(json, seqNo));
+                    }
+
+                    NoteFree(jsonWithCrc);
+                }
+
+                AND_GIVEN("a trailing CRLF")
+                {
+                    char json[] = "{\"req\":\"hub.sync\",\"crc\":\"0001:10BAC79A\"}\r\n";
+
+                    THEN("A CRC error SHALL NOT be reported")
+                    {
+                        // Trailing \r\n should be ignored.
+                        CHECK(!_crcError(json, seqNo));
+                    }
+                }
+            }
         }
     }
-}
-
 }
 
 #endif // !NOTE_C_LOW_MEM

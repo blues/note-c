@@ -30,11 +30,12 @@ static uint16_t lastRequestSeqno = 0;
 #define CRC_FIELD_LENGTH        22  // ,"crc":"SSSS:CCCCCCCC"
 #define CRC_FIELD_NAME_OFFSET   1
 #define CRC_FIELD_NAME_TEST     "\"crc\":\""
+#define ERR_FIELD_NAME_TEST     "\"err\":\""
 NOTE_C_STATIC int32_t _crc32(const void* data, size_t length);
 NOTE_C_STATIC char * _crcAdd(char *json, uint16_t seqno);
 NOTE_C_STATIC bool _crcError(char *json, uint16_t shouldBeSeqno);
 
-static bool notecardSupportsCrc = false;
+NOTE_C_STATIC bool notecardFirmwareSupportsCrc = false;
 #endif
 
 /*!
@@ -930,27 +931,38 @@ NOTE_C_STATIC char *_crcAdd(char *json, uint16_t seqno)
  */
 NOTE_C_STATIC bool _crcError(char *json, uint16_t shouldBeSeqno)
 {
-    // Strip off any crlf for crc calculation
+    // Trim whitespace (specifically "\r\n") for CRC calculation
     size_t jsonLen = strlen(json);
-    while (jsonLen > 0 && json[jsonLen-1] <= ' ') {
+    while (jsonLen > 0 && json[jsonLen - 1] <= ' ') {
         jsonLen--;
     }
 
-    // Minimum valid JSON is "{}" (2 bytes) and must end with a closing "}".
-    if (jsonLen < CRC_FIELD_LENGTH+2 || json[jsonLen-1] != '}') {
+    // Ignore CRC check if the response contains an error
+    // A valid JSON string begins with "{". Therefore, the presence of an error
+    // message in a well-formed JSON string MUST result in a non-zero response.
+    if (strstr(json, ERR_FIELD_NAME_TEST)) {
+        return false;
+    }
+
+    // Skip if invalid JSON or is too short to contain a CRC parameter
+    // Minimum length is "{}" (2 bytes) + CRC_FIELD_LENGTH
+    // Valid JSON ends with a closing "}"
+    if ((jsonLen < (CRC_FIELD_LENGTH + 2)) || (json[jsonLen - 1] != '}')) {
         return false;
     }
 
     // See if it has a compliant CRC field
-    size_t fieldOffset = ((jsonLen-1) - CRC_FIELD_LENGTH);
-    if (memcmp(&json[fieldOffset+CRC_FIELD_NAME_OFFSET], CRC_FIELD_NAME_TEST, sizeof(CRC_FIELD_NAME_TEST)-1) != 0) {
+    size_t fieldOffset = ((jsonLen - 1) - CRC_FIELD_LENGTH);
+    if (memcmp(&json[fieldOffset + CRC_FIELD_NAME_OFFSET], CRC_FIELD_NAME_TEST, ((sizeof(CRC_FIELD_NAME_TEST) - 1)) != 0)) {
         // If we've seen a CRC before, we should see one every time
-        return notecardSupportsCrc ? true : false;
+        return notecardFirmwareSupportsCrc;
     }
 
     // If we get here, we've seen at least one CRC from the Notecard, so we should expect it.
-    notecardSupportsCrc = true;
-    char *p = &json[fieldOffset + CRC_FIELD_NAME_OFFSET + (sizeof(CRC_FIELD_NAME_TEST)-1)];
+    notecardFirmwareSupportsCrc = true;
+
+    // Extract the CRC field and the sequence number
+    char *p = &json[fieldOffset + CRC_FIELD_NAME_OFFSET + (sizeof(CRC_FIELD_NAME_TEST) - 1)];
     uint16_t actualSeqno = (uint16_t) _n_atoh(p, 4);
     uint32_t actualCrc32 = (uint32_t) _n_atoh(p+5, 8);
     json[fieldOffset++] = '}';
