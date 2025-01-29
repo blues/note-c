@@ -26,7 +26,7 @@ jobs:
       - name: Run cppcheck
         run: |
           mkdir -p reports
-          cppcheck --enable=all --inconclusive --error-exitcode=1 --force --inline-suppr --project=build/compile_commands.json --suppress=missingIncludeSystem --xml --output-file=reports/cppcheck_results.xml
+          cppcheck --enable=all --inconclusive --error-exitcode=1 --force --inline-suppr --project="${{ github.workspace }}/build/compile_commands.json" --suppress=missingIncludeSystem --xml --output-file="${{ github.workspace }}/reports/cppcheck_results.xml"
 
       - name: Upload analysis results
         if: always()

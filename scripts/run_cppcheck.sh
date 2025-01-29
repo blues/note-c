@@ -21,7 +21,7 @@ cppcheck \
     --error-exitcode=1 \
     --force \
     --inline-suppr \
-    --project="$SRC_DIR/build/compile_commands.json" \
+    --project="${PWD}/build/compile_commands.json" \
     --suppress=missingIncludeSystem \
     --xml \
     --output-file="$CPPCHECK_OUTPUT_FILE"
