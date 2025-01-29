@@ -36,8 +36,7 @@ jobs:
             --project=build/compile_commands.json \
             --suppress=missingIncludeSystem \
             --xml \
-            --output-file="$CPPCHECK_OUTPUT_FILE" \
-            .
+            --output-file="$CPPCHECK_OUTPUT_FILE"
 
       - name: Upload analysis results
         if: always()

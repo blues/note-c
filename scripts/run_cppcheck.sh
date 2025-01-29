@@ -21,8 +21,7 @@ cppcheck \
     --project="$SRC_DIR/build/compile_commands.json" \
     --suppress=missingIncludeSystem \
     --xml \
-    --output-file="$CPPCHECK_OUTPUT_FILE" \
-    .
+    --output-file="$CPPCHECK_OUTPUT_FILE"
 
 # If we get here, cppcheck passed
 echo "Static analysis complete. Results saved to cppcheck_results.xml"
