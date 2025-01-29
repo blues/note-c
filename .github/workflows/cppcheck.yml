@@ -26,12 +26,12 @@ jobs:
       - name: Run cppcheck
         shell: bash
         run: |
-          set -eo pipefail  # Exit on error and propagate pipe failures
+          set -o pipefail  # Propagate pipe failures but don't exit immediately on error
           
           echo "Running static analysis with cppcheck..."
           echo "----------------------------------------"
           
-          # Run cppcheck with specific checks enabled
+          # Run cppcheck and capture its exit code
           cppcheck \
             --enable=all \
             --check-level=exhaustive \
@@ -52,8 +52,7 @@ jobs:
             --error-exitcode=1 \
             . 2>&1 | tee cppcheck_output.txt
           
-          # Use cppcheck's exit code
-          exit ${PIPESTATUS[0]}
+          CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
           
           echo "----------------------------------------"
           echo "Critical Issues:"
@@ -73,8 +72,9 @@ jobs:
             [ "$count" -gt 0 ] && echo "${sev^^}: $count issues found"
           done
           
-          # Show error summary but don't fail the build
-          if grep -q "error:" cppcheck_output.txt; then
+          # Exit with cppcheck's status code after showing the summary
+          if [ $CPPCHECK_EXIT_CODE -ne 0 ]; then
             echo "----------------------------------------"
-            echo "NOTE: Critical issues found. These should be reviewed but won't block merging."
+            echo "ERROR: Critical issues found. Build will fail."
+            exit $CPPCHECK_EXIT_CODE
           fi
