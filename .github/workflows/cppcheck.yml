@@ -24,12 +24,14 @@ jobs:
         run: cmake --build build
 
       - name: Run cppcheck
+        shell: bash
         run: |
+          set -eo pipefail  # Exit on error and propagate pipe failures
+          
           echo "Running static analysis with cppcheck..."
           echo "----------------------------------------"
           
           # Run cppcheck with specific checks enabled
-          set -o pipefail  # Make sure pipe failures are propagated
           cppcheck \
             --enable=all \
             --check-level=exhaustive \
@@ -49,7 +51,9 @@ jobs:
             --debug-warnings \
             --error-exitcode=1 \
             . 2>&1 | tee cppcheck_output.txt
-          exit ${PIPESTATUS[0]}  # Use cppcheck's exit code
+          
+          # Use cppcheck's exit code
+          exit ${PIPESTATUS[0]}
           
           echo "----------------------------------------"
           echo "Critical Issues:"
