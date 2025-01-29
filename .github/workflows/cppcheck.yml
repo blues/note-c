@@ -38,12 +38,11 @@ jobs:
             --inline-suppr \
             --suppress=missingIncludeSystem \
             --suppress=nullPointerRedundantCheck:*/n_cjson.c \
-            --project="${{ github.workspace }}/build/compile_commands.json" \
             --template="{file}:{line}: {severity}: {id}: {message}" \
             --max-configs=32 \
             --check-library \
             --debug-warnings \
-            2>&1 | tee cppcheck_output.txt
+            . 2>&1 | tee cppcheck_output.txt
           
           echo "----------------------------------------"
           echo "Critical Issues:"
