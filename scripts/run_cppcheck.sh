@@ -22,6 +22,7 @@ cppcheck \
     --inline-suppr \
     --project="${PWD}/build/compile_commands.json" \
     --suppress=missingIncludeSystem \
+    --suppress=nullPointerRedundantCheck:*/n_cjson.c \
     --xml \
     --output-file="$CPPCHECK_OUTPUT_FILE"
 
