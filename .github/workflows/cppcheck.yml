@@ -27,6 +27,7 @@ jobs:
         run: |
           chmod +x scripts/run_cppcheck.sh
           CPPCHECK_OUTPUT_FILE="${{ github.workspace }}/cppcheck_results.xml"
+          cat << 'EOF' | bash
           cppcheck \
             --enable=all \
             --inconclusive \
@@ -37,6 +38,7 @@ jobs:
             --suppress=missingIncludeSystem \
             --xml \
             --output-file="$CPPCHECK_OUTPUT_FILE"
+          EOF
 
       - name: Upload analysis results
         if: always()
