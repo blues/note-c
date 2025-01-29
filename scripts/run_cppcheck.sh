@@ -16,7 +16,7 @@ mkdir -p "$SRC_DIR/reports"
 # Run cppcheck with comprehensive checks
 CPPCHECK_OUTPUT_FILE="$SRC_DIR/reports/cppcheck_results.xml"
 cppcheck \
-    --enable=error \
+    --enable=warning \
     --error-exitcode=1 \
     --force \
     --inline-suppr \

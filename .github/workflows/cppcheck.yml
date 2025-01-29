@@ -26,8 +26,8 @@ jobs:
       - name: Run cppcheck
         run: |
           mkdir -p reports
-          cppcheck --enable=error --error-exitcode=1 --force --inline-suppr --project="${{ github.workspace }}/build/compile_commands.json" --suppress=missingIncludeSystem 2>&1 | tee cppcheck_console.txt
-          cppcheck --enable=error --error-exitcode=1 --force --inline-suppr --project="${{ github.workspace }}/build/compile_commands.json" --suppress=missingIncludeSystem --xml --output-file="${{ github.workspace }}/reports/cppcheck_results.xml"
+          cppcheck --enable=warning --error-exitcode=1 --force --inline-suppr --project="${{ github.workspace }}/build/compile_commands.json" --suppress=missingIncludeSystem 2>&1 | tee cppcheck_console.txt
+          cppcheck --enable=warning --error-exitcode=1 --force --inline-suppr --project="${{ github.workspace }}/build/compile_commands.json" --suppress=missingIncludeSystem --xml --output-file="${{ github.workspace }}/reports/cppcheck_results.xml"
 
       - name: Upload analysis results
         if: always()
