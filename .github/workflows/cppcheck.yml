@@ -43,7 +43,7 @@ jobs:
             --max-configs=32 \
             --check-library \
             --debug-warnings \
-            . 2>&1 | tee cppcheck_output.txt
+            2>&1 | tee cppcheck_output.txt
           
           echo "----------------------------------------"
           echo "Critical Issues:"
