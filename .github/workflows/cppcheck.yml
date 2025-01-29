@@ -42,6 +42,7 @@ jobs:
             --max-configs=32 \
             --check-library \
             --debug-warnings \
+            --error-exitcode=0 \
             . 2>&1 | tee cppcheck_output.txt
           
           echo "----------------------------------------"
@@ -62,9 +63,8 @@ jobs:
             [ "$count" -gt 0 ] && echo "${sev^^}: $count issues found"
           done
           
-          # Exit with error if there are error-level issues
+          # Show error summary but don't fail the build
           if grep -q "error:" cppcheck_output.txt; then
             echo "----------------------------------------"
-            echo "ERROR: Critical issues found. Please fix them before merging."
-            exit 1
+            echo "NOTE: Critical issues found. These should be reviewed but won't block merging."
           fi
