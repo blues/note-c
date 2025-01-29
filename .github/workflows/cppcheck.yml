@@ -26,6 +26,7 @@ jobs:
       - name: Run cppcheck
         run: |
           mkdir -p reports
+          cppcheck --enable=all --inconclusive --error-exitcode=1 --force --inline-suppr --project="${{ github.workspace }}/build/compile_commands.json" --suppress=missingIncludeSystem 2>&1 | tee cppcheck_console.txt
           cppcheck --enable=all --inconclusive --error-exitcode=1 --force --inline-suppr --project="${{ github.workspace }}/build/compile_commands.json" --suppress=missingIncludeSystem --xml --output-file="${{ github.workspace }}/reports/cppcheck_results.xml"
 
       - name: Upload analysis results
@@ -33,4 +34,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: cppcheck-results
-          path: reports/cppcheck_results.xml
+          path: |
+            reports/cppcheck_results.xml
+            cppcheck_console.txt
