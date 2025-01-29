@@ -25,12 +25,12 @@ jobs:
 
       - name: Run cppcheck
         run: |
-          CPPCHECK_OUTPUT_FILE="${{ github.workspace }}/cppcheck_results.xml"
-          cppcheck --enable=all --inconclusive --error-exitcode=1 --force --inline-suppr --project=build/compile_commands.json --suppress=missingIncludeSystem --xml --output-file="$CPPCHECK_OUTPUT_FILE"
+          mkdir -p reports
+          cppcheck --enable=all --inconclusive --error-exitcode=1 --force --inline-suppr --project=build/compile_commands.json --suppress=missingIncludeSystem --xml --output-file=reports/cppcheck_results.xml
 
       - name: Upload analysis results
         if: always()
         uses: actions/upload-artifact@v3
         with:
           name: cppcheck-results
-          path: cppcheck_results.xml
+          path: reports/cppcheck_results.xml

@@ -10,8 +10,11 @@ if [ ! -d "$SRC_DIR/build" ] || [ ! -f "$SRC_DIR/build/compile_commands.json" ];
     cmake -B "$SRC_DIR/build" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 fi
 
+# Ensure reports directory exists
+mkdir -p "$SRC_DIR/reports"
+
 # Run cppcheck with comprehensive checks
-CPPCHECK_OUTPUT_FILE="$SRC_DIR/cppcheck_results.xml"
+CPPCHECK_OUTPUT_FILE="$SRC_DIR/reports/cppcheck_results.xml"
 cppcheck \
     --enable=all \
     --inconclusive \
