@@ -41,7 +41,8 @@
 #define NOTE_C_LOW_MEM
 #endif
 #else
-#error What are floating point exponent length symbols for this compiler?
+// Default to low memory mode if we can't determine float/double sizes
+#define NOTE_C_LOW_MEM
 #endif
 
 // NOTE_LOWMEM is the old name of NOTE_C_LOW_MEM. If NOTE_LOWMEM is defined,
