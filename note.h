@@ -30,18 +30,12 @@
 
 #define NOTE_C_VERSION NOTE_C_STRINGIZE(NOTE_C_VERSION_MAJOR) "." NOTE_C_STRINGIZE(NOTE_C_VERSION_MINOR) "." NOTE_C_STRINGIZE(NOTE_C_VERSION_PATCH)
 
-// If double and float are the same size, then we must be on a small MCU. Turn
-// on NOTE_C_LOW_MEM to conserve memory.
-#if defined(FLT_MAX_EXP) && defined(DBL_MAX_EXP)
-#if (FLT_MAX_EXP == DBL_MAX_EXP)
+// If we can't determine float/double sizes, default to low memory mode
+#if !defined(FLT_MAX_EXP) && !defined(DBL_MAX_EXP) && !defined(__FLT_MAX_EXP__) && !defined(__DBL_MAX_EXP__)
 #define NOTE_C_LOW_MEM
-#endif
-#elif defined(__FLT_MAX_EXP__) && defined(__DBL_MAX_EXP__)
-#if (__FLT_MAX_EXP__ == __DBL_MAX_EXP__)
-#define NOTE_C_LOW_MEM
-#endif
-#else
-// Default to low memory mode if we can't determine float/double sizes
+// If double and float are the same size, then we must be on a small MCU
+#elif (defined(FLT_MAX_EXP) && defined(DBL_MAX_EXP) && (FLT_MAX_EXP == DBL_MAX_EXP)) || \
+      (defined(__FLT_MAX_EXP__) && defined(__DBL_MAX_EXP__) && (__FLT_MAX_EXP__ == __DBL_MAX_EXP__))
 #define NOTE_C_LOW_MEM
 #endif
 
