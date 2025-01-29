@@ -11,6 +11,7 @@ if [ ! -d "$SRC_DIR/build" ] || [ ! -f "$SRC_DIR/build/compile_commands.json" ];
 fi
 
 # Run cppcheck with comprehensive checks
+CPPCHECK_OUTPUT_FILE="$SRC_DIR/cppcheck_results.xml"
 cppcheck \
     --enable=all \
     --inconclusive \
@@ -20,8 +21,8 @@ cppcheck \
     --project="$SRC_DIR/build/compile_commands.json" \
     --suppress=missingIncludeSystem \
     --xml \
-    --output-file="$SRC_DIR/cppcheck_results.xml" \
-    "$SRC_DIR"
+    --output-file="$CPPCHECK_OUTPUT_FILE" \
+    .
 
 # If we get here, cppcheck passed
 echo "Static analysis complete. Results saved to cppcheck_results.xml"

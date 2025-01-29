@@ -26,7 +26,18 @@ jobs:
       - name: Run cppcheck
         run: |
           chmod +x scripts/run_cppcheck.sh
-          ./scripts/run_cppcheck.sh
+          CPPCHECK_OUTPUT_FILE="${{ github.workspace }}/cppcheck_results.xml"
+          cppcheck \
+            --enable=all \
+            --inconclusive \
+            --error-exitcode=1 \
+            --force \
+            --inline-suppr \
+            --project=build/compile_commands.json \
+            --suppress=missingIncludeSystem \
+            --xml \
+            --output-file="$CPPCHECK_OUTPUT_FILE" \
+            .
 
       - name: Upload analysis results
         if: always()
