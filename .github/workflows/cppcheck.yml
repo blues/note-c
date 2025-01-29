@@ -29,6 +29,7 @@ jobs:
           echo "----------------------------------------"
           
           # Run cppcheck with specific checks enabled
+          set -o pipefail  # Make sure pipe failures are propagated
           cppcheck \
             --enable=all \
             --check-level=exhaustive \
@@ -48,6 +49,7 @@ jobs:
             --debug-warnings \
             --error-exitcode=1 \
             . 2>&1 | tee cppcheck_output.txt
+          exit ${PIPESTATUS[0]}  # Use cppcheck's exit code
           
           echo "----------------------------------------"
           echo "Critical Issues:"
