@@ -38,11 +38,15 @@ jobs:
             --inline-suppr \
             --suppress=missingIncludeSystem \
             --suppress=nullPointerRedundantCheck:*/n_cjson.c \
+            --suppress=unusedFunction \
+            --suppress=unmatchedSuppression \
+            --suppress=style \
+            --suppress=information \
             --template="{file}:{line}: {severity}: {id}: {message}" \
             --max-configs=32 \
             --check-library \
             --debug-warnings \
-            --error-exitcode=0 \
+            --error-exitcode=1 \
             . 2>&1 | tee cppcheck_output.txt
           
           echo "----------------------------------------"
