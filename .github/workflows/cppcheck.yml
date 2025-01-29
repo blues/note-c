@@ -25,15 +25,17 @@ jobs:
 
       - name: Run cppcheck
         run: |
-          mkdir -p reports
-          cppcheck --enable=warning --error-exitcode=1 --force --inline-suppr --suppress=nullPointerRedundantCheck:*/n_cjson.c --project="${{ github.workspace }}/build/compile_commands.json" --suppress=missingIncludeSystem 2>&1 | tee cppcheck_console.txt
-          cppcheck --enable=warning --error-exitcode=1 --force --inline-suppr --suppress=nullPointerRedundantCheck:*/n_cjson.c --project="${{ github.workspace }}/build/compile_commands.json" --suppress=missingIncludeSystem --xml --output-file="${{ github.workspace }}/reports/cppcheck_results.xml"
-
-      - name: Upload analysis results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: cppcheck-results
-          path: |
-            reports/cppcheck_results.xml
-            cppcheck_console.txt
+          echo "Running static analysis with cppcheck..."
+          echo "----------------------------------------"
+          cppcheck \
+            --enable=warning,performance,portability \
+            --error-exitcode=1 \
+            --force \
+            --inline-suppr \
+            --suppress=nullPointerRedundantCheck:*/n_cjson.c \
+            --project="${{ github.workspace }}/build/compile_commands.json" \
+            --suppress=missingIncludeSystem \
+            --template="{file}:{line}: {severity}: {message}" \
+            2>&1 | tee >(cat)
+          echo "----------------------------------------"
+          echo "Static analysis complete."
