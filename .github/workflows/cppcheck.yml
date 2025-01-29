@@ -1,0 +1,36 @@
+name: Static Analysis
+
+on:
+  push:
+    branches: [ "master", "main", "devin/*" ]
+  pull_request:
+
+jobs:
+  cppcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y gcc-multilib g++-multilib cppcheck
+
+      - name: Configure CMake
+        run: cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Run cppcheck
+        run: |
+          chmod +x scripts/run_cppcheck.sh
+          ./scripts/run_cppcheck.sh
+
+      - name: Upload analysis results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cppcheck-results
+          path: cppcheck_results.xml

@@ -104,6 +104,21 @@
             "group": {
                 "kind": "none"
             }
+        },
+        {
+            "label": "Note-C: Run Static Analysis",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run_cppcheck.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "LC_ALL": "C"
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "test"
         }
     ]
 }

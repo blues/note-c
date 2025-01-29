@@ -65,6 +65,7 @@ RUN ["dash", "-c", "\
      nano \
      python3-pip \
      python3-sphinx \
+     cppcheck \
      valgrind \
  && pip install --break-system-packages \
      breathe \
