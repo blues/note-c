@@ -476,7 +476,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
 #endif
 
     // Determine whether or not a response will be expected, by virtue of "cmd" being present
-    bool noResponseExpected = (reqType != NULL && reqType[0] == '\0' && cmdType != NULL && cmdType[0] != '\0');
+    bool noResponseExpected = (reqType[0] == '\0' && cmdType[0] != '\0');
 
     // If a reset of the module is required for any reason, do it now.
     // We must do this before acquiring lock.

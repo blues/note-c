@@ -30,13 +30,18 @@
 
 #define NOTE_C_VERSION NOTE_C_STRINGIZE(NOTE_C_VERSION_MAJOR) "." NOTE_C_STRINGIZE(NOTE_C_VERSION_MINOR) "." NOTE_C_STRINGIZE(NOTE_C_VERSION_PATCH)
 
-// If we can't determine float/double sizes, default to low memory mode
-#if !defined(FLT_MAX_EXP) && !defined(DBL_MAX_EXP) && !defined(__FLT_MAX_EXP__) && !defined(__DBL_MAX_EXP__)
+// If double and float are the same size, then we must be on a small MCU. Turn
+// on NOTE_C_LOW_MEM to conserve memory.
+#if defined(FLT_MAX_EXP) && defined(DBL_MAX_EXP)
+#if (FLT_MAX_EXP == DBL_MAX_EXP)
 #define NOTE_C_LOW_MEM
-// If double and float are the same size, then we must be on a small MCU
-#elif (defined(FLT_MAX_EXP) && defined(DBL_MAX_EXP) && (FLT_MAX_EXP == DBL_MAX_EXP)) || \
-      (defined(__FLT_MAX_EXP__) && defined(__DBL_MAX_EXP__) && (__FLT_MAX_EXP__ == __DBL_MAX_EXP__))
+#endif
+#elif defined(__FLT_MAX_EXP__) && defined(__DBL_MAX_EXP__)
+#if (__FLT_MAX_EXP__ == __DBL_MAX_EXP__)
 #define NOTE_C_LOW_MEM
+#endif
+#else
+#error What are floating point exponent length symbols for this compiler?
 #endif
 
 // NOTE_LOWMEM is the old name of NOTE_C_LOW_MEM. If NOTE_LOWMEM is defined,
