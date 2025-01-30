@@ -78,7 +78,7 @@ cppcheck \
     . 2>&1 | tee cppcheck_output.txt
 CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
-# Always generate and display summary
+# Generate and display summary before exiting
 {
     echo "=== Static Analysis Summary ==="
     echo
@@ -110,6 +110,7 @@ CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
         echo "Status: PASSED - No critical issues found"
         echo "Note: Review non-critical issues for potential improvements"
     fi
-} | tee summary.txt
+} 2>&1 | tee summary.txt
 
-exit $CPPCHECK_EXIT_CODE
+# Exit with the cppcheck status code
+(exit $CPPCHECK_EXIT_CODE)
