@@ -26,12 +26,12 @@ jobs:
       - name: Run cppcheck
         shell: bash
         run: |
-          set -o pipefail  # Propagate pipe failures but don't exit immediately on error
+          set -o pipefail
           
-          echo "Running static analysis with cppcheck..."
-          echo "----------------------------------------"
+          echo "=== Running Static Analysis ==="
+          echo
           
-          # Run cppcheck and capture its exit code
+          # Run cppcheck and capture output
           cppcheck \
             --enable=all \
             --check-level=exhaustive \
@@ -54,27 +54,42 @@ jobs:
           
           CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
           
-          echo "----------------------------------------"
-          echo "Critical Issues:"
-          echo "----------------------------------------"
-          grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " || true
+          # Generate comprehensive summary
+          {
+            echo "=== Static Analysis Summary ==="
+            echo
+            
+            echo "Critical Issues (Errors & Warnings):"
+            echo "-----------------------------------"
+            grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " | \
+              awk -F': ' '{printf "%-40s %s\n", $1, $4}' || echo "None found"
+            echo
+            
+            echo "Performance & Portability Issues:"
+            echo "--------------------------------"
+            grep -E "performance:|portability:" cppcheck_output.txt | grep -v "Checking " | \
+              awk -F': ' '{printf "%-40s %s\n", $1, $4}' || echo "None found"
+            echo
+            
+            echo "Issue Count by Severity:"
+            echo "------------------------"
+            for sev in error warning performance portability style information; do
+              count=$(grep -c "${sev}:" cppcheck_output.txt || echo 0)
+              printf "%-12s %d issues\n" "${sev^^}:" "$count"
+            done
+            echo
+            
+            if [ $CPPCHECK_EXIT_CODE -ne 0 ]; then
+              echo "Status: FAILED - Critical issues found"
+              echo "Action Required: Please fix the critical issues listed above"
+            else
+              echo "Status: PASSED - No critical issues found"
+              echo "Note: Review non-critical issues for potential improvements"
+            fi
+          } | tee static_analysis_summary.txt
           
-          echo "----------------------------------------"
-          echo "Other Issues:"
-          echo "----------------------------------------"
-          grep -E "style:|performance:|portability:|information:" cppcheck_output.txt | grep -v "Checking " || true
+          # Always display the summary in the build log
+          cat static_analysis_summary.txt
           
-          echo "----------------------------------------"
-          echo "Summary by Severity:"
-          echo "----------------------------------------"
-          for sev in error warning style performance portability information; do
-            count=$(grep -c "${sev}:" cppcheck_output.txt || echo 0)
-            [ "$count" -gt 0 ] && echo "${sev^^}: $count issues found"
-          done
-          
-          # Exit with cppcheck's status code after showing the summary
-          if [ $CPPCHECK_EXIT_CODE -ne 0 ]; then
-            echo "----------------------------------------"
-            echo "ERROR: Critical issues found. Build will fail."
-            exit $CPPCHECK_EXIT_CODE
-          fi
+          # Exit with original status code
+          exit $CPPCHECK_EXIT_CODE
