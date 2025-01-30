@@ -74,15 +74,15 @@ cppcheck \
     --max-configs=32 \
     --check-library \
     --debug-warnings \
-    . 2>&1 | tee cppcheck_output.txt
+    --error-exitcode=1 \
+    . 2>&1 | tee cppcheck_output.txt || true
 
-# Generate and display summary regardless of cppcheck result
+# Always generate and display summary
 generate_summary
 echo "=== Full Analysis Summary ==="
 cat summary.txt
 
-# Check for critical issues and exit with appropriate code
+# Check for critical issues and exit appropriately
 if grep -q "error:" cppcheck_output.txt || grep -q "warning:" cppcheck_output.txt; then
     exit 1
 fi
-exit 0
