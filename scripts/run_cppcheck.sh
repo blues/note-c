@@ -54,7 +54,6 @@ generate_summary() {
 
 # Run cppcheck and capture output
 exec 3>&1
-CPPCHECK_EXIT_CODE=0
 {
     cppcheck \
         --enable=all \
@@ -78,16 +77,23 @@ CPPCHECK_EXIT_CODE=0
         --check-library \
         --debug-warnings \
         --error-exitcode=1 \
-        . 2>&1 || CPPCHECK_EXIT_CODE=$?
+        . 2>&1
 } | tee cppcheck_output.txt >&3
+CPPCHECK_EXIT_CODE=$?
 exec 3>&-
 
-# Always generate and display summary before exiting
+# Generate and display summary
 generate_summary
 
 # Make sure the summary is visible in CI logs
 echo "=== Full Analysis Summary ==="
 cat summary.txt
 
-# Exit with cppcheck's exit code
-exit $CPPCHECK_EXIT_CODE
+# Exit with cppcheck's exit code if there were errors
+# or exit with 1 if there were warnings
+if [ $CPPCHECK_EXIT_CODE -ne 0 ] || grep -q "warning:" cppcheck_output.txt; then
+    echo "Critical issues found. Check the summary above for details."
+    exit 1
+fi
+
+exit 0
