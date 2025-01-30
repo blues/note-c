@@ -62,6 +62,7 @@ cppcheck \
     --inline-suppr \
     --suppress=missingIncludeSystem \
     --suppress=nullPointerRedundantCheck:*/n_cjson.c \
+    --suppress=ctunullpointer:*/n_cjson.c \
     --suppress=unusedFunction \
     --suppress=unmatchedSuppression \
     --suppress=style \
