@@ -78,13 +78,19 @@ cppcheck \
     . 2>&1 | tee cppcheck_output.txt
 CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
-# Always generate and display summary before exiting
+# Generate and display summary
 generate_summary
 echo "=== Full Analysis Summary ==="
 cat summary.txt
 
-# Exit with error if there are critical issues
+# Store if there are critical issues
+HAS_CRITICAL_ISSUES=0
 if [ $CPPCHECK_EXIT_CODE -ne 0 ] || grep -q "error:" cppcheck_output.txt || grep -q "warning:" cppcheck_output.txt; then
+    HAS_CRITICAL_ISSUES=1
+fi
+
+# Display critical issues message if any were found
+if [ $HAS_CRITICAL_ISSUES -eq 1 ]; then
     echo "Critical issues found. Check the summary above for details."
     exit 1
 fi
