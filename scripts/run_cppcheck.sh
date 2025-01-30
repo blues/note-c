@@ -53,7 +53,7 @@ generate_summary() {
 }
 
 # Run cppcheck and capture output
-# Run cppcheck and capture output
+# Run cppcheck and capture output and exit code
 cppcheck \
     --enable=all \
     --check-level=exhaustive \
@@ -78,6 +78,48 @@ cppcheck \
     --error-exitcode=1 \
     . 2>&1 | tee cppcheck_output.txt
 CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
+
+# Always generate and display summary regardless of exit code
+echo
+echo "=== Static Analysis Summary ==="
+echo
+
+# Display critical issues
+echo "Critical Issues (Errors & Warnings):"
+echo "-----------------------------------"
+grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " | grep -v "nofile:0:" | \
+    sort | uniq | awk -F': ' '{printf "%-40s %s\n", $1, $4}' || echo "None found"
+echo
+
+# Display performance issues
+echo "Performance & Portability Issues:"
+echo "--------------------------------"
+grep -E "performance:|portability:" cppcheck_output.txt | grep -v "Checking " | \
+    sort | uniq | awk -F': ' '{printf "%-40s %s\n", $1, $4}' || echo "None found"
+echo
+
+# Count issues by severity
+echo "Issue Count by Severity:"
+echo "------------------------"
+for sev in error warning performance portability style information; do
+    count=$(grep -c "${sev}:" cppcheck_output.txt || echo 0)
+    printf "%-12s %d issues\n" "${sev^^}:" "$count"
+done
+echo
+
+# Display status and details
+if [ $CPPCHECK_EXIT_CODE -ne 0 ]; then
+    echo "Status: FAILED - Critical issues found"
+    echo
+    echo "Critical Issues Details:"
+    echo "------------------------"
+    grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " | grep -v "nofile:0:" | \
+        sort | uniq || echo "None found"
+    echo
+fi
+
+# Exit with cppcheck's status code
+exit $CPPCHECK_EXIT_CODE
 
 # Generate and display summary
 echo
