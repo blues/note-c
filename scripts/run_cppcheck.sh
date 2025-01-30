@@ -52,33 +52,35 @@ generate_summary() {
     } | tee summary.txt
 }
 
-# Run cppcheck and capture output
-cppcheck \
-    --enable=all \
-    --check-level=exhaustive \
-    --inconclusive \
-    --std=c11 \
-    --force \
-    --inline-suppr \
-    --suppress=missingIncludeSystem \
-    --suppress=nullPointerRedundantCheck:*/n_cjson.c \
-    --suppress=ctunullpointer:*/n_cjson.c \
-    --suppress=unusedFunction \
-    --suppress=unmatchedSuppression \
-    --suppress=style \
-    --suppress=information \
-    --suppress=syntaxError:test/* \
-    --suppress=unknownMacro:test/* \
-    -I test/include \
-    --template="{file}:{line}: {severity}: {id}: {message}" \
-    --max-configs=32 \
-    --check-library \
-    --debug-warnings \
-    --error-exitcode=1 \
-    . 2>&1 | tee cppcheck_output.txt
-CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
+# Function to run cppcheck
+run_cppcheck() {
+    cppcheck \
+        --enable=all \
+        --check-level=exhaustive \
+        --inconclusive \
+        --std=c11 \
+        --force \
+        --inline-suppr \
+        --suppress=missingIncludeSystem \
+        --suppress=nullPointerRedundantCheck:*/n_cjson.c \
+        --suppress=ctunullpointer:*/n_cjson.c \
+        --suppress=unusedFunction \
+        --suppress=unmatchedSuppression \
+        --suppress=style \
+        --suppress=information \
+        --suppress=syntaxError:test/* \
+        --suppress=unknownMacro:test/* \
+        -I test/include \
+        --template="{file}:{line}: {severity}: {id}: {message}" \
+        --max-configs=32 \
+        --check-library \
+        --debug-warnings \
+        --error-exitcode=1 \
+        . 2>&1 | tee cppcheck_output.txt
+    return ${PIPESTATUS[0]}
+}
 
-# Generate summary
+# Function to generate summary
 generate_summary() {
     echo "=== Static Analysis Summary ==="
     echo
@@ -112,6 +114,12 @@ generate_summary() {
     fi
 }
 
-# Ensure summary is displayed before exit
+# Run cppcheck and capture its exit code
+run_cppcheck
+CPPCHECK_EXIT_CODE=$?
+
+# Always generate and display summary before exiting
 generate_summary | tee summary.txt
+
+# Exit with cppcheck's status code
 exit $CPPCHECK_EXIT_CODE
