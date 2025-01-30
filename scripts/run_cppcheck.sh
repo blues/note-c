@@ -53,38 +53,57 @@ generate_summary() {
 }
 
 # Run cppcheck and capture all output
-cppcheck \
-    --enable=all \
-    --check-level=exhaustive \
-    --inconclusive \
-    --std=c11 \
-    --force \
-    --inline-suppr \
-    --suppress=missingIncludeSystem \
-    --suppress=nullPointerRedundantCheck:*/n_cjson.c \
-    --suppress=ctunullpointer:*/n_cjson.c \
-    --suppress=unusedFunction \
-    --suppress=unmatchedSuppression \
-    --suppress=style \
-    --suppress=information \
-    --suppress=syntaxError:test/* \
-    --suppress=unknownMacro:test/* \
-    -I test/include \
-    --template="{file}:{line}: {severity}: {id}: {message}" \
-    --max-configs=32 \
-    --check-library \
-    --debug-warnings \
-    --error-exitcode=1 \
-    . 2>&1 | tee cppcheck_output.txt
-CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
-
-# Always generate and display summary, regardless of exit code
-generate_summary
-
-# Store the summary in a file that can be used by CI
 {
+    cppcheck \
+        --enable=all \
+        --check-level=exhaustive \
+        --inconclusive \
+        --std=c11 \
+        --force \
+        --inline-suppr \
+        --suppress=missingIncludeSystem \
+        --suppress=nullPointerRedundantCheck:*/n_cjson.c \
+        --suppress=ctunullpointer:*/n_cjson.c \
+        --suppress=unusedFunction \
+        --suppress=unmatchedSuppression \
+        --suppress=style \
+        --suppress=information \
+        --suppress=syntaxError:test/* \
+        --suppress=unknownMacro:test/* \
+        -I test/include \
+        --template="{file}:{line}: {severity}: {id}: {message}" \
+        --max-configs=32 \
+        --check-library \
+        --debug-warnings \
+        --error-exitcode=1 \
+        . 2>&1 | tee cppcheck_output.txt
+    CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
+
+    # Generate and display summary before exiting
+    echo
     echo "=== Static Analysis Summary ==="
     echo
+    
+    echo "Critical Issues (Errors & Warnings):"
+    echo "-----------------------------------"
+    grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " | grep -v "nofile:0:" | \
+        sort | uniq | awk -F': ' '{printf "%-40s %s\n", $1, $4}' || echo "None found"
+    echo
+    
+    echo "Performance & Portability Issues:"
+    echo "--------------------------------"
+    grep -E "performance:|portability:" cppcheck_output.txt | grep -v "Checking " | \
+        sort | uniq | awk -F': ' '{printf "%-40s %s\n", $1, $4}' || echo "None found"
+    echo
+    
+    echo "Issue Count by Severity:"
+    echo "------------------------"
+    for sev in error warning performance portability style information; do
+        count=$(grep -c "${sev}:" cppcheck_output.txt || echo 0)
+        printf "%-12s %d issues\n" "${sev^^}:" "$count"
+    done
+    echo
+    
     if [ $CPPCHECK_EXIT_CODE -ne 0 ]; then
         echo "Status: FAILED - Critical issues found"
         echo
@@ -96,7 +115,7 @@ generate_summary
         echo "Status: PASSED - No critical issues found"
         echo "Note: Review non-critical issues for potential improvements"
     fi
-} > summary.txt
+} | tee summary.txt
 
 # Exit with the cppcheck exit code
 exit $CPPCHECK_EXIT_CODE
