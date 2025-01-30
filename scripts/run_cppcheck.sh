@@ -52,7 +52,7 @@ generate_summary() {
     } | tee summary.txt
 }
 
-# Run cppcheck and capture output
+# Run cppcheck and capture output and exit code
 cppcheck \
     --enable=all \
     --check-level=exhaustive \
@@ -75,17 +75,13 @@ cppcheck \
     --check-library \
     --debug-warnings \
     --error-exitcode=1 \
-    . 2>&1 | tee cppcheck_output.txt
-CPPCHECK_EXIT_CODE=$?
+    . > >(tee cppcheck_output.txt) 2>&1
+CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
-# Always generate and display summary
+# Generate and display summary
 generate_summary
 echo "=== Full Analysis Summary ==="
 cat summary.txt
 
-# If there are critical issues, display them and exit with error
-if [ $CPPCHECK_EXIT_CODE -ne 0 ]; then
-    echo
-    echo "Critical issues found. Check the summary above for details."
-    exit 1
-fi
+# Exit with cppcheck's exit code
+exit $CPPCHECK_EXIT_CODE
