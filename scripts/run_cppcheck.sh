@@ -78,8 +78,25 @@ cppcheck \
     . 2>&1 | tee cppcheck_output.txt
 CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
-# Generate and display summary
+# Always generate and display summary, regardless of exit code
 generate_summary
+
+# Store the summary in a file that can be used by CI
+{
+    echo "=== Static Analysis Summary ==="
+    echo
+    if [ $CPPCHECK_EXIT_CODE -ne 0 ]; then
+        echo "Status: FAILED - Critical issues found"
+        echo
+        echo "Critical Issues Details:"
+        echo "------------------------"
+        grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " | grep -v "nofile:0:" | \
+            sort | uniq || echo "None found"
+    else
+        echo "Status: PASSED - No critical issues found"
+        echo "Note: Review non-critical issues for potential improvements"
+    fi
+} > summary.txt
 
 # Exit with the cppcheck exit code
 exit $CPPCHECK_EXIT_CODE
