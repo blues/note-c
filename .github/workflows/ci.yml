@@ -181,7 +181,7 @@ jobs:
 
       - name: Run cppcheck
         run: |
-          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_cppcheck.sh
+          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_cppcheck.sh ghcr.io/blues/note_c_ci:latest
 
   publish_ci_image:
     runs-on: ubuntu-latest
