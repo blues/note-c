@@ -114,6 +114,9 @@ cppcheck \
     . 2>&1 | tee cppcheck_output.txt
 CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
+# Run cppcheck and capture its exit code
+CPPCHECK_EXIT_CODE=$?
+
 # Generate and display summary
 generate_summary
 
