@@ -520,7 +520,6 @@ void NoteDelayMs(uint32_t ms)
     }
 }
 
-#if NOTE_C_SHOW_MALLOC
 //**************************************************************************/
 /*!
   @brief  Convert number to a hex string
@@ -530,8 +529,6 @@ void NoteDelayMs(uint32_t ms)
 /**************************************************************************/
 void _n_htoa32(uint32_t n, char *p)
 {
-    static_assert(sizeof(void *) == sizeof(uint32_t), "Pointer size mismatch");
-
     for (int i=0; i<8; i++) {
         uint32_t nibble = (n >> 28) & 0xff;
         n = n << 4;
@@ -543,7 +540,14 @@ void _n_htoa32(uint32_t n, char *p)
     }
     *p = '\0';
 }
+
+#if NOTE_C_SHOW_MALLOC
+void _n_ptoa32(void* ptr, char* p) {
+    static_assert(sizeof(void *) == sizeof(uint32_t), "Pointer size mismatch");
+    _n_htoa32((uint32_t)ptr);
+}
 #endif
+
 
 //**************************************************************************/
 /*!
@@ -566,7 +570,7 @@ void *NoteMalloc(size_t size)
         if (p == NULL) {
             hookDebugOutput("FAIL");
         } else {
-            _n_htoa32((uint32_t)p, str);
+            _n_ptoa32(p, str);
             hookDebugOutput(str);
         }
     }
@@ -586,7 +590,7 @@ void NoteFree(void *p)
 #if NOTE_C_SHOW_MALLOC
         if (_noteIsDebugOutputActive()) {
             char str[16];
-            _n_htoa32((uint32_t)p, str);
+            _n_ptoa32(p, str);
             hookDebugOutput("free");
             hookDebugOutput(str);
         }
