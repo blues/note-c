@@ -52,8 +52,9 @@ generate_summary() {
     } | tee summary.txt
 }
 
-# Run cppcheck and capture output to temporary file
-cppcheck \
+# Run cppcheck and capture output
+exec 5>&1
+CPPCHECK_OUTPUT=$(cppcheck \
     --enable=all \
     --check-level=exhaustive \
     --inconclusive \
@@ -75,11 +76,11 @@ cppcheck \
     --check-library \
     --debug-warnings \
     --error-exitcode=1 \
-    . > cppcheck_output.txt 2>&1
+    . 2>&1)
 CPPCHECK_EXIT_CODE=$?
 
-# Display cppcheck output
-cat cppcheck_output.txt
+# Save output to file and display it
+echo "$CPPCHECK_OUTPUT" | tee cppcheck_output.txt
 
 echo
 echo "=== Static Analysis Summary ==="
