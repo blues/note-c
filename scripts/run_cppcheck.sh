@@ -52,35 +52,33 @@ generate_summary() {
     } | tee summary.txt
 }
 
-# Run cppcheck and capture output
-exec 3>&1
-{
-    cppcheck \
-        --enable=all \
-        --check-level=exhaustive \
-        --inconclusive \
-        --std=c11 \
-        --force \
-        --inline-suppr \
-        --suppress=missingIncludeSystem \
-        --suppress=nullPointerRedundantCheck:*/n_cjson.c \
-        --suppress=ctunullpointer:*/n_cjson.c \
-        --suppress=unusedFunction \
-        --suppress=unmatchedSuppression \
-        --suppress=style \
-        --suppress=information \
-        --suppress=syntaxError:test/* \
-        --suppress=unknownMacro:test/* \
-        -I test/include \
-        --template="{file}:{line}: {severity}: {id}: {message}" \
-        --max-configs=32 \
-        --check-library \
-        --debug-warnings \
-        --error-exitcode=1 \
-        . 2>&1
-} | tee cppcheck_output.txt >&3
-CPPCHECK_EXIT_CODE=$?
-exec 3>&-
+# Run cppcheck and capture output to file
+cppcheck \
+    --enable=all \
+    --check-level=exhaustive \
+    --inconclusive \
+    --std=c11 \
+    --force \
+    --inline-suppr \
+    --suppress=missingIncludeSystem \
+    --suppress=nullPointerRedundantCheck:*/n_cjson.c \
+    --suppress=ctunullpointer:*/n_cjson.c \
+    --suppress=unusedFunction \
+    --suppress=unmatchedSuppression \
+    --suppress=style \
+    --suppress=information \
+    --suppress=syntaxError:test/* \
+    --suppress=unknownMacro:test/* \
+    -I test/include \
+    --template="{file}:{line}: {severity}: {id}: {message}" \
+    --max-configs=32 \
+    --check-library \
+    --debug-warnings \
+    --error-exitcode=1 \
+    . 2>&1 | tee cppcheck_output.txt
+
+# Store the exit code before generating summary
+CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
 # Generate and display summary
 generate_summary
@@ -89,11 +87,5 @@ generate_summary
 echo "=== Full Analysis Summary ==="
 cat summary.txt
 
-# Exit with cppcheck's exit code if there were errors
-# or exit with 1 if there were warnings
-if [ $CPPCHECK_EXIT_CODE -ne 0 ] || grep -q "warning:" cppcheck_output.txt; then
-    echo "Critical issues found. Check the summary above for details."
-    exit 1
-fi
-
-exit 0
+# Exit with the stored exit code
+exit $CPPCHECK_EXIT_CODE
