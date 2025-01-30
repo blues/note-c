@@ -89,9 +89,5 @@ generate_summary
 echo "=== Full Analysis Summary ==="
 cat summary.txt
 
-# Exit with error if critical issues were found
-if [ $HAS_CRITICAL_ISSUES -eq 1 ]; then
-    exit 1
-fi
-
-exit 0
+# Exit with the appropriate code
+exit $HAS_CRITICAL_ISSUES
