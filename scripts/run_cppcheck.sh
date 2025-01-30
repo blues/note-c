@@ -53,34 +53,34 @@ generate_summary() {
 }
 
 # Run cppcheck and capture all output
-{
-    cppcheck \
-        --enable=all \
-        --check-level=exhaustive \
-        --inconclusive \
-        --std=c11 \
-        --force \
-        --inline-suppr \
-        --suppress=missingIncludeSystem \
-        --suppress=nullPointerRedundantCheck:*/n_cjson.c \
-        --suppress=ctunullpointer:*/n_cjson.c \
-        --suppress=unusedFunction \
-        --suppress=unmatchedSuppression \
-        --suppress=style \
-        --suppress=information \
-        --suppress=syntaxError:test/* \
-        --suppress=unknownMacro:test/* \
-        -I test/include \
-        --template="{file}:{line}: {severity}: {id}: {message}" \
-        --max-configs=32 \
-        --check-library \
-        --debug-warnings \
-        --error-exitcode=1 \
-        . 2>&1 | tee cppcheck_output.txt
-    CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
+# Run cppcheck and capture output
+cppcheck \
+    --enable=all \
+    --check-level=exhaustive \
+    --inconclusive \
+    --std=c11 \
+    --force \
+    --inline-suppr \
+    --suppress=missingIncludeSystem \
+    --suppress=nullPointerRedundantCheck:*/n_cjson.c \
+    --suppress=ctunullpointer:*/n_cjson.c \
+    --suppress=unusedFunction \
+    --suppress=unmatchedSuppression \
+    --suppress=style \
+    --suppress=information \
+    --suppress=syntaxError:test/* \
+    --suppress=unknownMacro:test/* \
+    -I test/include \
+    --template="{file}:{line}: {severity}: {id}: {message}" \
+    --max-configs=32 \
+    --check-library \
+    --debug-warnings \
+    --error-exitcode=1 \
+    . 2>&1 | tee cppcheck_output.txt
+CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
-    # Generate and display summary before exiting
-    echo
+# Generate and display summary
+{
     echo "=== Static Analysis Summary ==="
     echo
     
@@ -116,6 +116,9 @@ generate_summary() {
         echo "Note: Review non-critical issues for potential improvements"
     fi
 } | tee summary.txt
+
+# Exit with cppcheck's exit code
+exit $CPPCHECK_EXIT_CODE
 
 # Exit with the cppcheck exit code
 exit $CPPCHECK_EXIT_CODE
