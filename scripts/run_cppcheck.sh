@@ -53,44 +53,37 @@ generate_summary() {
 }
 
 # Run cppcheck and capture output
-{
-    cppcheck \
-        --enable=all \
-        --check-level=exhaustive \
-        --inconclusive \
-        --std=c11 \
-        --force \
-        --inline-suppr \
-        --suppress=missingIncludeSystem \
-        --suppress=nullPointerRedundantCheck:*/n_cjson.c \
-        --suppress=ctunullpointer:*/n_cjson.c \
-        --suppress=unusedFunction \
-        --suppress=unmatchedSuppression \
-        --suppress=style \
-        --suppress=information \
-        --suppress=syntaxError:test/* \
-        --suppress=unknownMacro:test/* \
-        -I test/include \
-        --template="{file}:{line}: {severity}: {id}: {message}" \
-        --max-configs=32 \
-        --check-library \
-        --debug-warnings \
-        --error-exitcode=1 \
-        . 2>&1 | tee cppcheck_output.txt
-    CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
+cppcheck \
+    --enable=all \
+    --check-level=exhaustive \
+    --inconclusive \
+    --std=c11 \
+    --force \
+    --inline-suppr \
+    --suppress=missingIncludeSystem \
+    --suppress=nullPointerRedundantCheck:*/n_cjson.c \
+    --suppress=ctunullpointer:*/n_cjson.c \
+    --suppress=unusedFunction \
+    --suppress=unmatchedSuppression \
+    --suppress=style \
+    --suppress=information \
+    --suppress=syntaxError:test/* \
+    --suppress=unknownMacro:test/* \
+    -I test/include \
+    --template="{file}:{line}: {severity}: {id}: {message}" \
+    --max-configs=32 \
+    --check-library \
+    --debug-warnings \
+    --error-exitcode=1 \
+    . 2>&1 | tee cppcheck_output.txt
+CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
-    # Always generate and display summary before exiting
-    generate_summary
+# Always generate and display summary before exiting
+generate_summary
 
-    # Make sure the summary is visible in CI logs
-    echo "=== Full Analysis Summary ==="
-    cat summary.txt
+# Make sure the summary is visible in CI logs
+echo "=== Full Analysis Summary ==="
+cat summary.txt
 
-    # Exit with cppcheck's exit code
-    exit $CPPCHECK_EXIT_CODE
-} || {
-    # If cppcheck fails, ensure we still display the summary
-    echo "=== Full Analysis Summary ==="
-    cat summary.txt
-    exit 1
-}
+# Exit with cppcheck's exit code
+exit $CPPCHECK_EXIT_CODE
