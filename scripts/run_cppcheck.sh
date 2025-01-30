@@ -76,16 +76,17 @@ cppcheck \
     --debug-warnings \
     --error-exitcode=1 \
     . 2>&1 | tee cppcheck_output.txt
-
-# Store the exit code before generating summary
 CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
-# Generate and display summary
+# Always generate and display summary before exiting
 generate_summary
-
-# Make sure the summary is visible in CI logs
 echo "=== Full Analysis Summary ==="
 cat summary.txt
 
-# Exit with the stored exit code
-exit $CPPCHECK_EXIT_CODE
+# Exit with error if there are critical issues
+if [ $CPPCHECK_EXIT_CODE -ne 0 ] || grep -q "error:" cppcheck_output.txt || grep -q "warning:" cppcheck_output.txt; then
+    echo "Critical issues found. Check the summary above for details."
+    exit 1
+fi
+
+exit 0
