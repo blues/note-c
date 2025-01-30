@@ -66,6 +66,9 @@ cppcheck \
     --suppress=unmatchedSuppression \
     --suppress=style \
     --suppress=information \
+    --suppress=syntaxError:test/* \
+    --suppress=unknownMacro:test/* \
+    -I test/include \
     --template="{file}:{line}: {severity}: {id}: {message}" \
     --max-configs=32 \
     --check-library \
