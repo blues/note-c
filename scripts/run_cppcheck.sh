@@ -52,8 +52,7 @@ generate_summary() {
     } | tee summary.txt
 }
 
-# Run cppcheck and capture output and exit code
-set -o pipefail
+# Run cppcheck and capture output
 cppcheck \
     --enable=all \
     --check-level=exhaustive \
@@ -84,12 +83,9 @@ generate_summary
 echo "=== Full Analysis Summary ==="
 cat summary.txt
 
-# Store the summary in case we need to display it again
-cp summary.txt cppcheck_summary.txt
-
 # If there are critical issues, display them and exit with error
 if [ $CPPCHECK_EXIT_CODE -ne 0 ]; then
+    echo
     echo "Critical issues found. Check the summary above for details."
-    cat cppcheck_summary.txt
     exit 1
 fi
