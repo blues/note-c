@@ -32,25 +32,55 @@ jobs:
           echo
           
           # Run cppcheck and capture output
-          cppcheck \
-            --enable=all \
-            --check-level=exhaustive \
-            --inconclusive \
-            --std=c11 \
-            --force \
-            --inline-suppr \
-            --suppress=missingIncludeSystem \
-            --suppress=nullPointerRedundantCheck:*/n_cjson.c \
-            --suppress=unusedFunction \
-            --suppress=unmatchedSuppression \
-            --suppress=style \
-            --suppress=information \
-            --template="{file}:{line}: {severity}: {id}: {message}" \
-            --max-configs=32 \
-            --check-library \
-            --debug-warnings \
-            --error-exitcode=1 \
-            . 2>&1 | tee cppcheck_output.txt
+          {
+            # Run cppcheck and store exit code
+            cppcheck \
+              --enable=all \
+              --check-level=exhaustive \
+              --inconclusive \
+              --std=c11 \
+              --force \
+              --inline-suppr \
+              --suppress=missingIncludeSystem \
+              --suppress=nullPointerRedundantCheck:*/n_cjson.c \
+              --suppress=unusedFunction \
+              --suppress=unmatchedSuppression \
+              --suppress=style \
+              --suppress=information \
+              --template="{file}:{line}: {severity}: {id}: {message}" \
+              --max-configs=32 \
+              --check-library \
+              --debug-warnings \
+              --error-exitcode=1 \
+              . 2>&1 | tee cppcheck_output.txt
+            CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
+
+            # Always generate and display summary
+            echo "=== Static Analysis Summary ==="
+            echo
+            echo "Critical Issues (Errors & Warnings):"
+            echo "-----------------------------------"
+            grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " | grep -v "nofile:0:" | \
+              awk -F': ' '{printf "%-40s %s\n", $1, $4}' || echo "None found"
+            echo
+            
+            echo "Performance & Portability Issues:"
+            echo "--------------------------------"
+            grep -E "performance:|portability:" cppcheck_output.txt | grep -v "Checking " | \
+              awk -F': ' '{printf "%-40s %s\n", $1, $4}' || echo "None found"
+            echo
+            
+            echo "Issue Count by Severity:"
+            echo "------------------------"
+            for sev in error warning performance portability style information; do
+              count=$(grep -c "${sev}:" cppcheck_output.txt || echo 0)
+              printf "%-12s %d issues\n" "${sev^^}:" "$count"
+            done
+            echo
+            
+            # Exit with original status code
+            exit $CPPCHECK_EXIT_CODE
+          }
           
           CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
           
