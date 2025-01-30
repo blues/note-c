@@ -83,5 +83,7 @@ generate_summary
 echo "=== Full Analysis Summary ==="
 cat summary.txt
 
-# Exit with cppcheck's exit code
-exit $CPPCHECK_EXIT_CODE
+# Exit with error if critical issues found
+if grep -q "error:" cppcheck_output.txt || grep -q "warning:" cppcheck_output.txt; then
+    exit 1
+fi
