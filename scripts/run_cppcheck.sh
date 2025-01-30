@@ -75,7 +75,7 @@ cppcheck \
     --check-library \
     --debug-warnings \
     --error-exitcode=1 \
-    . 2>&1 | tee cppcheck_output.txt
+    . > >(tee cppcheck_output.txt) 2>&1
 CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
 # Function to generate summary
