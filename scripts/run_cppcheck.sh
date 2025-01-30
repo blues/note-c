@@ -53,30 +53,34 @@ generate_summary() {
 }
 
 # Run cppcheck and capture output
-cppcheck \
-    --enable=all \
-    --check-level=exhaustive \
-    --inconclusive \
-    --std=c11 \
-    --force \
-    --inline-suppr \
-    --suppress=missingIncludeSystem \
-    --suppress=nullPointerRedundantCheck:*/n_cjson.c \
-    --suppress=ctunullpointer:*/n_cjson.c \
-    --suppress=unusedFunction \
-    --suppress=unmatchedSuppression \
-    --suppress=style \
-    --suppress=information \
-    --suppress=syntaxError:test/* \
-    --suppress=unknownMacro:test/* \
-    -I test/include \
-    --template="{file}:{line}: {severity}: {id}: {message}" \
-    --max-configs=32 \
-    --check-library \
-    --debug-warnings \
-    --error-exitcode=1 \
-    . 2>&1 | tee cppcheck_output.txt
-CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
+exec 3>&1
+CPPCHECK_EXIT_CODE=0
+{
+    cppcheck \
+        --enable=all \
+        --check-level=exhaustive \
+        --inconclusive \
+        --std=c11 \
+        --force \
+        --inline-suppr \
+        --suppress=missingIncludeSystem \
+        --suppress=nullPointerRedundantCheck:*/n_cjson.c \
+        --suppress=ctunullpointer:*/n_cjson.c \
+        --suppress=unusedFunction \
+        --suppress=unmatchedSuppression \
+        --suppress=style \
+        --suppress=information \
+        --suppress=syntaxError:test/* \
+        --suppress=unknownMacro:test/* \
+        -I test/include \
+        --template="{file}:{line}: {severity}: {id}: {message}" \
+        --max-configs=32 \
+        --check-library \
+        --debug-warnings \
+        --error-exitcode=1 \
+        . 2>&1 || CPPCHECK_EXIT_CODE=$?
+} | tee cppcheck_output.txt >&3
+exec 3>&-
 
 # Always generate and display summary before exiting
 generate_summary
