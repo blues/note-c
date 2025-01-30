@@ -52,7 +52,7 @@ generate_summary() {
     } | tee summary.txt
 }
 
-# Run cppcheck and capture output
+# Run cppcheck and capture both output and exit code
 cppcheck \
     --enable=all \
     --check-level=exhaustive \
@@ -75,14 +75,13 @@ cppcheck \
     --check-library \
     --debug-warnings \
     --error-exitcode=1 \
-    . 2>&1 | tee cppcheck_output.txt || true
+    . 2>&1 | tee cppcheck_output.txt
+CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
 # Always generate and display summary
 generate_summary
 echo "=== Full Analysis Summary ==="
 cat summary.txt
 
-# Check for critical issues and exit appropriately
-if grep -q "error:" cppcheck_output.txt || grep -q "warning:" cppcheck_output.txt; then
-    exit 1
-fi
+# Exit with cppcheck's exit code
+exit $CPPCHECK_EXIT_CODE
