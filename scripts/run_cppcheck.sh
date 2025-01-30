@@ -76,47 +76,51 @@ cppcheck \
     --check-library \
     --debug-warnings \
     --error-exitcode=1 \
-    . > >(tee cppcheck_output.txt) 2>&1
+    . 2>&1 | tee cppcheck_output.txt
 CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
-# Generate summary
-echo "=== Static Analysis Summary ===" > summary.txt
-echo >> summary.txt
+# Function to generate summary
+generate_summary() {
+    {
+        echo "=== Static Analysis Summary ==="
+        echo
+        
+        echo "Critical Issues (Errors & Warnings):"
+        echo "-----------------------------------"
+        grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " | grep -v "nofile:0:" | \
+            sort | uniq | awk -F': ' '{printf "%-40s %s\n", $1, $4}' || echo "None found"
+        echo
+        
+        echo "Performance & Portability Issues:"
+        echo "--------------------------------"
+        grep -E "performance:|portability:" cppcheck_output.txt | grep -v "Checking " | \
+            sort | uniq | awk -F': ' '{printf "%-40s %s\n", $1, $4}' || echo "None found"
+        echo
+        
+        echo "Issue Count by Severity:"
+        echo "------------------------"
+        for sev in error warning performance portability style information; do
+            count=$(grep -c "${sev}:" cppcheck_output.txt || echo 0)
+            printf "%-12s %d issues\n" "${sev^^}:" "$count"
+        done
+        echo
+        
+        if [ $CPPCHECK_EXIT_CODE -ne 0 ]; then
+            echo "Status: FAILED - Critical issues found"
+            echo
+            echo "Critical Issues Details:"
+            echo "------------------------"
+            grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " | grep -v "nofile:0:" | \
+                sort | uniq || echo "None found"
+        else
+            echo "Status: PASSED - No critical issues found"
+            echo "Note: Review non-critical issues for potential improvements"
+        fi
+    } | tee summary.txt
+}
 
-echo "Critical Issues (Errors & Warnings):" >> summary.txt
-echo "-----------------------------------" >> summary.txt
-grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " | grep -v "nofile:0:" | \
-    sort | uniq | awk -F': ' '{printf "%-40s %s\n", $1, $4}' >> summary.txt || echo "None found" >> summary.txt
-echo >> summary.txt
-
-echo "Performance & Portability Issues:" >> summary.txt
-echo "--------------------------------" >> summary.txt
-grep -E "performance:|portability:" cppcheck_output.txt | grep -v "Checking " | \
-    sort | uniq | awk -F': ' '{printf "%-40s %s\n", $1, $4}' >> summary.txt || echo "None found" >> summary.txt
-echo >> summary.txt
-
-echo "Issue Count by Severity:" >> summary.txt
-echo "------------------------" >> summary.txt
-for sev in error warning performance portability style information; do
-    count=$(grep -c "${sev}:" cppcheck_output.txt || echo 0)
-    printf "%-12s %d issues\n" "${sev^^}:" "$count" >> summary.txt
-done
-echo >> summary.txt
-
-if [ $CPPCHECK_EXIT_CODE -ne 0 ]; then
-    echo "Status: FAILED - Critical issues found" >> summary.txt
-    echo >> summary.txt
-    echo "Critical Issues Details:" >> summary.txt
-    echo "------------------------" >> summary.txt
-    grep -E "error:|warning:" cppcheck_output.txt | grep -v "Checking " | grep -v "nofile:0:" | \
-        sort | uniq >> summary.txt || echo "None found" >> summary.txt
-else
-    echo "Status: PASSED - No critical issues found" >> summary.txt
-    echo "Note: Review non-critical issues for potential improvements" >> summary.txt
-fi
-
-# Display summary
-cat summary.txt
+# Generate and display summary
+generate_summary
 
 # Exit with cppcheck's exit code
 exit $CPPCHECK_EXIT_CODE
