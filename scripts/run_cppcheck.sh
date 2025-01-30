@@ -53,8 +53,7 @@ generate_summary() {
 }
 
 # Run cppcheck and capture output
-exec 5>&1
-CPPCHECK_OUTPUT=$(cppcheck \
+cppcheck \
     --enable=all \
     --check-level=exhaustive \
     --inconclusive \
@@ -76,11 +75,8 @@ CPPCHECK_OUTPUT=$(cppcheck \
     --check-library \
     --debug-warnings \
     --error-exitcode=1 \
-    . 2>&1)
-CPPCHECK_EXIT_CODE=$?
-
-# Save output to file and display it
-echo "$CPPCHECK_OUTPUT" | tee cppcheck_output.txt
+    . 2>&1 | tee cppcheck_output.txt
+CPPCHECK_EXIT_CODE=${PIPESTATUS[0]}
 
 echo
 echo "=== Static Analysis Summary ==="
