@@ -153,11 +153,8 @@ bool NoteRequest(J *req)
     }
 
     // Check for a transaction error, and exit
-    bool success = false;
-    if (rsp != NULL) {
-        success = JIsNullString(rsp, c_err);
-        JDelete(rsp);
-    }
+    bool success = JIsNullString(rsp, c_err);
+    JDelete(rsp);
     return success;
 }
 
@@ -187,11 +184,8 @@ bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds)
     }
 
     // Check for a transaction error, and exit
-    bool success = false;
-    if (rsp != NULL) {
-        success = JIsNullString(rsp, c_err);
-        JDelete(rsp);
-    }
+    bool success = JIsNullString(rsp, c_err);
+    JDelete(rsp);
     return success;
 }
 
