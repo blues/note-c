@@ -646,9 +646,13 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
 #endif
             }
             isIoError = true;
+            JDelete(rsp);  // Ensure rsp is NULL after deletion
+            rsp = NULL;
         }
         if (isIoError || isBadBin) {
-            NOTE_C_LOG_ERROR(JGetString(rsp, c_err));
+            if (rsp != NULL) {
+                NOTE_C_LOG_ERROR(JGetString(rsp, c_err));
+            }
             JFree(responseJSON);
 
             if (isBadBin) {
