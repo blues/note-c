@@ -153,9 +153,11 @@ bool NoteRequest(J *req)
     }
 
     // Check for a transaction error, and exit
-    bool success = JIsNullString(rsp, c_err);
-    JDelete(rsp);
-
+    bool success = false;
+    if (rsp != NULL) {
+        success = JIsNullString(rsp, c_err);
+        JDelete(rsp);
+    }
     return success;
 }
 
@@ -185,9 +187,11 @@ bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds)
     }
 
     // Check for a transaction error, and exit
-    bool success = JIsNullString(rsp, c_err);
-    JDelete(rsp);
-
+    bool success = false;
+    if (rsp != NULL) {
+        success = JIsNullString(rsp, c_err);
+        JDelete(rsp);
+    }
     return success;
 }
 
@@ -476,7 +480,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
 #endif
 
     // Determine whether or not a response will be expected, by virtue of "cmd" being present
-    bool noResponseExpected = (reqType[0] == '\0' && cmdType[0] != '\0');
+    bool noResponseExpected = ((!reqType || reqType[0] == '\0') && (cmdType && cmdType[0] != '\0'));
 
     // If a reset of the module is required for any reason, do it now.
     // We must do this before acquiring lock.
@@ -575,7 +579,9 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
             break;
         } else {
             // free on retry
-            JDelete(rsp);
+            if (rsp != NULL) {
+                JDelete(rsp);
+            }
         }
 
         // reset variables
@@ -646,8 +652,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
 #endif
             }
             isIoError = true;
-            JDelete(rsp);  // Ensure rsp is NULL after deletion
-            rsp = NULL;
+            rsp = errDoc(id, ERRSTR("failed to parse response JSON", c_bad));
         }
         if (isIoError || isBadBin) {
             if (rsp != NULL) {
@@ -682,7 +687,9 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
 
     // If error, queue up a reset
     if (errStr != NULL) {
-        JDelete(rsp);
+        if (rsp != NULL) {
+            JDelete(rsp);
+        }
         NoteResetRequired();
         J *errRsp = errDoc(id, errStr);
         if (lockNotecard) {
