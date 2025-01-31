@@ -476,7 +476,9 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
 #endif
 
     // Determine whether or not a response will be expected, by virtue of "cmd" being present
-    bool noResponseExpected = (reqType[0] == '\0' && cmdType[0] != '\0');
+    // Both `reqType` and `cmdType` are guaranteed to be NULL-terminated strings, but cppcheck
+    // doesn't know that (so we redundantly check for not NULL).
+    bool noResponseExpected = ((reqType && (reqType[0] == '\0')) && (cmdType && (cmdType[0] != '\0')));
 
     // If a reset of the module is required for any reason, do it now.
     // We must do this before acquiring lock.
@@ -573,7 +575,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         // If no retry possibility, break out
         if (lastRequestRetries > CARD_REQUEST_RETRIES_ALLOWED) {
             break;
-        } else {
+        } else if (rsp != NULL) {
             // free on retry
             JDelete(rsp);
         }
@@ -648,8 +650,13 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
             isIoError = true;
         }
         if (isIoError || isBadBin) {
-            NOTE_C_LOG_ERROR(JGetString(rsp, c_err));
-            JFree(responseJSON);
+            if (rsp != NULL) {
+                NOTE_C_LOG_ERROR(JGetString(rsp, c_err));
+            }
+            if (responseJSON != NULL) {
+                JFree(responseJSON);
+                responseJSON = NULL;
+            }
 
             if (isBadBin) {
                 errStr = ERRSTR("notecard binary i/o error {bad-bin}{io}", c_badbinerr);
@@ -678,7 +685,10 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
 
     // If error, queue up a reset
     if (errStr != NULL) {
-        JDelete(rsp);
+        if (rsp != NULL) {
+            JDelete(rsp);
+            rsp = NULL;
+        }
         NoteResetRequired();
         J *errRsp = errDoc(id, errStr);
         if (lockNotecard) {
