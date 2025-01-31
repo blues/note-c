@@ -520,6 +520,10 @@ void NoteDelayMs(uint32_t ms)
     }
 }
 
+// _n_htoa32 is used in this file when showing malloc/free activity (NOTE_C_SHOW_MALLOC==1),
+// and also in request.c, _addCrc, when NOTE_C_LOW_MEM is undefined
+
+#if NOTE_C_SHOW_MALLOC || !defined(NOTE_C_LOW_MEM)
 //**************************************************************************/
 /*!
   @brief  Convert number to a hex string
@@ -540,6 +544,7 @@ void _n_htoa32(uint32_t n, char *p)
     }
     *p = '\0';
 }
+#endif
 
 #if NOTE_C_SHOW_MALLOC
 void _n_ptoa32(void* ptr, char* p) {
