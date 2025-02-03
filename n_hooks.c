@@ -668,6 +668,200 @@ void _noteTransactionStop(void)
     }
 }
 
+/*!
+ @brief Get the platform-specific debug output function.
+ @param fn Pointer to store the debug output function pointer.
+*/
+void NoteGetFnDebugOutput(debugOutputFn *fn)
+{
+    if (fn != NULL) {
+        *fn = hookDebugOutput;
+    }
+}
+
+/*!
+ @brief Get the platform-specific transaction functions.
+ @param startFn Pointer to store the transaction start function pointer.
+ @param stopFn Pointer to store the transaction stop function pointer.
+*/
+void NoteGetFnTransaction(txnStartFn *startFn, txnStopFn *stopFn)
+{
+    if (startFn != NULL) {
+        *startFn = hookTransactionStart;
+    }
+    if (stopFn != NULL) {
+        *stopFn = hookTransactionStop;
+    }
+}
+
+/*!
+ @brief Get the platform-specific mutex functions for I2C and Notecard.
+ @param lockI2Cfn Pointer to store the I2C lock function pointer.
+ @param unlockI2Cfn Pointer to store the I2C unlock function pointer.
+ @param lockNotefn Pointer to store the Notecard lock function pointer.
+ @param unlockNotefn Pointer to store the Notecard unlock function pointer.
+*/
+void NoteGetFnMutex(mutexFn *lockI2Cfn, mutexFn *unlockI2Cfn, mutexFn *lockNotefn,
+                    mutexFn *unlockNotefn)
+{
+    if (lockI2Cfn != NULL) {
+        *lockI2Cfn = hookLockI2C;
+    }
+    if (unlockI2Cfn != NULL) {
+        *unlockI2Cfn = hookUnlockI2C;
+    }
+    if (lockNotefn != NULL) {
+        *lockNotefn = hookLockNote;
+    }
+    if (unlockNotefn != NULL) {
+        *unlockNotefn = hookUnlockNote;
+    }
+}
+
+/*!
+ @brief Get the platform-specific mutex functions for I2C.
+ @param lockI2Cfn Pointer to store the I2C lock function pointer.
+ @param unlockI2Cfn Pointer to store the I2C unlock function pointer.
+*/
+void NoteGetFnI2CMutex(mutexFn *lockI2Cfn, mutexFn *unlockI2Cfn)
+{
+    if (lockI2Cfn != NULL) {
+        *lockI2Cfn = hookLockI2C;
+    }
+    if (unlockI2Cfn != NULL) {
+        *unlockI2Cfn = hookUnlockI2C;
+    }
+}
+
+/*!
+ @brief Get the platform-specific mutex functions for the Notecard.
+ @param lockFn Pointer to store the Notecard lock function pointer.
+ @param unlockFn Pointer to store the Notecard unlock function pointer.
+*/
+void NoteGetFnNoteMutex(mutexFn *lockFn, mutexFn *unlockFn)
+{
+    if (lockFn != NULL) {
+        *lockFn = hookLockNote;
+    }
+    if (unlockFn != NULL) {
+        *unlockFn = hookUnlockNote;
+    }
+}
+
+/*!
+ @brief Get the default memory and timing hooks.
+ @param mallocfn Pointer to store the memory allocation function pointer.
+ @param freefn Pointer to store the memory free function pointer.
+ @param delayfn Pointer to store the delay function pointer.
+ @param millisfn Pointer to store the millis function pointer.
+*/
+void NoteGetFnDefault(mallocFn *mallocfn, freeFn *freefn, delayMsFn *delayfn,
+                      getMsFn *millisfn)
+{
+    if (mallocfn != NULL) {
+        *mallocfn = hookMalloc;
+    }
+    if (freefn != NULL) {
+        *freefn = hookFree;
+    }
+    if (delayfn != NULL) {
+        *delayfn = hookDelayMs;
+    }
+    if (millisfn != NULL) {
+        *millisfn = hookGetMs;
+    }
+}
+
+/*!
+ @brief Get the platform-specific memory and timing hooks.
+ @param mallocHook Pointer to store the memory allocation function pointer.
+ @param freeHook Pointer to store the memory free function pointer.
+ @param delayMsHook Pointer to store the delay function pointer.
+ @param getMsHook Pointer to store the millis function pointer.
+*/
+void NoteGetFn(mallocFn *mallocHook, freeFn *freeHook, delayMsFn *delayMsHook,
+               getMsFn *getMsHook)
+{
+    if (mallocHook != NULL) {
+        *mallocHook = hookMalloc;
+    }
+    if (freeHook != NULL) {
+        *freeHook = hookFree;
+    }
+    if (delayMsHook != NULL) {
+        *delayMsHook = hookDelayMs;
+    }
+    if (getMsHook != NULL) {
+        *getMsHook = hookGetMs;
+    }
+}
+
+/*!
+ @brief Get the platform-specific hooks for serial communication.
+ @param resetFn Pointer to store the serial reset function pointer.
+ @param transmitFn Pointer to store the serial transmit function pointer.
+ @param availFn Pointer to store the serial available function pointer.
+ @param receiveFn Pointer to store the serial receive function pointer.
+*/
+void NoteGetFnSerial(serialResetFn *resetFn, serialTransmitFn *transmitFn,
+                     serialAvailableFn *availFn, serialReceiveFn *receiveFn)
+{
+    if (resetFn != NULL) {
+        *resetFn = hookSerialReset;
+    }
+    if (transmitFn != NULL) {
+        *transmitFn = hookSerialTransmit;
+    }
+    if (availFn != NULL) {
+        *availFn = hookSerialAvailable;
+    }
+    if (receiveFn != NULL) {
+        *receiveFn = hookSerialReceive;
+    }
+}
+
+/*!
+ @brief Get the platform-specific hooks for I2C communication.
+ @param resetFn Pointer to store the I2C reset function pointer.
+ @param transmitFn Pointer to store the I2C transmit function pointer.
+ @param receiveFn Pointer to store the I2C receive function pointer.
+*/
+void NoteGetFnI2C(i2cResetFn *resetFn, i2cTransmitFn *transmitFn,
+                  i2cReceiveFn *receiveFn)
+{
+    if (resetFn != NULL) {
+        *resetFn = hookI2CReset;
+    }
+    if (transmitFn != NULL) {
+        *transmitFn = hookI2CTransmit;
+    }
+    if (receiveFn != NULL) {
+        *receiveFn = hookI2CReceive;
+    }
+}
+
+/*!
+ @brief Get whether the platform-specific communications method is disabled.
+ @param isDisabled Pointer to store the disabled state.
+*/
+void NoteGetFnDisabled(bool *isDisabled)
+{
+    if (isDisabled != NULL) {
+        *isDisabled = (hookActiveInterface == interfaceNone);
+    }
+}
+
+/*!
+ @brief Get the I2C address of the Notecard.
+ @param i2caddress Pointer to store the I2C address.
+*/
+void NoteGetI2CAddress(uint32_t *i2caddress)
+{
+    if (i2caddress != NULL) {
+        *i2caddress = i2cAddress;
+    }
+}
+
 //**************************************************************************/
 /*!
   @brief  Get the active interface's name

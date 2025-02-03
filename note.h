@@ -260,22 +260,38 @@ J *NoteTransaction(J *req);
 bool NoteErrorContains(const char *errstr, const char *errtype);
 void NoteErrorClean(char *errbuf);
 void NoteSetFnDebugOutput(debugOutputFn fn);
+void NoteGetFnDebugOutput(debugOutputFn *fn);
 void NoteSetFnTransaction(txnStartFn startFn, txnStopFn stopFn);
+void NoteGetFnTransaction(txnStartFn *startFn, txnStopFn *stopFn);
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn,
                     mutexFn unlockNotefn);
+void NoteGetFnMutex(mutexFn *lockI2Cfn, mutexFn *unlockI2Cfn, mutexFn *lockNotefn,
+                    mutexFn *unlockNotefn);
 void NoteSetFnI2CMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn);
+void NoteGetFnI2CMutex(mutexFn *lockI2Cfn, mutexFn *unlockI2Cfn);
 void NoteSetFnNoteMutex(mutexFn lockFn, mutexFn unlockFn);
+void NoteGetFnNoteMutex(mutexFn *lockFn, mutexFn *unlockFn);
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn,
                       getMsFn millisfn);
+void NoteGetFnDefault(mallocFn *mallocfn, freeFn *freefn, delayMsFn *delayfn,
+                      getMsFn *millisfn);
 void NoteSetFn(mallocFn mallocHook, freeFn freeHook, delayMsFn delayMsHook,
                getMsFn getMsHook);
+void NoteGetFn(mallocFn *mallocHook, freeFn *freeHook, delayMsFn *delayMsHook,
+               getMsFn *getMsHook);
 void NoteSetFnSerial(serialResetFn resetFn, serialTransmitFn transmitFn,
                      serialAvailableFn availFn, serialReceiveFn receiveFn);
+void NoteGetFnSerial(serialResetFn *resetFn, serialTransmitFn *transmitFn,
+                     serialAvailableFn *availFn, serialReceiveFn *receiveFn);
 void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
                   i2cResetFn resetFn, i2cTransmitFn transmitFn,
                   i2cReceiveFn receiveFn);
+void NoteGetFnI2C(i2cResetFn *resetFn, i2cTransmitFn *transmitFn,
+                  i2cReceiveFn *receiveFn);
 void NoteSetFnDisabled(void);
+void NoteGetFnDisabled(bool *isDisabled);
 void NoteSetI2CAddress(uint32_t i2caddress);
+void NoteGetI2CAddress(uint32_t *i2caddress);
 
 // The Notecard, whose default I2C address is below, uses a serial-to-i2c
 // protocol whose "byte count" must fit into a single byte and which must not
