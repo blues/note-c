@@ -620,12 +620,21 @@ fail:
 /* Parse the input text into an unescaped cinput, and populate item. */
 NOTE_C_STATIC Jbool _parse_string(J * const item, parse_buffer * const input_buffer)
 {
+    // This is a static function that is only called internally, and we are
+    // guaranteed that item is not NULL. `cppcheck` is not able to infer this
+    // from the code, because we are using a macro, NOTE_C_STATIC, to remove
+    // the static keyword in the public header during testing.
+
+    // cppcheck-suppress ctunullpointer
+    // cppcheck-suppress nullPointerRedundantCheck
     const unsigned char *input_pointer = buffer_at_offset(input_buffer) + 1;
+    // cppcheck-suppress nullPointerRedundantCheck
     const unsigned char *input_end = buffer_at_offset(input_buffer) + 1;
     unsigned char *output_pointer = NULL;
     unsigned char *output = NULL;
 
     /* not a string */
+    // cppcheck-suppress nullPointerRedundantCheck
     if (buffer_at_offset(input_buffer)[0] != '\"') {
         goto fail;
     }
@@ -1252,19 +1261,30 @@ NOTE_C_STATIC Jbool _print_value(const J * const item, printbuffer * const outpu
 /* Build an array from input text. */
 NOTE_C_STATIC Jbool _parse_array(J * const item, parse_buffer * const input_buffer)
 {
+    // This is a static function that is only called internally, and we are
+    // guaranteed that item is not NULL. `cppcheck` is not able to infer this
+    // from the code, because we are using a macro, NOTE_C_STATIC, to remove
+    // the static keyword in the public header during testing.
+
     J *head = NULL; /* head of the linked list */
     J *current_item = NULL;
 
+    // cppcheck-suppress nullPointerRedundantCheck
     if (input_buffer->depth >= N_CJSON_NESTING_LIMIT) {
         return false; /* to deeply nested */
     }
+    // cppcheck-suppress nullPointerRedundantCheck
     input_buffer->depth++;
 
+    // cppcheck-suppress nullPointerRedundantCheck
     if (buffer_at_offset(input_buffer)[0] != '[') {
         /* not an array */
         goto fail;
     }
 
+    // _buffer_skip_whitespace() will verify the input_buffer is not NULL at
+    // the new offset.
+    // cppcheck-suppress nullPointerRedundantCheck
     input_buffer->offset++;
     _buffer_skip_whitespace(input_buffer);
     if (can_access_at_index(input_buffer, 0) && (buffer_at_offset(input_buffer)[0] == ']')) {
@@ -1274,12 +1294,16 @@ NOTE_C_STATIC Jbool _parse_array(J * const item, parse_buffer * const input_buff
 
     /* check if we skipped to the end of the buffer */
     if (cannot_access_at_index(input_buffer, 0)) {
+        // _buffer_skip_whitespace() has moved us one beyond the end, therefore
+        // we need to move back one, and we know we can access it.
+        // cppcheck-suppress nullPointerRedundantCheck
         input_buffer->offset--;
         goto fail;
     }
 
     /* step back to character in front of the first element */
     input_buffer->offset--;
+
     /* loop through the comma separated array elements */
     do {
         /* allocate next item */
@@ -1387,18 +1411,28 @@ NOTE_C_STATIC Jbool _print_array(const J * const item, printbuffer * const outpu
 /* Build an object from the text. */
 NOTE_C_STATIC Jbool _parse_object(J * const item, parse_buffer * const input_buffer)
 {
+    // This is a static function that is only called internally, and we are
+    // guaranteed that item is not NULL. `cppcheck` is not able to infer this
+    // from the code, because we are using a macro, NOTE_C_STATIC, to remove
+    // the static keyword in the public header during testing.
+
     J *head = NULL; /* linked list head */
     J *current_item = NULL;
 
+    // cppcheck-suppress nullPointerRedundantCheck
     if (input_buffer->depth >= N_CJSON_NESTING_LIMIT) {
         return false; /* to deeply nested */
     }
+    // cppcheck-suppress nullPointerRedundantCheck
     input_buffer->depth++;
 
     if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] != '{')) {
         goto fail; /* not an object */
     }
 
+    // _buffer_skip_whitespace() will verify the input_buffer is not NULL at
+    // the new offset.
+    // cppcheck-suppress nullPointerRedundantCheck
     input_buffer->offset++;
     _buffer_skip_whitespace(input_buffer);
     if (can_access_at_index(input_buffer, 0) && (buffer_at_offset(input_buffer)[0] == '}')) {
@@ -1407,12 +1441,17 @@ NOTE_C_STATIC Jbool _parse_object(J * const item, parse_buffer * const input_buf
 
     /* check if we skipped to the end of the buffer */
     if (cannot_access_at_index(input_buffer, 0)) {
+        // _buffer_skip_whitespace() has moved us one beyond the end, therefore
+        // we need to move back one, and we know we can access it.
+        // cppcheck-suppress nullPointerRedundantCheck
         input_buffer->offset--;
         goto fail;
     }
 
     /* step back to character in front of the first element */
+    // cppcheck-suppress nullPointerRedundantCheck
     input_buffer->offset--;
+
     /* loop through the comma separated array elements */
     do {
         /* allocate next item */
@@ -1433,6 +1472,9 @@ NOTE_C_STATIC Jbool _parse_object(J * const item, parse_buffer * const input_buf
         }
 
         /* parse the name of the child */
+        // _buffer_skip_whitespace() will verify the input_buffer is not NULL at
+        // the new offset.
+        // cppcheck-suppress nullPointerRedundantCheck
         input_buffer->offset++;
         _buffer_skip_whitespace(input_buffer);
         if (!_parse_string(current_item, input_buffer)) {
