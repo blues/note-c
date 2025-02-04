@@ -111,6 +111,15 @@ add_test(NoteFactoryReset_test)
 add_test(NoteGetContact_test)
 add_test(NoteGetEnv_test)
 add_test(NoteGetEnvNumber_test)
+add_test(NoteGetFnDebugOutput_test)
+add_test(NoteGetFn_test)
+add_test(NoteGetFnI2C_test)
+add_test(NoteGetI2CAddress_test)
+add_test(NoteGetFnI2CMutex_test)
+add_test(NoteGetFnMutex_test)
+add_test(NoteGetFnNoteMutex_test)
+add_test(NoteGetFnSerial_test)
+add_test(NoteGetFnTransaction_test)
 add_test(NoteGetLocation_test)
 add_test(NoteGetLocationMode_test)
 add_test(NoteGetNetStatus_test)
@@ -178,7 +187,7 @@ if(NOTE_C_COVERAGE)
         # Zero out the coverage counters from any previous runs.
         COMMAND lcov --zerocounters --directory ${NOTE_C_SRC_DIR}
         COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
-        WORKING_DIRECTORY ${CMAKE_CURENT_BINARY_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     )
     # These files are third party code that we aren't interested in testing
     # ourselves, so we don't care about coverage for them.
