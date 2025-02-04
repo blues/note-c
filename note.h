@@ -273,8 +273,6 @@ void NoteSetFnNoteMutex(mutexFn lockFn, mutexFn unlockFn);
 void NoteGetFnNoteMutex(mutexFn *lockFn, mutexFn *unlockFn);
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn,
                       getMsFn millisfn);
-void NoteGetFnDefault(mallocFn *mallocfn, freeFn *freefn, delayMsFn *delayfn,
-                      getMsFn *millisfn);
 void NoteSetFn(mallocFn mallocHook, freeFn freeHook, delayMsFn delayMsHook,
                getMsFn getMsHook);
 void NoteGetFn(mallocFn *mallocHook, freeFn *freeHook, delayMsFn *delayMsHook,
@@ -286,10 +284,10 @@ void NoteGetFnSerial(serialResetFn *resetFn, serialTransmitFn *transmitFn,
 void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
                   i2cResetFn resetFn, i2cTransmitFn transmitFn,
                   i2cReceiveFn receiveFn);
-void NoteGetFnI2C(i2cResetFn *resetFn, i2cTransmitFn *transmitFn,
+void NoteGetFnI2C(uint32_t *notecardAddr, uint32_t *maxTransmitSize,
+                  i2cResetFn *resetFn, i2cTransmitFn *transmitFn,
                   i2cReceiveFn *receiveFn);
 void NoteSetFnDisabled(void);
-void NoteGetFnDisabled(bool *isDisabled);
 void NoteSetI2CAddress(uint32_t i2caddress);
 void NoteGetI2CAddress(uint32_t *i2caddress);
 

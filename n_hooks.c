@@ -749,30 +749,6 @@ void NoteGetFnNoteMutex(mutexFn *lockFn, mutexFn *unlockFn)
 }
 
 /*!
- @brief Get the default memory and timing hooks.
- @param mallocfn Pointer to store the memory allocation function pointer.
- @param freefn Pointer to store the memory free function pointer.
- @param delayfn Pointer to store the delay function pointer.
- @param millisfn Pointer to store the millis function pointer.
-*/
-void NoteGetFnDefault(mallocFn *mallocfn, freeFn *freefn, delayMsFn *delayfn,
-                      getMsFn *millisfn)
-{
-    if (mallocfn != NULL) {
-        *mallocfn = hookMalloc;
-    }
-    if (freefn != NULL) {
-        *freefn = hookFree;
-    }
-    if (delayfn != NULL) {
-        *delayfn = hookDelayMs;
-    }
-    if (millisfn != NULL) {
-        *millisfn = hookGetMs;
-    }
-}
-
-/*!
  @brief Get the platform-specific memory and timing hooks.
  @param mallocHook Pointer to store the memory allocation function pointer.
  @param freeHook Pointer to store the memory free function pointer.
@@ -822,13 +798,22 @@ void NoteGetFnSerial(serialResetFn *resetFn, serialTransmitFn *transmitFn,
 
 /*!
  @brief Get the platform-specific hooks for I2C communication.
+ @param notecardAddr Pointer to store the I2C address.
+ @param maxTransmitSize Pointer to store the I2C maximum segment size.
  @param resetFn Pointer to store the I2C reset function pointer.
  @param transmitFn Pointer to store the I2C transmit function pointer.
  @param receiveFn Pointer to store the I2C receive function pointer.
 */
-void NoteGetFnI2C(i2cResetFn *resetFn, i2cTransmitFn *transmitFn,
+void NoteGetFnI2C(uint32_t *notecardAddr, uint32_t *maxTransmitSize,
+                  i2cResetFn *resetFn, i2cTransmitFn *transmitFn,
                   i2cReceiveFn *receiveFn)
 {
+    if (notecardAddr != NULL) {
+        *notecardAddr = i2cAddress;
+    }
+    if (maxTransmitSize != NULL) {
+        *maxTransmitSize = i2cMax;
+    }
     if (resetFn != NULL) {
         *resetFn = hookI2CReset;
     }
@@ -837,17 +822,6 @@ void NoteGetFnI2C(i2cResetFn *resetFn, i2cTransmitFn *transmitFn,
     }
     if (receiveFn != NULL) {
         *receiveFn = hookI2CReceive;
-    }
-}
-
-/*!
- @brief Get whether the platform-specific communications method is disabled.
- @param isDisabled Pointer to store the disabled state.
-*/
-void NoteGetFnDisabled(bool *isDisabled)
-{
-    if (isDisabled != NULL) {
-        *isDisabled = (hookActiveInterface == interfaceNone);
     }
 }
 
