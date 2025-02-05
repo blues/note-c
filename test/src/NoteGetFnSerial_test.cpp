@@ -45,23 +45,19 @@ char mockSerialReceive(void)
 
 SCENARIO("NoteGetFnSerial")
 {
-    GIVEN("A set of serial functions")
-    {
+    GIVEN("A set of serial functions") {
         NoteSetFnSerial(mockSerialReset, mockSerialTransmit, mockSerialAvailable, mockSerialReceive);
 
-        AND_GIVEN("Valid pointers for all serial functions are provided")
-        {
+        AND_GIVEN("Valid pointers for all serial functions are provided") {
             serialResetFn resetFunc = NULL;
             serialTransmitFn transmitFunc = NULL;
             serialAvailableFn availableFunc = NULL;
             serialReceiveFn receiveFunc = NULL;
 
-            WHEN("NoteGetFnSerial is called")
-            {
+            WHEN("NoteGetFnSerial is called") {
                 NoteGetFnSerial(&resetFunc, &transmitFunc, &availableFunc, &receiveFunc);
 
-                THEN("It should return the mock serial functions")
-                {
+                THEN("It should return the mock serial functions") {
                     CHECK(resetFunc == mockSerialReset);
                     CHECK(transmitFunc == mockSerialTransmit);
                     CHECK(availableFunc == mockSerialAvailable);
@@ -70,74 +66,59 @@ SCENARIO("NoteGetFnSerial")
             }
         }
 
-        AND_GIVEN("Only NULL pointers are provided")
-        {
-            WHEN("NoteGetFnSerial is called")
-            {
+        AND_GIVEN("Only NULL pointers are provided") {
+            WHEN("NoteGetFnSerial is called") {
                 NoteGetFnSerial(NULL, NULL, NULL, NULL);
 
-                THEN("It should not crash")
-                {
+                THEN("It should not crash") {
                     SUCCEED();
                 }
             }
         }
 
-        AND_GIVEN("Only a vaild pointer for the serial reset function is provided")
-        {
+        AND_GIVEN("Only a vaild pointer for the serial reset function is provided") {
             serialResetFn resetFunc = NULL;
 
-            WHEN("NoteGetFnSerial is called")
-            {
+            WHEN("NoteGetFnSerial is called") {
                 NoteGetFnSerial(&resetFunc, NULL, NULL, NULL);
 
-                THEN("It should return the mock serial reset function")
-                {
+                THEN("It should return the mock serial reset function") {
                     CHECK(resetFunc == mockSerialReset);
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the serial transmit function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the serial transmit function is provided") {
             serialTransmitFn transmitFunc = NULL;
 
-            WHEN("NoteGetFnSerial is called")
-            {
+            WHEN("NoteGetFnSerial is called") {
                 NoteGetFnSerial(NULL, &transmitFunc, NULL, NULL);
 
-                THEN("It should return the mock serial transmit function")
-                {
+                THEN("It should return the mock serial transmit function") {
                     CHECK(transmitFunc == mockSerialTransmit);
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the serial available function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the serial available function is provided") {
             serialAvailableFn availableFunc = NULL;
 
-            WHEN("NoteGetFnSerial is called")
-            {
+            WHEN("NoteGetFnSerial is called") {
                 NoteGetFnSerial(NULL, NULL, &availableFunc, NULL);
 
-                THEN("It should return the mock serial available function")
-                {
+                THEN("It should return the mock serial available function") {
                     CHECK(availableFunc == mockSerialAvailable);
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the serial receive function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the serial receive function is provided") {
             serialReceiveFn receiveFunc = NULL;
 
-            WHEN("NoteGetFnSerial is called")
-            {
+            WHEN("NoteGetFnSerial is called") {
                 NoteGetFnSerial(NULL, NULL, NULL, &receiveFunc);
 
-                THEN("It should return the mock serial receive function")
-                {
+                THEN("It should return the mock serial receive function") {
                     CHECK(receiveFunc == mockSerialReceive);
                 }
             }

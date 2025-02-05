@@ -520,7 +520,8 @@ void NoteDelayMs(uint32_t ms)
     }
 }
 
-#if NOTE_C_SHOW_MALLOC || !defined(NOTE_C_LOW_MEM)
+#ifndef NOTE_C_LOW_MEM
+
 //**************************************************************************/
 /*!
   @brief  Convert number to a hex string
@@ -530,8 +531,6 @@ void NoteDelayMs(uint32_t ms)
 /**************************************************************************/
 void _n_htoa32(uint32_t n, char *p)
 {
-    static_assert(sizeof(void *) == sizeof(uint32_t), "Pointer size mismatch");
-
     for (int i=0; i<8; i++) {
         uint32_t nibble = (n >> 28) & 0xff;
         n = n << 4;
@@ -543,7 +542,17 @@ void _n_htoa32(uint32_t n, char *p)
     }
     *p = '\0';
 }
-#endif
+
+#if NOTE_C_SHOW_MALLOC
+static_assert(sizeof(void *) == sizeof(uint32_t), "Pointer size mismatch");
+
+NOTE_C_STATIC void _n_ptoa32(void *ptr, char *str)
+{
+    _n_htoa32((uint32_t)ptr, str);
+}
+
+#endif  // NOTE_C_SHOW_MALLOC
+#endif  // !NOTE_C_LOW_MEM
 
 //**************************************************************************/
 /*!
@@ -557,16 +566,19 @@ void *NoteMalloc(size_t size)
         return NULL;
     }
     void *p = hookMalloc(size);
-#if NOTE_C_SHOW_MALLOC
+#if NOTE_C_SHOW_MALLOC && !defined(NOTE_C_LOW_MEM)
     if (_noteIsDebugOutputActive()) {
+        hookDebugOutput("malloc ");
+        // Convert the size to a string and print
         char str[16];
         JItoA(size, str);
-        hookDebugOutput("malloc ");
         hookDebugOutput(str);
         if (p == NULL) {
-            hookDebugOutput("FAIL");
+            hookDebugOutput(" FAIL");
         } else {
-            _n_htoa32((uint32_t)p, str);
+            hookDebugOutput(" ");
+            // Convert the pointer to a string and print
+            _n_ptoa32(p, str);
             hookDebugOutput(str);
         }
     }
@@ -583,11 +595,12 @@ void *NoteMalloc(size_t size)
 void NoteFree(void *p)
 {
     if (hookFree != NULL) {
-#if NOTE_C_SHOW_MALLOC
+#if NOTE_C_SHOW_MALLOC && !defined(NOTE_C_LOW_MEM)
         if (_noteIsDebugOutputActive()) {
+            hookDebugOutput("free ");
+            // Convert the pointer to a string and print
             char str[16];
-            _n_htoa32((uint32_t)p, str);
-            hookDebugOutput("free");
+            _n_ptoa32(p, str);
             hookDebugOutput(str);
         }
 #endif

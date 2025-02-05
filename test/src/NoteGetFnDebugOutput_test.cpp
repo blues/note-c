@@ -29,28 +29,24 @@ size_t mockDebugOutput(const char *message)
 
 SCENARIO("NoteGetFnDebugOutput")
 {
-    GIVEN("A mock debug output function")
-    {
+    GIVEN("A mock debug output function") {
         NoteSetFnDebugOutput(mockDebugOutput);
 
-        WHEN("Get debug output function with NULL parameter")
-        {
+        WHEN("Get debug output function with NULL parameter") {
             THEN("It should not crash")
-                NoteGetFnDebugOutput(NULL);
+            NoteGetFnDebugOutput(NULL);
             {
-        }
+            }
 
-        WHEN("Get debug output function with valid parameter")
-        {
-            THEN("It should return the mock function")
-            {
-                debugOutputFn fn = NULL;
-                NoteGetFnDebugOutput(&fn);
-                REQUIRE(fn == mockDebugOutput);
+            WHEN("Get debug output function with valid parameter") {
+                THEN("It should return the mock function") {
+                    debugOutputFn fn = NULL;
+                    NoteGetFnDebugOutput(&fn);
+                    REQUIRE(fn == mockDebugOutput);
+                }
             }
         }
     }
-}
 
 }
 }

@@ -33,64 +33,51 @@ void mockUnlockNote(void)
 
 SCENARIO("NoteGetFnNoteMutex")
 {
-    GIVEN("A set of Note mutex functions")
-    {
+    GIVEN("A set of Note mutex functions") {
         NoteSetFnNoteMutex(mockLockNote, mockUnlockNote);
 
-        AND_GIVEN("Valid pointers for all Note mutex functions are provided")
-        {
+        AND_GIVEN("Valid pointers for all Note mutex functions are provided") {
             mutexFn lockNote = NULL;
             mutexFn unlockNote = NULL;
 
-            WHEN("NoteGetFnNoteMutex is called")
-            {
+            WHEN("NoteGetFnNoteMutex is called") {
                 NoteGetFnNoteMutex(&lockNote, &unlockNote);
 
-                THEN("It should return the mock Note mutex functions")
-                {
+                THEN("It should return the mock Note mutex functions") {
                     CHECK(lockNote == mockLockNote);
                     CHECK(unlockNote == mockUnlockNote);
                 }
             }
         }
 
-        AND_GIVEN("Only NULL pointers are provided")
-        {
-            WHEN("NoteGetFnNoteMutex is called")
-            {
+        AND_GIVEN("Only NULL pointers are provided") {
+            WHEN("NoteGetFnNoteMutex is called") {
                 NoteGetFnNoteMutex(NULL, NULL);
-                THEN("It should not crash")
-                {
+                THEN("It should not crash") {
                     SUCCEED();
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the Note lock function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the Note lock function is provided") {
             mutexFn lockNote = NULL;
 
-            WHEN("NoteGetFnNoteMutex is called")
-            {
+            WHEN("NoteGetFnNoteMutex is called") {
                 NoteGetFnNoteMutex(&lockNote, NULL);
 
-                THEN("It should return the mock lock function")
-                {
+                THEN("It should return the mock lock function") {
                     CHECK(lockNote == mockLockNote);
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the Note unlock function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the Note unlock function is provided") {
             mutexFn unlockNote = NULL;
 
-            WHEN("NoteGetFnNoteMutex is called")
-            {
+            WHEN("NoteGetFnNoteMutex is called") {
                 NoteGetFnNoteMutex(NULL, &unlockNote);
 
-                THEN("It should return the mock unlock function")
-                {
+                THEN("It should return the mock unlock function") {
                     CHECK(unlockNote == mockUnlockNote);
                 }
             }
