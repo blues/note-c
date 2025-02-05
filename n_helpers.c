@@ -2320,9 +2320,9 @@ bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel)
     }
     JAddStringToObject(req, "file", "_synclog.qi");
     JAddBoolToObject(req, "delete", true);
-    NoteSuspendTransactionDebug();
+    _noteSuspendTransactionDebug();
     J *rsp = NoteRequestResponse(req);
-    NoteResumeTransactionDebug();
+    _noteResumeTransactionDebug();
     if (rsp != NULL) {
 
         // If an error is returned, this means that no response is pending. Note

@@ -105,6 +105,8 @@ extern "C" {
 #endif
 
 // Transactions
+void _noteResumeTransactionDebug(void);
+void _noteSuspendTransactionDebug(void);
 J *_noteTransactionShouldLock(J *req, bool lockNotecard);
 const char *_i2cNoteTransaction(const char *request, size_t reqLen, char **response, uint32_t timeoutMs);
 bool _i2cNoteReset(void);
