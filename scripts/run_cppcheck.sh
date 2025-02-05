@@ -53,7 +53,7 @@ generate_summary() {
         echo
 
         # Display status and details
-        if [ $has_critical_issues ]; then
+        if $has_critical_issues; then
             echo "Status: FAILED - Critical issues found"
             echo
             echo "Review and fix critical issues before proceeding"
