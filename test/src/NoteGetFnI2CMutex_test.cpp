@@ -33,65 +33,52 @@ void mockUnlockI2C(void)
 
 SCENARIO("NoteGetFnI2CMutex")
 {
-    GIVEN("A set of I2C mutex functions")
-    {
+    GIVEN("A set of I2C mutex functions") {
         NoteSetFnI2CMutex(mockLockI2C, mockUnlockI2C);
 
-        AND_GIVEN("Valid pointers for all I2C mutex functions are provided")
-        {
+        AND_GIVEN("Valid pointers for all I2C mutex functions are provided") {
             mutexFn lockI2C = NULL;
             mutexFn unlockI2C = NULL;
 
-            WHEN("NoteGetFnI2CMutex is called")
-            {
+            WHEN("NoteGetFnI2CMutex is called") {
                 NoteGetFnI2CMutex(&lockI2C, &unlockI2C);
 
-                THEN("It should return the mock I2C mutex functions")
-                {
+                THEN("It should return the mock I2C mutex functions") {
                     CHECK(lockI2C == mockLockI2C);
                     CHECK(unlockI2C == mockUnlockI2C);
                 }
             }
         }
 
-        AND_GIVEN("Only NULL pointers are provided")
-        {
-            WHEN("NoteGetFnI2CMutex is called")
-            {
+        AND_GIVEN("Only NULL pointers are provided") {
+            WHEN("NoteGetFnI2CMutex is called") {
                 NoteGetFnI2CMutex(NULL, NULL);
 
-                THEN("It should not crash")
-                {
+                THEN("It should not crash") {
                     SUCCEED();
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the I2C lock function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the I2C lock function is provided") {
             mutexFn lockI2C = NULL;
 
-            WHEN("NoteGetFnI2CMutex is called")
-            {
+            WHEN("NoteGetFnI2CMutex is called") {
                 NoteGetFnI2CMutex(&lockI2C, NULL);
 
-                THEN("It should return the mock I2C lock function")
-                {
+                THEN("It should return the mock I2C lock function") {
                     CHECK(lockI2C == mockLockI2C);
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the I2C unlock function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the I2C unlock function is provided") {
             mutexFn unlockI2C = NULL;
 
-            WHEN("NoteGetFnI2CMutex is called")
-            {
+            WHEN("NoteGetFnI2CMutex is called") {
                 NoteGetFnI2CMutex(NULL, &unlockI2C);
 
-                THEN("It should return the mock I2C unlock function")
-                {
+                THEN("It should return the mock I2C unlock function") {
                     CHECK(unlockI2C == mockUnlockI2C);
                 }
             }

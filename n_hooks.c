@@ -546,7 +546,8 @@ void _n_htoa32(uint32_t n, char *p)
 #if NOTE_C_SHOW_MALLOC
 static_assert(sizeof(void *) == sizeof(uint32_t), "Pointer size mismatch");
 
-NOTE_C_STATIC void _n_ptoa32(void *ptr, char *str) {
+NOTE_C_STATIC void _n_ptoa32(void *ptr, char *str)
+{
     _n_htoa32((uint32_t)ptr, str);
 }
 

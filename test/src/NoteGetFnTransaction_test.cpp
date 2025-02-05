@@ -34,65 +34,52 @@ void mockTxnStop(void)
 
 SCENARIO("NoteGetFnTransaction")
 {
-    GIVEN("A set of transaction functions")
-    {
+    GIVEN("A set of transaction functions") {
         NoteSetFnTransaction(mockTxnStart, mockTxnStop);
 
-        AND_GIVEN("Valid pointers for all transaction functions are provided")
-        {
+        AND_GIVEN("Valid pointers for all transaction functions are provided") {
             txnStartFn startFn = NULL;
             txnStopFn stopFn = NULL;
 
-            WHEN("NoteGetFnTransaction is called")
-            {
+            WHEN("NoteGetFnTransaction is called") {
                 NoteGetFnTransaction(&startFn, &stopFn);
 
-                THEN("It should return the mock transaction functions")
-                {
+                THEN("It should return the mock transaction functions") {
                     CHECK(startFn == mockTxnStart);
                     CHECK(stopFn == mockTxnStop);
                 }
             }
         }
 
-        AND_GIVEN("Only NULL pointers are provided")
-        {
-            WHEN("NoteGetFnTransaction is called")
-            {
+        AND_GIVEN("Only NULL pointers are provided") {
+            WHEN("NoteGetFnTransaction is called") {
                 NoteGetFnTransaction(NULL, NULL);
 
-                THEN("It should not crash")
-                {
+                THEN("It should not crash") {
                     SUCCEED();
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for transaction start function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for transaction start function is provided") {
             txnStartFn startFn = NULL;
 
-            WHEN("NoteGetFnTransaction is called")
-            {
+            WHEN("NoteGetFnTransaction is called") {
                 NoteGetFnTransaction(&startFn, NULL);
 
-                THEN("It should return the mock start function")
-                {
+                THEN("It should return the mock start function") {
                     REQUIRE(startFn == mockTxnStart);
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for transaction stop function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for transaction stop function is provided") {
             txnStopFn stopFn = NULL;
 
-            WHEN("NoteGetFnTransaction is called")
-            {
+            WHEN("NoteGetFnTransaction is called") {
                 NoteGetFnTransaction(NULL, &stopFn);
 
-                THEN("It should return the mock stop function")
-                {
+                THEN("It should return the mock stop function") {
                     REQUIRE(stopFn == mockTxnStop);
                 }
             }

@@ -43,23 +43,19 @@ void mockUnlockNote(void)
 
 SCENARIO("NoteGetFnMutex")
 {
-    GIVEN("A set of mutex functions")
-    {
+    GIVEN("A set of mutex functions") {
         NoteSetFnMutex(mockLockI2C, mockUnlockI2C, mockLockNote, mockUnlockNote);
 
-        AND_GIVEN("Valid pointers for all mutex functions are provided")
-        {
+        AND_GIVEN("Valid pointers for all mutex functions are provided") {
             mutexFn lockI2C = NULL;
             mutexFn unlockI2C = NULL;
             mutexFn lockNote = NULL;
             mutexFn unlockNote = NULL;
 
-            WHEN("NoteGetFnMutex is called")
-            {
+            WHEN("NoteGetFnMutex is called") {
                 NoteGetFnMutex(&lockI2C, &unlockI2C, &lockNote, &unlockNote);
 
-                THEN("It should return the mock mutex functions")
-                {
+                THEN("It should return the mock mutex functions") {
                     CHECK(lockI2C == mockLockI2C);
                     CHECK(unlockI2C == mockUnlockI2C);
                     CHECK(lockNote == mockLockNote);
@@ -68,74 +64,59 @@ SCENARIO("NoteGetFnMutex")
             }
         }
 
-        AND_GIVEN("Only NULL pointers are provided")
-        {
-            WHEN("NoteGetFnMutex is called")
-            {
+        AND_GIVEN("Only NULL pointers are provided") {
+            WHEN("NoteGetFnMutex is called") {
                 NoteGetFnMutex(NULL, NULL, NULL, NULL);
 
-                THEN("It should not crash")
-                {
+                THEN("It should not crash") {
                     SUCCEED();
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the I2C lock function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the I2C lock function is provided") {
             mutexFn lockI2C = NULL;
 
-            WHEN("NoteGetFnMutex is called")
-            {
+            WHEN("NoteGetFnMutex is called") {
                 NoteGetFnMutex(&lockI2C, NULL, NULL, NULL);
 
-                THEN("It should return the mock lock function")
-                {
+                THEN("It should return the mock lock function") {
                     CHECK(lockI2C == mockLockI2C);
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the I2C unlock function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the I2C unlock function is provided") {
             mutexFn unlockI2C = NULL;
 
-            WHEN("NoteGetFnMutex is called")
-            {
+            WHEN("NoteGetFnMutex is called") {
                 NoteGetFnMutex(NULL, &unlockI2C, NULL, NULL);
 
-                THEN("It should return the mock unlock function")
-                {
+                THEN("It should return the mock unlock function") {
                     CHECK(unlockI2C == mockUnlockI2C);
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the Note lock function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the Note lock function is provided") {
             mutexFn lockNote = NULL;
 
-            WHEN("NoteGetFnMutex is called")
-            {
+            WHEN("NoteGetFnMutex is called") {
                 NoteGetFnMutex(NULL, NULL, &lockNote, NULL);
 
-                THEN("It should return the mock lock function")
-                {
+                THEN("It should return the mock lock function") {
                     CHECK(lockNote == mockLockNote);
                 }
             }
         }
 
-        AND_GIVEN("Only a valid pointer for the Note unlock function is provided")
-        {
+        AND_GIVEN("Only a valid pointer for the Note unlock function is provided") {
             mutexFn unlockNote = NULL;
 
-            WHEN("NoteGetFnMutex is called")
-            {
+            WHEN("NoteGetFnMutex is called") {
                 NoteGetFnMutex(NULL, NULL, NULL, &unlockNote);
 
-                THEN("It should return the mock unlock function")
-                {
+                THEN("It should return the mock unlock function") {
                     CHECK(unlockNote == mockUnlockNote);
                 }
             }
