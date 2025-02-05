@@ -29,6 +29,77 @@ firmware image. For more on testing, see test/README.md.
 - BUILD_SHARED_LIBS: Build the note-c library as shared instead of static. This
 reduces the total size of the compiled tests. Default: ON.
 
+## Logging
+
+`note-c` provides a comprehensive and flexible logging functionality.
+
+To activate logging, you must provide a callback for logging via
+`hookDebugOutput()`. The callback takes the following form:
+
+```c
+typedef size_t (*debugOutputFn) (const char *text);
+```
+
+The callback is responsible for taking a character array (C-style string) and
+returning the number of bytes processed (written out) as confirmation. The
+exact implementation will be up to the user who provided the function pointer,
+but its presence will active logging in the library.
+
+### Library Logging
+
+#### Log Levels
+
+`note-c` provides for four (4) levels of logging. Here they are listed from
+most severe to most verbose:
+
+0. `NOTE_C_LOG_LEVEL_ERROR`
+1. `NOTE_C_LOG_LEVEL_WARN`
+2. `NOTE_C_LOG_LEVEL_INFO`
+3. `NOTE_C_LOG_LEVEL_DEBUG`
+
+By default, `note-c` logs at `NOTE_C_LOG_LEVEL_INFO`.
+
+#### Default Logging Behavior
+
+To modify the default behavior, you may specify the desired log level at compile
+time, as follows:
+
+```sh
+-DNOTE_C_LOG_LEVEL=0
+```
+
+_**NOTE:** In the example above, you will notice we used zero (`0`), instead of
+`NOTE_C_LOG_LEVEL_ERROR`. This is because those values are internal to the
+library, and not available in the context of the command line._
+
+Here, we have decided to show only the most severe (i.e. `[ERROR]`) logs.
+Alternatively, you may set the level to any of the values listed above.
+
+#### Dynamic Logging Behavior
+
+In the previous section, we discussed setting the base (or default) logging
+behavior for the library. However, you may also set the log level dynamically,
+during runtime, by using the `NoteSetLogLevel()` API.
+
+```c
+NoteSetLogLevel(NOTE_C_LOG_LEVEL_WARN)
+```
+
+### Notecard Sync Logging (`[SYNC]`)
+
+Tangential to the standard logging behavior, `note-c` also provides a helper
+function to invoke/extract synchronization logs from the Notecard.
+
+- `NoteDebugSyncStatus()`
+
+Instead of toggling features inside the library, this helper functions sends a
+request to the Notecard to inquire about its synchronization status and logs
+those details.
+
+The function is designed to be called in a loop, and throttled by a parameter.
+See [the documentation page](https://blues.github.io/note-c/api_reference.html#c.NoteDebugSyncStatus)
+for more information.
+
 ## Contributing
 
 We love issues, fixes, and pull requests from everyone. By participating in this

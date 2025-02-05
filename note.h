@@ -15,6 +15,15 @@
 
 #pragma once
 
+#if defined(__GNUC__) || defined(__clang__)
+#define NOTE_C_DEPRECATED __attribute__((__deprecated__))
+#elif defined(_MSC_VER)
+#define NOTE_C_DEPRECATED __declspec(deprecated)
+#else
+#define NOTE_C_DEPRECATED
+#define NOTE_C_NO_DEPRECATED_ATTR
+#endif // __GNUC__ || __clang__
+
 // In case they're not yet defined
 #include <float.h>
 #include <limits.h>
@@ -231,8 +240,8 @@ J *NoteNewCommand(const char *request);
 J *NoteRequestResponse(J *req);
 J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds);
 char * NoteRequestResponseJSON(const char *reqJSON);
-void NoteSuspendTransactionDebug(void);
-void NoteResumeTransactionDebug(void);
+NOTE_C_DEPRECATED void NoteSuspendTransactionDebug(void);
+NOTE_C_DEPRECATED void NoteResumeTransactionDebug(void);
 #define SYNCSTATUS_LEVEL_MAJOR         0
 #define SYNCSTATUS_LEVEL_MINOR         1
 #define SYNCSTATUS_LEVEL_DETAILED      2
@@ -506,7 +515,7 @@ bool NoteLocalTimeST(uint16_t *retYear, uint8_t *retMonth, uint8_t *retDay, uint
 bool NoteRegion(char **retCountry, char **retArea, char **retZone, int *retZoneOffset);
 bool NoteLocationValid(char *errbuf, uint32_t errbuflen);
 bool NoteLocationValidST(char *errbuf, uint32_t errbuflen);
-void NoteTurboIO(bool enable);
+NOTE_C_DEPRECATED void NoteTurboIO(bool enable);
 JINTEGER NoteGetEnvInt(const char *variable, JINTEGER defaultVal);
 JNUMBER NoteGetEnvNumber(const char *variable, JNUMBER defaultVal);
 bool NoteGetEnv(const char *variable, const char *defaultVal, char *buf, uint32_t buflen);

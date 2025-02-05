@@ -186,3 +186,52 @@ Macros
 ------
 
 .. doxygendefine:: N_CJSON_NESTING_LIMIT
+
+Logging
+=======
+
+Hooks
+-----
+
+Functions
+^^^^^^^^^
+
+.. doxygenfunction:: NoteGetFnDebugOutput
+
+.. doxygenfunction:: NoteSetFnDebugOutput
+
+Types
+^^^^^
+
+.. doxygentypedef:: debugOutputFn
+
+Control
+-------
+
+Functions
+^^^^^^^^^
+
+.. doxygenfunction:: NoteSetLogLevel
+
+.. doxygenfunction:: NoteDebugSyncStatus
+
+Macros
+^^^^^^
+
+.. doxygendefine:: NOTE_C_LOG_LEVEL_ERROR
+
+.. doxygendefine:: NOTE_C_LOG_LEVEL_WARN
+
+.. doxygendefine:: NOTE_C_LOG_LEVEL_INFO
+
+.. doxygendefine:: NOTE_C_LOG_LEVEL_DEBUG
+
+.. doxygendefine:: SYNCSTATUS_LEVEL_MAJOR
+
+.. doxygendefine:: SYNCSTATUS_LEVEL_MINOR
+
+.. doxygendefine:: SYNCSTATUS_LEVEL_DETAILED
+
+.. doxygendefine:: SYNCSTATUS_LEVEL_ALGORITHMIC
+
+.. doxygendefine:: SYNCSTATUS_LEVEL_ALL
