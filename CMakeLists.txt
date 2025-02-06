@@ -56,6 +56,8 @@ target_compile_options(
         -ggdb
     PUBLIC
         -m32
+        -mfpmath=sse
+        -msse2
 )
 target_include_directories(
     note_c

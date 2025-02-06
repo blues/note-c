@@ -12,7 +12,7 @@ message(STATUS "Downloading Catch2...")
 FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        v3.2.0
+    GIT_TAG        v3.3.0
 )
 FetchContent_MakeAvailable(Catch2)
 
@@ -89,7 +89,7 @@ add_test(JItoA_test)
 add_test(JNtoA_test)
 add_test(JNumberValue_test)
 add_test(JPrintUnformatted_test)
-# add_test(JSON_number_handling_test)
+add_test(JSON_number_handling_test)
 add_test(JStringValue_test)
 add_test(JType_test)
 add_test(NoteAdd_test)
