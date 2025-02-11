@@ -27,15 +27,6 @@ development process.
 
 ### Testing and Validation
 
-- `build_docs.sh`
-
-    Builds the API documentation in `${note-c}/build/docs`. Open `index.html`
-    in your browser to review documentation.
-
-    > _**NOTE:** In order for an API to be considered for inclusion in the API
-    documentation, it _MUST_ be added to `${note-c}/docs/api_reference.rst`
-    file._
-
 - `check_libc_dependencies.sh`
 
     Checks for dependencies on non-whitelisted `libc` functions. The whitelist
@@ -67,6 +58,17 @@ development process.
     created by the `run_md5srv.sh` shell script. The URL will be echoed to
     the screen, as well as supplied to the CI environment when called as part
     of the continuous integration test pipeline.
+
+### Documentation
+
+- `build_docs.sh`
+
+    Builds the API documentation in `${note-c}/build/docs`. Open `index.html`
+    in your browser to review documentation.
+
+    > _**NOTE:** In order for an API to be considered for inclusion in the API
+    documentation, it _MUST_ be added to `${note-c}/docs/api_reference.rst`
+    file._
 
 ## Testing
 
@@ -115,9 +117,9 @@ basic behavior.
 
     Provides comprehensive build logs to assist in test debugging.
 
-### Running the Tests Manually
+#### Interfacing with CMake Directly
 
-The CMakeList.txt and the CMake build system are used to compile `note-c` into
+The `CMakeList.txt` and the CMake build system are used to compile `note-c` into
 a library and to link that library against the unit-tests.
 
 You can use it to generate a static or shared `note-c` library, but embedded
@@ -132,12 +134,11 @@ make -j
 ctest
 ```
 
-### Notes
+> _**WARNING:** We forbid in-source builds, so creating a build directory (e.g.
+`mkdir build`) and building there is mandatory._
 
-- We forbid in-source builds, so creating a build directory (e.g. `mkdir build`)
-and building in there is mandatory.
+#### CMake Options
 
-## CMake Options
 - `-DNOTE_C_BUILD_DOCS:BOOL=ON`: Build the tests (Default: `ON`).
 - `-DNOTE_C_COVERAGE:BOOL=ON`: Adds the target `coverage` to the build. Requires
 lcov. To generate a coverage report, run `make coverage` (Default: `OFF`).
@@ -155,29 +156,13 @@ single precision, which is commonplace on many MCUs (Default: `OFF`).
 - `-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON --log-level=VERBOSE`: Increase the verbosity
 of the build system (Default: `OFF`).
 
-## Test Organization
+### Organization
 
-For the most part, each function in the API gets its own test executable in
-test/src. The naming convention is FunctionName_test.cpp. Some functions make
-sense to test together, like the NotePayload* family, so they're exercised in
-one executable (NotePayload_test.cpp, in this case). Any functions that are
-mocked need to be added to the list of mocked functions in the root
-CMakeLists.txt (see MOCKED_FNS). Once written, the test needs to be added to
-test/CMakeLists.txt with a call to the `add_test` macro.
-
-### Generating a Coverage Report
-
-Assuming you ran cmake with coverage enabled (`-DCOVERAGE=1`), ran `make
-coverage`, and are in the build directory, you can view the coverage report as
-HTML with:
-
-```sh
-cd build/test/coverage
-genhtml lcov.info -o tmp
-```
-
-This will generate HTML under test/coverage/tmp. Open index.html in your
-browser to view the report.
+Generally, each function in the API gets its own test executable in `test/src`.
+The naming convention is `FunctionName_test.cpp`. Some functions make sense to
+test together, like the `NotePayload*` family, so they're exercised in one
+executable (`NotePayload_test.cpp`, in this case). All newly created test MUST
+be added to `test/CMakeLists.txt` with a call to the `add_test` macro.
 
 ### Style
 
@@ -188,9 +173,10 @@ browser to view the report.
 and `CHECK`. We prefer `CHECK` anywhere you need to assert something in a test
 case. However, if it doesn't make sense or it would cause a fault to continue a
 test case, `REQUIRE` should be used to exit the case immediately on failure.
+
 Example:
 
-```c
+```cpp
 REQUIRE(sizeof(expectedBuf) == actualLength);
 CHECK(!memcmp(expectedBuf, actualBuf, actualLength));
 ```
