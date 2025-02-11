@@ -19,7 +19,7 @@
 namespace
 {
 
-#ifdef NOTE_C_LOW_MEM
+#ifdef NOTE_C_SINGLE_PRECISION
 const JNUMBER nums[] = {
     3.40282e+38, // Approximate largest single-precision float value
     1.17549e-38, // Approximate smallest single-precision float value
@@ -29,8 +29,6 @@ const char *expectedNumStrs[] = {
     "3.40282e+38",
     "1.17549e-38"
 };
-
-const JNUMBER TOLERANCE = 1e-8;
 #else
 const JNUMBER nums[] = {
     1.79769e+308, // Approximate largest double-precision float value
@@ -41,9 +39,9 @@ const char *expectedNumStrs[] = {
     "1.79769e+308",
     "2.22507e-308"
 };
+#endif // NOTE_C_SINGLE_PRECISION
 
 const JNUMBER TOLERANCE = 1e-8;
-#endif // NOTE_C_LOW_MEM
 
 const size_t NUM_TESTS = sizeof(nums) / sizeof(nums[0]);
 

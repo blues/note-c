@@ -63,8 +63,6 @@ breathe_domain_by_extension = {
 # Options for HTML output
 
 html_theme = 'sphinx_rtd_theme'
-# WARNING: Calling get_html_theme_path is deprecated. If you are calling it to define html_theme_path, you are safe to remove that code.
-#html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_logo = str(NOTE_C_BASE / 'assets' / 'blues_logo_no_text.png')
 html_theme_options = {
     'logo_only': True,

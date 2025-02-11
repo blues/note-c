@@ -7,6 +7,7 @@ SHOW_MALLOC=0
 SINGLE_PRECISION=0
 VERBOSE=0
 
+# Parse command line arguments.
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --coverage) COVERAGE=1 ;;
@@ -20,28 +21,32 @@ while [[ "$#" -gt 0 ]]; do
     shift
 done
 
+# Determine the directory of the script.
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ROOT_SRC_DIR="$SCRIPT_DIR/.."
 
+# Check for a CMakeLists.txt file, to ensure CMake operations
+# are executed in the correct directory.
 if [[ ! -f "$ROOT_SRC_DIR/CMakeLists.txt" ]]; then
-    echo "Failed to find note-c root directory. (did the location of run_unit_tests.sh change?)"
+    echo "ERROR: Unable to locate ${ROOT_SRC_DIR}/CMakeList.txt. Expecting to use '..' to access root directory. Did the location of run_unit_tests.sh change?"
     exit 1
 fi
 
+# Move to the root source directory.
 pushd $ROOT_SRC_DIR $@ > /dev/null
 
-CMAKE_OPTIONS="-DNOTE_C_BUILD_TESTS=1"
+CMAKE_OPTIONS="-DNOTE_C_BUILD_TESTS:BOOL=ON"
 BUILD_OPTIONS=""
 CTEST_OPTIONS=""
 if [[ $COVERAGE -eq 1 ]]; then
-    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_COVERAGE=1"
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_COVERAGE:BOOL=ON"
     BUILD_OPTIONS="${BUILD_OPTIONS} coverage"
 fi
 if [[ $LOW_MEM -eq 1 ]]; then
-    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_LOW_MEM=1"
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_LOW_MEM:BOOL=ON"
 fi
 if [[ $MEM_CHECK -eq 1 ]]; then
-    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_MEM_CHECK=1"
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_MEM_CHECK:BOOL=ON"
     CTEST_OPTIONS="${CTEST_OPTIONS} -T memcheck"
 
     # This fixes a problem when running valgrind in a Docker container when the
@@ -49,35 +54,38 @@ if [[ $MEM_CHECK -eq 1 ]]; then
     ulimit -n 1024
 fi
 if [[ $SHOW_MALLOC -eq 1 ]]; then
-    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_SHOW_MALLOC=1"
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_SHOW_MALLOC:BOOL=ON"
 fi
 if [[ $SINGLE_PRECISION -eq 1 ]]; then
-    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_TEST_SINGLE_PRECISION=1"
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_SINGLE_PRECISION:BOOL=ON"
 fi
 if [[ $VERBOSE -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON --log-level=VERBOSE"
 fi
 
+# Configure the build with the flag to build docs.
 cmake -B build/ $CMAKE_OPTIONS
 if [[ $? -ne 0 ]]; then
-    echo "Failed to run CMake."
-    popd $@ > /dev/null
+    echo "ERROR: CMake failed to configure build."
+    popd > /dev/null
     exit 1
 fi
 
+# Build `note-c` and the unit-tests.
 cmake --build build/ -- $BUILD_OPTIONS -j
 if [[ $? -ne 0 ]]; then
-    echo "Failed to build code."
-    popd $@ > /dev/null
+    echo "ERROR: CMake failed to build note-c and the unit-tests."
+    popd > /dev/null
     exit 1
 fi
 
+# Run the unit tests.
 ctest --test-dir build/ --output-on-failure ${CTEST_OPTIONS}
 if [[ $? -ne 0 ]]; then
-    echo "ctest failed."
-    popd $@ > /dev/null
+    echo "ERROR: Unit-tests did not pass."
+    popd > /dev/null
     exit 1
 fi
 
-echo "Tests passed."
-popd $@ > /dev/null
+echo "SUCCESS: Tests passed."
+popd > /dev/null

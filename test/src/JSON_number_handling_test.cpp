@@ -258,8 +258,8 @@ SCENARIO("JSON Number Handling (Marshalling)")
 
     GIVEN("A JSON object with a numeric field with the max value of JINTEGER "
           "plus 4096") {
-#ifdef NOTE_C_TEST_SINGLE_PRECISION
-        // In the NOTE_C_TEST_SINGLE_PRECISION case, where JNUMBER is a
+#ifdef NOTE_C_SINGLE_PRECISION
+        // In the NOTE_C_SINGLE_PRECISION case, where JNUMBER is a
         // single-precision float, JINTEGER_MAX_PLUS_4096 is indistinguishable
         // from JINTEGER_MAX.
         const char expected[] = "{\"" FIELD "\":" JINTEGER_MAX_STR "}";
@@ -332,8 +332,8 @@ SCENARIO("JSON Number Handling (Marshalling)")
 
     GIVEN("A J object with a numeric field with the min value of JINTEGER minus"
           " 4096") {
-#ifdef NOTE_C_TEST_SINGLE_PRECISION
-        // In the NOTE_C_TEST_SINGLE_PRECISION case, where JNUMBER is a
+#ifdef NOTE_C_SINGLE_PRECISION
+        // In the NOTE_C_SINGLE_PRECISION case, where JNUMBER is a
         // single-precision float, JINTEGER_MIN_MINUS_4096 is indistinguishable
         // from JINTEGER_MIN.
         const char expected[] = "{\"" FIELD "\":" JINTEGER_MIN_STR "}";

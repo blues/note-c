@@ -7,8 +7,9 @@
 # array below with a path relative to the source code root.
 #
 
+# Confirm astyle is installed in the system
 if [[ ! $(which astyle) ]]; then
-    echo "astyle binary not found. Please install it and try again."
+    echo "ERROR: astyle binary not found. Please install it and try again."
     exit 1
 fi
 
@@ -17,8 +18,9 @@ EXCLUDE_FILES=(
     test/include/fff.h
 )
 
+# Ensure the working directory is clean before running astyle.
 if [[ `git diff` ]]; then
-    echo "Local unstaged changes detected. Please stage, commit, stash, or discard any changes prior to running this script."
+    echo "ERROR: Local unstaged changes detected. Please stage, commit, stash, or discard any changes prior to running this script."
     exit 1
 fi
 

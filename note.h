@@ -44,10 +44,12 @@
 #if defined(FLT_MAX_EXP) && defined(DBL_MAX_EXP)
 #if (FLT_MAX_EXP == DBL_MAX_EXP)
 #define NOTE_C_LOW_MEM
+#define NOTE_C_SINGLE_PRECISION
 #endif
 #elif defined(__FLT_MAX_EXP__) && defined(__DBL_MAX_EXP__)
 #if (__FLT_MAX_EXP__ == __DBL_MAX_EXP__)
 #define NOTE_C_LOW_MEM
+#define NOTE_C_SINGLE_PRECISION
 #endif
 #else
 #error What are floating point exponent length symbols for this compiler?
@@ -66,12 +68,12 @@
 #define ERRSTR(x,y) (y)
 #else
 #define ERRSTR(x,y) (x)
-#endif
+#endif // NOTE_C_LOW_MEM
 
 /*!
  @brief The floating point type used for JSON handling in note-c.
  */
-#ifdef NOTE_C_TEST_SINGLE_PRECISION
+#ifdef NOTE_C_SINGLE_PRECISION
 typedef float JNUMBER;
 #else
 typedef double JNUMBER;

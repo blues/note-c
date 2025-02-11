@@ -79,12 +79,6 @@
 
 #define PRINT_TAB_CHARS     4
 
-#ifdef NOTE_C_TEST
-#include "test_static.h"
-#else
-#define NOTE_C_STATIC static
-#endif
-
 typedef struct {
     const unsigned char *json;
     size_t position;
