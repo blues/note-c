@@ -111,6 +111,18 @@ EITHER leading zeroes OR trailing zeroes (e.g. version `1.10.2` is invalid).
 These additional constraints have been observed to help disambiguate versions
 and reduce support burden.
 
+### Version Artifacts
+
+The version can be referenced/tested programmatically via the following
+preprocessor defined integers found in `note.h`:
+
+- `NOTE_C_VERSION_MAJOR`
+- `NOTE_C_VERSION_MINOR`
+- `NOTE_C_VERSION_PATCH`
+
+The version may also be logged via the preprocessor defined string literal,
+`NOTE_C_VERSION`.
+
 ## Contributing
 
 We love issues, fixes, and pull requests from everyone. By participating in this

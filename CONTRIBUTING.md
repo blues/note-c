@@ -33,8 +33,9 @@ clean up inconsistent whitespace )
 
 ## Library Development
 
-Review our [developer documentation](./docs/development.md) for setting up your
-environment and interacting with our tools.
+Review our [contribution guidelines](./CONTRIBUTING.md) and [developer
+documentation](./test/README.md) for setting up your environment and
+configuring your toolchain.
 
 ## Cleaning up issues
 
