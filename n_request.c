@@ -12,12 +12,6 @@
 
 #include "n_lib.h"
 
-#ifdef NOTE_C_TEST
-#include "test_static.h"
-#else
-#define NOTE_C_STATIC static
-#endif
-
 // For flow tracing
 static int suppressShowTransactions = 0;
 
@@ -36,7 +30,7 @@ NOTE_C_STATIC char * _crcAdd(char *json, uint16_t seqno);
 NOTE_C_STATIC bool _crcError(char *json, uint16_t shouldBeSeqno);
 
 NOTE_C_STATIC bool notecardFirmwareSupportsCrc = false;
-#endif
+#endif // !NOTE_C_LOW_MEM
 
 /*!
  @internal
@@ -661,7 +655,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
                 _DebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, responseJSON);
 #else
                 NOTE_C_LOG_ERROR(c_ioerr);
-#endif
+#endif // !NOTE_C_LOW_MEM
             }
             isIoError = true;
         }
@@ -694,7 +688,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
     // Bump the request sequence number now that we've processed this request, success or error
 #ifndef NOTE_C_LOW_MEM
     lastRequestSeqno++;
-#endif
+#endif // !NOTE_C_LOW_MEM
 
     // Free the original serialized JSON request
     JFree(json);

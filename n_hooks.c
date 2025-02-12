@@ -582,7 +582,7 @@ void *NoteMalloc(size_t size)
             hookDebugOutput(str);
         }
     }
-#endif
+#endif // NOTE_C_SHOW_MALLOC && !defined(NOTE_C_LOW_MEM)
     return p;
 }
 
@@ -603,7 +603,7 @@ void NoteFree(void *p)
             _n_ptoa32(p, str);
             hookDebugOutput(str);
         }
-#endif
+#endif // NOTE_C_SHOW_MALLOC && !defined(NOTE_C_LOW_MEM)
         hookFree(p);
     }
 }

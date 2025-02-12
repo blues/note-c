@@ -15,12 +15,6 @@
 
 #include "n_lib.h"
 
-#ifdef NOTE_C_TEST
-#include "test_static.h"
-#else
-#define NOTE_C_STATIC static
-#endif
-
 // Forwards
 NOTE_C_STATIC void _delayIO(void);
 NOTE_C_STATIC const char * _i2cNoteQueryLength(uint32_t * available, uint32_t timeoutMs);

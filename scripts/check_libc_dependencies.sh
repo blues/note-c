@@ -1,25 +1,21 @@
 #!/bin/bash
 
+# Determine the directory of the script.
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ROOT_SRC_DIR="$SCRIPT_DIR/.."
 
+# Check for a CMakeLists.txt file, to ensure CMake operations
+# are executed in the correct directory.
 if [[ ! -f "$ROOT_SRC_DIR/CMakeLists.txt" ]]; then
-    echo "Failed to find note-c root directory. (did the location of check_libc_dependencies.sh change?)"
+    echo "ERROR: Unable to locate ${ROOT_SRC_DIR}/CMakeList.txt. Expecting to use '..' to access root directory. Did the location of check_libc_dependencies.sh change?"
     exit 1
 fi
 
+# Move to the root source directory.
 pushd $ROOT_SRC_DIR $@ > /dev/null
 
-CMAKE_OPTIONS="-DNOTE_C_NO_LIBC=1"
-
-cmake -B build/ $CMAKE_OPTIONS
-if [[ $? -ne 0 ]]; then
-    echo "Failed to run CMake."
-    popd $@ > /dev/null
-    exit 1
-fi
-
-PERMITTED_FNS=(
+# Whitelist of permitted libc functions.
+LIBC_WHITELIST=(
     # These math functions are ok
     __divdi3    # dividing double-integer (64-bit) values
     __udivdi3   # unsigned dividing double-integer (64-bit) values
@@ -53,6 +49,17 @@ element_in_array() {
     return 1  # Element not found in array
 }
 
+# Configure the build with the option to exclude libc.
+cmake -B build/ -DNOTE_C_NO_LIBC=1
+if [[ $? -ne 0 ]]; then
+    echo "ERROR: CMake failed to configure build."
+    popd > /dev/null
+    exit 1
+fi
+
+# Build the project without `libc`. Then capture the build errors to parse for
+# undefined references. Next, compile a list of the undefined references, and
+# confirm they are found in our whitelist of permitted `libc` functions.
 BUILD_OUTPUT=$(cmake --build build/ -j 2>&1)
 if [[ $? -ne 0 ]]; then
     # Iterate over the lines from the build output to get all the undefined
@@ -71,24 +78,28 @@ if [[ $? -ne 0 ]]; then
     # Check if each function that caused an undefined reference error is
     # permitted.
     FAIL=0
+    echo "Performing 'libc' reference scan..."
+    echo
     for UNDEF_REF in "${UNDEF_REFS[@]}"; do
-        if element_in_array "$UNDEF_REF" "${PERMITTED_FNS[@]}"; then
-            echo "$UNDEF_REF is permitted."
+        if element_in_array "$UNDEF_REF" "${LIBC_WHITELIST[@]}"; then
+            echo " [OK]  $UNDEF_REF"
         else
-            echo "$UNDEF_REF is NOT permitted"
+            echo "[FAIL] $UNDEF_REF"
             FAIL=1
         fi
     done
 
     if [ "$FAIL" -eq 1 ]; then
-        echo "Unpermitted libc functions found."
-        popd $@ > /dev/null
+        echo "ERROR: Unpermitted libc functions found."
+        popd > /dev/null
         exit 1
     fi
 else
-    echo "Build unexpectedly succeeded. The build should fail because certain permitted libc functions shouldn't be found when linking."
-    popd $@ > /dev/null
+    echo "ERROR: 'libc' not excluded, all symbols linked."
+    popd > /dev/null
     exit 1
 fi
 
-popd $@ > /dev/null
+echo
+echo "SUCCESS: Only whitelisted functions found."
+popd > /dev/null

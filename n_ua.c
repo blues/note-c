@@ -206,4 +206,4 @@ void NoteSetUserAgentCPU(int cpu_mem, int cpu_mhz, int cpu_cores, char *cpu_vend
     n_cpu_vendor = cpu_vendor;
 }
 
-#endif
+#endif  // !NOTE_C_LOW_MEM

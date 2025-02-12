@@ -23,6 +23,17 @@
 extern "C" {
 #endif
 
+//**************************************************************************/
+/*!
+  @brief  `NOTE_C_TEST` enables testing of static functions.
+*/
+/**************************************************************************/
+#ifdef NOTE_C_TEST
+#define NOTE_C_STATIC
+#else
+#define NOTE_C_STATIC static
+#endif
+
 /**************************************************************************/
 /*!
     @brief  How long to wait for the card for any given transaction.
@@ -98,11 +109,11 @@ extern "C" {
 #define ALLOC_CHUNK 64
 #else
 #define ALLOC_CHUNK 128
-#endif
+#endif // NOTE_C_LOW_MEM
 
 #ifdef NOTE_C_LOW_MEM
 #define NOTE_DISABLE_USER_AGENT
-#endif
+#endif // NOTE_C_LOW_MEM
 
 // Transactions
 void _noteResumeTransactionDebug(void);

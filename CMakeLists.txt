@@ -16,13 +16,13 @@ if(NOT EXISTS ${PROJECT_BINARY_DIR}/.gitignore)
 endif()
 
 option(NOTE_C_BUILD_DOCS "Build docs." OFF)
-option(NOTE_C_BUILD_TESTS "Build tests." OFF)
+option(NOTE_C_BUILD_TESTS "Build tests." ON)
 option(NOTE_C_COVERAGE "Compile for test NOTE_C_COVERAGE reporting." OFF)
 option(NOTE_C_LOW_MEM "Build the library tailored for low memory usage." OFF)
 option(NOTE_C_MEM_CHECK "Run tests with Valgrind." OFF)
 option(NOTE_C_NO_LIBC "Build the library without linking against libc, generating errors for any undefined symbols." OFF)
 option(NOTE_C_SHOW_MALLOC "Build the library with flags required to log memory usage." OFF)
-option(NOTE_C_TEST_SINGLE_PRECISION "Use single precision for JSON floating point numbers." OFF)
+option(NOTE_C_SINGLE_PRECISION "Use single precision for JSON floating point numbers." OFF)
 
 set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(note_c SHARED)
@@ -112,11 +112,11 @@ if(NOTE_C_SHOW_MALLOC)
     )
 endif()
 
-if(NOTE_C_TEST_SINGLE_PRECISION)
+if(NOTE_C_SINGLE_PRECISION)
     target_compile_definitions(
         note_c
         PUBLIC
-            NOTE_C_TEST_SINGLE_PRECISION
+            NOTE_C_SINGLE_PRECISION
     )
 endif()
 

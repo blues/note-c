@@ -8,7 +8,7 @@ set(DOCS_CFG_DIR ${CMAKE_CURRENT_LIST_DIR})
 set(DOCS_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
 set(DOCS_SRC_DIR ${PROJECT_SOURCE_DIR}/docs)
 
-set(SPHINX_OPTS "-j auto -W --keep-going -T")
+set(SPHINX_OPTS "-j auto -W --keep-going -T -v")
 separate_arguments(SPHINX_OPTS)
 
 add_custom_target(

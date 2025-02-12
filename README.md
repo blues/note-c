@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/blues/note-c/badge.svg?branch=master)](https://coveralls.io/github/blues/note-c?branch=master)
+[![Coverage Status][coverage badge]][coverage details]
 
 # note-c
 
@@ -12,24 +12,11 @@ Notes to [Notehub.io][notehub].
 This library is used by the [note-arduino library][note-arduino], which includes
 it as a git subtree.
 
-## Documentation
+## API Documentation
 
-The documentation for this library can be found [here](https://blues.github.io/note-c/index.html).
+The API documentation for this library can be found [here][note-c API docs].
 
-## CMake
-
-The CMake build system is primarily here for testing note-c on a development
-machine. You can use it to generate a static or shared note-c library, but
-embedded users will typically just compile all the .c source files into their
-firmware image. For more on testing, see test/README.md.
-
-### Options
-
-- BUILD_TESTS: Build the tests. See the tests directory. Default: ON.
-- BUILD_SHARED_LIBS: Build the note-c library as shared instead of static. This
-reduces the total size of the compiled tests. Default: ON.
-
-## Logging
+## Logging Control
 
 `note-c` provides a comprehensive and flexible logging functionality.
 
@@ -69,8 +56,8 @@ time, as follows:
 ```
 
 _**NOTE:** In the example above, you will notice we used zero (`0`), instead of
-`NOTE_C_LOG_LEVEL_ERROR`. This is because those values are internal to the
-library, and not available in the context of the command line._
+`NOTE_C_LOG_LEVEL_ERROR`. This is because the warning constants are internal to
+the library, and not available in the context of the command line._
 
 Here, we have decided to show only the most severe (i.e. `[ERROR]`) logs.
 Alternatively, you may set the level to any of the values listed above.
@@ -82,7 +69,7 @@ behavior for the library. However, you may also set the log level dynamically,
 during runtime, by using the `NoteSetLogLevel()` API.
 
 ```c
-NoteSetLogLevel(NOTE_C_LOG_LEVEL_WARN)
+NoteSetLogLevel(NOTE_C_LOG_LEVEL_WARN);
 ```
 
 ### Notecard Sync Logging (`[SYNC]`)
@@ -96,9 +83,45 @@ Instead of toggling features inside the library, this helper functions sends a
 request to the Notecard to inquire about its synchronization status and logs
 those details.
 
-The function is designed to be called in a loop, and throttled by a parameter.
-See [the documentation page](https://blues.github.io/note-c/api_reference.html#c.NoteDebugSyncStatus)
-for more information.
+The function is designed to be called in a loop and throttled by a parameter.
+See [the documentation page][NoteDebugSyncStatus] for more information.
+
+## Versioning
+
+The `note-c` versioning scheme is a variant of [Semantic
+Versioning](https://semver.org/).
+
+Below is a high-level overview of the major/minor/patch versions:
+
+- Major Version: Signals incompatible API changes.
+- Minor Version: Signals added functionality in a backward compatible manner.
+- Patch Version: Signals backward compatible bug fixes.
+
+Beyond the SemVer foundation, Blues has imposed additional requirements for a
+version to be considered valid:
+
+- Major/minor/patch versions SHALL NOT be zero.
+- For anything other than major version, version numbers MUST NOT contain
+EITHER leading zeroes OR trailing zeroes (e.g. version `1.10.2` is invalid).
+
+> Example version progression:
+>
+> `1.8.1`, `1.9.1`, `1.9.2`, `1.11.1`, `1.11.2`, `1.11.3`, `1.12.1`, `2.1.1`
+
+These additional constraints have been observed to help disambiguate versions
+and reduce support burden.
+
+### Version Artifacts
+
+The version can be referenced/tested programmatically via the following
+preprocessor defined integers found in `note.h`:
+
+- `NOTE_C_VERSION_MAJOR`
+- `NOTE_C_VERSION_MINOR`
+- `NOTE_C_VERSION_PATCH`
+
+The version may also be logged via the preprocessor defined string literal,
+`NOTE_C_VERSION`.
 
 ## Contributing
 
@@ -128,8 +151,12 @@ Copyright (c) 2019 Blues Inc. Released under the MIT license. See
 [LICENSE](LICENSE) for details.
 
 [blues]: https://blues.com
+[code of conduct]: https://blues.github.io/opensource/code-of-conduct
+[coverage badge]: https://coveralls.io/repos/github/blues/note-c/badge.svg?branch=master
+[coverage details]: https://coveralls.io/github/blues/note-c?branch=master
+[NoteDebugSyncStatus]: https://blues.github.io/note-c/api_reference.html#c.NoteDebugSyncStatus
 [notehub]: https://notehub.io
 [note-arduino]: https://github.com/blues/note-arduino
+[note-c API docs]: https://blues.github.io/note-c/index.html
 [note-go]: https://github.com/blues/note-go
 [note-python]: https://github.com/blues/note-python
-[code of conduct]: https://blues.github.io/opensource/code-of-conduct
