@@ -115,7 +115,11 @@ jobs:
 
       - name: Run tests
         run: |
-          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_unit_tests.sh ghcr.io/blues/note_c_ci:latest --coverage --mem-check
+          docker run --rm --volume $(pwd):/note-c/ \
+                          --workdir /note-c/ \
+                          --entrypoint ./scripts/run_unit_tests.sh \
+                          --user root \
+                          ghcr.io/blues/note_c_ci:latest --coverage --mem-check
 
       - name: Adjust lcov source file paths for Coveralls
         run: sudo sed -i 's/\/note-c\///g' ./build/test/coverage/lcov.info
