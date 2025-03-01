@@ -361,8 +361,8 @@ void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
 
     notecardReset = _i2cNoteReset;
     notecardTransaction = _i2cNoteTransaction;
-    notecardChunkedReceive = _i2cChunkedReceive;
-    notecardChunkedTransmit = _i2cChunkedTransmit;
+    notecardChunkedReceive = _i2cNoteChunkedReceive;
+    notecardChunkedTransmit = _i2cNoteChunkedTransmit;
 }
 
 //**************************************************************************/
