@@ -195,6 +195,7 @@ static nTransmitFn notecardChunkedTransmit = NULL;
  */
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn)
 {
+    _LockNote();
     if (hookMalloc == NULL) {
         hookMalloc = mallocfn;
     }
@@ -207,6 +208,7 @@ void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMs
     if (hookGetMs == NULL) {
         hookGetMs = millisfn;
     }
+    _UnlockNote();
 }
 
 /*!
@@ -221,10 +223,12 @@ void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMs
 void NoteSetFn(mallocFn mallocHook, freeFn freeHook, delayMsFn delayMsHook,
                getMsFn getMsHook)
 {
+    _LockNote();
     hookMalloc = mallocHook;
     hookFree = freeHook;
     hookDelayMs = delayMsHook;
     hookGetMs = getMsHook;
+    _UnlockNote();
 }
 
 //**************************************************************************/
@@ -235,7 +239,9 @@ void NoteSetFn(mallocFn mallocHook, freeFn freeHook, delayMsFn delayMsHook,
 /**************************************************************************/
 void NoteSetFnDebugOutput(debugOutputFn fn)
 {
+    _LockNote();
     hookDebugOutput = fn;
+    _UnlockNote();
 }
 
 //**************************************************************************/
@@ -260,8 +266,10 @@ bool _noteIsDebugOutputActive(void)
 /**************************************************************************/
 void NoteSetFnTransaction(txnStartFn startFn, txnStopFn stopFn)
 {
+    _LockNote();
     hookTransactionStart = startFn;
     hookTransactionStop = stopFn;
+    _UnlockNote();
 }
 
 //**************************************************************************/
@@ -319,6 +327,8 @@ void NoteSetFnNoteMutex(mutexFn lockFn, mutexFn unlockFn)
 void NoteSetFnSerial(serialResetFn resetFn, serialTransmitFn transmitFn,
                      serialAvailableFn availFn, serialReceiveFn receiveFn)
 {
+    _LockNote();
+
     hookActiveInterface = interfaceSerial;
 
     hookSerialReset = resetFn;
@@ -330,6 +340,8 @@ void NoteSetFnSerial(serialResetFn resetFn, serialTransmitFn transmitFn,
     notecardTransaction = _serialNoteTransaction;
     notecardChunkedReceive = _serialChunkedReceive;
     notecardChunkedTransmit = _serialChunkedTransmit;
+
+    _UnlockNote();
 }
 
 /*!
@@ -350,6 +362,8 @@ void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
                   i2cResetFn resetFn, i2cTransmitFn transmitFn,
                   i2cReceiveFn receiveFn)
 {
+    _LockNote();
+
     i2cAddress = notecardAddr;
     i2cMax = maxTransmitSize;
 
@@ -363,6 +377,8 @@ void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
     notecardTransaction = _i2cNoteTransaction;
     notecardChunkedReceive = _i2cNoteChunkedReceive;
     notecardChunkedTransmit = _i2cNoteChunkedTransmit;
+
+    _UnlockNote();
 }
 
 //**************************************************************************/
@@ -373,12 +389,16 @@ void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
 void NoteSetFnDisabled(void)
 {
 
+    _LockNote();
+
     hookActiveInterface = interfaceNone;
 
     notecardReset = NULL;
     notecardTransaction = NULL;
     notecardChunkedReceive = NULL;
     notecardChunkedTransmit = NULL;
+
+    _UnlockNote();
 
 }
 
@@ -699,12 +719,14 @@ void NoteGetFnDebugOutput(debugOutputFn *fn)
 */
 void NoteGetFnTransaction(txnStartFn *startFn, txnStopFn *stopFn)
 {
+    _LockNote();
     if (startFn != NULL) {
         *startFn = hookTransactionStart;
     }
     if (stopFn != NULL) {
         *stopFn = hookTransactionStop;
     }
+    _UnlockNote();
 }
 
 /*!
@@ -771,6 +793,7 @@ void NoteGetFnNoteMutex(mutexFn *lockFn, mutexFn *unlockFn)
 void NoteGetFn(mallocFn *mallocHook, freeFn *freeHook, delayMsFn *delayMsHook,
                getMsFn *getMsHook)
 {
+    _LockNote();
     if (mallocHook != NULL) {
         *mallocHook = hookMalloc;
     }
@@ -783,6 +806,7 @@ void NoteGetFn(mallocFn *mallocHook, freeFn *freeHook, delayMsFn *delayMsHook,
     if (getMsHook != NULL) {
         *getMsHook = hookGetMs;
     }
+    _UnlockNote();
 }
 
 /*!
@@ -795,6 +819,7 @@ void NoteGetFn(mallocFn *mallocHook, freeFn *freeHook, delayMsFn *delayMsHook,
 void NoteGetFnSerial(serialResetFn *resetFn, serialTransmitFn *transmitFn,
                      serialAvailableFn *availFn, serialReceiveFn *receiveFn)
 {
+    _LockNote();
     if (resetFn != NULL) {
         *resetFn = hookSerialReset;
     }
@@ -807,6 +832,7 @@ void NoteGetFnSerial(serialResetFn *resetFn, serialTransmitFn *transmitFn,
     if (receiveFn != NULL) {
         *receiveFn = hookSerialReceive;
     }
+    _UnlockNote();
 }
 
 /*!
@@ -821,6 +847,7 @@ void NoteGetFnI2C(uint32_t *notecardAddr, uint32_t *maxTransmitSize,
                   i2cResetFn *resetFn, i2cTransmitFn *transmitFn,
                   i2cReceiveFn *receiveFn)
 {
+    _LockNote();
     if (notecardAddr != NULL) {
         *notecardAddr = i2cAddress;
     }
@@ -836,6 +863,7 @@ void NoteGetFnI2C(uint32_t *notecardAddr, uint32_t *maxTransmitSize,
     if (receiveFn != NULL) {
         *receiveFn = hookI2CReceive;
     }
+    _UnlockNote();
 }
 
 /*!
