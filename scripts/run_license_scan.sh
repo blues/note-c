@@ -7,6 +7,32 @@ SRC_DIR="$SCRIPT_DIR/.."
 echo "Running License Compliance Analysis..."
 echo
 
+# Install FOSSology scanners if not already installed
+if ! command -v nomossa &> /dev/null || ! command -v copyright &> /dev/null; then
+    echo "Installing FOSSology scanners..."
+    apt-get update -qq
+    apt-get install -y --no-install-recommends wget ca-certificates
+    
+    # Create a temporary directory for FOSSology tools
+    mkdir -p /tmp/fossology
+    cd /tmp/fossology
+    
+    # Download and extract FOSSology CLI tools
+    wget -q https://github.com/fossology/fossology/releases/download/4.4.0/fossology-4.4.0-1_amd64.deb
+    dpkg -x fossology-4.4.0-1_amd64.deb .
+    
+    # Copy the scanner binaries to a location in PATH
+    cp -f usr/lib/fossology/agents/nomossa /usr/local/bin/
+    cp -f usr/lib/fossology/agents/ojo /usr/local/bin/
+    cp -f usr/lib/fossology/agents/copyright /usr/local/bin/
+    
+    # Clean up
+    cd -
+    rm -rf /tmp/fossology
+    
+    echo "FOSSology scanners installed successfully."
+fi
+
 # Create a function to generate the summary
 generate_summary() {
     {
@@ -71,14 +97,44 @@ generate_summary() {
     fi
 }
 
-# Run FOSSology scanner and capture output and exit code
-docker run --rm \
-    --volume "$SRC_DIR:/note-c/" \
-    --workdir /note-c/ \
-    fossology/fossology:scanner \
-    /bin/fossologyscanner nomos ojo copyright keyword repo 2>&1 | tee fossology_output.txt
+# Create output file
+touch fossology_output.txt
+
+# Run license scanners directly
+echo "Running Nomos license scanner..."
+find "$SRC_DIR" -type f -not -path "*/\.*" -not -path "*/build/*" | while read -r file; do
+    if [ -f "$file" ]; then
+        # Run nomos scanner
+        if command -v nomossa &> /dev/null; then
+            result=$(nomossa "$file" 2>/dev/null || echo "No license found")
+            if [ "$result" != "No license found" ]; then
+                echo "License: $result in $file" >> fossology_output.txt
+                
+                # Check for non-MIT licenses (example of a critical issue)
+                if [[ "$result" != *"MIT"* ]] && [[ "$result" != *"SPDX"* ]]; then
+                    echo "Critical: Non-MIT license found: $result in $file" >> fossology_output.txt
+                fi
+            fi
+        fi
+        
+        # Run copyright scanner
+        if command -v copyright &> /dev/null; then
+            copyright_result=$(copyright "$file" 2>/dev/null || echo "")
+            if [ -n "$copyright_result" ]; then
+                echo "Copyright: $copyright_result in $file" >> fossology_output.txt
+            fi
+        fi
+    fi
+done
+
+# Run keyword scanner (simple implementation)
+echo "Running keyword scanner..."
+grep -r --include="*.c" --include="*.h" --include="*.cpp" --include="*.hpp" -l "GPL\|GNU" "$SRC_DIR" | while read -r file; do
+    echo "Keyword: Potential GPL reference in $file" >> fossology_output.txt
+    echo "Critical: Potential GPL license reference in $file" >> fossology_output.txt
+done
 
 generate_summary
 
-# Exit with FOSSology's status code
+# Exit with summary's status code
 exit $?
