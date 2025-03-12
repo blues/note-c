@@ -76,7 +76,7 @@ SCENARIO("NoteUserAgent")
 #if defined(__GNUC__)
         CHECK(strstr(JGetString(ua, "compiler"), "gcc") != NULL);
 #endif
-        CHECK(strcmp(JGetString(ua, "req_interface"), "unknown") == 0);
+        CHECK(strcmp(JGetString(ua, "req_interface"), "none") == 0);
         CHECK(JGetInt(ua, "cpu_mem") == mem);
         CHECK(JGetInt(ua, "cpu_mhz") == mhz);
         CHECK(JGetInt(ua, "cpu_cores") == cores);

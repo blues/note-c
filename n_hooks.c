@@ -35,11 +35,6 @@
 #include <string.h>
 #endif
 
-// Which I/O port to use
-#define interfaceNone       0
-#define interfaceSerial     1
-#define interfaceI2C        2
-
 // Externalized Hooks
 //**************************************************************************/
 /*!
@@ -111,12 +106,12 @@ getMsFn hookGetMs = NULL;
 /*!
   @brief  Hook for the calling platform's current active interface. Value is
   one of:
-  - interfaceNone = 0 (default)
-  - interfaceSerial = 1
-  - interfaceI2C = 2
+  - NOTE_C_INTERFACE_NONE (default)
+  - NOTE_C_INTERFACE_SERIAL
+  - NOTE_C_INTERFACE_I2C
 */
 /**************************************************************************/
-uint32_t hookActiveInterface = interfaceNone;
+volatile int hookActiveInterface = NOTE_C_INTERFACE_NONE;
 
 //**************************************************************************/
 /*!
@@ -184,6 +179,64 @@ static nTransactionFn notecardTransaction = NULL;
 static nReceiveFn notecardChunkedReceive = NULL;
 static nTransmitFn notecardChunkedTransmit = NULL;
 
+//**************************************************************************/
+/*!
+ @brief  Get the active, platform-specific communications method
+
+ @returns  The active interface. One of:
+   - NOTE_C_INTERFACE_NONE (default)
+   - NOTE_C_INTERFACE_SERIAL
+   - NOTE_C_INTERFACE_I2C
+ */
+/**************************************************************************/
+int NoteGetActiveInterface(void)
+{
+    return hookActiveInterface;
+}
+
+NOTE_C_STATIC void _noteSetActiveInterface(int interface)
+{
+    hookActiveInterface = interface;
+
+    switch (interface) {
+        case NOTE_C_INTERFACE_SERIAL:
+            notecardReset = _serialNoteReset;
+            notecardTransaction = _serialNoteTransaction;
+            notecardChunkedReceive = _serialChunkedReceive;
+            notecardChunkedTransmit = _serialChunkedTransmit;
+            break;
+        case NOTE_C_INTERFACE_I2C:
+            notecardReset = _i2cNoteReset;
+            notecardTransaction = _i2cNoteTransaction;
+            notecardChunkedReceive = _i2cNoteChunkedReceive;
+            notecardChunkedTransmit = _i2cNoteChunkedTransmit;
+            break;
+        default:
+            notecardReset = NULL;
+            notecardTransaction = NULL;
+            notecardChunkedReceive = NULL;
+            notecardChunkedTransmit = NULL;
+            break;
+    }
+}
+
+//**************************************************************************/
+/*!
+ @brief  Set the desired, platform-specific communications method
+ @param   interface  The desired interface to use. One of:
+   - NOTE_C_INTERFACE_NONE (default)
+   - NOTE_C_INTERFACE_SERIAL
+   - NOTE_C_INTERFACE_I2C
+ */
+/**************************************************************************/
+void NoteSetActiveInterface(int interface)
+{
+    _LockNote();
+    _noteSetActiveInterface(interface);
+    _UnlockNote();
+}
+
+//**************************************************************************/
 /*!
  @brief  Set the default memory and timing hooks if they aren't already set
  @param   mallocfn  The default memory allocation `malloc`
@@ -193,6 +246,7 @@ static nTransmitFn notecardChunkedTransmit = NULL;
  @param   delayfn  The default delay function to use.
  @param   millisfn  The default 'millis' function to use.
  */
+//**************************************************************************/
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMsFn millisfn)
 {
     _LockNote();
@@ -211,6 +265,7 @@ void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMs
     _UnlockNote();
 }
 
+//**************************************************************************/
 /*!
  @brief Set the platform-specific memory and timing hooks.
 
@@ -220,6 +275,7 @@ void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn, getMs
  @param delayMsHook The platform-specific millisecond delay function.
  @param getMsHook The platform-specific millisecond counter function.
 */
+//**************************************************************************/
 void NoteSetFn(mallocFn mallocHook, freeFn freeHook, delayMsFn delayMsHook,
                getMsFn getMsHook)
 {
@@ -329,17 +385,12 @@ void NoteSetFnSerial(serialResetFn resetFn, serialTransmitFn transmitFn,
 {
     _LockNote();
 
-    hookActiveInterface = interfaceSerial;
-
     hookSerialReset = resetFn;
     hookSerialTransmit = transmitFn;
     hookSerialAvailable = availFn;
     hookSerialReceive = receiveFn;
 
-    notecardReset = _serialNoteReset;
-    notecardTransaction = _serialNoteTransaction;
-    notecardChunkedReceive = _serialChunkedReceive;
-    notecardChunkedTransmit = _serialChunkedTransmit;
+    _noteSetActiveInterface(NOTE_C_INTERFACE_SERIAL);
 
     _UnlockNote();
 }
@@ -367,16 +418,11 @@ void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
     i2cAddress = notecardAddr;
     i2cMax = maxTransmitSize;
 
-    hookActiveInterface = interfaceI2C;
-
     hookI2CReset = resetFn;
     hookI2CTransmit = transmitFn;
     hookI2CReceive = receiveFn;
 
-    notecardReset = _i2cNoteReset;
-    notecardTransaction = _i2cNoteTransaction;
-    notecardChunkedReceive = _i2cNoteChunkedReceive;
-    notecardChunkedTransmit = _i2cNoteChunkedTransmit;
+    _noteSetActiveInterface(NOTE_C_INTERFACE_I2C);
 
     _UnlockNote();
 }
@@ -390,14 +436,7 @@ void NoteSetFnDisabled(void)
 {
 
     _LockNote();
-
-    hookActiveInterface = interfaceNone;
-
-    notecardReset = NULL;
-    notecardTransaction = NULL;
-    notecardChunkedReceive = NULL;
-    notecardChunkedTransmit = NULL;
-
+    _noteSetActiveInterface(NOTE_C_INTERFACE_NONE);
     _UnlockNote();
 
 }
@@ -879,30 +918,13 @@ void NoteGetI2CAddress(uint32_t *i2caddress)
 
 //**************************************************************************/
 /*!
-  @brief  Get the active interface's name
-  @returns A string
-*/
-/**************************************************************************/
-const char *_noteActiveInterface(void)
-{
-    switch (hookActiveInterface) {
-    case interfaceSerial:
-        return "serial";
-    case interfaceI2C:
-        return "i2c";
-    }
-    return "unknown";
-}
-
-//**************************************************************************/
-/*!
   @brief  Reset the Serial bus using the platform-specific hook.
   @returns A boolean indicating whether the Serial bus was reset successfully.
 */
 /**************************************************************************/
 bool _noteSerialReset(void)
 {
-    if (hookActiveInterface == interfaceSerial && hookSerialReset != NULL) {
+    if (hookActiveInterface == NOTE_C_INTERFACE_SERIAL && hookSerialReset != NULL) {
         return hookSerialReset();
     }
     return true;
@@ -918,7 +940,7 @@ bool _noteSerialReset(void)
 /**************************************************************************/
 void _noteSerialTransmit(uint8_t *text, size_t len, bool flush)
 {
-    if (hookActiveInterface == interfaceSerial && hookSerialTransmit != NULL) {
+    if (hookActiveInterface == NOTE_C_INTERFACE_SERIAL && hookSerialTransmit != NULL) {
         hookSerialTransmit(text, len, flush);
     }
 }
@@ -932,7 +954,7 @@ void _noteSerialTransmit(uint8_t *text, size_t len, bool flush)
 /**************************************************************************/
 bool _noteSerialAvailable(void)
 {
-    if (hookActiveInterface == interfaceSerial && hookSerialAvailable != NULL) {
+    if (hookActiveInterface == NOTE_C_INTERFACE_SERIAL && hookSerialAvailable != NULL) {
         return hookSerialAvailable();
     }
     return false;
@@ -947,7 +969,7 @@ bool _noteSerialAvailable(void)
 /**************************************************************************/
 char _noteSerialReceive(void)
 {
-    if (hookActiveInterface == interfaceSerial && hookSerialReceive != NULL) {
+    if (hookActiveInterface == NOTE_C_INTERFACE_SERIAL && hookSerialReceive != NULL) {
         return hookSerialReceive();
     }
     return 0;
@@ -961,7 +983,7 @@ char _noteSerialReceive(void)
 /**************************************************************************/
 bool _noteI2CReset(uint16_t DevAddress)
 {
-    if (hookActiveInterface == interfaceI2C && hookI2CReset != NULL) {
+    if (hookActiveInterface == NOTE_C_INTERFACE_I2C && hookI2CReset != NULL) {
         return hookI2CReset(DevAddress);
     }
     return true;
@@ -979,7 +1001,7 @@ bool _noteI2CReset(uint16_t DevAddress)
 /**************************************************************************/
 const char *_noteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size)
 {
-    if (hookActiveInterface == interfaceI2C && hookI2CTransmit != NULL) {
+    if (hookActiveInterface == NOTE_C_INTERFACE_I2C && hookI2CTransmit != NULL) {
         return hookI2CTransmit(DevAddress, pBuffer, Size);
     }
     return "i2c not active";
@@ -998,7 +1020,7 @@ const char *_noteI2CTransmit(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Siz
 /**************************************************************************/
 const char *_noteI2CReceive(uint16_t DevAddress, uint8_t* pBuffer, uint16_t Size, uint32_t *available)
 {
-    if (hookActiveInterface == interfaceI2C && hookI2CReceive != NULL) {
+    if (hookActiveInterface == NOTE_C_INTERFACE_I2C && hookI2CReceive != NULL) {
         return hookI2CReceive(DevAddress, pBuffer, Size, available);
     }
     return "i2c not active";
@@ -1087,7 +1109,7 @@ bool _noteHardReset(void)
 /**************************************************************************/
 const char *_noteJSONTransaction(const char *request, size_t reqLen, char **response, uint32_t timeoutMs)
 {
-    if (notecardTransaction == NULL || hookActiveInterface == interfaceNone) {
+    if (notecardTransaction == NULL || hookActiveInterface == NOTE_C_INTERFACE_NONE) {
         return "i2c or serial interface must be selected";
     }
     return notecardTransaction(request, reqLen, response, timeoutMs);
@@ -1114,7 +1136,7 @@ const char *_noteJSONTransaction(const char *request, size_t reqLen, char **resp
 const char *_noteChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay,
                                 uint32_t timeoutMs, uint32_t *available)
 {
-    if (notecardChunkedReceive == NULL || hookActiveInterface == interfaceNone) {
+    if (notecardChunkedReceive == NULL || hookActiveInterface == NOTE_C_INTERFACE_NONE) {
         return "i2c or serial interface must be selected";
     }
     return notecardChunkedReceive(buffer, size, delay, timeoutMs, available);
@@ -1132,7 +1154,7 @@ const char *_noteChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay,
 /**************************************************************************/
 const char *_noteChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay)
 {
-    if (notecardChunkedTransmit == NULL || hookActiveInterface == interfaceNone) {
+    if (notecardChunkedTransmit == NULL || hookActiveInterface == NOTE_C_INTERFACE_NONE) {
         return "i2c or serial interface must be selected";
     }
     return notecardChunkedTransmit(buffer, size, delay);

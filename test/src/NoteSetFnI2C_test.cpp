@@ -68,7 +68,7 @@ SCENARIO("NoteSetFnI2C")
     CHECK(_noteI2CReceive(i2cAddr, NULL, 0, NULL) == NULL);
     CHECK(i2cReceiveCalled == 1);
 
-    CHECK(strcmp(_noteActiveInterface(), "i2c") == 0);
+    CHECK(NoteGetActiveInterface() == NOTE_C_INTERFACE_I2C);
 
     CHECK(_noteHardReset());
     CHECK(_i2cNoteReset_fake.call_count == 1);
@@ -99,7 +99,7 @@ SCENARIO("NoteSetFnI2C")
     CHECK(_noteI2CReceive(i2cAddr, NULL, 0, NULL) != NULL);
     CHECK(i2cReceiveCalled == 1);
 
-    CHECK(strcmp(_noteActiveInterface(), "unknown") == 0);
+    CHECK(NoteGetActiveInterface() == NOTE_C_INTERFACE_NONE);
 
     CHECK(_noteHardReset());
     CHECK(_i2cNoteReset_fake.call_count == 1);

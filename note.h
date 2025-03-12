@@ -30,11 +30,17 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+enum {
+    NOTE_C_INTERFACE_NONE = 0,
+    NOTE_C_INTERFACE_SERIAL,
+    NOTE_C_INTERFACE_I2C,
+};
+
 #define _NOTE_C_STRINGIZE(x) #x
 #define NOTE_C_STRINGIZE(x) _NOTE_C_STRINGIZE(x)
 
 #define NOTE_C_VERSION_MAJOR 2
-#define NOTE_C_VERSION_MINOR 3
+#define NOTE_C_VERSION_MINOR 4
 #define NOTE_C_VERSION_PATCH 1
 
 #define NOTE_C_VERSION NOTE_C_STRINGIZE(NOTE_C_VERSION_MAJOR) "." NOTE_C_STRINGIZE(NOTE_C_VERSION_MINOR) "." NOTE_C_STRINGIZE(NOTE_C_VERSION_PATCH)
@@ -298,6 +304,8 @@ void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
 void NoteGetFnI2C(uint32_t *notecardAddr, uint32_t *maxTransmitSize,
                   i2cResetFn *resetFn, i2cTransmitFn *transmitFn,
                   i2cReceiveFn *receiveFn);
+void NoteSetActiveInterface(int interface);
+int NoteGetActiveInterface(void);
 void NoteSetFnDisabled(void);
 void NoteSetI2CAddress(uint32_t i2caddress);
 void NoteGetI2CAddress(uint32_t *i2caddress);

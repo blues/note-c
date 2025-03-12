@@ -34,6 +34,8 @@ namespace
 SCENARIO("NoteRequestResponseJSON")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteUnlockNote);
 
     JParse_fake.custom_fake = [](const char *value) -> J * {
         return JParseWithOpts(value,0,0);

@@ -73,7 +73,7 @@ SCENARIO("NoteSetFnSerial")
     CHECK(_noteSerialReceive() == 'a');
     CHECK(serialReceiveCalled == 1);
 
-    CHECK(strcmp(_noteActiveInterface(), "serial") == 0);
+    CHECK(NoteGetActiveInterface() == NOTE_C_INTERFACE_SERIAL);
 
     CHECK(_noteHardReset());
     CHECK(_serialNoteReset_fake.call_count == 1);
@@ -97,7 +97,7 @@ SCENARIO("NoteSetFnSerial")
     CHECK(_noteSerialReceive() == 0);
     CHECK(serialReceiveCalled == 1);
 
-    CHECK(strcmp(_noteActiveInterface(), "unknown") == 0);
+    CHECK(NoteGetActiveInterface() == NOTE_C_INTERFACE_NONE);
 
     CHECK(_noteHardReset());
     CHECK(_serialNoteReset_fake.call_count == 1);
