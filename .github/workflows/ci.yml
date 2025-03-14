@@ -186,11 +186,30 @@ jobs:
       - name: Run cppcheck
         run: |
           docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_cppcheck.sh ghcr.io/blues/note_c_ci:latest
+          
+  run_scancode:
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build_ci_docker_image]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Load CI Docker image
+        # Only load the Docker image artifact if build_ci_docker_image actually
+        # ran (e.g. it wasn't skipped and was successful).
+        if: ${{ needs.build_ci_docker_image.result == 'success' }}
+        uses: ./.github/actions/load-ci-image
+
+      - name: Run license compliance check
+        run: |
+          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_scancode.sh ghcr.io/blues/note_c_ci:latest
 
   publish_ci_image:
     runs-on: ubuntu-latest
     # Make sure unit tests unit tests passed before publishing.
-    needs: [build_ci_docker_image, run_unit_tests]
+    needs: [build_ci_docker_image, run_unit_tests, run_scancode]
     # Only publish the image if this is a push event and the Docker image was rebuilt
     if: ${{ github.event_name == 'push' && needs.build_ci_docker_image.result == 'success' }}
 

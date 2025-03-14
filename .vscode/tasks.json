@@ -120,5 +120,19 @@
             ],
             "group": "test"
         }
+    ,
+        {
+            "label": "Note-C: Run License Compliance Check",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run_scancode.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "LC_ALL": "C"
+                }
+            },
+            "problemMatcher": [],
+            "group": "test"
+        }
     ]
 }
