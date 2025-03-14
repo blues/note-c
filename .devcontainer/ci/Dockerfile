@@ -76,6 +76,7 @@ RUN ["dash", "-c", "\
  && pip install --break-system-packages \
      breathe \
      sphinx-rtd-theme \
+     scancode-toolkit \
  && apt-get clean \
  && apt-get purge \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
