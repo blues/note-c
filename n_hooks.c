@@ -71,37 +71,37 @@ mutexFn hookUnlockNote = NULL;
   @brief  Hook for the calling platform's transaction initiation function.
 */
 /**************************************************************************/
-txnStartFn hookTransactionStart = NULL;
+NOTE_C_STATIC txnStartFn hookTransactionStart = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's transaction completion function.
 */
 /**************************************************************************/
-txnStopFn hookTransactionStop = NULL;
+NOTE_C_STATIC txnStopFn hookTransactionStop = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's memory allocation function.
 */
 /**************************************************************************/
-mallocFn hookMalloc = NULL;
+NOTE_C_STATIC mallocFn hookMalloc = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's memory free function.
 */
 /**************************************************************************/
-freeFn hookFree = NULL;
+NOTE_C_STATIC freeFn hookFree = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's delay function.
 */
 /**************************************************************************/
-delayMsFn hookDelayMs = NULL;
+NOTE_C_STATIC delayMsFn hookDelayMs = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's millis timing function.
 */
 /**************************************************************************/
-getMsFn hookGetMs = NULL;
+NOTE_C_STATIC getMsFn hookGetMs = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's current active interface. Value is
@@ -111,73 +111,72 @@ getMsFn hookGetMs = NULL;
   - NOTE_C_INTERFACE_I2C
 */
 /**************************************************************************/
-volatile int hookActiveInterface = NOTE_C_INTERFACE_NONE;
+NOTE_C_STATIC volatile int hookActiveInterface = NOTE_C_INTERFACE_NONE;
 
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's Serial reset function.
 */
 /**************************************************************************/
-serialResetFn hookSerialReset = NULL;
+NOTE_C_STATIC serialResetFn hookSerialReset = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's Serial transmit function.
 */
 /**************************************************************************/
-serialTransmitFn hookSerialTransmit = NULL;
+NOTE_C_STATIC serialTransmitFn hookSerialTransmit = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's Serial data available function.
 */
 /**************************************************************************/
-serialAvailableFn hookSerialAvailable = NULL;
+NOTE_C_STATIC serialAvailableFn hookSerialAvailable = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's Serial receive function.
 */
 /**************************************************************************/
-serialReceiveFn hookSerialReceive = NULL;
-
+NOTE_C_STATIC serialReceiveFn hookSerialReceive = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's I2C address.
 */
 /**************************************************************************/
-uint32_t i2cAddress = 0;
+NOTE_C_STATIC uint32_t i2cAddress = 0;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's I2C maximum segment size, in bytes.
 */
 /**************************************************************************/
-uint32_t i2cMax = 0;
+NOTE_C_STATIC uint32_t i2cMax = 0;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's I2C reset function.
 */
 /**************************************************************************/
-i2cResetFn hookI2CReset = NULL;
+NOTE_C_STATIC i2cResetFn hookI2CReset = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's transmit function.
 */
 /**************************************************************************/
-i2cTransmitFn hookI2CTransmit = NULL;
+NOTE_C_STATIC i2cTransmitFn hookI2CTransmit = NULL;
 //**************************************************************************/
 /*!
   @brief  Hook for the calling platform's I2C receive function.
 */
 /**************************************************************************/
-i2cReceiveFn hookI2CReceive = NULL;
+NOTE_C_STATIC i2cReceiveFn hookI2CReceive = NULL;
 
 // Internal hooks
 typedef bool (*nNoteResetFn) (void);
 typedef const char * (*nTransactionFn) (const char *, size_t, char **, uint32_t);
 typedef const char * (*nReceiveFn) (uint8_t *, uint32_t *, bool, uint32_t, uint32_t *);
 typedef const char * (*nTransmitFn) (uint8_t *, uint32_t, bool);
-static nNoteResetFn notecardReset = NULL;
-static nTransactionFn notecardTransaction = NULL;
-static nReceiveFn notecardChunkedReceive = NULL;
-static nTransmitFn notecardChunkedTransmit = NULL;
+NOTE_C_STATIC nNoteResetFn notecardReset = NULL;
+NOTE_C_STATIC nTransactionFn notecardTransaction = NULL;
+NOTE_C_STATIC nReceiveFn notecardChunkedReceive = NULL;
+NOTE_C_STATIC nTransmitFn notecardChunkedTransmit = NULL;
 
 //**************************************************************************/
 /*!
@@ -212,6 +211,7 @@ NOTE_C_STATIC void _noteSetActiveInterface(int interface)
             notecardChunkedTransmit = _i2cNoteChunkedTransmit;
             break;
         default:
+            hookActiveInterface = NOTE_C_INTERFACE_NONE; // unrecognized interfaces are disabled
             notecardReset = NULL;
             notecardTransaction = NULL;
             notecardChunkedReceive = NULL;

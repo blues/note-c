@@ -11,10 +11,8 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
+#include <fff.h>
 
 #include "n_lib.h"
 
@@ -29,6 +27,7 @@ FAKE_VALUE_FUNC(J *, NoteRequestResponse, J *)
 uint8_t buf[32] = {0xDE, 0xAD, 0xBE, 0xEF};
 uint32_t dataLen = 4;
 uint32_t bufLen = sizeof(buf);
+bool resetRequested = false;
 
 namespace
 {
@@ -36,14 +35,18 @@ namespace
 SCENARIO("NoteBinaryStoreTransmit")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteUnlockNote);
 
     NoteNewRequest_fake.custom_fake = [](const char *) -> J * {
         return JCreateObject();
     };
 
-    GIVEN("Bad parameters are supplied") {
-        WHEN("unencodedData is NULL") {
-            const char *err = NoteBinaryStoreTransmit(NULL, dataLen, bufLen, 0);
+    GIVEN("Bad parameters") {
+        uint8_t * const nullUnencodedData = NULL;
+
+        WHEN("NoteBinaryStoreTransmit is called with unencodedData as NULL") {
+            const char *err = NoteBinaryStoreTransmit(nullUnencodedData, dataLen, bufLen, 0);
 
             THEN("An error is returned") {
                 CHECK(err != NULL);
@@ -200,6 +203,7 @@ SCENARIO("NoteBinaryStoreTransmit")
 
     GIVEN("The initial card.binary response is ok") {
         auto cardBinaryRspInitial = [](J *req) -> J * {
+            resetRequested = JGetBool(req,"reset");
             JDelete(req);
             J *rsp = JCreateObject();
             JAddIntToObject(rsp, "length", 0);
@@ -210,6 +214,14 @@ SCENARIO("NoteBinaryStoreTransmit")
         NoteRequestResponse_fake.custom_fake = cardBinaryRspInitial;
         uint8_t originalData[sizeof(buf)];
         memcpy(originalData, buf, dataLen);
+
+        WHEN("NoteBinaryStoreTransmit is called with a zero offset") {
+            const char *err = NoteBinaryStoreTransmit(buf, dataLen, bufLen, 0);
+
+            THEN("reset is added to the card.binary request") {
+                CHECK(resetRequested);
+            }
+        }
 
         AND_GIVEN("Allocating the card.binary.put request fails") {
             NoteNewRequest_fake.custom_fake = NULL;
@@ -395,9 +407,7 @@ SCENARIO("NoteBinaryStoreTransmit")
     CHECK(_noteLockNote_fake.call_count == _noteUnlockNote_fake.call_count);
 
     RESET_FAKE(_noteChunkedTransmit);
-    RESET_FAKE(_noteLockNote);
     RESET_FAKE(_noteTransactionShouldLock);
-    RESET_FAKE(_noteUnlockNote);
     RESET_FAKE(NoteNewRequest);
     RESET_FAKE(NoteRequestResponse);
 }

@@ -12,7 +12,7 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
+#include <fff.h>
 
 #include "n_lib.h"
 
@@ -59,7 +59,7 @@ J *NoteTransactionOtherError(J *)
     return resp;
 }
 
-TEST_CASE("NoteRequestResponseWithRetry")
+SCENARIO("NoteRequestResponseWithRetry")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 

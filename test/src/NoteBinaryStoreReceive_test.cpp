@@ -11,10 +11,8 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
+#include <fff.h>
 
 #include "n_lib.h"
 
@@ -49,6 +47,8 @@ namespace
 SCENARIO("NoteBinaryStoreReceive")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteUnlockNote);
 
     // These fakes are the default. Tests below may override them to exercise
     // different scenarios.
@@ -232,9 +232,7 @@ SCENARIO("NoteBinaryStoreReceive")
     CHECK(_noteLockNote_fake.call_count == _noteUnlockNote_fake.call_count);
 
     RESET_FAKE(_noteChunkedReceive);
-    RESET_FAKE(_noteLockNote);
     RESET_FAKE(_noteTransactionShouldLock);
-    RESET_FAKE(_noteUnlockNote);
     RESET_FAKE(NoteBinaryCodecDecode);
     RESET_FAKE(NoteBinaryStoreEncodedLength);
     RESET_FAKE(NoteNewRequest);

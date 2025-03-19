@@ -15,7 +15,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include "test_static.h"
+#include "n_lib.h"
 
 extern bool notecardFirmwareSupportsCrc;
 

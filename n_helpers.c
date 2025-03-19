@@ -529,7 +529,7 @@ const char * NoteBinaryStoreTransmit(uint8_t *unencodedData, uint32_t unencodedL
         return err;
     }
 
-    // Issue a "card.binary" request, reseetting the length if this is the
+    // Issue a "card.binary" request. The length is reset if this is the
     // first segment, clearing out any error that might potentially be
     // pending from a previous use of the binary store.
     J *req = NoteNewRequest("card.binary");

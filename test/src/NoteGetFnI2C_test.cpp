@@ -12,47 +12,64 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
+#include <fff.h>
 
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
+FAKE_VOID_FUNC(_noteLockNote)
+FAKE_VOID_FUNC(_noteUnlockNote)
+
+extern uint32_t i2cAddress;
+extern uint32_t i2cMax;
+extern i2cResetFn hookI2CReset;
+extern i2cTransmitFn hookI2CTransmit;
+extern i2cReceiveFn hookI2CReceive;
 
 namespace
 {
 
-uint32_t notecardAddr = 0x09;
-uint32_t maxTransmitSize = 0xF0;
+const uint32_t MyI2cAddress = 0x19790917;
+const uint32_t MyI2cMax = 79;
 
-bool mockI2CReset(uint16_t address)
+bool MyI2cReset(uint16_t)
 {
-    (void)address;
     return false;
 }
 
-const char * mockI2CTransmit(uint16_t address, uint8_t* txBuf, uint16_t txBufSize)
+const char * MyI2cTransmit(uint16_t, uint8_t*, uint16_t)
 {
-    (void)address;
-    (void)txBuf;
-    (void)txBufSize;
     return NULL;
 }
 
-const char * mockI2CReceive(uint16_t address, uint8_t* rxBuf, uint16_t rxBufSize, uint32_t *available)
+const char * MyI2cReceive(uint16_t, uint8_t*, uint16_t, uint32_t *)
 {
-    (void)address;
-    (void)rxBuf;
-    (void)rxBufSize;
-    (void)available;
     return NULL;
 }
 
 SCENARIO("NoteGetFnI2C")
 {
-    GIVEN("A set of I2C parameters") {
-        NoteSetFnI2C(notecardAddr, maxTransmitSize, mockI2CReset, mockI2CTransmit, mockI2CReceive);
+    GIVEN("I2C hooks and static variables have previously been set") {
+        i2cAddress = MyI2cAddress;
+        i2cMax = MyI2cMax;
+        hookI2CReset = MyI2cReset;
+        hookI2CTransmit = MyI2cTransmit;
+        hookI2CReceive = MyI2cReceive;
 
-        AND_GIVEN("Valid pointers for all I2C functions are provided") {
+        WHEN("NoteGetFnI2C is called") {
+            NoteGetFnI2C(NULL, NULL, NULL, NULL, NULL);
+
+            THEN("It should not crash") {
+                SUCCEED();
+            }
+
+            THEN("The Notecard lock is taken and released") {
+                CHECK(1 == _noteLockNote_fake.call_count);
+                CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
+            }
+        }
+
+        AND_GIVEN("Valid empty pointers for all I2C functions") {
             uint32_t notecardAddr = 0;
             uint32_t maxTransmitSize = 0;
             i2cResetFn resetFunc = NULL;
@@ -60,23 +77,19 @@ SCENARIO("NoteGetFnI2C")
             i2cReceiveFn receiveFunc = NULL;
 
             WHEN("NoteGetFnI2C is called") {
+                NoteGetFnI2C(&notecardAddr, &maxTransmitSize, &resetFunc, &transmitFunc, &receiveFunc);
+
                 THEN("It should return the mock functions") {
-                    NoteGetFnI2C(&notecardAddr, &maxTransmitSize, &resetFunc, &transmitFunc, &receiveFunc);
-                    CHECK(notecardAddr == 0x09);
-                    CHECK(maxTransmitSize == 0xF0);
-                    CHECK(resetFunc == mockI2CReset);
-                    CHECK(transmitFunc == mockI2CTransmit);
-                    CHECK(receiveFunc == mockI2CReceive);
+                    CHECK(notecardAddr == MyI2cAddress);
+                    CHECK(maxTransmitSize == MyI2cMax);
+                    CHECK(resetFunc == MyI2cReset);
+                    CHECK(transmitFunc == MyI2cTransmit);
+                    CHECK(receiveFunc == MyI2cReceive);
                 }
-            }
-        }
 
-        AND_GIVEN("Only NULL pointers are provided") {
-            WHEN("NoteGetFnI2C is called") {
-                NoteGetFnI2C(NULL, NULL, NULL, NULL, NULL);
-
-                THEN("It should not crash") {
-                    SUCCEED();
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -88,7 +101,12 @@ SCENARIO("NoteGetFnI2C")
                 NoteGetFnI2C(&notecardAddr, NULL, NULL, NULL, NULL);
 
                 THEN("It should return the mock address") {
-                    CHECK(notecardAddr == 0x09);
+                    CHECK(notecardAddr == MyI2cAddress);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -100,7 +118,12 @@ SCENARIO("NoteGetFnI2C")
                 NoteGetFnI2C(NULL, &maxTransmitSize, NULL, NULL, NULL);
 
                 THEN("It should return the mock max transmit size") {
-                    CHECK(maxTransmitSize == 0xF0);
+                    CHECK(maxTransmitSize == MyI2cMax);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -112,7 +135,12 @@ SCENARIO("NoteGetFnI2C")
                 NoteGetFnI2C(NULL, NULL, &resetFunc, NULL, NULL);
 
                 THEN("It should return the mock reset function") {
-                    CHECK(resetFunc == mockI2CReset);
+                    CHECK(resetFunc == MyI2cReset);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -124,7 +152,12 @@ SCENARIO("NoteGetFnI2C")
                 NoteGetFnI2C(NULL, NULL, NULL, &transmitFunc, NULL);
 
                 THEN("It should return the mock transmit function") {
-                    CHECK(transmitFunc == mockI2CTransmit);
+                    CHECK(transmitFunc == MyI2cTransmit);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -136,11 +169,19 @@ SCENARIO("NoteGetFnI2C")
                 NoteGetFnI2C(NULL, NULL, NULL, NULL, &receiveFunc);
 
                 THEN("It should return the mock receive function") {
-                    CHECK(receiveFunc == mockI2CReceive);
+                    CHECK(receiveFunc == MyI2cReceive);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
     }
+
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteUnlockNote);
 }
 
 }

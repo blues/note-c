@@ -29,6 +29,7 @@ extern "C" {
 */
 /**************************************************************************/
 #ifdef NOTE_C_TEST
+#include "test/include/test_static.h"
 #define NOTE_C_STATIC
 #else
 #define NOTE_C_STATIC static

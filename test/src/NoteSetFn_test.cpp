@@ -11,83 +11,91 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
+#include <fff.h>
 
 #include "n_lib.h"
+
+DEFINE_FFF_GLOBALS
+FAKE_VOID_FUNC(_noteLockNote)
+FAKE_VOID_FUNC(_noteUnlockNote)
+
+extern mallocFn hookMalloc;
+extern freeFn hookFree;
+extern delayMsFn hookDelayMs;
+extern getMsFn hookGetMs;
 
 namespace
 {
 
-bool mallocCalled = false;
-bool freeCalled = false;
-bool delayMsCalled = false;
-bool getMsCalled = false;
-
 void* MyMalloc(size_t)
 {
-    mallocCalled = true;
     return NULL;
 }
 
 void MyFree(void *)
 {
-    freeCalled = true;
 }
 
 void MyDelayMs(uint32_t)
 {
-    delayMsCalled = true;
 }
 
 uint32_t MyGetMs()
 {
-    getMsCalled = true;
     return 0;
 }
 
 SCENARIO("NoteSetFn")
 {
-    NoteSetFnDefault(MyMalloc, MyFree, MyDelayMs, MyGetMs);
+    GIVEN("Hooks have not been set (i.e. NULL)") {
+        hookMalloc = NULL;
+        hookFree = NULL;
+        hookDelayMs = NULL;
+        hookGetMs = NULL;
 
-    SECTION("NoteSetFnDefault: Hooks not overridden") {
-        // NoteSetFnDefault will only set the hooks if they're non-NULL, so
-        // trying to set them to NULL here should have no effect, since they
-        // were previously set to valid values.
-        NoteSetFnDefault(NULL, NULL, NULL, NULL);
+        WHEN("NoteSetFn is called") {
+            NoteSetFn(MyMalloc, MyFree, MyDelayMs, MyGetMs);
 
-        void* buf = NoteMalloc(1);
-        NoteFree(buf);
-        NoteDelayMs(1);
-        NoteGetMs();
+            THEN("The hooks are set") {
+                CHECK(hookMalloc == MyMalloc);
+                CHECK(hookFree == MyFree);
+                CHECK(hookDelayMs == MyDelayMs);
+                CHECK(hookGetMs == MyGetMs);
+            }
 
-        CHECK(mallocCalled);
-        CHECK(freeCalled);
-        CHECK(delayMsCalled);
-        CHECK(getMsCalled);
+            THEN("The Notecard lock is taken and released") {
+                CHECK(1 == _noteLockNote_fake.call_count);
+                CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
+            }
+        }
     }
 
-    SECTION("NoteSetFn: Hooks overridden") {
-        NoteSetFn(NULL, NULL, NULL, NULL);
+    GIVEN("Hooks have been set with non-NULL values") {
+        hookMalloc = MyMalloc;
+        hookFree = MyFree;
+        hookDelayMs = MyDelayMs;
+        hookGetMs = MyGetMs;
 
-        void* buf = NoteMalloc(1);
-        NoteFree(buf);
-        NoteDelayMs(1);
-        NoteGetMs();
+        WHEN("NoteSetFn is called") {
+            NoteSetFn(NULL, NULL, NULL, NULL);
 
-        CHECK(!mallocCalled);
-        CHECK(!freeCalled);
-        CHECK(!delayMsCalled);
-        CHECK(!getMsCalled);
+            THEN("The existing hooks overridden") {
+                CHECK(hookMalloc == NULL);
+                CHECK(hookFree == NULL);
+                CHECK(hookDelayMs == NULL);
+                CHECK(hookGetMs == NULL);
+            }
+
+            THEN("The Notecard lock is taken and released") {
+                CHECK(1 == _noteLockNote_fake.call_count);
+                CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
+            }
+        }
     }
 
-    mallocCalled = false;
-    freeCalled = false;
-    delayMsCalled = false;
-    getMsCalled = false;
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteUnlockNote);
 }
 
 }
-
-
