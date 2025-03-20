@@ -18,9 +18,10 @@
  */
 
 #include <assert.h>
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
+
 #include "n_lib.h"
 
 //**************************************************************************/
@@ -167,6 +168,14 @@ NOTE_C_STATIC i2cTransmitFn hookI2CTransmit = NULL;
 */
 /**************************************************************************/
 NOTE_C_STATIC i2cReceiveFn hookI2CReceive = NULL;
+//**************************************************************************/
+/*!
+  @brief Variable used to determine the runtime logging level
+*/
+/**************************************************************************/
+#ifndef NOTE_NODEBUG
+NOTE_C_STATIC int noteLogLevel = NOTE_C_LOG_LEVEL;
+#endif
 
 // Internal hooks
 typedef bool (*nNoteResetFn) (void);
@@ -442,15 +451,6 @@ void NoteSetFnDisabled(void)
 }
 
 // Runtime hook wrappers
-
-//**************************************************************************/
-/*!
-  @brief Variable used to determine the runtime logging level
-*/
-/**************************************************************************/
-#ifndef NOTE_NODEBUG
-int noteLogLevel = NOTE_C_LOG_LEVEL;
-#endif
 
 //**************************************************************************/
 /*!
@@ -907,12 +907,12 @@ void NoteGetFnI2C(uint32_t *notecardAddr, uint32_t *maxTransmitSize,
 
 /*!
  @brief Get the I2C address of the Notecard.
- @param i2caddress Pointer to store the I2C address.
+ @param i2cAddr Pointer to store the I2C address.
 */
-void NoteGetI2CAddress(uint32_t *i2caddress)
+void NoteGetI2CAddress(uint32_t *i2cAddr)
 {
-    if (i2caddress != NULL) {
-        *i2caddress = i2cAddress;
+    if (i2cAddr != NULL) {
+        *i2cAddr = i2cAddress;
     }
 }
 
@@ -972,7 +972,7 @@ char _noteSerialReceive(void)
     if (hookActiveInterface == NOTE_C_INTERFACE_SERIAL && hookSerialReceive != NULL) {
         return hookSerialReceive();
     }
-    return 0;
+    return '\0';
 }
 
 //**************************************************************************/
@@ -1043,12 +1043,12 @@ uint32_t NoteI2CAddress(void)
 //**************************************************************************/
 /*!
   @brief  Set the I2C address for communication with the Notecard.
-  @param   i2caddress the I2C address to use for the Notecard.
+  @param   i2cAddr the I2C address to use for the Notecard.
 */
 /**************************************************************************/
-void NoteSetI2CAddress(uint32_t i2caddress)
+void NoteSetI2CAddress(uint32_t i2cAddr)
 {
-    i2cAddress = i2caddress;
+    i2cAddress = i2cAddr;
 }
 
 //**************************************************************************/
@@ -1071,7 +1071,6 @@ uint32_t NoteI2CMax(void)
     }
     return i2cMax;
 }
-
 
 //**************************************************************************/
 /*!
@@ -1110,7 +1109,7 @@ bool _noteHardReset(void)
 const char *_noteJSONTransaction(const char *request, size_t reqLen, char **response, uint32_t timeoutMs)
 {
     if (notecardTransaction == NULL || hookActiveInterface == NOTE_C_INTERFACE_NONE) {
-        return "i2c or serial interface must be selected";
+        return "a valid interface must be selected";
     }
     return notecardTransaction(request, reqLen, response, timeoutMs);
 }
@@ -1137,7 +1136,7 @@ const char *_noteChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay,
                                 uint32_t timeoutMs, uint32_t *available)
 {
     if (notecardChunkedReceive == NULL || hookActiveInterface == NOTE_C_INTERFACE_NONE) {
-        return "i2c or serial interface must be selected";
+        return "a valid interface must be selected";
     }
     return notecardChunkedReceive(buffer, size, delay, timeoutMs, available);
 }
@@ -1155,7 +1154,7 @@ const char *_noteChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay,
 const char *_noteChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay)
 {
     if (notecardChunkedTransmit == NULL || hookActiveInterface == NOTE_C_INTERFACE_NONE) {
-        return "i2c or serial interface must be selected";
+        return "a valid interface must be selected";
     }
     return notecardChunkedTransmit(buffer, size, delay);
 }
