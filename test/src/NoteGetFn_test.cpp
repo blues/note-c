@@ -12,43 +12,63 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
+#include <fff.h>
 
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
+FAKE_VOID_FUNC(_noteLockNote)
+FAKE_VOID_FUNC(_noteUnlockNote)
+
+extern mallocFn hookMalloc;
+extern freeFn hookFree;
+extern delayMsFn hookDelayMs;
+extern getMsFn hookGetMs;
 
 namespace
 {
 
-void mockDelayMs(uint32_t ms)
+void MyDelayMs(uint32_t)
 {
-    (void)ms;
 }
 
-void mockFree(void *mem)
+void MyFree(void *)
 {
-    (void)mem;
     return;
 }
 
-uint32_t mockGetMs(void)
+uint32_t MyGetMs(void)
 {
     return 0;
 }
 
-void * mockMalloc(size_t size)
+void * MyMalloc(size_t)
 {
-    (void)size;
     return NULL;
 }
 
 SCENARIO("NoteGetFn")
 {
-    GIVEN("A set of hook functions") {
-        NoteSetFn(mockMalloc, mockFree, mockDelayMs, mockGetMs);
+    GIVEN("Hooks have been set with non-NULL values") {
+        hookMalloc = MyMalloc;
+        hookFree = MyFree;
+        hookDelayMs = MyDelayMs;
+        hookGetMs = MyGetMs;
 
-        AND_GIVEN("Valid pointers for all platform functions are provided") {
+        WHEN("NoteGetFn is called") {
+            NoteGetFn(NULL, NULL, NULL, NULL);
+
+            THEN("It should not crash") {
+                SUCCEED();
+            }
+
+            THEN("The Notecard lock is taken and released") {
+                CHECK(1 == _noteLockNote_fake.call_count);
+                CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
+            }
+        }
+
+        AND_GIVEN("Valid empty pointers for all platform functions") {
             mallocFn mallocFunc = NULL;
             freeFn freeFunc = NULL;
             delayMsFn delayMs = NULL;
@@ -58,20 +78,15 @@ SCENARIO("NoteGetFn")
                 NoteGetFn(&mallocFunc, &freeFunc, &delayMs, &getMs);
 
                 THEN("The hook functions are returned") {
-                    CHECK(mallocFunc == mockMalloc);
-                    CHECK(freeFunc == mockFree);
-                    CHECK(delayMs == mockDelayMs);
-                    CHECK(getMs == mockGetMs);
+                    CHECK(mallocFunc == MyMalloc);
+                    CHECK(freeFunc == MyFree);
+                    CHECK(delayMs == MyDelayMs);
+                    CHECK(getMs == MyGetMs);
                 }
-            }
-        }
 
-        AND_GIVEN("Only NULL pointers are provided") {
-            WHEN("NoteGetFn is called") {
-                NoteGetFn(NULL, NULL, NULL, NULL);
-
-                THEN("It should not crash") {
-                    SUCCEED();
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -83,7 +98,12 @@ SCENARIO("NoteGetFn")
                 NoteGetFn(&mallocFunc, NULL, NULL, NULL);
 
                 THEN("The malloc function is returned") {
-                    CHECK(mallocFunc == mockMalloc);
+                    CHECK(mallocFunc == MyMalloc);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -95,7 +115,12 @@ SCENARIO("NoteGetFn")
                 NoteGetFn(NULL, &freeFunc, NULL, NULL);
 
                 THEN("The free function is returned") {
-                    CHECK(freeFunc == mockFree);
+                    CHECK(freeFunc == MyFree);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -107,7 +132,12 @@ SCENARIO("NoteGetFn")
                 NoteGetFn(NULL, NULL, &delayMs, NULL);
 
                 THEN("The delay function is returned") {
-                    CHECK(delayMs == mockDelayMs);
+                    CHECK(delayMs == MyDelayMs);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -119,10 +149,19 @@ SCENARIO("NoteGetFn")
                 NoteGetFn(NULL, NULL, NULL, &getMs);
 
                 THEN("The get milliseconds function is returned") {
-                    CHECK(getMs == mockGetMs);
+                    CHECK(getMs == MyGetMs);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
     }
+
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteUnlockNote);
 }
+
 }

@@ -16,6 +16,7 @@ char *_crcAdd(char *json, uint16_t seqno);
 bool _crcError(char *json, uint16_t shouldBeSeqno);
 void _delayIO(void);
 const char * _i2cNoteQueryLength(uint32_t * available, uint32_t timeoutMs);
+void _noteSetActiveInterface(int interface);
 void _setTime(JTIME seconds);
 bool _timerExpiredSecs(uint32_t *timer, uint32_t periodSecs);
 char _j_tolower(char c);

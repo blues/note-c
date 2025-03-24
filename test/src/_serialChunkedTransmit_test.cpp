@@ -11,13 +11,11 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
-#include "time_mocks.h"
+#include <fff.h>
 
 #include "n_lib.h"
+#include "time_mocks.h"
 
 DEFINE_FFF_GLOBALS
 FAKE_VOID_FUNC(_noteSerialTransmit, uint8_t *, size_t, bool)

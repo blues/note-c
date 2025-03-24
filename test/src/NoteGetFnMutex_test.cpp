@@ -12,11 +12,8 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
 
 #include "n_lib.h"
-
-DEFINE_FFF_GLOBALS
 
 namespace
 {

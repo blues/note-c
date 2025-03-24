@@ -11,10 +11,8 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
+#include <fff.h>
 
 #include "n_lib.h"
 
@@ -28,12 +26,20 @@ FAKE_VALUE_FUNC(N_CJSON_PUBLIC(J *), JParse, const char *)
 FAKE_VOID_FUNC(NoteFree, void *)
 FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
 
+extern mallocFn hookMalloc;
+extern freeFn hookFree;
+extern delayMsFn hookDelayMs;
+extern getMsFn hookGetMs;
+
 namespace
 {
 
 SCENARIO("NoteRequestResponseJSON")
 {
-    NoteSetFnDefault(malloc, free, NULL, NULL);
+    hookMalloc = malloc;
+    hookFree = free;
+    hookDelayMs = NULL;
+    hookGetMs = NULL;
 
     JParse_fake.custom_fake = [](const char *value) -> J * {
         return JParseWithOpts(value,0,0);
@@ -222,8 +228,8 @@ SCENARIO("NoteRequestResponseJSON")
 
             THEN("The Notecard is locked and unlocked") {
                 REQUIRE(_noteJSONTransaction_fake.call_count > 0);
-                CHECK(_noteLockNote_fake.call_count == 1);
-                CHECK(_noteUnlockNote_fake.call_count == 1);
+                CHECK(1 == _noteLockNote_fake.call_count);
+                CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
             }
 
             THEN("The transaction start/stop function are used to prepare the "

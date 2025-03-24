@@ -11,11 +11,10 @@
  *
  */
 
-
+#include <catch2/catch_test_macros.hpp>
+#include <fff.h>
 
 #include "n_lib.h"
-#include <catch2/catch_test_macros.hpp>
-#include "fff.h"
 
 // This has to come after n_lib.h, which will define NOTE_DISABLE_USER_AGENT if
 // NOTE_C_LOW_MEM is defined.
@@ -76,7 +75,7 @@ SCENARIO("NoteUserAgent")
 #if defined(__GNUC__)
         CHECK(strstr(JGetString(ua, "compiler"), "gcc") != NULL);
 #endif
-        CHECK(strcmp(JGetString(ua, "req_interface"), "unknown") == 0);
+        CHECK(strcmp(JGetString(ua, "req_interface"), "none") == 0);
         CHECK(JGetInt(ua, "cpu_mem") == mem);
         CHECK(JGetInt(ua, "cpu_mhz") == mhz);
         CHECK(JGetInt(ua, "cpu_cores") == cores);

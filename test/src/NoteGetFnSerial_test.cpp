@@ -12,43 +12,63 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
+#include <fff.h>
 
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
+FAKE_VOID_FUNC(_noteLockNote)
+FAKE_VOID_FUNC(_noteUnlockNote)
+
+extern serialResetFn hookSerialReset;
+extern serialTransmitFn hookSerialTransmit;
+extern serialAvailableFn hookSerialAvailable;
+extern serialReceiveFn hookSerialReceive;
 
 namespace
 {
 
-bool mockSerialReset(void)
+bool MySerialReset(void)
 {
     return false;
 }
 
-void mockSerialTransmit(uint8_t *txBuf, size_t txBufSize, bool flush)
+void MySerialTransmit(uint8_t *, size_t, bool)
 {
-    (void)txBuf;
-    (void)txBufSize;
-    (void)flush;
 }
 
-bool mockSerialAvailable(void)
+bool MySerialAvailable(void)
 {
     return false;
 }
 
-char mockSerialReceive(void)
+char MySerialReceive(void)
 {
     return 0;
 }
 
 SCENARIO("NoteGetFnSerial")
 {
-    GIVEN("A set of serial functions") {
-        NoteSetFnSerial(mockSerialReset, mockSerialTransmit, mockSerialAvailable, mockSerialReceive);
+    GIVEN("Serial hooks have previously been set") {
+        hookSerialReset = MySerialReset;
+        hookSerialTransmit = MySerialTransmit;
+        hookSerialAvailable = MySerialAvailable;
+        hookSerialReceive = MySerialReceive;
 
-        AND_GIVEN("Valid pointers for all serial functions are provided") {
+        WHEN("NoteGetFnSerial is called") {
+            NoteGetFnSerial(NULL, NULL, NULL, NULL);
+
+            THEN("It should not crash") {
+                SUCCEED();
+            }
+
+            THEN("The Notecard lock is taken and released") {
+                CHECK(1 == _noteLockNote_fake.call_count);
+                CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
+            }
+        }
+
+        AND_GIVEN("Valid empty pointers for all serial functions") {
             serialResetFn resetFunc = NULL;
             serialTransmitFn transmitFunc = NULL;
             serialAvailableFn availableFunc = NULL;
@@ -58,20 +78,15 @@ SCENARIO("NoteGetFnSerial")
                 NoteGetFnSerial(&resetFunc, &transmitFunc, &availableFunc, &receiveFunc);
 
                 THEN("It should return the mock serial functions") {
-                    CHECK(resetFunc == mockSerialReset);
-                    CHECK(transmitFunc == mockSerialTransmit);
-                    CHECK(availableFunc == mockSerialAvailable);
-                    CHECK(receiveFunc == mockSerialReceive);
+                    CHECK(resetFunc == MySerialReset);
+                    CHECK(transmitFunc == MySerialTransmit);
+                    CHECK(availableFunc == MySerialAvailable);
+                    CHECK(receiveFunc == MySerialReceive);
                 }
-            }
-        }
 
-        AND_GIVEN("Only NULL pointers are provided") {
-            WHEN("NoteGetFnSerial is called") {
-                NoteGetFnSerial(NULL, NULL, NULL, NULL);
-
-                THEN("It should not crash") {
-                    SUCCEED();
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -83,7 +98,12 @@ SCENARIO("NoteGetFnSerial")
                 NoteGetFnSerial(&resetFunc, NULL, NULL, NULL);
 
                 THEN("It should return the mock serial reset function") {
-                    CHECK(resetFunc == mockSerialReset);
+                    CHECK(resetFunc == MySerialReset);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -95,7 +115,12 @@ SCENARIO("NoteGetFnSerial")
                 NoteGetFnSerial(NULL, &transmitFunc, NULL, NULL);
 
                 THEN("It should return the mock serial transmit function") {
-                    CHECK(transmitFunc == mockSerialTransmit);
+                    CHECK(transmitFunc == MySerialTransmit);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -107,7 +132,12 @@ SCENARIO("NoteGetFnSerial")
                 NoteGetFnSerial(NULL, NULL, &availableFunc, NULL);
 
                 THEN("It should return the mock serial available function") {
-                    CHECK(availableFunc == mockSerialAvailable);
+                    CHECK(availableFunc == MySerialAvailable);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -119,11 +149,19 @@ SCENARIO("NoteGetFnSerial")
                 NoteGetFnSerial(NULL, NULL, NULL, &receiveFunc);
 
                 THEN("It should return the mock serial receive function") {
-                    CHECK(receiveFunc == mockSerialReceive);
+                    CHECK(receiveFunc == MySerialReceive);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
     }
+
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteUnlockNote);
 }
 
 }

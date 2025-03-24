@@ -12,51 +12,64 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
+#include <fff.h>
 
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
+FAKE_VOID_FUNC(_noteLockNote)
+FAKE_VOID_FUNC(_noteUnlockNote)
+
+extern txnStartFn hookTransactionStart;
+extern txnStopFn hookTransactionStop;
 
 namespace
 {
 
-bool mockTxnStart(uint32_t timeoutMs)
+bool MyTxnStart(uint32_t)
 {
-    (void)timeoutMs;
     return false;
 }
 
-void mockTxnStop(void)
+void MyTxnStop(void)
 {
     return;
 }
 
 SCENARIO("NoteGetFnTransaction")
 {
-    GIVEN("A set of transaction functions") {
-        NoteSetFnTransaction(mockTxnStart, mockTxnStop);
+    GIVEN("Transaction hooks have been set with non-NULL values") {
+        hookTransactionStart = MyTxnStart;
+        hookTransactionStop = MyTxnStop;
 
-        AND_GIVEN("Valid pointers for all transaction functions are provided") {
+        WHEN("NoteGetFnTransaction is called") {
+            NoteGetFnTransaction(NULL, NULL);
+
+            THEN("It should not crash") {
+                SUCCEED();
+            }
+
+            THEN("The Notecard lock is taken and released") {
+                CHECK(1 == _noteLockNote_fake.call_count);
+                CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
+            }
+        }
+
+        AND_GIVEN("Valid empty pointers for both transaction functions") {
             txnStartFn startFn = NULL;
             txnStopFn stopFn = NULL;
 
             WHEN("NoteGetFnTransaction is called") {
                 NoteGetFnTransaction(&startFn, &stopFn);
 
-                THEN("It should return the mock transaction functions") {
-                    CHECK(startFn == mockTxnStart);
-                    CHECK(stopFn == mockTxnStop);
+                THEN("The hook functions are returned") {
+                    CHECK(startFn == MyTxnStart);
+                    CHECK(stopFn == MyTxnStop);
                 }
-            }
-        }
 
-        AND_GIVEN("Only NULL pointers are provided") {
-            WHEN("NoteGetFnTransaction is called") {
-                NoteGetFnTransaction(NULL, NULL);
-
-                THEN("It should not crash") {
-                    SUCCEED();
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -68,7 +81,12 @@ SCENARIO("NoteGetFnTransaction")
                 NoteGetFnTransaction(&startFn, NULL);
 
                 THEN("It should return the mock start function") {
-                    REQUIRE(startFn == mockTxnStart);
+                    REQUIRE(startFn == MyTxnStart);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
@@ -80,11 +98,19 @@ SCENARIO("NoteGetFnTransaction")
                 NoteGetFnTransaction(NULL, &stopFn);
 
                 THEN("It should return the mock stop function") {
-                    REQUIRE(stopFn == mockTxnStop);
+                    REQUIRE(stopFn == MyTxnStop);
+                }
+
+                THEN("The Notecard lock is taken and released") {
+                    CHECK(1 == _noteLockNote_fake.call_count);
+                    CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
                 }
             }
         }
     }
+
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteUnlockNote);
 }
 
 }

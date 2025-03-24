@@ -11,13 +11,10 @@
  *
  */
 
-
-
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
+#include <fff.h>
 
 #include "n_lib.h"
-#include "test_static.h"
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(const char *, _noteI2CTransmit, uint16_t, uint8_t *, uint16_t)

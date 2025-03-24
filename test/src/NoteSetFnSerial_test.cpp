@@ -12,101 +12,101 @@
  */
 
 #include <catch2/catch_test_macros.hpp>
-#include "fff.h"
+#include <fff.h>
 
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(bool, _serialNoteReset)
-FAKE_VALUE_FUNC(const char *, _serialNoteTransaction, const char *, size_t, char **, uint32_t)
+FAKE_VOID_FUNC(_noteLockNote)
+FAKE_VOID_FUNC(_noteSetActiveInterface, int)
+FAKE_VOID_FUNC(_noteUnlockNote)
+
+extern serialResetFn hookSerialReset;
+extern serialTransmitFn hookSerialTransmit;
+extern serialAvailableFn hookSerialAvailable;
+extern serialReceiveFn hookSerialReceive;
 
 namespace
 {
 
-uint8_t serialResetCalled = 0;
-uint8_t serialTransmitCalled = 0;
-uint8_t serialAvailableCalled = 0;
-uint8_t serialReceiveCalled = 0;
-
-bool serialReset()
+bool MySerialReset()
 {
-    ++serialResetCalled;
     return true;
 }
 
-void serialTransmit(uint8_t *, size_t, bool)
+void MySerialTransmit(uint8_t *, size_t, bool)
 {
-    ++serialTransmitCalled;
 }
 
-bool serialAvailable()
+bool MySerialAvailable()
 {
-    ++serialAvailableCalled;
     return true;
 }
 
-char serialReceive()
+char MySerialReceive()
 {
-    ++serialReceiveCalled;
-    return 'a';
+    return 'z';
 }
 
 SCENARIO("NoteSetFnSerial")
 {
-    char req[] = "{ \"req\": \"note.add\" }\n";
-    char *resp = NULL;
-    _serialNoteReset_fake.return_val = true;
-    _serialNoteTransaction_fake.return_val = NULL;
+    GIVEN("Serial hooks have not been set (i.e. NULL)") {
+        hookSerialReset = NULL;
+        hookSerialTransmit = NULL;
+        hookSerialAvailable = NULL;
+        hookSerialReceive = NULL;
 
-    NoteSetFnSerial(serialReset, serialTransmit, serialAvailable,
-                    serialReceive);
+        WHEN("NoteSetFnSerial is called") {
+            NoteSetFnSerial(MySerialReset, MySerialTransmit, MySerialAvailable,
+                MySerialReceive);
 
-    CHECK(_noteSerialReset());
-    CHECK(serialResetCalled == 1);
+            THEN("_noteSetActiveInterface is called with the serial interface") {
+                CHECK(NOTE_C_INTERFACE_SERIAL == _noteSetActiveInterface_fake.arg0_val);
+            }
 
-    _noteSerialTransmit((uint8_t *)req, strlen(req), false);
-    CHECK(serialTransmitCalled == 1);
+            THEN("The serial hooks are set") {
+                CHECK(MySerialReset == hookSerialReset);
+                CHECK(MySerialTransmit == hookSerialTransmit);
+                CHECK(MySerialAvailable == hookSerialAvailable);
+                CHECK(MySerialReceive == hookSerialReceive);
+            }
 
-    CHECK(_noteSerialAvailable());
-    CHECK(serialAvailableCalled == 1);
+            THEN("The Notecard lock is taken and released") {
+                CHECK(1 == _noteLockNote_fake.call_count);
+                CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
+            }
+        }
+    }
 
-    CHECK(_noteSerialReceive() == 'a');
-    CHECK(serialReceiveCalled == 1);
+    GIVEN("Serial hooks have previously been set") {
+        hookSerialReset = MySerialReset;
+        hookSerialTransmit = MySerialTransmit;
+        hookSerialAvailable = MySerialAvailable;
+        hookSerialReceive = MySerialReceive;
 
-    CHECK(strcmp(_noteActiveInterface(), "serial") == 0);
+        WHEN("NoteSetFnSerial is called") {
+            NoteSetFnSerial(NULL, NULL, NULL, NULL);
 
-    CHECK(_noteHardReset());
-    CHECK(_serialNoteReset_fake.call_count == 1);
+            THEN("_noteSetActiveInterface is called with the serial interface") {
+                CHECK(NOTE_C_INTERFACE_SERIAL == _noteSetActiveInterface_fake.arg0_val);
+            }
 
-    CHECK(_noteJSONTransaction(req, strlen(req), &resp, CARD_INTER_TRANSACTION_TIMEOUT_SEC) == NULL);
-    CHECK(_serialNoteTransaction_fake.call_count == 1);
+            THEN("The serial hooks are set") {
+                CHECK(NULL == hookSerialReset);
+                CHECK(NULL == hookSerialTransmit);
+                CHECK(NULL == hookSerialAvailable);
+                CHECK(NULL == hookSerialReceive);
+            }
 
-    // Unset the callbacks and ensure they aren't called again.
-    NoteSetFnSerial(NULL, NULL, NULL, NULL);
-    NoteSetFnDisabled();
+            THEN("The Notecard lock is taken and released") {
+                CHECK(1 == _noteLockNote_fake.call_count);
+                CHECK(_noteUnlockNote_fake.call_count == _noteLockNote_fake.call_count);
+            }
+        }
+    }
 
-    CHECK(_noteSerialReset());
-    CHECK(serialResetCalled == 1);
-
-    _noteSerialTransmit((uint8_t *)req, strlen(req), false);
-    CHECK(serialTransmitCalled == 1);
-
-    CHECK(!_noteSerialAvailable());
-    CHECK(serialAvailableCalled == 1);
-
-    CHECK(_noteSerialReceive() == 0);
-    CHECK(serialReceiveCalled == 1);
-
-    CHECK(strcmp(_noteActiveInterface(), "unknown") == 0);
-
-    CHECK(_noteHardReset());
-    CHECK(_serialNoteReset_fake.call_count == 1);
-
-    CHECK(_noteJSONTransaction(req, strlen(req), &resp, CARD_INTER_TRANSACTION_TIMEOUT_SEC) != NULL);
-    CHECK(_serialNoteTransaction_fake.call_count == 1);
-
-    RESET_FAKE(_serialNoteReset);
-    RESET_FAKE(_serialNoteTransaction);
+    RESET_FAKE(_noteLockNote);
+    RESET_FAKE(_noteUnlockNote);
 }
 
 }
