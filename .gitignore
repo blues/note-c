@@ -11,3 +11,4 @@ settings.json
 
 # Development Artifacts
 cppcheck_output.txt
+scancode_console_output.txt
