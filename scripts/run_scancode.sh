@@ -1,5 +1,5 @@
 #!/bin/bash
-set -eo pipefail
+set -exo pipefail
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 SRC_DIR="$SCRIPT_DIR/.."
@@ -94,8 +94,10 @@ scancode \
     --tallies \
     --json-pp scancode_output.json \
     --timeout 120 \
-    --processes 2 \
-    . 2>&1 | tee scancode_console_output.txt
+    --processes 4 \
+    --ignore "build/*" \
+    --verbose \
+    $SRC_DIR 2>&1 | tee scancode_console_output.txt
 
 generate_summary
 
