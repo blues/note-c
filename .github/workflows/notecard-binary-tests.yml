@@ -259,6 +259,9 @@ jobs:
             --json-output-path test.json \
             --junit-output-path test.xml
 
+          echo "card_client.log:"
+          echo "$(cat card_client.log)"
+
           kill $PID 2>/dev/null
 
       - name: Publish test report
