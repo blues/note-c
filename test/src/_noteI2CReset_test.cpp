@@ -27,27 +27,22 @@ const bool hookResult = false;
 
 SCENARIO("_noteI2CReset")
 {
-    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_I2C")
-    {
+    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_I2C") {
         hookActiveInterface = NOTE_C_INTERFACE_NONE;
 
-        AND_GIVEN("hookI2CReset is NULL")
-        {
+        AND_GIVEN("hookI2CReset is NULL") {
             hookI2CReset = NULL;
 
-            WHEN("_noteI2CReset is called")
-            {
+            WHEN("_noteI2CReset is called") {
                 const bool result = _noteI2CReset(0);
 
-                THEN("_noteI2CReset returns true")
-                {
+                THEN("_noteI2CReset returns true") {
                     CHECK(result);
                 }
             }
         }
 
-        AND_GIVEN("hookI2CReset is not NULL")
-        {
+        AND_GIVEN("hookI2CReset is not NULL") {
             hookI2CReset = [](uint16_t address_) {
                 hookParameter_address = address_;
                 return hookResult;
@@ -56,12 +51,10 @@ SCENARIO("_noteI2CReset")
             AND_GIVEN("valid parameters") {
                 const uint16_t address = NOTE_I2C_ADDR_DEFAULT;
 
-                WHEN("_noteI2CReset is called")
-                {
+                WHEN("_noteI2CReset is called") {
                     const bool result = _noteI2CReset(address);
 
-                    THEN("_noteI2CReset returns true")
-                    {
+                    THEN("_noteI2CReset returns true") {
                         CHECK(result);
                     }
                 }
@@ -69,27 +62,22 @@ SCENARIO("_noteI2CReset")
         }
     }
 
-    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_I2C")
-    {
+    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_I2C") {
         hookActiveInterface = NOTE_C_INTERFACE_I2C;
 
-        AND_GIVEN("hookI2CReset is NULL")
-        {
+        AND_GIVEN("hookI2CReset is NULL") {
             hookI2CReset = NULL;
 
-            WHEN("_noteI2CReset is called")
-            {
+            WHEN("_noteI2CReset is called") {
                 const bool result = _noteI2CReset(0);
 
-                THEN("_noteI2CReset returns true")
-                {
+                THEN("_noteI2CReset returns true") {
                     CHECK(result);
                 }
             }
         }
 
-        AND_GIVEN("hookI2CReset is not NULL")
-        {
+        AND_GIVEN("hookI2CReset is not NULL") {
             hookI2CReset = [](uint16_t address_) {
                 hookParameter_address = address_;
                 return hookResult;
@@ -98,17 +86,14 @@ SCENARIO("_noteI2CReset")
             AND_GIVEN("valid parameters") {
                 const uint16_t address = NOTE_I2C_ADDR_DEFAULT;
 
-                WHEN("_noteI2CReset is called")
-                {
+                WHEN("_noteI2CReset is called") {
                     const bool result = _noteI2CReset(address);
 
-                    THEN("_noteI2CReset calls hookI2CReset with the same parameters")
-                    {
+                    THEN("_noteI2CReset calls hookI2CReset with the same parameters") {
                         CHECK(address == hookParameter_address);
                     }
 
-                    THEN("_noteI2CReset returns the result of hookI2CReset")
-                    {
+                    THEN("_noteI2CReset returns the result of hookI2CReset") {
                         CHECK(result == hookResult);
                     }
                 }

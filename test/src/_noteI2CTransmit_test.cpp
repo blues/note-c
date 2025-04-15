@@ -29,27 +29,22 @@ const char * const hookResult = "test";
 
 SCENARIO("_noteI2CTransmit")
 {
-    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_I2C")
-    {
+    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_I2C") {
         hookActiveInterface = NOTE_C_INTERFACE_NONE;
 
-        AND_GIVEN("hookI2CTransmit is NULL")
-        {
+        AND_GIVEN("hookI2CTransmit is NULL") {
             hookI2CTransmit = NULL;
 
-            WHEN("_noteI2CTransmit is called")
-            {
+            WHEN("_noteI2CTransmit is called") {
                 const char * const result = _noteI2CTransmit(0, NULL, 0);
 
-                THEN("_noteI2CTransmit returns \"i2c not active\"")
-                {
+                THEN("_noteI2CTransmit returns \"i2c not active\"") {
                     CHECK(strcmp(result, "i2c not active") == 0);
                 }
             }
         }
 
-        AND_GIVEN("hookI2CTransmit is not NULL")
-        {
+        AND_GIVEN("hookI2CTransmit is not NULL") {
             hookI2CTransmit = [](uint16_t address_, uint8_t *buffer_, uint16_t buffer_size_) {
                 hookParameter_address = address_;
                 hookParameter_buffer = buffer_;
@@ -62,12 +57,10 @@ SCENARIO("_noteI2CTransmit")
                 uint8_t buffer[] = "test";
                 const uint16_t buffer_size = sizeof(buffer);
 
-                WHEN("_noteI2CTransmit is called")
-                {
+                WHEN("_noteI2CTransmit is called") {
                     const char * result = _noteI2CTransmit(address, buffer, buffer_size);
 
-                    THEN("_noteI2CTransmit returns \"i2c not active\"")
-                    {
+                    THEN("_noteI2CTransmit returns \"i2c not active\"") {
                         CHECK(strcmp(result, "i2c not active") == 0);
                     }
                 }
@@ -75,27 +68,22 @@ SCENARIO("_noteI2CTransmit")
         }
     }
 
-    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_I2C")
-    {
+    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_I2C") {
         hookActiveInterface = NOTE_C_INTERFACE_I2C;
 
-        AND_GIVEN("hookI2CTransmit is NULL")
-        {
+        AND_GIVEN("hookI2CTransmit is NULL") {
             hookI2CTransmit = NULL;
 
-            WHEN("_noteI2CTransmit is called")
-            {
+            WHEN("_noteI2CTransmit is called") {
                 const char * const result = _noteI2CTransmit(0, NULL, 0);
 
-                THEN("_noteI2CTransmit returns \"i2c not active\"")
-                {
+                THEN("_noteI2CTransmit returns \"i2c not active\"") {
                     CHECK(strcmp(result, "i2c not active") == 0);
                 }
             }
         }
 
-        AND_GIVEN("hookI2CTransmit is not NULL")
-        {
+        AND_GIVEN("hookI2CTransmit is not NULL") {
             hookI2CTransmit = [](uint16_t address_, uint8_t *buffer_, uint16_t buffer_size_) {
                 hookParameter_address = address_;
                 hookParameter_buffer = buffer_;
@@ -108,12 +96,10 @@ SCENARIO("_noteI2CTransmit")
                 uint8_t buffer[] = "test";
                 const uint16_t buffer_size = sizeof(buffer);
 
-                WHEN("_noteI2CTransmit is called")
-                {
+                WHEN("_noteI2CTransmit is called") {
                     const char * const result = _noteI2CTransmit(address, buffer, buffer_size);
 
-                    THEN("_noteI2CTransmit calls hookI2CTransmit with the same parameters")
-                    {
+                    THEN("_noteI2CTransmit calls hookI2CTransmit with the same parameters") {
                         CHECK(address == hookParameter_address);
                         CHECK(buffer == hookParameter_buffer);
                         CHECK(buffer_size == hookParameter_buffer_size);

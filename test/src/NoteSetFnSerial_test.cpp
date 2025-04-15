@@ -58,7 +58,7 @@ SCENARIO("NoteSetFnSerial")
 
         WHEN("NoteSetFnSerial is called") {
             NoteSetFnSerial(MySerialReset, MySerialTransmit, MySerialAvailable,
-                MySerialReceive);
+                            MySerialReceive);
 
             THEN("_noteSetActiveInterface is called with the serial interface") {
                 CHECK(NOTE_C_INTERFACE_SERIAL == _noteSetActiveInterface_fake.arg0_val);
