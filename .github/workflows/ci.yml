@@ -25,7 +25,7 @@ jobs:
           base: 'master'
           filters: |
             changed:
-              - 'Dockerfile'
+              - '.devcontainer/ci/Dockerfile'
 
   build_ci_docker_image:
     runs-on: ubuntu-latest
@@ -50,6 +50,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          file: .devcontainer/ci/Dockerfile
           load: true
           tags: ghcr.io/blues/note_c_ci:latest
           outputs: type=docker,dest=/tmp/note_c_ci_image.tar
