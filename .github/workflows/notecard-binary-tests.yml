@@ -4,16 +4,23 @@ on:
   pull_request:
     branches: [ master ]
   workflow_dispatch:
+    firmware_s3_uri:
+      description: 'S3 URI for Notecard firmware to sideload before running the tests. Special value "nightly" downloads the latest nightly firmware. If not given, tests will run using whatever firmware is currently installed.'
+      type: string
+      default: ''
   schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron: '45 4 * * 1'  # 4.45am every Monday
+    # Run nightly. * is a special character in YAML so you have to quote this
+    # string.
+    - cron: '0 8 * * *'
 
 permissions:
   checks: write
+  contents: read
+  id-token: write
 
 jobs:
   md5srv-test:
-     uses: ./.github/workflows/md5srv-tests.yml
+    uses: ./.github/workflows/md5srv-tests.yml
 
   notecard-binary-test:
     needs: md5srv-test
@@ -22,6 +29,7 @@ jobs:
       run:
         shell: bash
     env:
+        FIRMWARE_S3_URI: ${{ github.event_name == 'schedule' && 'nightly' || inputs.firmware_s3_uri }}
         MD5SRV_PORT: 9178
         NOTEHUB: "notehub.io"
         NOTEHUB_API: "api.notefile.net"
@@ -46,6 +54,14 @@ jobs:
           oauth-secret: ${{ secrets.TS_OAUTH_CLIENT_SECRET }}
           tags: tag:ci
 
+      # Needed so we can download Notecard firmware from S3.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::163050375163:role/S3ReadAccessForHil_LabGitHubActions
+          aws-region: us-east-1
+          mask-aws-account-id: 'false'
+
       # Needed for asyncio.TaskGroup, which the card_client code uses.
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
@@ -54,17 +70,6 @@ jobs:
 
       - name: Checkout note-c repo
         uses: actions/checkout@v4
-
-      - name: Checkout hil_lab repo
-        uses: actions/checkout@v4
-        with:
-          repository: blues/hil_lab
-          ref: master
-          path: hil_lab
-          # Since hil_lab is a private repo, we need to authenticate. This uses
-          # the "deploy keys" approach described here:
-          # https://stackoverflow.com/a/70283191
-          ssh-key: ${{ secrets.HIL_LAB_CLONE_PRIV_KEY }}
 
       - name: Generate MD5 Server Token
         run: |
@@ -181,30 +186,78 @@ jobs:
             exit 1
           fi
 
+      # The notestation CLI uses the notecard CLI.
+      - name: Install notecard CLI
+        run: |
+          git clone --depth=1 https://github.com/blues/note-cli.git
+          cd note-cli/notecard
+          go build .
+          sudo cp notecard /usr/bin/
+
+      - name: Download and install latest notestation CLI dev release
+        env:
+          GH_TOKEN: ${{ secrets.NOTESTATION_RELEASE_DOWNLOAD_TOKEN }}
+        run: |
+          api_url="https://api.github.com/repos/blues/notestation/releases/tags/dev"
+
+          # Query the release asset metadata.
+          asset_info=$(curl -s -H "Authorization: token $GH_TOKEN" "$api_url")
+
+          # Extract the release asset URL and name.
+          asset_url=$(echo "$asset_info" | jq -r '.assets[] | select(.name | endswith(".whl")) | .url')
+          asset_name=$(echo "$asset_info" | jq -r '.assets[] | select(.name | endswith(".whl")) | .name')
+
+          if [ -z "$asset_url" ] || [ -z "$asset_name" ]; then
+            echo "❌ No wheel found in release assets."
+            exit 1
+          fi
+
+          # Download the wheel using the original filename.
+          curl -L -H "Authorization: token $GH_TOKEN" \
+               -H "Accept: application/octet-stream" \
+               "$asset_url" -o "$asset_name"
+
+          # Create a virtual environment and install the notestation CLI in it.
+          python -m venv venv
+          source venv/bin/activate
+          wheel_file=$(ls *.whl)
+          pip install "$wheel_file"
+
       - name: Build and upload test firmware and run tests
         run: |
-          cd hil_lab/
-          pip install -r requirements.txt
+          source venv/bin/activate
+
+          args=()
+          if [ -n "${{ env.FIRMWARE_S3_URI }}" ]; then
+            args+=(--update-card-fw "${{ env.FIRMWARE_S3_URI }}")
+          fi
 
           # For now, we're hardcoding the Notestation to
           # los-angeles-notestation-1, which is the only one we've set up to run
-          # these tests.
-          cd notestation/
-          nohup python -m core.card_client \
-            --mcu-debug \
-            --notestation los-angeles-notestation-1 \
-            --work-dir /tmp &> card_client.log &
+          # these tests. The --ready-file option creates a "ready" file at the
+          # given path once the notestation client is done reserving the
+          # notestation and, if relevant, the Notecard firmware upgrade is
+          # complete. This allows us to launch a notestation client in the
+          # background and then wait for it to be ready before moving on. This
+          # async pattern is used here.
+          READY_FILE=/tmp/ns_client_ready
+          args+=(
+            --mcu-debug
+            --notestation los-angeles-notestation-1
+            --work-dir /tmp
+            --ready-file $READY_FILE
+          )
 
+          nohup notestation client reserve "${args[@]}" &> card_client.log &
           PID=$!
-          RES_FILE=/tmp/ns_reservation.json
 
           timeout=600  # 10 minutes in seconds
-          interval=1   # Check every second
+          interval=3   # Check every 3 seconds
           elapsed=0
 
-          # If we aren't able to reserve a Notestation after 10 minutes, or if
-          # the card_client fails, bail.
-          while [ ! -f $RES_FILE ]; do
+          # If we don't see the ready file after 10 minutes, or if the client
+          # fails, bail.
+          while [ ! -f $READY_FILE ]; do
               sleep $interval
               elapsed=$((elapsed + interval))
 
@@ -216,14 +269,15 @@ jobs:
               fi
 
               if [ $elapsed -ge $timeout ]; then
-                  echo "Timeout reached: $RES_FILE did not appear."
+                  echo "Timeout reached: $READY_FILE did not appear."
                   kill $PID 2>/dev/null
                   exit 1
               fi
           done
 
-          echo "Notestation reserved."
+          echo "Notestation ready."
 
+          RES_FILE="/tmp/ns_reservation.json"
           # Set these environment variables, which are read in platformio.ini in
           # order to flash the Swan with the test firmware.
           export MCU_GDB_SERVER_IP="$(jq -r '.notestation' $RES_FILE)"
