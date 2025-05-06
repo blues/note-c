@@ -296,9 +296,14 @@ void NoteGetFn(mallocFn *mallocHook, freeFn *freeHook, delayMsFn *delayMsHook,
                getMsFn *getMsHook);
 void NoteSetFnSerial(serialResetFn resetFn, serialTransmitFn transmitFn,
                      serialAvailableFn availFn, serialReceiveFn receiveFn);
+void NoteSetFnSerialDefault(serialResetFn resetFn, serialTransmitFn transmitFn,
+                     serialAvailableFn availFn, serialReceiveFn receiveFn);
 void NoteGetFnSerial(serialResetFn *resetFn, serialTransmitFn *transmitFn,
                      serialAvailableFn *availFn, serialReceiveFn *receiveFn);
 void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
+                  i2cResetFn resetFn, i2cTransmitFn transmitFn,
+                  i2cReceiveFn receiveFn);
+void NoteSetFnI2cDefault(uint32_t notecardAddr, uint32_t maxTransmitSize,
                   i2cResetFn resetFn, i2cTransmitFn transmitFn,
                   i2cReceiveFn receiveFn);
 void NoteGetFnI2C(uint32_t *notecardAddr, uint32_t *maxTransmitSize,
