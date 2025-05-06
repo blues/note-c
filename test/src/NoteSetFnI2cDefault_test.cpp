@@ -96,7 +96,7 @@ SCENARIO("NoteSetFnI2cDefault")
         WHEN("NoteSetFnI2cDefault is called with different values") {
             const uint32_t otherAddress = 0x42;
             const uint32_t otherMax = 42;
-            
+
             auto otherReset = [](uint16_t addr) -> bool { return false; };
             auto otherTransmit = [](uint16_t addr, uint8_t* buffer, uint16_t size) -> const char* { return "test"; };
             auto otherReceive = [](uint16_t addr, uint8_t* buffer, uint16_t size, uint32_t* available) -> const char* { return "test"; };

@@ -415,7 +415,7 @@ void NoteSetFnSerialDefault(serialResetFn resetFn, serialTransmitFn transmitFn,
                            serialAvailableFn availFn, serialReceiveFn receiveFn)
 {
     _LockNote();
-    
+
     if (hookSerialReset == NULL) {
         hookSerialReset = resetFn;
     }
@@ -428,11 +428,11 @@ void NoteSetFnSerialDefault(serialResetFn resetFn, serialTransmitFn transmitFn,
     if (hookSerialReceive == NULL) {
         hookSerialReceive = receiveFn;
     }
-    
+
     if (hookActiveInterface == NOTE_C_INTERFACE_NONE) {
         _noteSetActiveInterface(NOTE_C_INTERFACE_SERIAL);
     }
-    
+
     _UnlockNote();
 }
 
@@ -484,7 +484,7 @@ void NoteSetFnI2cDefault(uint32_t notecardAddr, uint32_t maxTransmitSize,
                         i2cReceiveFn receiveFn)
 {
     _LockNote();
-    
+
     if (i2cAddress == 0) {
         i2cAddress = notecardAddr;
     }
@@ -500,11 +500,11 @@ void NoteSetFnI2cDefault(uint32_t notecardAddr, uint32_t maxTransmitSize,
     if (hookI2CReceive == NULL) {
         hookI2CReceive = receiveFn;
     }
-    
+
     if (hookActiveInterface == NOTE_C_INTERFACE_NONE) {
         _noteSetActiveInterface(NOTE_C_INTERFACE_I2C);
     }
-    
+
     _UnlockNote();
 }
 
