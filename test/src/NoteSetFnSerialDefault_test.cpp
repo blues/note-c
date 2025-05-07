@@ -60,7 +60,7 @@ SCENARIO("NoteSetFnSerialDefault")
 
         WHEN("NoteSetFnSerialDefault is called") {
             NoteSetFnSerialDefault(MySerialReset, MySerialTransmit, MySerialAvailable,
-                                 MySerialReceive);
+                                   MySerialReceive);
 
             THEN("The serial hooks are set") {
                 CHECK(MySerialReset == hookSerialReset);

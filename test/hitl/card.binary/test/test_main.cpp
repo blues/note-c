@@ -14,6 +14,27 @@ int runUnityTests(void)
     return UNITY_END();
 }
 
+// This function blocks until it receives the string "start\n" or "start\r\n" on
+// Serial (Swan USB). This prevents the tests from running unprompted, like if
+// the Swan gets reset or power is lost and restored.
+void waitForStartCommand()
+{
+    String input;
+    while (true) {
+        while (Serial.available()) {
+            char c = Serial.read();
+            input += c;
+            if (c == '\n') {
+                if (input == "start\n" || input == "start\r\n") {
+                    return;
+                }
+                // Reset string on invalid input.
+                input = "";
+            }
+        }
+    }
+}
+
 /**
   * For Arduino framework
   */
@@ -21,6 +42,18 @@ void setup()
 {
     Serial.begin();
     while (!Serial);  // wait for connection
+
+    Serial.println("Waiting to receive \"start\"...");
+    waitForStartCommand();
+
+    // After receiving start, delay for 5 seconds. In after_upload.py, we send
+    // start\n to the Swan after flashing the firmware. It takes time for
+    // PlatformIO to move from the "upload" step to the "test" step, where it
+    // begins capturing test output. So, this delay is to ensure we don't miss
+    // capturing any test output.
+    delay(5000);
+
+    Serial.println("Start received. Running tests...");
     runUnityTests();
 }
 

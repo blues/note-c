@@ -33,7 +33,8 @@ const char * const hookResult = "random error msg";
 const uint32_t hookResult_size = 9;
 const uint32_t hookResult_available = 17;
 
-SCENARIO("_noteChunkedReceive") {
+SCENARIO("_noteChunkedReceive")
+{
     GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_NONE") {
         hookActiveInterface = NOTE_C_INTERFACE_NONE;
 

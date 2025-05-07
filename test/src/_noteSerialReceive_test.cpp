@@ -25,70 +25,56 @@ const char receive_result = 'z';
 
 SCENARIO("_noteSerialReceive")
 {
-    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_SERIAL")
-    {
+    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_SERIAL") {
         hookActiveInterface = NOTE_C_INTERFACE_NONE;
 
-        AND_GIVEN("hookSerialReceive is NULL")
-        {
+        AND_GIVEN("hookSerialReceive is NULL") {
             hookSerialReceive = NULL;
 
-            WHEN("_noteSerialReceive is called")
-            {
+            WHEN("_noteSerialReceive is called") {
                 const char result = _noteSerialReceive();
 
-                THEN("_noteSerialReceive returns '\0'")
-                {
+                THEN("_noteSerialReceive returns '\0'") {
                     CHECK(result == '\0');
                 }
             }
         }
 
-        AND_GIVEN("hookSerialReceive is not NULL")
-        {
+        AND_GIVEN("hookSerialReceive is not NULL") {
             hookSerialReceive = []() -> char { return receive_result; };
 
-            WHEN("_noteSerialReceive is called")
-            {
+            WHEN("_noteSerialReceive is called") {
                 const char result = _noteSerialReceive();
 
-                THEN("_noteSerialReceive returns '\0'")
-                {
+                THEN("_noteSerialReceive returns '\0'") {
                     CHECK(result == '\0');
                 }
             }
         }
     }
 
-    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_SERIAL")
-    {
+    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_SERIAL") {
         hookActiveInterface = NOTE_C_INTERFACE_SERIAL;
 
-        AND_GIVEN("hookSerialReceive is NULL")
-        {
+        AND_GIVEN("hookSerialReceive is NULL") {
             hookSerialReceive = NULL;
 
-            WHEN("_noteSerialReceive is called")
-            {
+            WHEN("_noteSerialReceive is called") {
                 const char result = _noteSerialReceive();
 
-                THEN("_noteSerialReceive returns '\0'")
-                {
+                THEN("_noteSerialReceive returns '\0'") {
                     CHECK(result == '\0');
                 }
             }
         }
 
-        AND_GIVEN("hookSerialReceive is not NULL")
-        {
+        AND_GIVEN("hookSerialReceive is not NULL") {
             hookSerialReceive = []() -> char { return receive_result; };
 
-            WHEN("_noteSerialReceive is called")
-            {
+            WHEN("_noteSerialReceive is called") {
                 const char result = _noteSerialReceive();
 
-                THEN("_noteSerialReceive returns the result of hookSerialReceive")
-                {
+                THEN("_noteSerialReceive returns the result of hookSerialReceive") {
                     CHECK(result == receive_result);
                 }
             }

@@ -25,70 +25,60 @@ const bool reset_result = false;
 
 SCENARIO("_noteSerialReset")
 {
-    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_SERIAL")
-    {
+    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_SERIAL") {
         hookActiveInterface = NOTE_C_INTERFACE_NONE;
 
-        AND_GIVEN("hookSerialReset is NULL")
-        {
+        AND_GIVEN("hookSerialReset is NULL") {
             hookSerialReset = NULL;
 
-            WHEN("_noteSerialReset is called")
-            {
+            WHEN("_noteSerialReset is called") {
                 const bool result = _noteSerialReset();
 
-                THEN("_noteSerialReset returns true")
-                {
+                THEN("_noteSerialReset returns true") {
                     CHECK(result);
                 }
             }
         }
 
-        AND_GIVEN("hookSerialReset is not NULL")
-        {
-            hookSerialReset = []() { return reset_result; };
+        AND_GIVEN("hookSerialReset is not NULL") {
+            hookSerialReset = []() {
+                return reset_result;
+            };
 
-            WHEN("_noteSerialReset is called")
-            {
+            WHEN("_noteSerialReset is called") {
                 const bool result = _noteSerialReset();
 
-                THEN("_noteSerialReset returns true")
-                {
+                THEN("_noteSerialReset returns true") {
                     CHECK(result);
                 }
             }
         }
     }
 
-    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_SERIAL")
-    {
+    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_SERIAL") {
         hookActiveInterface = NOTE_C_INTERFACE_SERIAL;
 
-        AND_GIVEN("hookSerialReset is NULL")
-        {
+        AND_GIVEN("hookSerialReset is NULL") {
             hookSerialReset = NULL;
 
-            WHEN("_noteSerialReset is called")
-            {
+            WHEN("_noteSerialReset is called") {
                 const bool result = _noteSerialReset();
 
-                THEN("_noteSerialReset returns true")
-                {
+                THEN("_noteSerialReset returns true") {
                     CHECK(result);
                 }
             }
         }
 
-        AND_GIVEN("hookSerialReset is not NULL")
-        {
-            hookSerialReset = []() { return reset_result; };
+        AND_GIVEN("hookSerialReset is not NULL") {
+            hookSerialReset = []() {
+                return reset_result;
+            };
 
-            WHEN("_noteSerialReset is called")
-            {
+            WHEN("_noteSerialReset is called") {
                 const bool result = _noteSerialReset();
 
-                THEN("_noteSerialReset returns the result of hookSerialReset")
-                {
+                THEN("_noteSerialReset returns the result of hookSerialReset") {
                     CHECK(result == reset_result);
                 }
             }

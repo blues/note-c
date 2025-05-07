@@ -207,25 +207,25 @@ NOTE_C_STATIC void _noteSetActiveInterface(int interface)
     hookActiveInterface = interface;
 
     switch (interface) {
-        case NOTE_C_INTERFACE_SERIAL:
-            notecardReset = _serialNoteReset;
-            notecardTransaction = _serialNoteTransaction;
-            notecardChunkedReceive = _serialChunkedReceive;
-            notecardChunkedTransmit = _serialChunkedTransmit;
-            break;
-        case NOTE_C_INTERFACE_I2C:
-            notecardReset = _i2cNoteReset;
-            notecardTransaction = _i2cNoteTransaction;
-            notecardChunkedReceive = _i2cNoteChunkedReceive;
-            notecardChunkedTransmit = _i2cNoteChunkedTransmit;
-            break;
-        default:
-            hookActiveInterface = NOTE_C_INTERFACE_NONE; // unrecognized interfaces are disabled
-            notecardReset = NULL;
-            notecardTransaction = NULL;
-            notecardChunkedReceive = NULL;
-            notecardChunkedTransmit = NULL;
-            break;
+    case NOTE_C_INTERFACE_SERIAL:
+        notecardReset = _serialNoteReset;
+        notecardTransaction = _serialNoteTransaction;
+        notecardChunkedReceive = _serialChunkedReceive;
+        notecardChunkedTransmit = _serialChunkedTransmit;
+        break;
+    case NOTE_C_INTERFACE_I2C:
+        notecardReset = _i2cNoteReset;
+        notecardTransaction = _i2cNoteTransaction;
+        notecardChunkedReceive = _i2cNoteChunkedReceive;
+        notecardChunkedTransmit = _i2cNoteChunkedTransmit;
+        break;
+    default:
+        hookActiveInterface = NOTE_C_INTERFACE_NONE; // unrecognized interfaces are disabled
+        notecardReset = NULL;
+        notecardTransaction = NULL;
+        notecardChunkedReceive = NULL;
+        notecardChunkedTransmit = NULL;
+        break;
     }
 }
 
@@ -412,7 +412,7 @@ void NoteSetFnSerial(serialResetFn resetFn, serialTransmitFn transmitFn,
  * @param   receiveFn The platform-specific serial receive function.
  */
 void NoteSetFnSerialDefault(serialResetFn resetFn, serialTransmitFn transmitFn,
-                           serialAvailableFn availFn, serialReceiveFn receiveFn)
+                            serialAvailableFn availFn, serialReceiveFn receiveFn)
 {
     _LockNote();
 
@@ -480,8 +480,8 @@ void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
  * @param   receiveFn The platform-specific I2C receive function.
  */
 void NoteSetFnI2cDefault(uint32_t notecardAddr, uint32_t maxTransmitSize,
-                        i2cResetFn resetFn, i2cTransmitFn transmitFn,
-                        i2cReceiveFn receiveFn)
+                         i2cResetFn resetFn, i2cTransmitFn transmitFn,
+                         i2cReceiveFn receiveFn)
 {
     _LockNote();
 

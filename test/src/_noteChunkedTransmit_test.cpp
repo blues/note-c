@@ -29,7 +29,8 @@ bool hookParameter_delay;
 
 const char * const hookResult = "random error msg";
 
-SCENARIO("_noteChunkedTransmit") {
+SCENARIO("_noteChunkedTransmit")
+{
     GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_NONE") {
         hookActiveInterface = NOTE_C_INTERFACE_NONE;
 
