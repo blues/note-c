@@ -25,70 +25,60 @@ const bool available_result = true;
 
 SCENARIO("_noteSerialAvailable")
 {
-    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_SERIAL")
-    {
+    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_SERIAL") {
         hookActiveInterface = NOTE_C_INTERFACE_NONE;
 
-        AND_GIVEN("hookSerialAvailable is NULL")
-        {
+        AND_GIVEN("hookSerialAvailable is NULL") {
             hookSerialAvailable = NULL;
 
-            WHEN("_noteSerialAvailable is called")
-            {
+            WHEN("_noteSerialAvailable is called") {
                 const bool result = _noteSerialAvailable();
 
-                THEN("_noteSerialAvailable returns false")
-                {
+                THEN("_noteSerialAvailable returns false") {
                     CHECK_FALSE(result);
                 }
             }
         }
 
-        AND_GIVEN("hookSerialAvailable is not NULL")
-        {
-            hookSerialAvailable = []() { return available_result; };
+        AND_GIVEN("hookSerialAvailable is not NULL") {
+            hookSerialAvailable = []() {
+                return available_result;
+            };
 
-            WHEN("_noteSerialAvailable is called")
-            {
+            WHEN("_noteSerialAvailable is called") {
                 const bool result = _noteSerialAvailable();
 
-                THEN("_noteSerialAvailable returns false")
-                {
+                THEN("_noteSerialAvailable returns false") {
                     CHECK_FALSE(result);
                 }
             }
         }
     }
 
-    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_SERIAL")
-    {
+    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_SERIAL") {
         hookActiveInterface = NOTE_C_INTERFACE_SERIAL;
 
-        AND_GIVEN("hookSerialAvailable is NULL")
-        {
+        AND_GIVEN("hookSerialAvailable is NULL") {
             hookSerialAvailable = NULL;
 
-            WHEN("_noteSerialAvailable is called")
-            {
+            WHEN("_noteSerialAvailable is called") {
                 const bool result = _noteSerialAvailable();
 
-                THEN("_noteSerialAvailable returns false")
-                {
+                THEN("_noteSerialAvailable returns false") {
                     CHECK_FALSE(result);
                 }
             }
         }
 
-        AND_GIVEN("hookSerialAvailable is not NULL")
-        {
-            hookSerialAvailable = []() { return available_result; };
+        AND_GIVEN("hookSerialAvailable is not NULL") {
+            hookSerialAvailable = []() {
+                return available_result;
+            };
 
-            WHEN("_noteSerialAvailable is called")
-            {
+            WHEN("_noteSerialAvailable is called") {
                 const bool result = _noteSerialAvailable();
 
-                THEN("_noteSerialAvailable returns the result of hookSerialAvailable")
-                {
+                THEN("_noteSerialAvailable returns the result of hookSerialAvailable") {
                     CHECK(result == available_result);
                 }
             }

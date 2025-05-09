@@ -27,62 +27,50 @@ bool hookParameter_flush;
 
 SCENARIO("_noteSerialTransmit")
 {
-    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_SERIAL")
-    {
+    GIVEN("hookActiveInterface is not set to NOTE_C_INTERFACE_SERIAL") {
         hookActiveInterface = NOTE_C_INTERFACE_NONE;
 
-        AND_GIVEN("hookSerialTransmit is NULL")
-        {
+        AND_GIVEN("hookSerialTransmit is NULL") {
             hookSerialTransmit = NULL;
 
-            WHEN("_noteSerialTransmit is called")
-            {
+            WHEN("_noteSerialTransmit is called") {
                 _noteSerialTransmit(NULL, 0, false);
 
-                THEN("_noteSerialTransmit does nothing")
-                {
+                THEN("_noteSerialTransmit does nothing") {
                     SUCCEED();
                 }
             }
         }
 
-        AND_GIVEN("hookSerialTransmit is not NULL")
-        {
+        AND_GIVEN("hookSerialTransmit is not NULL") {
             hookSerialTransmit = [](uint8_t *, size_t, bool) {};
 
-            WHEN("_noteSerialTransmit is called")
-            {
+            WHEN("_noteSerialTransmit is called") {
                 _noteSerialTransmit(NULL, 0, false);
 
-                THEN("_noteSerialTransmit does nothing")
-                {
+                THEN("_noteSerialTransmit does nothing") {
                     SUCCEED();
                 }
             }
         }
     }
 
-    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_SERIAL")
-    {
+    GIVEN("hookActiveInterface is set to NOTE_C_INTERFACE_SERIAL") {
         hookActiveInterface = NOTE_C_INTERFACE_SERIAL;
 
-        AND_GIVEN("hookSerialTransmit is NULL")
-        {
+        AND_GIVEN("hookSerialTransmit is NULL") {
             hookSerialTransmit = NULL;
 
-            WHEN("_noteSerialTransmit is called")
-            {
+            WHEN("_noteSerialTransmit is called") {
                 _noteSerialTransmit(NULL, 0, false);
 
-                THEN("_noteSerialTransmit does nothing")
-                {
+                THEN("_noteSerialTransmit does nothing") {
                     SUCCEED();
                 }
             }
         }
 
-        AND_GIVEN("hookSerialTransmit is not NULL")
-        {
+        AND_GIVEN("hookSerialTransmit is not NULL") {
             hookSerialTransmit = [](uint8_t *buffer_, size_t buffer_size_, bool flush_) {
                 hookParameter_buffer = buffer_;
                 hookParameter_buffer_size = buffer_size_;
@@ -94,12 +82,10 @@ SCENARIO("_noteSerialTransmit")
                 const size_t buffer_size = sizeof(buffer);
                 const bool flush = true;
 
-                WHEN("_noteSerialTransmit is called")
-                {
+                WHEN("_noteSerialTransmit is called") {
                     _noteSerialTransmit(buffer, buffer_size, flush);
 
-                    THEN("_noteSerialTransmit calls hookSerialTransmit with the same parameters")
-                    {
+                    THEN("_noteSerialTransmit calls hookSerialTransmit with the same parameters") {
                         CHECK(buffer == hookParameter_buffer);
                         CHECK(buffer_size == hookParameter_buffer_size);
                         CHECK(flush == hookParameter_flush);
