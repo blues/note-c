@@ -16,6 +16,8 @@
 
 #include "n_lib.h"
 
+#include <cstddef>
+
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, _crcError, char *, uint16_t)
 FAKE_VALUE_FUNC(const char *, _noteJSONTransaction, const char *, size_t, char **, uint32_t)
@@ -94,7 +96,7 @@ SCENARIO("NoteTransaction")
 
     SECTION("_noteTransactionStart fails") {
         _noteTransactionStart_fake.return_val = false;
-        J *req = NoteNewRequest("note.add");
+        J *req = NoteNewCommand("note.add");
         REQUIRE(req != NULL);
 
         CHECK(NoteTransaction(req) == NULL);
@@ -292,7 +294,7 @@ SCENARIO("NoteTransaction")
     }
 
     SECTION("A reset is required and it fails") {
-        J *req = NoteNewRequest("note.add");
+        J *req = NoteNewCommand("note.add");
         REQUIRE(req != NULL);
         NoteResetRequired();
         // Force NoteReset failure.
@@ -320,9 +322,9 @@ SCENARIO("NoteTransaction")
         // The transaction shouldn't be attempted if the request couldn't be
         // serialized.
         CHECK(_noteJSONTransaction_fake.call_count == 0);
-        // Ensure there's an error in the response.
-        CHECK(resp != NULL);
-        CHECK(NoteResponseError(resp));
+
+        // Ensure there's no error in the response.
+        CHECK(resp == NULL);
 
         JDelete(req);
         JDelete(resp);
