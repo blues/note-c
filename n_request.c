@@ -547,9 +547,11 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
     // If neither `"req"` nor `"cmd"` are found, then we have an error
     // condition. If both are present, then we have undefined behavior.
     if (!reqFound && !cmdFound) {
+        _Free(json);
         NOTE_C_LOG_ERROR(ERRSTR("neither req nor cmd found in API invocation (invalid JSON)", c_bad));
         return NULL;
     } else if (reqFound && cmdFound) {
+        _Free(json);
         NOTE_C_LOG_ERROR(ERRSTR("both req and cmd present in API invocation (undefined behavior)", c_bad));
         return NULL;
     }
@@ -559,6 +561,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
 
     // Ensure the Notecard is ready
     if (!_TransactionStart(CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000)) {
+        _Free(json);
         const char *errStr = ERRSTR("Notecard not ready (CTX/RTX) {io}", c_ioerr);
         if (cmdFound) {
             NOTE_C_LOG_ERROR(errStr);
@@ -586,6 +589,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
     if (resetRequired) {
         NOTE_C_LOG_DEBUG("Resetting Notecard I/O Interface...");
         if (!NoteReset()) {
+            _Free(json);
             _TransactionStop();
             const char *errStr = ERRSTR("failed to reset Notecard interface {io}", c_iobad);
             if (cmdFound) {
