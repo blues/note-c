@@ -554,14 +554,6 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         return NULL;
     }
 
-    // Unify the API value used for the transaction
-    const char * api;
-    if (reqFound) {
-        api = reqApi;
-    } else {
-        api = cmdApi;
-    }
-
     // Extract the ID of the request so that errors can be returned with the same ID
     const uint32_t id = JGetInt(req, "id");
 
@@ -580,7 +572,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
     // user agent data when the host is initializing the Notecard, as opposed
     // to every time the host does a `hub.set` to change mode.
 #ifndef NOTE_DISABLE_USER_AGENT
-    if (!JIsPresent(req, "body") && (strcmp(api, "hub.set") == 0) && JIsPresent(req, "product")) {
+    if (!JIsPresent(req, "body") && JContainsString(req, (reqFound ? "req" : "cmd"), "hub.set") && JIsPresent(req, "product")) {
         J *body = NoteUserAgent();
         if (body != NULL) {
             JAddItemToObject(req, "body", body);
