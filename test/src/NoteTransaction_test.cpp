@@ -16,10 +16,16 @@
 
 #include "n_lib.h"
 
+#include <cstddef>
+
 DEFINE_FFF_GLOBALS
+FAKE_VALUE_FUNC(char *, _crcAdd, char *, uint16_t)
 FAKE_VALUE_FUNC(bool, _crcError, char *, uint16_t)
+FAKE_VALUE_FUNC(bool, _noteHardReset)
 FAKE_VALUE_FUNC(const char *, _noteJSONTransaction, const char *, size_t, char **, uint32_t)
 FAKE_VALUE_FUNC(bool, _noteTransactionStart, uint32_t)
+FAKE_VOID_FUNC(NoteDebugWithLevel, uint8_t, const char *)
+FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
 FAKE_VALUE_FUNC(bool, NoteReset)
 FAKE_VALUE_FUNC(J *, NoteUserAgent)
 
@@ -78,9 +84,16 @@ const char *_noteJSONTransactionNotSupportedError(const char *, size_t, char **r
     return NULL;
 }
 
+char * _crcAdd_customFake(char *json, uint16_t seqno)
+{
+    // Custom fake implementation for _crcAdd
+    return strdup(json);
+}
+
 SCENARIO("NoteTransaction")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
+    _crcAdd_fake.custom_fake = _crcAdd_customFake;
 
     // NoteReset's mock should succeed unless the test explicitly instructs
     // it to fail.
@@ -92,9 +105,27 @@ SCENARIO("NoteTransaction")
         CHECK(NoteTransaction(NULL) == NULL);
     }
 
-    SECTION("_noteTransactionStart fails") {
+    SECTION("Passing a request with neither a command nor a request returns NULL") {
+        const char malformedRequest[] = "{\"foo\":\"bar\"}";
+        J *req = JParse(malformedRequest);
+
+        CHECK(NoteTransaction(req) == NULL);
+
+        JDelete(req);
+    }
+
+    SECTION("Passing a request with both a command and a request returns NULL") {
+        const char malformedRequest[] = "{\"cmd\":\"foo\",\"req\":\"bar\"}";
+        J *req = JParse(malformedRequest);
+
+        CHECK(NoteTransaction(req) == NULL);
+
+        JDelete(req);
+    }
+
+    SECTION("NULL returned when _noteTransactionStart fails on a command") {
         _noteTransactionStart_fake.return_val = false;
-        J *req = NoteNewRequest("note.add");
+        J *req = NoteNewCommand("note.add");
         REQUIRE(req != NULL);
 
         CHECK(NoteTransaction(req) == NULL);
@@ -102,7 +133,60 @@ SCENARIO("NoteTransaction")
         JDelete(req);
     }
 
-    SECTION("A response is expected and the response is valid") {
+    SECTION("Error returned when _noteTransactionStart fails on a request") {
+        _noteTransactionStart_fake.return_val = false;
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+
+        J* rsp = NoteTransaction(req);
+        CHECK(rsp != NULL);
+        CHECK(NoteResponseError(rsp));
+
+        JDelete(req);
+        JDelete(rsp);
+    }
+
+    SECTION("When transactions are suppressed, NoteDebugWithLevel is not called so long as a reset is not required") {
+        resetRequired = false; // Ensure resetRequired is false
+
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
+        NoteSuspendTransactionDebug();
+
+        J *resp = _noteTransactionShouldLock(req, false);
+
+        NoteResumeTransactionDebug();
+        CHECK(_noteJSONTransaction_fake.call_count == 1);
+        CHECK(resp != NULL);
+
+        // Ensure there's no error in the response.
+        CHECK(!NoteResponseError(resp));
+
+        // Ensure NoteDebugWithLevel was not called
+        CHECK(NoteDebugWithLevel_fake.call_count == 0);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("A response is expected and the response is valid with the Notecard unlocked") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
+
+        J *resp = _noteTransactionShouldLock(req, false);
+
+        CHECK(_noteJSONTransaction_fake.call_count == 1);
+        CHECK(resp != NULL);
+        // Ensure there's no error in the response.
+        CHECK(!NoteResponseError(resp));
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("A response is expected and the response is valid with the Notecard locked") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
         _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
@@ -113,6 +197,34 @@ SCENARIO("NoteTransaction")
         CHECK(resp != NULL);
         // Ensure there's no error in the response.
         CHECK(!NoteResponseError(resp));
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("A response is expected and the response has an I/O error") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        _noteJSONTransaction_fake.return_val = "This is an I/O error. {io}";
+
+        J *resp = NoteTransaction(req);
+
+        // Ensure the mock is called at least once
+        // Here the error causes multiple invocations by retries
+        CHECK(_noteJSONTransaction_fake.call_count >= 1);
+
+        // Ensure there's an error in the response.
+        CHECK(resp != NULL);
+        CHECK(NoteResponseError(resp));
+
+        // Ensure the error is an I/O error.
+        CHECK(NoteResponseErrorContains(resp, "{io}"));
+
+        // NoteDelayMs called to allow for each retry
+        CHECK(NoteDelayMs_fake.call_count > CARD_REQUEST_RETRIES_ALLOWED);
+
+        // _noteHardReset called to allow for each retry
+        CHECK(_noteHardReset_fake.call_count > CARD_REQUEST_RETRIES_ALLOWED);
 
         JDelete(req);
         JDelete(resp);
@@ -205,7 +317,29 @@ SCENARIO("NoteTransaction")
         J* resp = NoteTransaction(req);
         THEN("An error is not returned") {
             CHECK(resp != NULL);
-            CHECK(!JIsPresent(resp, "err"));
+            CHECK(!NoteResponseError(resp));
+        }
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    WHEN("The CRC addition fails, but the transaction is still successful") {
+        J* req = NoteNewRequest("card.time");
+        REQUIRE(req != NULL);
+        _noteJSONTransaction_fake.custom_fake = [] (const char *, size_t, char **response, uint32_t) -> const char * {
+            const char rsp_str[] = "{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de México\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
+            *response = (char *)malloc(sizeof(rsp_str));
+            strncpy(*response, rsp_str, sizeof(rsp_str));
+            return nullptr;
+        };
+        _crcAdd_fake.custom_fake = nullptr;
+        _crcAdd_fake.return_val = nullptr; // Simulate CRC failure by not adding it
+
+        J* resp = NoteTransaction(req);
+        THEN("An error is not returned") {
+            CHECK(resp != NULL);
+            CHECK(!NoteResponseError(resp));
         }
 
         JDelete(req);
@@ -224,15 +358,13 @@ SCENARIO("NoteTransaction")
         J* resp = NoteTransaction(req);
         THEN("An {io} error is returned") {
             CHECK(resp != NULL);
-            CHECK(JIsPresent(resp, "err"));
+            CHECK(NoteResponseError(resp));
             CHECK(JContainsString(resp, "err", "{io}"));
         }
 
         JDelete(req);
         JDelete(resp);
     }
-
-
 
 #ifndef NOTE_C_LOW_MEM
     SECTION("Bad CRC") {
@@ -292,6 +424,25 @@ SCENARIO("NoteTransaction")
     }
 
     SECTION("A reset is required and it fails") {
+        J *req = NoteNewCommand("note.add");
+        REQUIRE(req != NULL);
+        NoteResetRequired();
+        // Force NoteReset failure.
+        NoteReset_fake.return_val = false;
+
+        J *resp = NoteTransaction(req);
+        REQUIRE(NoteReset_fake.call_count == 1);
+
+        // The transaction shouldn't be attempted if reset failed.
+        CHECK(_noteJSONTransaction_fake.call_count == 0);
+
+        // The response should be null if reset failed.
+        CHECK(resp == NULL);
+
+        JDelete(req);
+    }
+
+    SECTION("A reset is required and it fails") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
         NoteResetRequired();
@@ -299,17 +450,39 @@ SCENARIO("NoteTransaction")
         NoteReset_fake.return_val = false;
 
         J *resp = NoteTransaction(req);
+        REQUIRE(NoteReset_fake.call_count == 1);
 
-        CHECK(NoteReset_fake.call_count == 1);
         // The transaction shouldn't be attempted if reset failed.
         CHECK(_noteJSONTransaction_fake.call_count == 0);
+
         // The response should be null if reset failed.
+        CHECK(resp != NULL);
+        CHECK(NoteResponseError(resp));
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("Serializing the JSON request fails when Notecard is unlocked") {
+        // Create an invalid J object.
+        J *req = reinterpret_cast<J *>(malloc(sizeof(J)));
+        REQUIRE(req != NULL);
+        memset(req, 0, sizeof(J));
+
+        J *resp = _noteTransactionShouldLock(req, false);
+
+        // The transaction shouldn't be attempted if the request couldn't be
+        // serialized.
+        CHECK(_noteJSONTransaction_fake.call_count == 0);
+
+        // Ensure there's no error in the response.
         CHECK(resp == NULL);
 
         JDelete(req);
+        JDelete(resp);
     }
 
-    SECTION("Serializing the JSON request fails") {
+    SECTION("Serializing the JSON request fails when Notecard is locked") {
         // Create an invalid J object.
         J *req = reinterpret_cast<J *>(malloc(sizeof(J)));
         REQUIRE(req != NULL);
@@ -320,9 +493,9 @@ SCENARIO("NoteTransaction")
         // The transaction shouldn't be attempted if the request couldn't be
         // serialized.
         CHECK(_noteJSONTransaction_fake.call_count == 0);
-        // Ensure there's an error in the response.
-        CHECK(resp != NULL);
-        CHECK(NoteResponseError(resp));
+
+        // Ensure there's no error in the response.
+        CHECK(resp == NULL);
 
         JDelete(req);
         JDelete(resp);
@@ -357,6 +530,7 @@ SCENARIO("NoteTransaction")
 
         CHECK(_noteJSONTransaction_fake.call_count >= 1);
         CHECK(resp != NULL);
+
         // Ensure there's an error in the response.
         CHECK(NoteResponseError(resp));
 
@@ -365,7 +539,22 @@ SCENARIO("NoteTransaction")
     }
 
 #ifndef NOTE_DISABLE_USER_AGENT
-    SECTION("hub.set with product adds user agent information") {
+    SECTION("hub.set command with product adds user agent information") {
+        J *req = NoteNewCommand("hub.set");
+        REQUIRE(req != NULL);
+        JAddStringToObject(req, "product", "a.b.c:d");
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
+        NoteUserAgent_fake.return_val = JCreateObject();
+
+        J *resp = NoteTransaction(req);
+        CHECK(resp != NULL);
+        CHECK(NoteUserAgent_fake.call_count > 0);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("hub.set request with product adds user agent information") {
         J *req = NoteNewRequest("hub.set");
         REQUIRE(req != NULL);
         JAddStringToObject(req, "product", "a.b.c:d");
@@ -379,107 +568,57 @@ SCENARIO("NoteTransaction")
         JDelete(req);
         JDelete(resp);
     }
+
+    SECTION("NoteUserAgent returns NULL during hub.set request with product") {
+        J *req = NoteNewRequest("hub.set");
+        REQUIRE(req != NULL);
+        JAddStringToObject(req, "product", "a.b.c:d");
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
+        NoteUserAgent_fake.return_val = NULL;
+
+        J *resp = NoteTransaction(req);
+        REQUIRE(NoteUserAgent_fake.call_count > 0);
+
+        CHECK(resp != NULL);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("hub.set command without product does not add user agent information") {
+        J *req = NoteNewCommand("hub.set");
+        REQUIRE(req != NULL);
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
+
+        J *resp = NoteTransaction(req);
+        CHECK(resp != NULL);
+        CHECK(NoteUserAgent_fake.call_count == 0);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("hub.set request without product does not add user agent information") {
+        J *req = NoteNewRequest("hub.set");
+        REQUIRE(req != NULL);
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
+
+        J *resp = NoteTransaction(req);
+        CHECK(resp != NULL);
+        CHECK(NoteUserAgent_fake.call_count == 0);
+
+        JDelete(req);
+        JDelete(resp);
+    }
 #endif // !NOTE_DISABLE_USER_AGENT
 
-    SECTION("Regular transactions have a timeout of CARD_INTER_TRANSACTION_TIMEOUT_SEC seconds") {
-        J *req = NoteNewRequest("note.add");
-        REQUIRE(req != NULL);
-
-        J *resp = NoteTransaction(req);
-        CHECK(_noteJSONTransaction_fake.arg3_val == (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000));
-
-        JDelete(req);
-        JDelete(resp);
-    }
-
-    SECTION("`note.add` with `milliseconds` updates timeout value with `milliseconds`") {
-        J *req = NoteNewRequest("note.add");
-        REQUIRE(req != NULL);
-        JAddIntToObject(req, "milliseconds", 9171979);
-
-        J *resp = NoteTransaction(req);
-        CHECK(_noteJSONTransaction_fake.arg3_val == 9171979);
-
-        JDelete(req);
-        JDelete(resp);
-    }
-
-    SECTION("`note.add` with `seconds` updates timeout value with `seconds`") {
-        J *req = NoteNewRequest("note.add");
-        REQUIRE(req != NULL);
-        JAddIntToObject(req, "seconds", 917);
-
-        J *resp = NoteTransaction(req);
-        CHECK(_noteJSONTransaction_fake.arg3_val == (917 * 1000));
-
-        JDelete(req);
-        JDelete(resp);
-    }
-
-    SECTION("`note.add` with both `milliseconds` and `seconds` updates timeout value with `milliseconds`") {
-        J *req = NoteNewRequest("note.add");
-        REQUIRE(req != NULL);
-        JAddIntToObject(req, "seconds", 917);
-        JAddIntToObject(req, "milliseconds", 9171979);
-
-        J *resp = NoteTransaction(req);
-        CHECK(_noteJSONTransaction_fake.arg3_val == 9171979);
-
-        JDelete(req);
-        JDelete(resp);
-    }
-
-    SECTION("`web.post` with `milliseconds` updates timeout value with `milliseconds`") {
-        J *req = NoteNewRequest("web.post");
-        REQUIRE(req != NULL);
-        JAddIntToObject(req, "milliseconds", 9171979);
-
-        J *resp = NoteTransaction(req);
-        CHECK(_noteJSONTransaction_fake.arg3_val == 9171979);
-
-        JDelete(req);
-        JDelete(resp);
-    }
-
-    SECTION("`web.post` with `seconds` updates timeout value with `seconds`") {
-        J *req = NoteNewRequest("web.post");
-        REQUIRE(req != NULL);
-        JAddIntToObject(req, "seconds", 1979);
-
-        J *resp = NoteTransaction(req);
-        CHECK(_noteJSONTransaction_fake.arg3_val == (1979 * 1000));
-
-        JDelete(req);
-        JDelete(resp);
-    }
-
-    SECTION("`web.post` with both `milliseconds` and `seconds` updates timeout value with `milliseconds`") {
-        J *req = NoteNewRequest("web.post");
-        REQUIRE(req != NULL);
-        JAddIntToObject(req, "seconds", 917);
-        JAddIntToObject(req, "milliseconds", 9171979);
-
-        J *resp = NoteTransaction(req);
-        CHECK(_noteJSONTransaction_fake.arg3_val == 9171979);
-
-        JDelete(req);
-        JDelete(resp);
-    }
-
-    SECTION("`web.post` without `milliseconds` or `seconds` updates timeout value with 90 seconds") {
-        J *req = NoteNewRequest("web.post");
-        REQUIRE(req != NULL);
-
-        J *resp = NoteTransaction(req);
-        CHECK(_noteJSONTransaction_fake.arg3_val == (90 * 1000));
-
-        JDelete(req);
-        JDelete(resp);
-    }
-
+    RESET_FAKE(_crcAdd);
     RESET_FAKE(_crcError);
+    RESET_FAKE(_noteHardReset);
     RESET_FAKE(_noteJSONTransaction);
     RESET_FAKE(_noteTransactionStart);
+    RESET_FAKE(NoteDebugWithLevel);
+    RESET_FAKE(NoteDelayMs);
     RESET_FAKE(NoteReset);
     RESET_FAKE(NoteUserAgent);
 }

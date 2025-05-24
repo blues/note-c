@@ -40,7 +40,7 @@ SCENARIO("_crcError")
         }
 
         AND_GIVEN("Invalid JSON") {
-            char json[] = "{\"req\":";
+            char json[] = "{\"req\":\"hub.sync\",\"crc\":\"0009:10BAC79A\""; // Missing closing brace
 
             THEN("A CRC error SHALL NOT be reported") {
                 CHECK(!_crcError(json, seqNo));
