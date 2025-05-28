@@ -41,10 +41,21 @@ SCENARIO("_crcAdd")
         NoteMalloc_fake.custom_fake = malloc;
 
         char emptyStringReq[] = "";
+        char emptyObjectReq[] = "{}";
         char invalidJsonReq[] = "{\"req\":";
 
         SECTION("Empty string") {
             CHECK(_crcAdd(emptyStringReq, seqNo) == NULL);
+        }
+
+        SECTION("Empty object") {
+            const char expectedNewJson[] = "{ \"crc\":\"0001:A3A6BF43\"}";
+            char *newJson = _crcAdd(emptyObjectReq, seqNo);
+
+            REQUIRE(newJson != NULL);
+            CHECK(strcmp(expectedNewJson, newJson) == 0);
+
+            NoteFree(newJson);
         }
 
         SECTION("Invalid JSON") {

@@ -20,6 +20,20 @@ namespace
 
 SCENARIO("NoteErrorClean")
 {
+    SECTION("Low-memory mode") {
+        char str[] = "{io}";
+
+        NoteErrorClean(str);
+        CHECK(strcmp(str, "") == 0);
+    }
+
+    SECTION("Braces without a prefixed space separator") {
+        char str[] = "connected (session open){connected}";
+
+        NoteErrorClean(str);
+        CHECK(strcmp(str, "connected (session open)") == 0);
+    }
+
     SECTION("hub.status response") {
         char str[] = "connected (session open) {connected}";
 
@@ -34,11 +48,11 @@ SCENARIO("NoteErrorClean")
         CHECK(strcmp(str, "connected (session open)") == 0);
     }
 
-    SECTION("No end brace") {
+    SECTION("No ending brace") {
         char str[] = "connected (session open) {connected";
 
         NoteErrorClean(str);
-        // String should be unchanged if there's no end brace.
+        // String should be unchanged if there's no ending brace.
         CHECK(strcmp(str, "connected (session open) {connected") == 0);
     }
 }

@@ -72,6 +72,7 @@ enum {
 
 #ifdef NOTE_C_LOW_MEM
 #define ERRSTR(x,y) (y)
+#define NOTE_C_LOG_DEBUG(msg) do { } while (0)
 #else
 #define ERRSTR(x,y) (x)
 #endif // NOTE_C_LOW_MEM
@@ -384,29 +385,37 @@ void NoteDebugWithLevelLn(uint8_t level, const char *msg);
 #define NOTE_C_LOG_FILE_AND_LINE(lvl)
 #endif
 
+#ifndef NOTE_C_LOG_ERROR
 #define NOTE_C_LOG_ERROR(msg) do { \
   NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_ERROR); \
   NoteDebugWithLevel(NOTE_C_LOG_LEVEL_ERROR, "[ERROR] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_ERROR, msg); \
-} while (0);
+} while (0)
+#endif
 
+#ifndef NOTE_C_LOG_WARN
 #define NOTE_C_LOG_WARN(msg) do { \
   NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_WARN); \
   NoteDebugWithLevel(NOTE_C_LOG_LEVEL_WARN, "[WARN] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_WARN, msg); \
-} while (0);
+} while (0)
+#endif
 
+#ifndef NOTE_C_LOG_INFO
 #define NOTE_C_LOG_INFO(msg) do { \
   NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_INFO); \
   NoteDebugWithLevel(NOTE_C_LOG_LEVEL_INFO, "[INFO] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_INFO, msg); \
-} while (0);
+} while (0)
+#endif
 
+#ifndef NOTE_C_LOG_DEBUG
 #define NOTE_C_LOG_DEBUG(msg) do { \
   NOTE_C_LOG_FILE_AND_LINE(NOTE_C_LOG_LEVEL_DEBUG); \
   NoteDebugWithLevel(NOTE_C_LOG_LEVEL_DEBUG, "[DEBUG] "); \
   NoteDebugWithLevelLn(NOTE_C_LOG_LEVEL_DEBUG, msg); \
-} while (0);
+} while (0)
+#endif
 
 // The default log level
 #define NOTE_C_LOG_LEVEL_DEFAULT NOTE_C_LOG_LEVEL_INFO
