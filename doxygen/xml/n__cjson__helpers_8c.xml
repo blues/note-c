@@ -1,0 +1,1503 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="n__cjson__helpers_8c" kind="file" language="C++">
+    <compoundname>n_cjson_helpers.c</compoundname>
+    <includes local="no">stdlib.h</includes>
+    <includes local="no">string.h</includes>
+    <includes local="no">time.h</includes>
+    <includes local="yes">n_lib.h</includes>
+    <incdepgraph>
+      <node id="1">
+        <label>/home/runner/work/note-c/note-c/n_cjson_helpers.c</label>
+        <link refid="n__cjson__helpers_8c"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>n_lib.h</label>
+      </node>
+      <node id="2">
+        <label>stdlib.h</label>
+      </node>
+      <node id="3">
+        <label>string.h</label>
+      </node>
+      <node id="4">
+        <label>time.h</label>
+      </node>
+    </incdepgraph>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a6cfeede8f787bbfd890ec7deae8aca24" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool JIsPresent</definition>
+        <argsstring>(J *json, const char *field)</argsstring>
+        <name>JIsPresent</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Determine if a field is present in a JSON object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field to find.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the field is present, or false if the field is not present or the JSON object is NULL. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="28" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="28" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a66cca753ac78c92d0904ad74a33b8c92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>char *</type>
+        <definition>char * JGetString</definition>
+        <argsstring>(J *json, const char *field)</argsstring>
+        <name>JGetString</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Get the value of a string field from a JSON object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The string field to query.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A pointer to the string if the field exists and is a string, otherwise the empty string (&quot;&quot;).</para>
+</simplesect>
+<simplesect kind="note"><para>The returned string is a pointer to the string contained in the JSON object. It is not a copy of the string, so once the JSON object is freed, the pointer is no longer valid. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="49" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="49" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a7422ca821f0402b0c0bd890558cbb254" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+        <definition>J * JGetArray</definition>
+        <argsstring>(J *json, const char *field)</argsstring>
+        <name>JGetArray</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Get the value of an array field from a JSON object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The array field to query.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A pointer to the array, which is itself a JSON object (<computeroutput><ref refid="struct_j" kindref="compound">J</ref> *</computeroutput>), if the field exists and is an array, otherwise NULL.</para>
+</simplesect>
+<simplesect kind="note"><para>The returned JSON object is a pointer to the array contained in the parent JSON object. It is not a copy, so once the parent JSON object is freed, the pointer is no longer valid. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="80" column="3" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="80" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a0fd01d5fe6235d3b194449a8e6ce4f9c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+        <definition>J * JGetObject</definition>
+        <argsstring>(J *json, const char *field)</argsstring>
+        <name>JGetObject</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Get the value of an object field from a JSON object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The object field to query.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A pointer to the object, which is itself a JSON object (<computeroutput><ref refid="struct_j" kindref="compound">J</ref> *</computeroutput>), if the field exists and is an object, otherwise NULL.</para>
+</simplesect>
+<simplesect kind="note"><para>The returned JSON object is a pointer to the object contained in the parent JSON object. It is not a copy, so once the parent JSON object is freed, the pointer is no longer valid. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="108" column="3" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="108" bodyend="121"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a3e836494d9b3a6fc4e4b02dc2767df83" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool JBoolValue</definition>
+        <argsstring>(J *item)</argsstring>
+        <name>JBoolValue</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+<para>Return the boolean representation of an item. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON item. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The boolean value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="130" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="130" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1abf4a22e53b5292fe4d65571159637cc4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>char *</type>
+        <definition>char * JStringValue</definition>
+        <argsstring>(J *item)</argsstring>
+        <name>JStringValue</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+<para>Return the string representation of an item. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON item. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The string value, or empty string, if NULL. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="145" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="145" bodyend="151"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a2b2a9c92f2833d424d1a7ab66b3533a8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="note_8h_1a9c9eb17c00d2f5af0a9fd4f3bc43bdc6" kindref="member">JNUMBER</ref></type>
+        <definition>JNUMBER JNumberValue</definition>
+        <argsstring>(J *item)</argsstring>
+        <name>JNumberValue</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+<para>Return the number representation of an item. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON item. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number, or 0.0, if NULL. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="160" column="9" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="160" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a7e30c9120dbe63db3fbedd568f76ecf7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="note_8h_1a9c9eb17c00d2f5af0a9fd4f3bc43bdc6" kindref="member">JNUMBER</ref></type>
+        <definition>JNUMBER JGetNumber</definition>
+        <argsstring>(J *json, const char *field)</argsstring>
+        <name>JGetNumber</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Get the floating point value of a number field from a JSON object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number field to query.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of the number field if the field exists and is a number, otherwise 0.0.</para>
+</simplesect>
+<simplesect kind="note"><para>The returned value is the floating point representation of the number.</para>
+</simplesect>
+<simplesect kind="see"><para><computeroutput><ref refid="n__cjson__helpers_8c_1a00b1ca83bdb8cc849114b973dd862d65" kindref="member">JGetInt</ref></computeroutput> </para>
+</simplesect>
+<simplesect kind="see"><para><computeroutput><ref refid="n__cjson__helpers_8c_1a51518894ee545340a884089f64e34671" kindref="member">JGetBool</ref></computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="182" column="9" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="182" bodyend="195"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a9f5aaa3fbaaee87de2b6119c7428b9dd" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb" kindref="member">JINTEGER</ref></type>
+        <definition>JINTEGER JIntValue</definition>
+        <argsstring>(J *item)</argsstring>
+        <name>JIntValue</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+<para>Return the integer representation of an item. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON item. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The number, or 0, if NULL. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="204" column="10" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="204" bodyend="210"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a00b1ca83bdb8cc849114b973dd862d65" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb" kindref="member">JINTEGER</ref></type>
+        <definition>JINTEGER JGetInt</definition>
+        <argsstring>(J *json, const char *field)</argsstring>
+        <name>JGetInt</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Get the integer value of a number field from a JSON object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number field to query.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of the number field if the field exists and is a number, otherwise 0.</para>
+</simplesect>
+<simplesect kind="note"><para>The returned value is the integer representation of the number.</para>
+</simplesect>
+<simplesect kind="see"><para><computeroutput><ref refid="n__cjson__helpers_8c_1a51518894ee545340a884089f64e34671" kindref="member">JGetBool</ref></computeroutput> </para>
+</simplesect>
+<simplesect kind="see"><para><computeroutput><ref refid="n__cjson__helpers_8c_1a7e30c9120dbe63db3fbedd568f76ecf7" kindref="member">JGetNumber</ref></computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="226" column="10" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="226" bodyend="239"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a51518894ee545340a884089f64e34671" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool JGetBool</definition>
+        <argsstring>(J *json, const char *field)</argsstring>
+        <name>JGetBool</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Get the value of a boolean field from a JSON object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The boolean field to query.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The value of the boolean field if it exists and is a boolean, otherwise false.</para>
+</simplesect>
+<simplesect kind="see"><para><computeroutput><ref refid="n__cjson__helpers_8c_1a00b1ca83bdb8cc849114b973dd862d65" kindref="member">JGetInt</ref></computeroutput> </para>
+</simplesect>
+<simplesect kind="see"><para><computeroutput><ref refid="n__cjson__helpers_8c_1a7e30c9120dbe63db3fbedd568f76ecf7" kindref="member">JGetNumber</ref></computeroutput> </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="253" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="253" bodyend="266"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1aafb4b69e85bd5d9c2d1534688fd4176d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool JIsNullString</definition>
+        <argsstring>(J *json, const char *field)</argsstring>
+        <name>JIsNullString</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Determine if a JSON object is valid and if a field is not present, or null. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON response object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field to return. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>bool. False if the field is not present, or NULL. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="277" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="277" bodyend="296"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1af4e9257e3b88d1b55441f15efd1bf0c3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool JIsExactString</definition>
+        <argsstring>(J *json, const char *field, const char *teststr)</argsstring>
+        <name>JIsExactString</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>teststr</declname>
+        </param>
+        <briefdescription>
+<para>Determine if a field exists, is a string and matches a provided value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON response object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field to check. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>teststr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The string to test against the returned value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>bol. Whether the fields match exactly. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="308" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="308" bodyend="327"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a31742b8fc463be8e85fe6f1b269bf9bb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool JContainsString</definition>
+        <argsstring>(J *json, const char *field, const char *substr)</argsstring>
+        <name>JContainsString</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>substr</declname>
+        </param>
+        <briefdescription>
+<para>Determine if a field exists, is a string and contains a provided value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON response object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field to check. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>substr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The string to test against the returned value. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>bol. Whether the provided string is found within the field. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="339" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="339" bodyend="358"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a9378ea8eddda1f23c815b69591747846" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool JAddBinaryToObject</definition>
+        <argsstring>(J *json, const char *fieldName, const void *binaryData, uint32_t binaryDataLen)</argsstring>
+        <name>JAddBinaryToObject</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>fieldName</declname>
+        </param>
+        <param>
+          <type>const void *</type>
+          <declname>binaryData</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>binaryDataLen</declname>
+        </param>
+        <briefdescription>
+<para>Add binary data as a Base64-encoded string field to a JSON object. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fieldName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name to use for the field. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>binaryData</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A buffer of binary data to encode. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>binaryDataLen</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The length of the binary data in bytes.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the string was successfully encoded and added to the object, otherwise false. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="372" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="372" bodyend="390"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a4c5ca7aa585e06623f2788b86300538d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool JGetBinaryFromObject</definition>
+        <argsstring>(J *json, const char *fieldName, uint8_t **retBinaryData, uint32_t *retBinaryDataLen)</argsstring>
+        <name>JGetBinaryFromObject</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>fieldName</declname>
+        </param>
+        <param>
+          <type>uint8_t **</type>
+          <declname>retBinaryData</declname>
+        </param>
+        <param>
+          <type>uint32_t *</type>
+          <declname>retBinaryDataLen</declname>
+        </param>
+        <briefdescription>
+<para>Decode a Base64-encoded string field in a JSON object and return the decoded bytes. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>fieldName</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the field. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>retBinaryData</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A pointer to a pointer, used to hold the pointer to the decoded bytes. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>retBinaryDataLen</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A pointer to an unsigned integer, used to hold the length of the decoded bytes.</para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>True if the string was successfully decoded and returned, otherwise false.</para>
+</simplesect>
+<simplesect kind="note"><para>The returned binary buffer must be freed by the user with <computeroutput>JFree</computeroutput> when it is no longer needed.</para>
+</simplesect>
+<simplesect kind="note"><para>On error, the returned binary buffer and data length shall be set to <computeroutput>NULL</computeroutput> and zero (0), respectively. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="413" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="413" bodyend="452"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1ac8fc6b5f1197bd2d117f538b1e33d34b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * JGetItemName</definition>
+        <argsstring>(const J *item)</argsstring>
+        <name>JGetItemName</name>
+        <param>
+          <type>const <ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+<para>Get the object name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The name, or the empty string, if NULL. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="461" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="461" bodyend="467"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a3fe8a8eeb1d78a8eb52ed720a36b99c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void JItoA</definition>
+        <argsstring>(JINTEGER n, char *s)</argsstring>
+        <name>JItoA</name>
+        <param>
+          <type><ref refid="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb" kindref="member">JINTEGER</ref></type>
+          <declname>n</declname>
+        </param>
+        <param>
+          <type>char *</type>
+          <declname>s</declname>
+        </param>
+        <briefdescription>
+<para>Convert an integer to text. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>n</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The integer to convert. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>s</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The buffer to hold the text. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>The buffer must be large enough because no bounds checking is done. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="477" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="477" bodyend="503"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a308f04aae0351a47e78c6974c0ced6e6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb" kindref="member">JINTEGER</ref></type>
+        <definition>JINTEGER JAtoI</definition>
+        <argsstring>(const char *string)</argsstring>
+        <name>JAtoI</name>
+        <param>
+          <type>const char *</type>
+          <declname>string</declname>
+        </param>
+        <briefdescription>
+<para>Convert text to an integer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>string</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A null-terminated text buffer </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>An integer, or 0 if invalid </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="512" column="10" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="512" bodyend="540"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1aa938730e0ffcac86947fc537945e05d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>char *</type>
+        <definition>char * JAllocString</definition>
+        <argsstring>(uint8_t *buffer, uint32_t len)</argsstring>
+        <name>JAllocString</name>
+        <param>
+          <type>uint8_t *</type>
+          <declname>buffer</declname>
+        </param>
+        <param>
+          <type>uint32_t</type>
+          <declname>len</declname>
+        </param>
+        <briefdescription>
+<para>Convert a buffer/len to a null-terminated c-string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>buffer</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A buffer containing the bytes to convert. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>len</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The length of buffer in bytes. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>If buffer is NULL or length 0, the empty string. If allocation fails, NULL. On success, the converted c-string. The returned string must be freed with NoteFree. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="552" column="6" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="552" bodyend="563"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a780bf7071e3133e62794491aa90a7086" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const char *</type>
+        <definition>const char * JType</definition>
+        <argsstring>(J *item)</argsstring>
+        <name>JType</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+<para>Return the type of an item, as a string. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>item</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON item. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The type </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="572" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="572" bodyend="594"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a0b63b324fbe5e773ca7c137666687b41" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int JGetType</definition>
+        <argsstring>(J *json, const char *field)</argsstring>
+        <name>JGetType</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>json</declname>
+        </param>
+        <param>
+          <type>const char *</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+<para>Get the type of a field, as an int usable in a switch statement. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>json</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The JSON object containing the field. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>field</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The field&apos;s name. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The type of the field on success. JTYPE_NOT_PRESENT on error or if the field doesn&apos;t exist. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="605" column="5" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="605" bodyend="611"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a39d4dc978cbd0c5d10d287b4ac57b8d1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int JGetItemType</definition>
+        <argsstring>(J *item)</argsstring>
+        <name>JGetItemType</name>
+        <param>
+          <type><ref refid="struct_j" kindref="compound">J</ref> *</type>
+          <declname>item</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="614" column="5" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="614" bodyend="670"/>
+      </memberdef>
+      <memberdef kind="function" id="n__cjson__helpers_8c_1a791851ed95cd350c24f33af25e7f0af8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int JBaseItemType</definition>
+        <argsstring>(int type)</argsstring>
+        <name>JBaseItemType</name>
+        <param>
+          <type>int</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c" line="673" column="5" bodyfile="/home/runner/work/note-c/note-c/n_cjson_helpers.c" bodystart="673" bodyend="694"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Written by Ray Ozzie and Blues Inc. team.</para>
+<para>Copyright (c) 2019 Blues Inc. MIT License. Use of this source code is governed by licenses granted by the copyright holder including that found in the <ulink url="https://github.com/blues/note-c/blob/master/LICENSE">LICENSE</ulink> file. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;stdlib.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;time.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;n_lib.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a6cfeede8f787bbfd890ec7deae8aca24" kindref="member">JIsPresent</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field)</highlight></codeline>
+<codeline lineno="29"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(<ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field)<sp/>!=<sp/>NULL);</highlight></codeline>
+<codeline lineno="34"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<ref refid="n__cjson__helpers_8c_1a66cca753ac78c92d0904ad74a33b8c92" kindref="member">JGetString</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field)</highlight></codeline>
+<codeline lineno="50"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*)<sp/>c_nullstring;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*item<sp/>=<sp/><ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field);</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*)<sp/>c_nullstring;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="n__cjson_8h_1a35c8801a08c0fd4de08759c36bd7d8ad" kindref="member">JIsString</ref>(item))<sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*)<sp/>c_nullstring;</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item-&gt;<ref refid="struct_j_1a54f8d507791671d5f5951e8cae540232" kindref="member">valuestring</ref><sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*)<sp/>c_nullstring;</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item-&gt;<ref refid="struct_j_1a54f8d507791671d5f5951e8cae540232" kindref="member">valuestring</ref>;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><ref refid="struct_j" kindref="compound">J</ref><sp/>*<ref refid="n__cjson__helpers_8c_1a7422ca821f0402b0c0bd890558cbb254" kindref="member">JGetArray</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field)</highlight></codeline>
+<codeline lineno="81"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>NULL;</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*item<sp/>=<sp/><ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field);</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>NULL;</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="n__cjson_8h_1ad2e8fbc0e1b1484f3593d95e32335c12" kindref="member">JIsArray</ref>(item))<sp/>{</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>NULL;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><ref refid="struct_j" kindref="compound">J</ref><sp/>*<ref refid="n__cjson__helpers_8c_1a0fd01d5fe6235d3b194449a8e6ce4f9c" kindref="member">JGetObject</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field)</highlight></codeline>
+<codeline lineno="109"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>NULL;</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*item<sp/>=<sp/><ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field);</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>NULL;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="n__cjson_8h_1a46958f34e3c76bef78fff3e9f78a7af8" kindref="member">JIsObject</ref>(item))<sp/>{</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>NULL;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="129"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a3e836494d9b3a6fc4e4b02dc2767df83" kindref="member">JBoolValue</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*item)</highlight></codeline>
+<codeline lineno="131"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>((item-&gt;<ref refid="struct_j_1a1bb6f40b6adc8640b4beb11102b21c4b" kindref="member">type</ref><sp/>&amp;<sp/>0xff)<sp/>==<sp/><ref refid="n__cjson_8h_1af3f87fd9d106ef925670d3b0d5303413" kindref="member">JTrue</ref>);</highlight></codeline>
+<codeline lineno="136"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="144"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<ref refid="n__cjson__helpers_8c_1abf4a22e53b5292fe4d65571159637cc4" kindref="member">JStringValue</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*item)</highlight></codeline>
+<codeline lineno="146"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*)</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item-&gt;<ref refid="struct_j_1a54f8d507791671d5f5951e8cae540232" kindref="member">valuestring</ref>;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="159"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><ref refid="note_8h_1a9c9eb17c00d2f5af0a9fd4f3bc43bdc6" kindref="member">JNUMBER</ref><sp/><ref refid="n__cjson__helpers_8c_1a2b2a9c92f2833d424d1a7ab66b3533a8" kindref="member">JNumberValue</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*item)</highlight></codeline>
+<codeline lineno="161"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item-&gt;<ref refid="struct_j_1ac62cf00a5cadeafc84d8d9fec38cfa50" kindref="member">valuenumber</ref>;</highlight></codeline>
+<codeline lineno="166"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><ref refid="note_8h_1a9c9eb17c00d2f5af0a9fd4f3bc43bdc6" kindref="member">JNUMBER</ref><sp/><ref refid="n__cjson__helpers_8c_1a7e30c9120dbe63db3fbedd568f76ecf7" kindref="member">JGetNumber</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field)</highlight></codeline>
+<codeline lineno="183"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*item<sp/>=<sp/><ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="n__cjson_8h_1a90966d05e3d50b9c6f664be5bb0246ec" kindref="member">JIsNumber</ref>(item))<sp/>{</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0.0;</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a2b2a9c92f2833d424d1a7ab66b3533a8" kindref="member">JNumberValue</ref>(item);</highlight></codeline>
+<codeline lineno="195"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="203"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><ref refid="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb" kindref="member">JINTEGER</ref><sp/><ref refid="n__cjson__helpers_8c_1a9f5aaa3fbaaee87de2b6119c7428b9dd" kindref="member">JIntValue</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*item)</highlight></codeline>
+<codeline lineno="205"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item-&gt;<ref refid="struct_j_1a55e3d5d8de0cc6aff4d92c1b1228f7ea" kindref="member">valueint</ref>;</highlight></codeline>
+<codeline lineno="210"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"></highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><ref refid="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb" kindref="member">JINTEGER</ref><sp/><ref refid="n__cjson__helpers_8c_1a00b1ca83bdb8cc849114b973dd862d65" kindref="member">JGetInt</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field)</highlight></codeline>
+<codeline lineno="227"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*item<sp/>=<sp/><ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field);</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="n__cjson_8h_1a90966d05e3d50b9c6f664be5bb0246ec" kindref="member">JIsNumber</ref>(item))<sp/>{</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>0;</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a9f5aaa3fbaaee87de2b6119c7428b9dd" kindref="member">JIntValue</ref>(item);</highlight></codeline>
+<codeline lineno="239"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"></highlight></codeline>
+<codeline lineno="253"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a51518894ee545340a884089f64e34671" kindref="member">JGetBool</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field)</highlight></codeline>
+<codeline lineno="254"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*item<sp/>=<sp/><ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field);</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="n__cjson_8h_1a7018dd9b9399e168495a42da2ca30c32" kindref="member">JIsBool</ref>(item))<sp/>{</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1af3451fac120016cabb032443098328e1" kindref="member">JIsTrue</ref>(item);</highlight></codeline>
+<codeline lineno="266"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"></highlight></codeline>
+<codeline lineno="268"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="276"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1aafb4b69e85bd5d9c2d1534688fd4176d" kindref="member">JIsNullString</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field)</highlight></codeline>
+<codeline lineno="278"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*item<sp/>=<sp/><ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field);</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="n__cjson_8h_1a35c8801a08c0fd4de08759c36bd7d8ad" kindref="member">JIsString</ref>(item))<sp/>{</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item-&gt;<ref refid="struct_j_1a54f8d507791671d5f5951e8cae540232" kindref="member">valuestring</ref><sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item-&gt;<ref refid="struct_j_1a54f8d507791671d5f5951e8cae540232" kindref="member">valuestring</ref>[0]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;\0&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="296"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"></highlight></codeline>
+<codeline lineno="298"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="307"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="308"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1af4e9257e3b88d1b55441f15efd1bf0c3" kindref="member">JIsExactString</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*teststr)</highlight></codeline>
+<codeline lineno="309"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*item<sp/>=<sp/><ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field);</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="n__cjson_8h_1a35c8801a08c0fd4de08759c36bd7d8ad" kindref="member">JIsString</ref>(item))<sp/>{</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item-&gt;<ref refid="struct_j_1a54f8d507791671d5f5951e8cae540232" kindref="member">valuestring</ref><sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(strlen(teststr)<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(strcmp(item-&gt;<ref refid="struct_j_1a54f8d507791671d5f5951e8cae540232" kindref="member">valuestring</ref>,<sp/>teststr)<sp/>==<sp/>0);</highlight></codeline>
+<codeline lineno="327"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"></highlight></codeline>
+<codeline lineno="329"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="338"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="339"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a31742b8fc463be8e85fe6f1b269bf9bb" kindref="member">JContainsString</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*substr)</highlight></codeline>
+<codeline lineno="340"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*item<sp/>=<sp/><ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field);</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="346"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="347"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!<ref refid="n__cjson_8h_1a35c8801a08c0fd4de08759c36bd7d8ad" kindref="member">JIsString</ref>(item))<sp/>{</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="351"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item-&gt;<ref refid="struct_j_1a54f8d507791671d5f5951e8cae540232" kindref="member">valuestring</ref><sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(strlen(substr)<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="355"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="356"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="357"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>(strstr(item-&gt;<ref refid="struct_j_1a54f8d507791671d5f5951e8cae540232" kindref="member">valuestring</ref>,<sp/>substr)<sp/>!=<sp/>NULL);</highlight></codeline>
+<codeline lineno="358"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="359"><highlight class="normal"></highlight></codeline>
+<codeline lineno="360"><highlight class="normal"></highlight></codeline>
+<codeline lineno="372"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a9378ea8eddda1f23c815b69591747846" kindref="member">JAddBinaryToObject</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*fieldName,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>*binaryData,<sp/>uint32_t<sp/>binaryDataLen)</highlight></codeline>
+<codeline lineno="373"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="374"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="375"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="376"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="377"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/>stringDataLen<sp/>=<sp/><ref refid="note_8h_1a9c5d969e2bfd9cbda902e6388285e624" kindref="member">JB64EncodeLen</ref>(binaryDataLen);</highlight></codeline>
+<codeline lineno="378"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*stringData<sp/>=<sp/>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*)<sp/>_Malloc(stringDataLen);</highlight></codeline>
+<codeline lineno="379"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(stringData<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="380"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="381"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="382"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="note_8h_1abd22cd7117763400021d6653a33f0d94" kindref="member">JB64Encode</ref>(stringData,<sp/>binaryData,<sp/>binaryDataLen);</highlight></codeline>
+<codeline lineno="383"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*stringItem<sp/>=<sp/><ref refid="n__cjson_8h_1a7171faa2a8de38aab570450e819e926d" kindref="member">JCreateStringValue</ref>(stringData);</highlight></codeline>
+<codeline lineno="384"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(stringItem<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="385"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>_Free(stringData);</highlight></codeline>
+<codeline lineno="386"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="387"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="388"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="n__cjson_8h_1a3430617fcd905e9d3d997354cb7e23cc" kindref="member">JAddItemToObject</ref>(json,<sp/>fieldName,<sp/>stringItem);</highlight></codeline>
+<codeline lineno="389"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="390"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="391"><highlight class="normal"></highlight></codeline>
+<codeline lineno="392"><highlight class="normal"></highlight></codeline>
+<codeline lineno="413"><highlight class="normal"></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a4c5ca7aa585e06623f2788b86300538d" kindref="member">JGetBinaryFromObject</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*fieldName,<sp/>uint8_t<sp/>**retBinaryData,<sp/>uint32_t<sp/>*retBinaryDataLen)</highlight></codeline>
+<codeline lineno="414"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="415"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Initialize<sp/>the<sp/>return<sp/>values<sp/>to<sp/>NULL<sp/>and<sp/>zero.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="416"><highlight class="normal"><sp/><sp/><sp/><sp/>*retBinaryData<sp/>=<sp/>NULL;</highlight></codeline>
+<codeline lineno="417"><highlight class="normal"><sp/><sp/><sp/><sp/>*retBinaryDataLen<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="418"><highlight class="normal"></highlight></codeline>
+<codeline lineno="419"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="420"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="421"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="422"><highlight class="normal"></highlight></codeline>
+<codeline lineno="423"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>In<sp/>some<sp/>cases,<sp/>the<sp/>caller<sp/>may<sp/>already<sp/>have<sp/>extracted<sp/>the<sp/>string<sp/>from<sp/>a<sp/>different<sp/>field,<sp/>in<sp/>which</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="424"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>case<sp/>&quot;json&quot;<sp/>will<sp/>be<sp/>set<sp/>to<sp/>the<sp/>payload<sp/>pointer.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="425"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*payload;</highlight></codeline>
+<codeline lineno="426"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(fieldName<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="427"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>payload<sp/>=<sp/>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*)<sp/>json;</highlight></codeline>
+<codeline lineno="428"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="429"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>payload<sp/>=<sp/><ref refid="n__cjson__helpers_8c_1a66cca753ac78c92d0904ad74a33b8c92" kindref="member">JGetString</ref>(json,<sp/>fieldName);</highlight></codeline>
+<codeline lineno="430"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="431"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(payload[0]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;\0&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="432"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="433"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="434"><highlight class="normal"></highlight></codeline>
+<codeline lineno="435"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Allocate<sp/>a<sp/>buffer<sp/>for<sp/>the<sp/>payload,<sp/>with<sp/>an<sp/>extra<sp/>&apos;convenience<sp/>byte&apos;<sp/>for<sp/>null<sp/>termination.<sp/><sp/>(see<sp/>below)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="436"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*p<sp/>=<sp/>(</highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*)<sp/>_Malloc(<ref refid="note_8h_1a53559c7bc512587f6776794a78fc424f" kindref="member">JB64DecodeLen</ref>(payload)+1);</highlight></codeline>
+<codeline lineno="437"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(p<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="438"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="439"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="440"><highlight class="normal"><sp/><sp/><sp/><sp/>uint32_t<sp/>actualLen<sp/>=<sp/><ref refid="note_8h_1a48c6cad9358d4154567949c192445a9e" kindref="member">JB64Decode</ref>(p,<sp/>payload);</highlight></codeline>
+<codeline lineno="441"><highlight class="normal"></highlight></codeline>
+<codeline lineno="442"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>As<sp/>a<sp/>convenience<sp/>to<sp/>the<sp/>caller,<sp/>null-terminate<sp/>the<sp/>returned<sp/>buffer<sp/>in<sp/>case<sp/>it&apos;s<sp/>a<sp/>string.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="443"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>(If<sp/>we<sp/>didn&apos;t<sp/>do<sp/>this,<sp/>the<sp/>caller<sp/>would<sp/>be<sp/>forced<sp/>to<sp/>alloc<sp/>another<sp/>buffer<sp/>of<sp/>length+1<sp/>and</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="444"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>copy<sp/>it<sp/>to<sp/>add<sp/>the<sp/>null<sp/>terminator,<sp/>while<sp/>it&apos;s<sp/>easy<sp/>for<sp/>us<sp/>to<sp/>do<sp/>it<sp/>here.)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="445"><highlight class="normal"><sp/><sp/><sp/><sp/>p[actualLen]<sp/>=<sp/></highlight><highlight class="charliteral">&apos;\0&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="446"><highlight class="normal"></highlight></codeline>
+<codeline lineno="447"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Return<sp/>the<sp/>binary<sp/>to<sp/>the<sp/>caller</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="448"><highlight class="normal"><sp/><sp/><sp/><sp/>*retBinaryData<sp/>=<sp/>(uint8_t<sp/>*)p;</highlight></codeline>
+<codeline lineno="449"><highlight class="normal"><sp/><sp/><sp/><sp/>*retBinaryDataLen<sp/>=<sp/>actualLen;</highlight></codeline>
+<codeline lineno="450"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="451"><highlight class="normal"></highlight></codeline>
+<codeline lineno="452"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="453"><highlight class="normal"></highlight></codeline>
+<codeline lineno="454"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="460"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="461"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<ref refid="n__cjson__helpers_8c_1ac8fc6b5f1197bd2d117f538b1e33d34b" kindref="member">JGetItemName</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="struct_j" kindref="compound">J</ref><sp/>*<sp/>item)</highlight></codeline>
+<codeline lineno="462"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="463"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL<sp/>||<sp/>item-&gt;<ref refid="struct_j_1aedd40ac50e584c7b93e0046e404ae543" kindref="member">string</ref><sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="464"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="465"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="466"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>item-&gt;<ref refid="struct_j_1aedd40ac50e584c7b93e0046e404ae543" kindref="member">string</ref>;</highlight></codeline>
+<codeline lineno="467"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="468"><highlight class="normal"></highlight></codeline>
+<codeline lineno="469"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="476"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="477"><highlight class="normal"></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a3fe8a8eeb1d78a8eb52ed720a36b99c6" kindref="member">JItoA</ref>(<ref refid="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb" kindref="member">JINTEGER</ref><sp/>n,<sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*s)</highlight></codeline>
+<codeline lineno="478"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="479"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>c;</highlight></codeline>
+<codeline lineno="480"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Conversion<sp/>to<sp/>unsigned<sp/>is<sp/>required<sp/>to<sp/>handle<sp/>the<sp/>case<sp/>where<sp/>n<sp/>is</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="481"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>JINTEGER_MIN.<sp/>In<sp/>that<sp/>case,<sp/>applying<sp/>the<sp/>unary<sp/>minus<sp/>operator<sp/>to<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="482"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>signed<sp/>version<sp/>of<sp/>n<sp/>overflows<sp/>and<sp/>the<sp/>behavior<sp/>is<sp/>undefined.<sp/>By<sp/>changing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="483"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>n<sp/>to<sp/>be<sp/>unsigned,<sp/>the<sp/>unary<sp/>minus<sp/>operator<sp/>behaves<sp/>differently,<sp/>and<sp/>there</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="484"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>is<sp/>no<sp/>overflow.<sp/>See<sp/>https://stackoverflow.com/q/8026694.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="485"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="note_8h_1aa40439c159fdacb5de8314453a6cc241" kindref="member">JUINTEGER</ref><sp/>unsignedN<sp/>=<sp/>n;</highlight></codeline>
+<codeline lineno="486"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">long</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>i,<sp/>j;</highlight></codeline>
+<codeline lineno="487"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(n<sp/>&lt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="488"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>unsignedN<sp/>=<sp/>-unsignedN;</highlight></codeline>
+<codeline lineno="489"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="490"><highlight class="normal"><sp/><sp/><sp/><sp/>i<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="491"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">do</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="492"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>s[i++]<sp/>=<sp/>unsignedN<sp/>%<sp/>10<sp/>+<sp/></highlight><highlight class="charliteral">&apos;0&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="493"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>((unsignedN<sp/>/=<sp/>10)<sp/>&gt;<sp/>0);</highlight></codeline>
+<codeline lineno="494"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(n<sp/>&lt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="495"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>s[i++]<sp/>=<sp/></highlight><highlight class="charliteral">&apos;-&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="496"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="497"><highlight class="normal"><sp/><sp/><sp/><sp/>s[i]<sp/>=<sp/></highlight><highlight class="charliteral">&apos;\0&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="498"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(i<sp/>=<sp/>0,<sp/>j<sp/>=<sp/>strlen(s)-1;<sp/>i&lt;j;<sp/>i++,<sp/>j--)<sp/>{</highlight></codeline>
+<codeline lineno="499"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>c<sp/>=<sp/>s[i];</highlight></codeline>
+<codeline lineno="500"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>s[i]<sp/>=<sp/>s[j];</highlight></codeline>
+<codeline lineno="501"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>s[j]<sp/>=<sp/>c;</highlight></codeline>
+<codeline lineno="502"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="503"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="504"><highlight class="normal"></highlight></codeline>
+<codeline lineno="505"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="511"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="512"><highlight class="normal"><ref refid="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb" kindref="member">JINTEGER</ref><sp/><ref refid="n__cjson__helpers_8c_1a308f04aae0351a47e78c6974c0ced6e6" kindref="member">JAtoI</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keywordtype">string</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="513"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="514"><highlight class="normal"><sp/><sp/><sp/><sp/><ref refid="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb" kindref="member">JINTEGER</ref><sp/>result<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="515"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">unsigned</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>digit;</highlight></codeline>
+<codeline lineno="516"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>sign;</highlight></codeline>
+<codeline lineno="517"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">while</highlight><highlight class="normal"><sp/>(*</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>==<sp/></highlight><highlight class="charliteral">&apos;<sp/>&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="518"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>+=<sp/>1;</highlight></codeline>
+<codeline lineno="519"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="520"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(*</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>==<sp/></highlight><highlight class="charliteral">&apos;-&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="521"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sign<sp/>=<sp/>1;</highlight></codeline>
+<codeline lineno="522"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>+=<sp/>1;</highlight></codeline>
+<codeline lineno="523"><highlight class="normal"><sp/><sp/><sp/><sp/>}<sp/></highlight><highlight class="keywordflow">else</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="524"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>sign<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="525"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(*</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>==<sp/></highlight><highlight class="charliteral">&apos;+&apos;</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="526"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>+=<sp/>1;</highlight></codeline>
+<codeline lineno="527"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="528"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="529"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(<sp/>;<sp/>;<sp/></highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>+=<sp/>1)<sp/>{</highlight></codeline>
+<codeline lineno="530"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>digit<sp/>=<sp/>*</highlight><highlight class="keywordtype">string</highlight><highlight class="normal"><sp/>-<sp/></highlight><highlight class="charliteral">&apos;0&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="531"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(digit<sp/>&gt;<sp/>9)<sp/>{</highlight></codeline>
+<codeline lineno="532"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">break</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="533"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="534"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/>(10*result)<sp/>+<sp/>digit;</highlight></codeline>
+<codeline lineno="535"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="536"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(sign)<sp/>{</highlight></codeline>
+<codeline lineno="537"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>result<sp/>=<sp/>-result;</highlight></codeline>
+<codeline lineno="538"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="539"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>result;</highlight></codeline>
+<codeline lineno="540"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="541"><highlight class="normal"></highlight></codeline>
+<codeline lineno="542"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="551"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="552"><highlight class="normal"></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<ref refid="n__cjson__helpers_8c_1aa938730e0ffcac86947fc537945e05d3" kindref="member">JAllocString</ref>(uint8_t<sp/>*buffer,<sp/>uint32_t<sp/>len)</highlight></codeline>
+<codeline lineno="553"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="554"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*buf<sp/>=<sp/>_Malloc(len+1);</highlight></codeline>
+<codeline lineno="555"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(buf<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="556"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>NULL;</highlight></codeline>
+<codeline lineno="557"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="558"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(len<sp/>&gt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="559"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>memcpy(buf,<sp/>buffer,<sp/>len);</highlight></codeline>
+<codeline lineno="560"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="561"><highlight class="normal"><sp/><sp/><sp/><sp/>buf[len]<sp/>=<sp/></highlight><highlight class="charliteral">&apos;\0&apos;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="562"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>buf;</highlight></codeline>
+<codeline lineno="563"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="564"><highlight class="normal"></highlight></codeline>
+<codeline lineno="565"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="571"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="572"><highlight class="normal"></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*<ref refid="n__cjson__helpers_8c_1a780bf7071e3133e62794491aa90a7086" kindref="member">JType</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*item)</highlight></codeline>
+<codeline lineno="573"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="574"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="575"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="576"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="577"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(item-&gt;<ref refid="struct_j_1a1bb6f40b6adc8640b4beb11102b21c4b" kindref="member">type</ref><sp/>&amp;<sp/>0xff)<sp/>{</highlight></codeline>
+<codeline lineno="578"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1af3f87fd9d106ef925670d3b0d5303413" kindref="member">JTrue</ref>:</highlight></codeline>
+<codeline lineno="579"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a4c4e8a545657ef9148ffb476b0a93074" kindref="member">JFalse</ref>:</highlight></codeline>
+<codeline lineno="580"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;bool&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="581"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a8be837cc65db843920c5bb2508208b44" kindref="member">JNULL</ref>:</highlight></codeline>
+<codeline lineno="582"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;null&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="583"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a81a6942a78096063c9de50c2b5f756d6" kindref="member">JNumber</ref>:</highlight></codeline>
+<codeline lineno="584"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;number&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="585"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a40980c81dba7b14912dd5643a3a98ce3" kindref="member">JRaw</ref>:</highlight></codeline>
+<codeline lineno="586"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1ab9e8c51828f7f79c9fcf2220d24b03ec" kindref="member">JString</ref>:</highlight></codeline>
+<codeline lineno="587"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;string&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="588"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a45e5b1c47300f1543cfaf97606da88b3" kindref="member">JObject</ref>:</highlight></codeline>
+<codeline lineno="589"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;object&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="590"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a9948138a2efa4524c27f4381b75edf78" kindref="member">JArray</ref>:</highlight></codeline>
+<codeline lineno="591"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;array&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="592"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="593"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="stringliteral">&quot;invalid&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="594"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="595"><highlight class="normal"></highlight></codeline>
+<codeline lineno="596"><highlight class="normal"></highlight><highlight class="comment">//**************************************************************************/</highlight></codeline>
+<codeline lineno="604"><highlight class="comment">/**************************************************************************/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="605"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a0b63b324fbe5e773ca7c137666687b41" kindref="member">JGetType</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*json,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*field)</highlight></codeline>
+<codeline lineno="606"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="607"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(json<sp/>==<sp/>NULL<sp/>||<sp/>field<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="608"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1abb2f3b5f9047911dfa9ae2249ae4ad58" kindref="member">JTYPE_NOT_PRESENT</ref>;</highlight></codeline>
+<codeline lineno="609"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="610"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a39d4dc978cbd0c5d10d287b4ac57b8d1" kindref="member">JGetItemType</ref>(<ref refid="n__cjson_8h_1a4bceae2bd457a4070dd31eb9838d2890" kindref="member">JGetObjectItem</ref>(json,<sp/>field));</highlight></codeline>
+<codeline lineno="611"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="612"><highlight class="normal"></highlight></codeline>
+<codeline lineno="613"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Get<sp/>the</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="614"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a39d4dc978cbd0c5d10d287b4ac57b8d1" kindref="member">JGetItemType</ref>(<ref refid="struct_j" kindref="compound">J</ref><sp/>*item)</highlight></codeline>
+<codeline lineno="615"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="616"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*v;</highlight></codeline>
+<codeline lineno="617"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item<sp/>==<sp/>NULL)<sp/>{</highlight></codeline>
+<codeline lineno="618"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1abb2f3b5f9047911dfa9ae2249ae4ad58" kindref="member">JTYPE_NOT_PRESENT</ref>;</highlight></codeline>
+<codeline lineno="619"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="620"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(item-&gt;<ref refid="struct_j_1a1bb6f40b6adc8640b4beb11102b21c4b" kindref="member">type</ref><sp/>&amp;<sp/>0xff)<sp/>{</highlight></codeline>
+<codeline lineno="621"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1af3f87fd9d106ef925670d3b0d5303413" kindref="member">JTrue</ref>:</highlight></codeline>
+<codeline lineno="622"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a1dde42a8f9d06851b91f73dcadb48067" kindref="member">JTYPE_BOOL_TRUE</ref>;</highlight></codeline>
+<codeline lineno="623"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a4c4e8a545657ef9148ffb476b0a93074" kindref="member">JFalse</ref>:</highlight></codeline>
+<codeline lineno="624"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a33c56f9e059f017b5f73a7207b5f690a" kindref="member">JTYPE_BOOL_FALSE</ref>;</highlight></codeline>
+<codeline lineno="625"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a8be837cc65db843920c5bb2508208b44" kindref="member">JNULL</ref>:</highlight></codeline>
+<codeline lineno="626"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1ab65facde73aab39c8c078c8f328badb0" kindref="member">JTYPE_NULL</ref>;</highlight></codeline>
+<codeline lineno="627"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a81a6942a78096063c9de50c2b5f756d6" kindref="member">JNumber</ref>:</highlight></codeline>
+<codeline lineno="628"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(item-&gt;<ref refid="struct_j_1a55e3d5d8de0cc6aff4d92c1b1228f7ea" kindref="member">valueint</ref><sp/>==<sp/>0<sp/>&amp;&amp;<sp/>item-&gt;<ref refid="struct_j_1ac62cf00a5cadeafc84d8d9fec38cfa50" kindref="member">valuenumber</ref><sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="629"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a34cb28204f46e15dc57b5b82181e2e1d" kindref="member">JTYPE_NUMBER_ZERO</ref>;</highlight></codeline>
+<codeline lineno="630"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="631"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a73cc27bda4c0d44bffca5dbc353e8d65" kindref="member">JTYPE_NUMBER</ref>;</highlight></codeline>
+<codeline lineno="632"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a40980c81dba7b14912dd5643a3a98ce3" kindref="member">JRaw</ref>:</highlight></codeline>
+<codeline lineno="633"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1ab9e8c51828f7f79c9fcf2220d24b03ec" kindref="member">JString</ref>:<sp/>{</highlight></codeline>
+<codeline lineno="634"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>v<sp/>=<sp/>item-&gt;<ref refid="struct_j_1a54f8d507791671d5f5951e8cae540232" kindref="member">valuestring</ref>;</highlight></codeline>
+<codeline lineno="635"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(v<sp/>==<sp/>NULL<sp/>||<sp/>v[0]<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="636"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a88bdd6cb77b65bec7d1a12d512a021a7" kindref="member">JTYPE_STRING_BLANK</ref>;</highlight></codeline>
+<codeline lineno="637"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="638"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>vlen<sp/>=<sp/>strlen(v);</highlight></codeline>
+<codeline lineno="639"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal"><sp/>*endstr;</highlight></codeline>
+<codeline lineno="640"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="note_8h_1a9c9eb17c00d2f5af0a9fd4f3bc43bdc6" kindref="member">JNUMBER</ref><sp/>value<sp/>=<sp/><ref refid="note_8h_1a2cc99bbc9c2ede0b85f310a775960f3f" kindref="member">JAtoN</ref>(v,<sp/>&amp;endstr);</highlight></codeline>
+<codeline lineno="641"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(endstr[0]<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="642"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(value<sp/>==<sp/>0)<sp/>{</highlight></codeline>
+<codeline lineno="643"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a05967fa1a39c824fce62fe31a645ca08" kindref="member">JTYPE_STRING_ZERO</ref>;</highlight></codeline>
+<codeline lineno="644"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="645"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1ab081e08668cdcbaed0bf2506cb666f9b" kindref="member">JTYPE_STRING_NUMBER</ref>;</highlight></codeline>
+<codeline lineno="646"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="647"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(vlen<sp/>==<sp/>4<sp/>&amp;&amp;<sp/>(</highlight></codeline>
+<codeline lineno="648"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(v[0]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;t&apos;</highlight><highlight class="normal"><sp/>||<sp/>v[0]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;T&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="649"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>(v[1]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;r&apos;</highlight><highlight class="normal"><sp/>||<sp/>v[1]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;R&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="650"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>(v[2]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;u&apos;</highlight><highlight class="normal"><sp/>||<sp/>v[2]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;U&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="651"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>(v[3]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;e&apos;</highlight><highlight class="normal"><sp/>||<sp/>v[3]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;E&apos;</highlight><highlight class="normal">)))<sp/>{</highlight></codeline>
+<codeline lineno="652"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1ad5597cf60a093c2986fb5451e69ea43e" kindref="member">JTYPE_STRING_BOOL_TRUE</ref>;</highlight></codeline>
+<codeline lineno="653"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="654"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(vlen<sp/>==<sp/>5<sp/>&amp;&amp;<sp/>(</highlight></codeline>
+<codeline lineno="655"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>(v[0]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;f&apos;</highlight><highlight class="normal"><sp/>||<sp/>v[0]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;F&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="656"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>(v[1]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;a&apos;</highlight><highlight class="normal"><sp/>||<sp/>v[1]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;A&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="657"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>(v[2]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;l&apos;</highlight><highlight class="normal"><sp/>||<sp/>v[2]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;L&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="658"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>(v[3]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;s&apos;</highlight><highlight class="normal"><sp/>||<sp/>v[3]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;S&apos;</highlight><highlight class="normal">)</highlight></codeline>
+<codeline lineno="659"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>&amp;&amp;<sp/>(v[4]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;e&apos;</highlight><highlight class="normal"><sp/>||<sp/>v[4]<sp/>==<sp/></highlight><highlight class="charliteral">&apos;E&apos;</highlight><highlight class="normal">)))<sp/>{</highlight></codeline>
+<codeline lineno="660"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a9db7f1f3c20bfd4aa66d563cde2d3bef" kindref="member">JTYPE_STRING_BOOL_FALSE</ref>;</highlight></codeline>
+<codeline lineno="661"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="662"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1aeba8ddb49a982975aff58fbc5a44b37d" kindref="member">JTYPE_STRING</ref>;</highlight></codeline>
+<codeline lineno="663"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="664"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a45e5b1c47300f1543cfaf97606da88b3" kindref="member">JObject</ref>:</highlight></codeline>
+<codeline lineno="665"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a7f3ba7ec204fbe5e43714b514236a1c7" kindref="member">JTYPE_OBJECT</ref>;</highlight></codeline>
+<codeline lineno="666"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="n__cjson_8h_1a9948138a2efa4524c27f4381b75edf78" kindref="member">JArray</ref>:</highlight></codeline>
+<codeline lineno="667"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a3029c9e9a021cf404acbc2178b94470f" kindref="member">JTYPE_ARRAY</ref>;</highlight></codeline>
+<codeline lineno="668"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="669"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1abb2f3b5f9047911dfa9ae2249ae4ad58" kindref="member">JTYPE_NOT_PRESENT</ref>;</highlight></codeline>
+<codeline lineno="670"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="671"><highlight class="normal"></highlight></codeline>
+<codeline lineno="672"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Coalesce<sp/>to<sp/>the<sp/>base<sp/>types</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="673"><highlight class="normal"></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/><ref refid="n__cjson__helpers_8c_1a791851ed95cd350c24f33af25e7f0af8" kindref="member">JBaseItemType</ref>(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>type)</highlight></codeline>
+<codeline lineno="674"><highlight class="normal">{</highlight></codeline>
+<codeline lineno="675"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(type)<sp/>{</highlight></codeline>
+<codeline lineno="676"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a1dde42a8f9d06851b91f73dcadb48067" kindref="member">JTYPE_BOOL_TRUE</ref>:</highlight></codeline>
+<codeline lineno="677"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a7fd70bf9265ce886f8370b4fb8eebb92" kindref="member">JTYPE_BOOL</ref>;</highlight></codeline>
+<codeline lineno="678"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a33c56f9e059f017b5f73a7207b5f690a" kindref="member">JTYPE_BOOL_FALSE</ref>:</highlight></codeline>
+<codeline lineno="679"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a7fd70bf9265ce886f8370b4fb8eebb92" kindref="member">JTYPE_BOOL</ref>;</highlight></codeline>
+<codeline lineno="680"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a34cb28204f46e15dc57b5b82181e2e1d" kindref="member">JTYPE_NUMBER_ZERO</ref>:</highlight></codeline>
+<codeline lineno="681"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a73cc27bda4c0d44bffca5dbc353e8d65" kindref="member">JTYPE_NUMBER</ref>;</highlight></codeline>
+<codeline lineno="682"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a88bdd6cb77b65bec7d1a12d512a021a7" kindref="member">JTYPE_STRING_BLANK</ref>:</highlight></codeline>
+<codeline lineno="683"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1aeba8ddb49a982975aff58fbc5a44b37d" kindref="member">JTYPE_STRING</ref>;</highlight></codeline>
+<codeline lineno="684"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a05967fa1a39c824fce62fe31a645ca08" kindref="member">JTYPE_STRING_ZERO</ref>:</highlight></codeline>
+<codeline lineno="685"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1aeba8ddb49a982975aff58fbc5a44b37d" kindref="member">JTYPE_STRING</ref>;</highlight></codeline>
+<codeline lineno="686"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="note_8h_1ab081e08668cdcbaed0bf2506cb666f9b" kindref="member">JTYPE_STRING_NUMBER</ref>:</highlight></codeline>
+<codeline lineno="687"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1aeba8ddb49a982975aff58fbc5a44b37d" kindref="member">JTYPE_STRING</ref>;</highlight></codeline>
+<codeline lineno="688"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="note_8h_1ad5597cf60a093c2986fb5451e69ea43e" kindref="member">JTYPE_STRING_BOOL_TRUE</ref>:</highlight></codeline>
+<codeline lineno="689"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1aeba8ddb49a982975aff58fbc5a44b37d" kindref="member">JTYPE_STRING</ref>;</highlight></codeline>
+<codeline lineno="690"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/><ref refid="note_8h_1a9db7f1f3c20bfd4aa66d563cde2d3bef" kindref="member">JTYPE_STRING_BOOL_FALSE</ref>:</highlight></codeline>
+<codeline lineno="691"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/><ref refid="note_8h_1aeba8ddb49a982975aff58fbc5a44b37d" kindref="member">JTYPE_STRING</ref>;</highlight></codeline>
+<codeline lineno="692"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="693"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>type;</highlight></codeline>
+<codeline lineno="694"><highlight class="normal">}</highlight></codeline>
+    </programlisting>
+    <location file="/home/runner/work/note-c/note-c/n_cjson_helpers.c"/>
+  </compounddef>
+</doxygen>
