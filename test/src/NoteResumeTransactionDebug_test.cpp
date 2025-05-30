@@ -27,12 +27,10 @@ namespace
 
 SCENARIO("NoteResumeTransactionDebug")
 {
-    WHEN("NoteResumeTransactionDebug is called")
-    {
+    WHEN("NoteResumeTransactionDebug is called") {
         NoteResumeTransactionDebug();
 
-        THEN("_noteResumeTransactionDebug is called once")
-        {
+        THEN("_noteResumeTransactionDebug is called once") {
             CHECK(_noteResumeTransactionDebug_fake.call_count == 1);
         }
     }
