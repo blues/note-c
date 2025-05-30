@@ -43,7 +43,8 @@ SCENARIO("NoteAuxSerialFlowControl")
                     NoteNewRequest_fake.custom_fake = [](const char *reqType) -> J * {
                         // Create a new JSON object for the request
                         J *request = JCreateObject();
-                        if (request != NULL) {
+                        if (request != NULL)
+                        {
                             JAddStringToObject(request, "req", reqType);
                         }
                         return request;

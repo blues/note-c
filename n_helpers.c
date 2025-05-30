@@ -94,14 +94,11 @@ bool NoteAuxSerialFlowControl(int bufSize, int delayMs)
     bool result = false;
 
     J *req = NoteNewRequest("card.aux.serial");
-    if (req != NULL)
-    {
+    if (req != NULL) {
         JAddIntToObject(req, "max", bufSize - 1);
         JAddIntToObject(req, "ms", delayMs);
         result = NoteRequest(req);
-    }
-    else
-    {
+    } else {
         NOTE_C_LOG_ERROR(ERRSTR("Failed to configure AUX serial flow control", c_mem));
     }
 
