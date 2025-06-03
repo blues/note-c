@@ -111,7 +111,8 @@ void _noteSuspendTransactionDebug(void)
 
  @returns The timeout in milliseconds.
 */
- NOTE_C_STATIC uint32_t _noteTransaction_calculateTimeoutMs(J *req, bool isReq) {
+NOTE_C_STATIC uint32_t _noteTransaction_calculateTimeoutMs(J *req, bool isReq)
+{
     uint32_t result = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
 
     // Interrogate the request
@@ -629,7 +630,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
     // Calculate the transaction timeout based on the parameters in the request.
     const uint32_t transactionTimeoutMs = _noteTransaction_calculateTimeoutMs(req, reqFound);
 
-    #ifndef NOTE_C_LOW_MEM
+#ifndef NOTE_C_LOW_MEM
     /*
     * Add a CRC value, so the request may be retried if it is received
     * in a corrupted state.
@@ -648,16 +649,16 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
     *    1     0      1
     *    1     1    1 (UB)
     */
-   bool crcAddedToRequest = false;
-   if (reqFound) {
-       char *newJson = _crcAdd(json, seqNo);
-       if (newJson != NULL) {
-           _Free(json);
-           json = newJson;
-           crcAddedToRequest = true;
+    bool crcAddedToRequest = false;
+    if (reqFound) {
+        char *newJson = _crcAdd(json, seqNo);
+        if (newJson != NULL) {
+            _Free(json);
+            json = newJson;
+            crcAddedToRequest = true;
         }
     }
-    #endif // !NOTE_C_LOW_MEM
+#endif // !NOTE_C_LOW_MEM
 
     // If we're performing retries, this is where we come back to
     // after a failed transaction.

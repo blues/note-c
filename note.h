@@ -520,6 +520,7 @@ void NoteMD5HashToString(unsigned char *hash, char *strbuf, unsigned long buflen
 
 // High-level helper functions that are both useful and serve to show developers
 // how to call the API
+bool NoteAuxSerialFlowControl(int bufSize, int delayMs);
 uint32_t NoteBinaryCodecDecode(const uint8_t *encData, uint32_t encDataLen,
                                uint8_t *decBuf, uint32_t decBufSize);
 uint32_t NoteBinaryCodecEncode(const uint8_t *decData, uint32_t decDataLen,

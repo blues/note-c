@@ -30,27 +30,22 @@ SCENARIO("_errDoc")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    GIVEN("Memory allocation failure")
-    {
+    GIVEN("Memory allocation failure") {
         JCreateObject_fake.return_val = nullptr;
-        WHEN("_errDoc is called")
-        {
+        WHEN("_errDoc is called") {
             J *result = _errDoc(0, "error");
-            THEN("it returns null")
-            {
+            THEN("it returns null") {
                 CHECK(result == nullptr);
             }
 
-            THEN("NoteDebugWithLevel is called with NOTE_C_LOG_LEVEL_ERROR")
-            {
+            THEN("NoteDebugWithLevel is called with NOTE_C_LOG_LEVEL_ERROR") {
                 CHECK(NoteDebugWithLevel_fake.call_count > 0);
                 CHECK(NoteDebugWithLevel_fake.arg0_val == NOTE_C_LOG_LEVEL_ERROR);
             }
         }
     }
 
-    GIVEN("Memory allocation success")
-    {
+    GIVEN("Memory allocation success") {
         JCreateObject_fake.return_val = (J *)NoteMalloc(sizeof(J));
         REQUIRE(JCreateObject_fake.return_val != nullptr);
         memset(JCreateObject_fake.return_val, 0, sizeof(J));
@@ -59,12 +54,10 @@ SCENARIO("_errDoc")
         WHEN("Transactions have been suppressed") {
             _noteSuspendTransactionDebug();
 
-            AND_WHEN("_errDoc is called")
-            {
+            AND_WHEN("_errDoc is called") {
                 J *result = _errDoc(123, "some error");
 
-                THEN("No errors are logged to the console")
-                {
+                THEN("No errors are logged to the console") {
                     REQUIRE(result != nullptr);
 
                     CHECK(NoteDebugWithLevel_fake.call_count == 0);
@@ -76,19 +69,16 @@ SCENARIO("_errDoc")
             _noteResumeTransactionDebug();
         }
 
-        WHEN("_errDoc is called")
-        {
+        WHEN("_errDoc is called") {
             J *result = _errDoc(123, "some error");
 
-            THEN("it returns an object with a source field of `note-c`")
-            {
+            THEN("it returns an object with a source field of `note-c`") {
                 REQUIRE(result != nullptr);
 
                 CHECK(strcmp(JGetString(result, "src"), "note-c") == 0);
             }
 
-            THEN("The error is logged to the console")
-            {
+            THEN("The error is logged to the console") {
                 CHECK(NoteDebugWithLevel_fake.call_count > 0);
                 CHECK(NoteDebugWithLevel_fake.arg0_val == NOTE_C_LOG_LEVEL_ERROR);
             }
@@ -96,16 +86,13 @@ SCENARIO("_errDoc")
             JDelete(result);
         }
 
-        AND_GIVEN("A specific error message is provided")
-        {
+        AND_GIVEN("A specific error message is provided") {
             const char *errorMessage = "a specific error message";
 
-            WHEN("_errDoc is called")
-            {
+            WHEN("_errDoc is called") {
                 J *result = _errDoc(123, errorMessage);
 
-                THEN("it returns an object with the same error message")
-                {
+                THEN("it returns an object with the same error message") {
                     REQUIRE(result != nullptr);
 
                     CHECK(strcmp(JGetString(result, "err"), errorMessage) == 0);
@@ -114,16 +101,13 @@ SCENARIO("_errDoc")
                 JDelete(result);
             }
 
-            AND_GIVEN("ID parameter value is zero")
-            {
+            AND_GIVEN("ID parameter value is zero") {
                 const int id = 0;
 
-                WHEN("_errDoc is called")
-                {
+                WHEN("_errDoc is called") {
                     J *result = _errDoc(id, errorMessage);
 
-                    THEN("it returns a object without an id field")
-                    {
+                    THEN("it returns a object without an id field") {
                         REQUIRE(result != nullptr);
 
                         CHECK(!JIsPresent(result, "id"));
@@ -133,16 +117,13 @@ SCENARIO("_errDoc")
                 }
             }
 
-            AND_GIVEN("ID parameter value is non-zero")
-            {
+            AND_GIVEN("ID parameter value is non-zero") {
                 const int id = 79;
 
-                WHEN("_errDoc is called")
-                {
+                WHEN("_errDoc is called") {
                     J *result = _errDoc(id, errorMessage);
 
-                    THEN("it returns a object with an id field")
-                    {
+                    THEN("it returns a object with an id field") {
                         REQUIRE(result != nullptr);
 
                         CHECK(JIsPresent(result, "id"));

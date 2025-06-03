@@ -37,8 +37,9 @@ extern getMsFn hookGetMs;
 namespace
 {
 
-char * call1_arg0_copy;  // Required to validate the value of the command
-                         // pipeline request without a terminating newline.
+// Required to validate the value of the command
+// pipeline request without a terminating newline.
+char * call1_arg0_copy;
 
 SCENARIO("NoteRequestResponseJSON")
 {
@@ -173,7 +174,8 @@ SCENARIO("NoteRequestResponseJSON")
             // Capture the value of the request on the second call, because the
             // `_noteJSONTransaction` function will add the missing newline to
             // the end of the request.
-            if (_noteJSONTransaction_fake.call_count == 2) {
+            if (_noteJSONTransaction_fake.call_count == 2)
+            {
                 call1_arg0_copy = (char *)malloc(reqLen + 1);
                 strncpy(call1_arg0_copy, request, reqLen);
                 call1_arg0_copy[reqLen] = '\0';
@@ -492,7 +494,8 @@ SCENARIO("NoteRequestResponseJSON")
                     // Allow the first seventeen calls to malloc to succeed for
                     // JParse(6), JCreateObject(9) and JPrintUnformatted(2), but
                     // fail the eighteenth call.
-                    if (NoteMalloc_fake.call_count > 17) {
+                    if (NoteMalloc_fake.call_count > 17)
+                    {
                         return NULL;
                     }
                     return malloc(size);
