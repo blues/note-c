@@ -233,7 +233,7 @@ jobs:
           fi
 
           # For now, we're hardcoding the Notestation to
-          # los-angeles-notestation-1, which is the only one we've set up to run
+          # barcelona-notestation-1, which is the only one we've set up to run
           # these tests. The --ready-file option creates a "ready" file at the
           # given path once the notestation client is done reserving the
           # notestation and, if relevant, the Notecard firmware upgrade is
@@ -243,7 +243,7 @@ jobs:
           READY_FILE=/tmp/ns_client_ready
           args+=(
             --mcu-debug
-            --notestation los-angeles-notestation-1
+            --notestation barcelona-notestation-1
             --work-dir /tmp
             --ready-file $READY_FILE
           )
