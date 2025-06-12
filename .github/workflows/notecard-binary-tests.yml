@@ -4,10 +4,11 @@ on:
   pull_request:
     branches: [ master ]
   workflow_dispatch:
-    firmware_s3_uri:
-      description: 'S3 URI for Notecard firmware to sideload before running the tests. Special value "nightly" downloads the latest nightly firmware. If not given, tests will run using whatever firmware is currently installed.'
-      type: string
-      default: ''
+    inputs:
+      firmware_s3_uri:
+        description: 'S3 URI for Notecard firmware to sideload before running the tests. Special value "nightly" downloads the latest nightly firmware. If not given, tests will run using whatever firmware is currently installed.'
+        type: string
+        default: ''
   schedule:
     # Run nightly. * is a special character in YAML so you have to quote this
     # string.
