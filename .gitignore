@@ -13,3 +13,4 @@ settings.json
 CMakeFiles/
 CMakeCache.txt
 cppcheck_output.txt
+scancode_console_output.txt
