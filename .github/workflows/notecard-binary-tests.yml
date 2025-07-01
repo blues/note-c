@@ -274,6 +274,7 @@ jobs:
               if [ $elapsed -ge $timeout ]; then
                   echo "Timeout reached: $READY_FILE did not appear."
                   kill $PID 2>/dev/null
+                  echo "$(cat card_client.log)"
                   exit 1
               fi
           done

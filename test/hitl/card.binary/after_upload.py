@@ -41,7 +41,7 @@ def after_upload(source, target, env):
     # test step: "device reports readiness to read but returned no data (device
     # disconnected or multiple access # on port?)" Not totally sure why, but
     # maybe this gives the OS a chance to cleanup anything using the test port.
-    time.sleep(0.3)
+    time.sleep(3)
 
 
 env.AddPostAction("upload", after_upload)
