@@ -21,6 +21,8 @@ bool set_aux_serial_baudrate(size_t baudrate, NotecardInterface nif)
     J* req = NoteNewRequest("card.aux.serial");
     JAddStringToObject(req, "mode", "req");
     JAddNumberToObject(req, "rate", baudrate);
+    JAddNumberToObject(req, "max", SERIAL_RX_BUFFER_SIZE-1);
+    JAddNumberToObject(req, "ms", 1);
     J* rsp = NoteRequestResponseWithRetry(req, 10);
     bool success = false;
     if (rsp==nullptr) {
