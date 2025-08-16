@@ -17,7 +17,7 @@
 static const int RETRY_DELAY_MS = 500;
 
 // A value that optionally overrides CARD_INTER_TRANSACTION_TIMEOUT_SEC
-static uint32_t cardTransactionTimeoutOverrideSecs = 0;
+uint32_t cardTransactionTimeoutOverrideSecs = 0;
 
 // For flow tracing
 static int suppressShowTransactions = 0;
