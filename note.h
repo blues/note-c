@@ -246,6 +246,7 @@ void NoteResetRequired(void);
 #define NoteGetBody(a) JGetObject(a, "body")
 J *NoteNewRequest(const char *request);
 J *NoteNewCommand(const char *request);
+uint32_t NoteRequestSetTimeout(uint32_t overrideSecsOrZeroForDefault);
 J *NoteRequestResponse(J *req);
 J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds);
 char * NoteRequestResponseJSON(const char *reqJSON);
