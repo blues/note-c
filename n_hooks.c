@@ -170,6 +170,12 @@ NOTE_C_STATIC i2cTransmitFn hookI2CTransmit = NULL;
 NOTE_C_STATIC i2cReceiveFn hookI2CReceive = NULL;
 //**************************************************************************/
 /*!
+  @brief  Hook for a heartbeat notification
+*/
+/**************************************************************************/
+NOTE_C_STATIC heartbeatFn hookHeartbeat = NULL;
+//**************************************************************************/
+/*!
   @brief Variable used to determine the runtime logging level
 */
 /**************************************************************************/
@@ -306,6 +312,19 @@ void NoteSetFnDebugOutput(debugOutputFn fn)
 {
     _LockNote();
     hookDebugOutput = fn;
+    _UnlockNote();
+}
+
+//**************************************************************************/
+/*!
+  @brief  Set the heartbeat function
+  @param   fn  A function pointer to call for heart beat notifications.
+*/
+/**************************************************************************/
+void NoteSetFnHeartbeat(heartbeatFn fn)
+{
+    _LockNote();
+    hookHeartbeat = fn;
     _UnlockNote();
 }
 
@@ -785,6 +804,22 @@ void _noteUnlockNote(void)
     if (hookUnlockNote != NULL) {
         hookUnlockNote();
     }
+}
+
+//**************************************************************************/
+/*!
+  @brief  Call a heartbeat function if registered
+  @param   heartbeatJson Pointer to null-terminated heartbeat Json string.
+  @returns  true to immediately abort the request with this heartbeat JSON,
+			false to continue processing the request.
+*/
+/**************************************************************************/
+bool _noteHeartbeat(const char *heartbeatJson)
+{
+    if (hookHeartbeat != NULL) {
+        return hookHeartbeat(heartbeatJson);
+    }
+    return false;
 }
 
 //**************************************************************************/

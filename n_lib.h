@@ -150,6 +150,10 @@ const char *_noteJSONTransaction(const char *request, size_t reqLen, char **resp
 const char *_noteChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, uint32_t timeoutMs, uint32_t *available);
 const char *_noteChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay);
 bool _noteIsDebugOutputActive(void);
+bool _noteHeartbeat(const char *heartbeatJson);
+
+// See if a given null-terminated json string is a heartbeat
+#define isHearbeatJsonResponse(jsonbuf) (strstr((const char *)(jsonbuf), "\"err\":\"{heartbeat}\"") != NULL)
 
 // Utilities
 void _n_htoa32(uint32_t n, char *p);

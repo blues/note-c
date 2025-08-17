@@ -80,19 +80,21 @@ const char *_serialNoteTransaction(const char *request, size_t reqLen, char **re
         return err;
     }
 
-    // Receive the Notecard response
+    // Receive the Notecard response, which is always null-terminated even when partially-received
+    jsonbuf[0] = '\0';
     uint32_t jsonbufLen = 0;
-    do {
+    for (;;) {
         uint32_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
         const char *err = _serialChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
         if (err) {
             _Free(jsonbuf);
-            NOTE_C_LOG_ERROR(ERRSTR("error occured during receive", c_iobad));
+            NOTE_C_LOG_ERROR(err);
             return err;
         }
         jsonbufLen += jsonbufAvailLen;
+        jsonbuf[jsonbufLen] = '\0';
 
         if (available) {
             // When more bytes are available than we have buffer to accommodate
@@ -113,11 +115,30 @@ const char *_serialNoteTransaction(const char *request, size_t reqLen, char **re
             _Free(jsonbuf);
             jsonbuf = jsonbufNew;
             NOTE_C_LOG_DEBUG("additional receive buffer chunk allocated");
+        } else {
+            // See if the fully-received response is a heartbeat
+            if (!isHearbeatJsonResponse(jsonbuf)) {
+                break;
+            }
+            // If requested to abort, use the heartbeat Json as the response
+            if (_noteHeartbeat((const char *)jsonbuf)) {
+                break;
+            }
+            // Reset the buffer and wait for the next response
+            jsonbuf[0] = '\0';
+            jsonbufLen = 0;
+            // Wait until the start of the next message is available, with full caller timeout
+            for (const uint32_t startMs = _GetMs(); !_SerialAvailable(); ) {
+                if (timeoutMs && (_GetMs() - startMs) >= timeoutMs) {
+                    NOTE_C_LOG_DEBUG(ERRSTR("reply to request didn't arrive from module in time", c_iotimeout));
+                    return ERRSTR("transaction timeout {io}", c_iotimeout);
+                }
+                if (!cardTurboIO) {
+                    _DelayMs(10);
+                }
+            }
         }
-    } while (available);
-
-    // Null-terminate it, using the +1 space that we'd allocated in the buffer
-    jsonbuf[jsonbufLen] = '\0';
+    }
 
     // Return it
     *response = (char *)jsonbuf;

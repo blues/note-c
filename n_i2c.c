@@ -125,9 +125,10 @@ const char *_i2cNoteTransaction(const char *request, size_t reqLen, char **respo
         }
     }
 
-    // Receive the Notecard response
+    // Receive the Notecard response, which is always null-terminated even when partially-received
+    jsonbuf[0] = '\0';
     uint32_t jsonbufLen = 0;
-    do {
+    for (;;) {
         uint32_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
@@ -136,11 +137,12 @@ const char *_i2cNoteTransaction(const char *request, size_t reqLen, char **respo
             if (jsonbuf) {
                 _Free(jsonbuf);
             }
-            NOTE_C_LOG_ERROR(ERRSTR("error occured during receive", c_iobad));
+            NOTE_C_LOG_ERROR(err);
             _UnlockI2C();
             return err;
         }
         jsonbufLen += jsonbufAvailLen;
+        jsonbuf[jsonbufLen] = '\0';
 
         if (available) {
             // When more bytes are available than we have buffer to accommodate
@@ -166,16 +168,34 @@ const char *_i2cNoteTransaction(const char *request, size_t reqLen, char **respo
             }
             jsonbuf = jsonbufNew;
             NOTE_C_LOG_DEBUG("additional receive buffer chunk allocated");
+        } else {
+            // See if the fully-received response is a heartbeat
+            if (!isHearbeatJsonResponse(jsonbuf)) {
+                break;
+            }
+            // If requested to abort, use the heartbeat Json as the response
+            if (_noteHeartbeat((const char *)jsonbuf)) {
+                break;
+            }
+            // Reset the buffer and wait for the next response
+            jsonbuf[0] = '\0';
+            jsonbufLen = 0;
+            // Wait until the start of the next message is available, with full caller timeout
+            uint32_t temp = 0;
+            err = _i2cNoteQueryLength(&temp, timeoutMs);
+            if (err) {
+                NOTE_C_LOG_ERROR(err);
+                if (jsonbuf) {
+                    _Free(jsonbuf);
+                }
+                _UnlockI2C();
+                return err;
+            }
         }
-    } while (available);
+    }
 
     // Done with the bus
     _UnlockI2C();
-
-    // Null-terminate it, using the +1 space that we'd allocated in the buffer
-    if (jsonbuf) {
-        jsonbuf[jsonbufLen] = '\0';
-    }
 
     // Return it
     *response = (char *)jsonbuf;

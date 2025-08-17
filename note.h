@@ -237,6 +237,12 @@ typedef const char * (*i2cReceiveFn) (uint16_t address, uint8_t* rxBuf,
                                       uint16_t rxBufSize, uint32_t *available);
 typedef bool (*txnStartFn) (uint32_t timeoutMs);
 typedef void (*txnStopFn) (void);
+/*!
+ @typedef heartbeatFn
+
+ @brief The type for a heartbeat notification
+ */
+typedef bool (*heartbeatFn) (const char *heartbeatJson);
 
 // External API
 bool NoteReset(void);
@@ -314,6 +320,7 @@ void NoteGetFnI2C(uint32_t *notecardAddr, uint32_t *maxTransmitSize,
 void NoteSetActiveInterface(int interface);
 int NoteGetActiveInterface(void);
 void NoteSetFnDisabled(void);
+void NoteSetFnHeartbeat(heartbeatFn fn);
 void NoteSetI2CAddress(uint32_t i2cAddr);
 void NoteGetI2CAddress(uint32_t *i2cAddr);
 

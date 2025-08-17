@@ -176,9 +176,9 @@ void NoteResumeTransactionDebug(void)
  */
 uint32_t NoteRequestSetTimeout(uint32_t overrideSecsOrZeroForDefault)
 {
-	uint32_t previous = CARD_INTER_TRANSACTION_TIMEOUT_SEC;
-	cardTransactionTimeoutOverrideSecs = overrideSecsOrZeroForDefault;
-	return previous;
+    uint32_t previous = CARD_INTER_TRANSACTION_TIMEOUT_SEC;
+    cardTransactionTimeoutOverrideSecs = overrideSecsOrZeroForDefault;
+    return previous;
 }
 
 /*!
