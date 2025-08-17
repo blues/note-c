@@ -40,7 +40,8 @@ extern "C" {
     @brief  How long to wait for the card for any given transaction.
 */
 /**************************************************************************/
-#define CARD_INTER_TRANSACTION_TIMEOUT_SEC 30
+extern uint32_t cardTransactionTimeoutOverrideSecs;
+#define CARD_INTER_TRANSACTION_TIMEOUT_SEC (cardTransactionTimeoutOverrideSecs == 0 ? 30 : cardTransactionTimeoutOverrideSecs)
 #define CARD_INTRA_TRANSACTION_TIMEOUT_SEC  1
 
 // The notecard is a real-time device that has a fixed size interrupt buffer.
@@ -149,6 +150,10 @@ const char *_noteJSONTransaction(const char *request, size_t reqLen, char **resp
 const char *_noteChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, uint32_t timeoutMs, uint32_t *available);
 const char *_noteChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay);
 bool _noteIsDebugOutputActive(void);
+bool _noteHeartbeat(const char *heartbeatJson);
+
+// See if a given null-terminated json string is a heartbeat
+#define isHearbeatJsonResponse(jsonbuf) (strstr((const char *)(jsonbuf), "\"err\":\"{heartbeat}\"") != NULL)
 
 // Utilities
 void _n_htoa32(uint32_t n, char *p);
