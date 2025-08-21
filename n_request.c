@@ -16,6 +16,9 @@
 
 static const int RETRY_DELAY_MS = 500;
 
+// A value that optionally overrides CARD_INTER_TRANSACTION_TIMEOUT_SEC
+uint32_t cardTransactionTimeoutOverrideSecs = 0;
+
 // For flow tracing
 static int suppressShowTransactions = 0;
 
@@ -158,6 +161,24 @@ void NoteSuspendTransactionDebug(void)
 void NoteResumeTransactionDebug(void)
 {
     _noteResumeTransactionDebug();
+}
+
+/*!
+ @brief Set or clear a request timeout override
+
+ This is for use with transactions such as card.test where only
+ the developer knows how long the transaction should take, based
+ on the nature of the transaction being performed.
+
+ @param overrideSecsOrZeroForDefault The override value
+
+ @returns Previous value that was overriddden
+ */
+uint32_t NoteSetRequestTimeout(uint32_t overrideSecsOrZeroForDefault)
+{
+    uint32_t previous = CARD_INTER_TRANSACTION_TIMEOUT_SEC;
+    cardTransactionTimeoutOverrideSecs = overrideSecsOrZeroForDefault;
+    return previous;
 }
 
 /*!
