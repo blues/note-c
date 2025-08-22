@@ -172,7 +172,7 @@ void NoteResumeTransactionDebug(void)
 
  @param overrideSecsOrZeroForDefault The override value
 
- @returns Previous value that was overriddden
+ @returns Previous value that was overridden
  */
 uint32_t NoteSetRequestTimeout(uint32_t overrideSecsOrZeroForDefault)
 {
