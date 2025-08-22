@@ -40,7 +40,8 @@ extern "C" {
     @brief  How long to wait for the card for any given transaction.
 */
 /**************************************************************************/
-#define CARD_INTER_TRANSACTION_TIMEOUT_SEC 30
+extern uint32_t cardTransactionTimeoutOverrideSecs;
+#define CARD_INTER_TRANSACTION_TIMEOUT_SEC (cardTransactionTimeoutOverrideSecs == 0 ? 30 : cardTransactionTimeoutOverrideSecs)
 #define CARD_INTRA_TRANSACTION_TIMEOUT_SEC  1
 
 // The notecard is a real-time device that has a fixed size interrupt buffer.

@@ -259,6 +259,8 @@ NOTE_C_DEPRECATED void NoteResumeTransactionDebug(void);
 bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel);
 bool NoteRequest(J *req);
 bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds);
+uint32_t NoteSetRequestTimeout(uint32_t overrideSecsOrZeroForDefault);
+
 /*!
  @brief Check if the Notecard response contains an error.
 
