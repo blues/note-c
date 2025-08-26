@@ -89,10 +89,14 @@ const char *_i2cNoteTransaction(const char *request, size_t reqLen, char **respo
     // Lock over the entire transaction
     _LockI2C();
 
-    err = _i2cChunkedTransmit((uint8_t *)request, reqLen, true);
-    if (err) {
-        _UnlockI2C();
-        return err;
+    // Do not attempt to send a zero-length request
+    if (reqLen > 0) {
+        err = _i2cChunkedTransmit((uint8_t *)request, reqLen, true);
+        if (err) {
+            NOTE_C_LOG_ERROR(err);
+            _UnlockI2C();
+            return err;
+        }
     }
 
     // If no reply expected, we're done
@@ -101,6 +105,7 @@ const char *_i2cNoteTransaction(const char *request, size_t reqLen, char **respo
         return NULL;
     }
 
+    // Wait for something to become available
     _delayIO();
 
     // Allocate a buffer for input, noting that we always put the +1 in the
@@ -118,7 +123,7 @@ const char *_i2cNoteTransaction(const char *request, size_t reqLen, char **respo
     if (jsonbufAllocLen) {
         jsonbuf = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
         if (jsonbuf == NULL) {
-            const char *err = ERRSTR("transaction: jsonbuf malloc failed", c_mem);
+            err = ERRSTR("transaction: jsonbuf malloc failed", c_mem);
             NOTE_C_LOG_ERROR(err);
             _UnlockI2C();
             return err;
@@ -131,16 +136,17 @@ const char *_i2cNoteTransaction(const char *request, size_t reqLen, char **respo
         uint32_t jsonbufAvailLen = (jsonbufAllocLen - jsonbufLen);
 
         // Append into the json buffer
-        const char *err = _i2cChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
+        err = _i2cChunkedReceive((uint8_t *)(jsonbuf + jsonbufLen), &jsonbufAvailLen, true, (CARD_INTRA_TRANSACTION_TIMEOUT_SEC * 1000), &available);
         if (err) {
             if (jsonbuf) {
                 _Free(jsonbuf);
             }
-            NOTE_C_LOG_ERROR(ERRSTR("error occured during receive", c_iobad));
+            NOTE_C_LOG_ERROR(ERRSTR(err, c_iobad));
             _UnlockI2C();
             return err;
         }
         jsonbufLen += jsonbufAvailLen;
+        jsonbuf[jsonbufLen] = '\0';
 
         if (available) {
             // When more bytes are available than we have buffer to accommodate
@@ -152,7 +158,7 @@ const char *_i2cNoteTransaction(const char *request, size_t reqLen, char **respo
             jsonbufAllocLen += (ALLOC_CHUNK * ((available / ALLOC_CHUNK) + ((available % ALLOC_CHUNK) > 0)));
             uint8_t *jsonbufNew = (uint8_t *)_Malloc(jsonbufAllocLen + 1);
             if (jsonbufNew == NULL) {
-                const char *err = ERRSTR("transaction: jsonbuf grow malloc failed", c_mem);
+                err = ERRSTR("transaction: jsonbuf grow malloc failed", c_mem);
                 NOTE_C_LOG_ERROR(err);
                 if (jsonbuf) {
                     _Free(jsonbuf);
