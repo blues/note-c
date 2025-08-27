@@ -113,7 +113,7 @@ void _noteSuspendTransactionDebug(void)
  @param isReq Whether the request is a regular request or a command.
 
  @returns The timeout in milliseconds.
-*/
+ */
 NOTE_C_STATIC uint32_t _noteTransaction_calculateTimeoutMs(J *req, bool isReq)
 {
     uint32_t result = (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000);
@@ -686,6 +686,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
     const char *errStr = NULL;
     char *rspJsonStr = NULL;
     J *rsp = NULL;
+    bool isHeartbeat = false;
     for (uint8_t lastRequestRetries = 0; lastRequestRetries <= CARD_REQUEST_RETRIES_ALLOWED; ++lastRequestRetries) {
         // free on retry
         if (rsp != NULL) {
@@ -698,7 +699,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         rsp = NULL;
 
         // Trace request unless suppressed
-        if (suppressShowTransactions == 0) {
+        if (!isHeartbeat && suppressShowTransactions == 0) {
             NOTE_C_LOG_INFO(json);
         }
 
@@ -708,12 +709,20 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         const size_t jsonLen = strlen(json);
         json[jsonLen] = '\n';
 
+        size_t jsonTxLen;
+        if (isHeartbeat) {
+            // Heartbeat responses have no request
+            jsonTxLen = 0;
+        } else {
+            jsonTxLen = (jsonLen + 1);
+        }
+
         // Perform the transaction
         if (cmdFound) {
-            errStr = _Transaction(json, (jsonLen + 1), NULL, transactionTimeoutMs);
+            errStr = _Transaction(json, jsonTxLen, NULL, transactionTimeoutMs);
             // break;  // No response expected for commands and no ability to retry.
         } else {
-            errStr = _Transaction(json, (jsonLen + 1), &rspJsonStr, transactionTimeoutMs);
+            errStr = _Transaction(json, jsonTxLen, &rspJsonStr, transactionTimeoutMs);
         }
 
         // Restore NULL-terminator
@@ -766,12 +775,14 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         // Error types
         bool isBadBin = false;
         bool isIoError = false;
+        isHeartbeat = false;
 
         // Error detection / classification
         rsp = JParse(rspJsonStr);
         if (rsp != NULL) {
             isBadBin = JContainsString(rsp, c_err, c_badbinerr);
             isIoError = JContainsString(rsp, c_err, c_ioerr) && !JContainsString(rsp, c_err, c_unsupported);
+            isHeartbeat = JContainsString(rsp, c_err, c_heartbeat);
         } else {
             // Failed to parse response as JSON
             isIoError = true;
@@ -785,7 +796,13 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         }
 
         // Error handling
-        if (isIoError || isBadBin) {
+        if (isHeartbeat) {
+            // Heartbeat responses are not traditional errors, log and resume waiting
+            _Free(rspJsonStr);
+            NOTE_C_LOG_DEBUG(ERRSTR(JGetString(rsp, c_status), c_heartbeat));
+            --lastRequestRetries; // Heartbeats do not count against retry limit
+            continue;
+        } else if (isIoError || isBadBin) {
             if (rsp != NULL) {
                 NOTE_C_LOG_ERROR(JGetString(rsp, c_err));
             }
