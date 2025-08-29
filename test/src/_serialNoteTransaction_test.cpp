@@ -371,7 +371,7 @@ SCENARIO("_serialNoteTransaction")
 
             // Custom receive function that returns a JSON response
             _serialChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool,
-                    uint32_t, uint32_t *available) -> const char* {
+            uint32_t, uint32_t *available) -> const char* {
                 const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\"}\n";
                 size_t respLen = strlen(testResp);
                 memcpy(buf, testResp, respLen);
@@ -432,7 +432,7 @@ SCENARIO("_serialNoteTransaction")
 
             // Custom receive function that returns a JSON response
             _serialChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool,
-                    uint32_t, uint32_t *available) -> const char* {
+            uint32_t, uint32_t *available) -> const char* {
                 const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\"}\n";
                 size_t respLen = strlen(testResp);
                 memcpy(buf, testResp, respLen);

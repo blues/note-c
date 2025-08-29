@@ -263,23 +263,24 @@ SCENARIO("_i2cNoteTransaction")
         AND_GIVEN("A bytes are available and a heartbeat response") {
             // Set up successful query length response
             _i2cNoteQueryLength_fake.custom_fake = [](uint32_t * available,
-                uint32_t) -> const char* {
-                    *available = 47;  // Small response size
-                    return NULL;
-                };
+            uint32_t) -> const char* {
+                *available = 47;  // Small response size
+                return NULL;
+            };
 
             // Set up successful receive response
             _i2cChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool, uint32_t,
-                uint32_t *available) -> const char* {
-                    const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\"}\n";
-                    size_t respLen = strlen(testResp);
-                    if (*size >= respLen) {
-                        memcpy(buf, testResp, respLen);
-                        *size = respLen;
-                    }
-                    *available = 0;  // No more data available
-                    return NULL;
-                };
+            uint32_t *available) -> const char* {
+                const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\"}\n";
+                size_t respLen = strlen(testResp);
+                if (*size >= respLen)
+                {
+                    memcpy(buf, testResp, respLen);
+                    *size = respLen;
+                }
+                *available = 0;  // No more data available
+                return NULL;
+            };
 
             WHEN("_i2cNoteTransaction is called with a response pointer") {
                 err = _i2cNoteTransaction(req, reqLen, &rsp, timeoutMs);
@@ -326,23 +327,24 @@ SCENARIO("_i2cNoteTransaction")
         AND_GIVEN("A bytes are available and a heartbeat response") {
             // Set up successful query length response
             _i2cNoteQueryLength_fake.custom_fake = [](uint32_t * available,
-                uint32_t) -> const char* {
-                    *available = 48;  // Small response size
-                    return NULL;
-                };
+            uint32_t) -> const char* {
+                *available = 48;  // Small response size
+                return NULL;
+            };
 
             // Set up successful receive response
             _i2cChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool, uint32_t,
-                uint32_t *available) -> const char* {
-                    const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\",}\n";
-                    size_t respLen = strlen(testResp);
-                    if (*size >= respLen) {
-                        memcpy(buf, testResp, respLen);
-                        *size = respLen;
-                    }
-                    *available = 0;  // No more data available
-                    return NULL;
-                };
+            uint32_t *available) -> const char* {
+                const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\",}\n";
+                size_t respLen = strlen(testResp);
+                if (*size >= respLen)
+                {
+                    memcpy(buf, testResp, respLen);
+                    *size = respLen;
+                }
+                *available = 0;  // No more data available
+                return NULL;
+            };
 
             WHEN("_i2cNoteTransaction is called with a response pointer") {
                 err = _i2cNoteTransaction(req, reqLen, &rsp, timeoutMs);

@@ -98,10 +98,12 @@ const char *_noteJSONTransactionHeartbeat(const char *, size_t, char **resp, uin
 }
 
 // Custom fake that returns heartbeat first, then valid response
-class HeartbeatThenValid {
+class HeartbeatThenValid
+{
 public:
     static int call_count;
-    static const char *fake(const char *, size_t, char **resp, uint32_t) {
+    static const char *fake(const char *, size_t, char **resp, uint32_t)
+    {
         call_count++;
         if (call_count == 1) {
             // First call returns heartbeat
@@ -123,15 +125,20 @@ public:
             return NULL;
         }
     }
-    static void reset() { call_count = 0; }
+    static void reset()
+    {
+        call_count = 0;
+    }
 };
 int HeartbeatThenValid::call_count = 0;
 
 // Custom fake that returns multiple heartbeats, then valid response
-class MultipleHeartbeatsThenValid {
+class MultipleHeartbeatsThenValid
+{
 public:
     static int call_count;
-    static const char *fake(const char *, size_t, char **resp, uint32_t) {
+    static const char *fake(const char *, size_t, char **resp, uint32_t)
+    {
         call_count++;
         if (call_count <= 3) {
             // First three calls return heartbeats
@@ -153,7 +160,10 @@ public:
             return NULL;
         }
     }
-    static void reset() { call_count = 0; }
+    static void reset()
+    {
+        call_count = 0;
+    }
 };
 int MultipleHeartbeatsThenValid::call_count = 0;
 
@@ -735,7 +745,8 @@ SCENARIO("NoteTransaction")
         static int heartbeat_call_count = 0;
         _noteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **resp, uint32_t) -> const char * {
             heartbeat_call_count++;
-            if (heartbeat_call_count <= (CARD_REQUEST_RETRIES_ALLOWED + 2)) {
+            if (heartbeat_call_count <= (CARD_REQUEST_RETRIES_ALLOWED + 2))
+            {
                 // Return more heartbeats than the retry limit would normally allow
                 static char heartbeatString[] = "{\"err\": \"{heartbeat}\", \"status\": \"testing stsafe\"}";
                 if (resp) {
@@ -744,7 +755,8 @@ SCENARIO("NoteTransaction")
                     *resp = respBuf;
                 }
                 return NULL;
-            } else {
+            } else
+            {
                 // Finally return valid response
                 static char validString[] = "{ \"success\": true }";
                 if (resp) {
@@ -780,7 +792,8 @@ SCENARIO("NoteTransaction")
         _noteJSONTransaction_fake.custom_fake = [](const char *request, size_t reqLen, char **resp, uint32_t) -> const char * {
             last_request_length = reqLen;
 
-            if (first_call) {
+            if (first_call)
+            {
                 first_call = false;
                 // First call returns heartbeat
                 static char heartbeatString[] = "{\"err\": \"{heartbeat}\", \"status\": \"testing stsafe\"}";
@@ -790,7 +803,8 @@ SCENARIO("NoteTransaction")
                     *resp = respBuf;
                 }
                 return NULL;
-            } else {
+            } else
+            {
                 // Second call should have zero length (heartbeat response)
                 // Verify that the request length is 0 for heartbeat follow-up
                 if (reqLen == 0) {
