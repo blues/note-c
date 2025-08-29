@@ -84,6 +84,89 @@ const char *_noteJSONTransactionNotSupportedError(const char *, size_t, char **r
     return NULL;
 }
 
+const char *_noteJSONTransactionHeartbeat(const char *, size_t, char **resp, uint32_t)
+{
+    static char respString[] = "{\"err\": \"{heartbeat}\", \"status\": \"testing stsafe\"}";
+
+    if (resp) {
+        char* respBuf = reinterpret_cast<char *>(malloc(sizeof(respString)));
+        memcpy(respBuf, respString, sizeof(respString));
+        *resp = respBuf;
+    }
+
+    return NULL;
+}
+
+// Custom fake that returns heartbeat first, then valid response
+class HeartbeatThenValid
+{
+public:
+    static int call_count;
+    static const char *fake(const char *, size_t, char **resp, uint32_t)
+    {
+        call_count++;
+        if (call_count == 1) {
+            // First call returns heartbeat
+            static char heartbeatString[] = "{\"err\": \"{heartbeat}\", \"status\": \"testing stsafe\"}";
+            if (resp) {
+                char* respBuf = reinterpret_cast<char *>(malloc(sizeof(heartbeatString)));
+                memcpy(respBuf, heartbeatString, sizeof(heartbeatString));
+                *resp = respBuf;
+            }
+            return NULL;
+        } else {
+            // Second call returns valid response
+            static char validString[] = "{ \"total\": 1 }";
+            if (resp) {
+                char* respBuf = reinterpret_cast<char *>(malloc(sizeof(validString)));
+                memcpy(respBuf, validString, sizeof(validString));
+                *resp = respBuf;
+            }
+            return NULL;
+        }
+    }
+    static void reset()
+    {
+        call_count = 0;
+    }
+};
+int HeartbeatThenValid::call_count = 0;
+
+// Custom fake that returns multiple heartbeats, then valid response
+class MultipleHeartbeatsThenValid
+{
+public:
+    static int call_count;
+    static const char *fake(const char *, size_t, char **resp, uint32_t)
+    {
+        call_count++;
+        if (call_count <= 3) {
+            // First three calls return heartbeats
+            static char heartbeatString[] = "{\"err\": \"{heartbeat}\", \"status\": \"testing stsafe\"}";
+            if (resp) {
+                char* respBuf = reinterpret_cast<char *>(malloc(sizeof(heartbeatString)));
+                memcpy(respBuf, heartbeatString, sizeof(heartbeatString));
+                *resp = respBuf;
+            }
+            return NULL;
+        } else {
+            // Fourth call returns valid response
+            static char validString[] = "{ \"total\": 42 }";
+            if (resp) {
+                char* respBuf = reinterpret_cast<char *>(malloc(sizeof(validString)));
+                memcpy(respBuf, validString, sizeof(validString));
+                *resp = respBuf;
+            }
+            return NULL;
+        }
+    }
+    static void reset()
+    {
+        call_count = 0;
+    }
+};
+int MultipleHeartbeatsThenValid::call_count = 0;
+
 char * _crcAdd_customFake(char *json, uint16_t seqno)
 {
     // Custom fake implementation for _crcAdd
@@ -611,6 +694,144 @@ SCENARIO("NoteTransaction")
         JDelete(resp);
     }
 #endif // !NOTE_DISABLE_USER_AGENT
+
+    SECTION("Heartbeat error handling - single heartbeat then valid response") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        HeartbeatThenValid::reset();
+        _noteJSONTransaction_fake.custom_fake = HeartbeatThenValid::fake;
+
+        J *resp = NoteTransaction(req);
+
+        // Should have been called twice - once for heartbeat, once for valid response
+        REQUIRE(HeartbeatThenValid::call_count == 2);
+        REQUIRE(_noteJSONTransaction_fake.call_count == 2);
+
+        // Final response should be valid
+        CHECK(resp != NULL);
+        CHECK(!NoteResponseError(resp));
+        CHECK(JGetNumber(resp, "total") == 1);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("Heartbeat error handling - multiple heartbeats then valid response") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        MultipleHeartbeatsThenValid::reset();
+        _noteJSONTransaction_fake.custom_fake = MultipleHeartbeatsThenValid::fake;
+
+        J *resp = NoteTransaction(req);
+
+        // Should have been called 4 times - 3 heartbeats + 1 valid response
+        REQUIRE(MultipleHeartbeatsThenValid::call_count == 4);
+        REQUIRE(_noteJSONTransaction_fake.call_count == 4);
+
+        // Final response should be valid
+        CHECK(resp != NULL);
+        CHECK(!NoteResponseError(resp));
+        CHECK(JGetNumber(resp, "total") == 42);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("Heartbeat error handling - heartbeats don't count against retry limit") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+
+        // Create a fake that returns many heartbeats (more than retry limit) then valid response
+        static int heartbeat_call_count = 0;
+        _noteJSONTransaction_fake.custom_fake = [](const char *, size_t, char **resp, uint32_t) -> const char * {
+            heartbeat_call_count++;
+            if (heartbeat_call_count <= (CARD_REQUEST_RETRIES_ALLOWED + 2))
+            {
+                // Return more heartbeats than the retry limit would normally allow
+                static char heartbeatString[] = "{\"err\": \"{heartbeat}\", \"status\": \"testing stsafe\"}";
+                if (resp) {
+                    char* respBuf = reinterpret_cast<char *>(malloc(sizeof(heartbeatString)));
+                    memcpy(respBuf, heartbeatString, sizeof(heartbeatString));
+                    *resp = respBuf;
+                }
+                return NULL;
+            } else
+            {
+                // Finally return valid response
+                static char validString[] = "{ \"success\": true }";
+                if (resp) {
+                    char* respBuf = reinterpret_cast<char *>(malloc(sizeof(validString)));
+                    memcpy(respBuf, validString, sizeof(validString));
+                    *resp = respBuf;
+                }
+                return NULL;
+            }
+        };
+        heartbeat_call_count = 0;
+
+        J *resp = NoteTransaction(req);
+
+        // Should succeed despite exceeding normal retry limit with heartbeats
+        CHECK(resp != NULL);
+        CHECK(!NoteResponseError(resp));
+        CHECK(JGetBool(resp, "success") == true);
+        CHECK(heartbeat_call_count > CARD_REQUEST_RETRIES_ALLOWED);
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("Heartbeat error handling - zero length request sent for heartbeat responses") {
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+
+        // Track the request length passed to _noteJSONTransaction
+        static size_t last_request_length = 0;
+        static bool first_call = true;
+
+        _noteJSONTransaction_fake.custom_fake = [](const char *request, size_t reqLen, char **resp, uint32_t) -> const char * {
+            last_request_length = reqLen;
+
+            if (first_call)
+            {
+                first_call = false;
+                // First call returns heartbeat
+                static char heartbeatString[] = "{\"err\": \"{heartbeat}\", \"status\": \"testing stsafe\"}";
+                if (resp) {
+                    char* respBuf = reinterpret_cast<char *>(malloc(sizeof(heartbeatString)));
+                    memcpy(respBuf, heartbeatString, sizeof(heartbeatString));
+                    *resp = respBuf;
+                }
+                return NULL;
+            } else
+            {
+                // Second call should have zero length (heartbeat response)
+                // Verify that the request length is 0 for heartbeat follow-up
+                if (reqLen == 0) {
+                    // Return valid response for zero-length request
+                    static char validString[] = "{ \"result\": \"ok\" }";
+                    if (resp) {
+                        char* respBuf = reinterpret_cast<char *>(malloc(sizeof(validString)));
+                        memcpy(respBuf, validString, sizeof(validString));
+                        *resp = respBuf;
+                    }
+                }
+                return NULL;
+            }
+        };
+        first_call = true;
+        last_request_length = 0;
+
+        J *resp = NoteTransaction(req);
+
+        // Should succeed and second call should have been with zero length
+        CHECK(resp != NULL);
+        CHECK(!NoteResponseError(resp));
+        CHECK(last_request_length == 0);  // Last call should have been zero-length
+
+        JDelete(req);
+        JDelete(resp);
+    }
 
     RESET_FAKE(_crcAdd);
     RESET_FAKE(_crcError);

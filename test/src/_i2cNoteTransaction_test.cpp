@@ -241,6 +241,143 @@ SCENARIO("_i2cNoteTransaction")
         }
     }
 
+    GIVEN("A request but zero-length") {
+        const size_t reqLen = 0;
+
+        WHEN("_i2cNoteTransaction is called with a NULL response") {
+            err = _i2cNoteTransaction(req, reqLen, NULL, timeoutMs);
+
+            THEN("_i2cChunkedTransmit is not called") {
+                CHECK(_i2cChunkedTransmit_fake.call_count == 0);
+            }
+
+            THEN("No error is returned") {
+                CHECK(err == NULL);
+            }
+
+            THEN("No attempt to query response availability is made") {
+                CHECK(_i2cNoteQueryLength_fake.call_count == 0);
+            }
+        }
+
+        AND_GIVEN("A bytes are available and a heartbeat response") {
+            // Set up successful query length response
+            _i2cNoteQueryLength_fake.custom_fake = [](uint32_t * available,
+            uint32_t) -> const char* {
+                const size_t HEARTBEAT_MESSAGE_SIZE = 47;
+                *available = HEARTBEAT_MESSAGE_SIZE;  // Small response size
+                return NULL;
+            };
+
+            // Set up successful receive response
+            _i2cChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool, uint32_t,
+            uint32_t *available) -> const char* {
+                const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\"}\n";
+                size_t respLen = strlen(testResp);
+                if (*size >= respLen)
+                {
+                    memcpy(buf, testResp, respLen);
+                    *size = respLen;
+                }
+                *available = 0;  // No more data available
+                return NULL;
+            };
+
+            WHEN("_i2cNoteTransaction is called with a response pointer") {
+                err = _i2cNoteTransaction(req, reqLen, &rsp, timeoutMs);
+
+                THEN("_i2cChunkedTransmit is not called") {
+                    CHECK(_i2cChunkedTransmit_fake.call_count == 0);
+                }
+
+                THEN("No error is returned") {
+                    CHECK(err == NULL);
+                }
+
+                THEN("Response is received and processed correctly") {
+                    CHECK(rsp != NULL);
+                    CHECK(strstr(rsp, "{heartbeat}") != NULL);
+                }
+
+                free(rsp);
+            }
+        }
+    }
+
+    // Ensure that req is not dereferenced in the function
+    GIVEN("A NULL request and zero-length") {
+        const char *req = NULL;
+        const size_t reqLen = 0;
+
+        WHEN("_i2cNoteTransaction is called with a NULL response") {
+            err = _i2cNoteTransaction(req, reqLen, NULL, timeoutMs);
+
+            THEN("_i2cChunkedTransmit is not called") {
+                CHECK(_i2cChunkedTransmit_fake.call_count == 0);
+            }
+
+            THEN("No error is returned") {
+                CHECK(err == NULL);
+            }
+
+            THEN("No attempt to query response availability is made") {
+                CHECK(_i2cNoteQueryLength_fake.call_count == 0);
+            }
+        }
+
+        AND_GIVEN("A bytes are available and a heartbeat response") {
+            // Set up successful query length response
+            _i2cNoteQueryLength_fake.custom_fake = [](uint32_t * available,
+            uint32_t) -> const char* {
+                const size_t HEARTBEAT_MESSAGE_SIZE = 47;
+                *available = HEARTBEAT_MESSAGE_SIZE;  // Small response size
+                return NULL;
+            };
+
+            // Set up successful receive response
+            _i2cChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool, uint32_t,
+            uint32_t *available) -> const char* {
+                const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\"}\n";
+                size_t respLen = strlen(testResp);
+                if (*size >= respLen)
+                {
+                    memcpy(buf, testResp, respLen);
+                    *size = respLen;
+                }
+                *available = 0;  // No more data available
+                return NULL;
+            };
+
+            WHEN("_i2cNoteTransaction is called with a response pointer") {
+                err = _i2cNoteTransaction(req, reqLen, &rsp, timeoutMs);
+
+                THEN("_i2cChunkedTransmit is not called") {
+                    CHECK(_i2cChunkedTransmit_fake.call_count == 0);
+                }
+
+                THEN("No error is returned") {
+                    CHECK(err == NULL);
+                }
+
+                THEN("Response is received and processed correctly") {
+                    CHECK(rsp != NULL);
+                    CHECK(strstr(rsp, "{heartbeat}") != NULL);
+                }
+
+                if (rsp) {
+                    free(rsp);
+                }
+            }
+        }
+    }
+
+    // NOTE: We don't test the "zero bytes available" scenario because it's
+    // logically impossible. _i2cNoteQueryLength() has a loop condition
+    // "!(*available)" which means it cannot successfully return with
+    // available=0. If no data is available, the function would either continue
+    // looping until data arrives or timeout with an error. This behavior is
+    // mandatory to ensure a NULL pointer is not dereferenced.
+
     THEN("The request parameter is unchanged") {
         CHECK(strcmp(originalReq, req) == 0);
     }
@@ -256,5 +393,3 @@ SCENARIO("_i2cNoteTransaction")
 }
 
 }
-
-

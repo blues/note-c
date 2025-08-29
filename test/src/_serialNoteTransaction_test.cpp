@@ -102,6 +102,7 @@ SCENARIO("_serialNoteTransaction")
 
     char req[] = "{\"req\": \"note.add\"}\n";
     const uint32_t timeoutMs = CARD_INTER_TRANSACTION_TIMEOUT_SEC;
+    const char *err = NULL;
 
     GIVEN("A valid JSON request C-string and a NULL response pointer") {
         _noteSerialTransmit_fake.custom_fake = _noteSerialTransmitAppend;
@@ -340,6 +341,127 @@ SCENARIO("_serialNoteTransaction")
         }
     }
 
+    GIVEN("A request but zero-length") {
+        const size_t reqLen = 0;
+
+        WHEN("_serialNoteTransaction is called with a NULL response") {
+            err = _serialNoteTransaction(req, reqLen, NULL, timeoutMs);
+
+            THEN("_serialChunkedTransmit is not called") {
+                CHECK(_serialChunkedTransmit_fake.call_count == 0);
+            }
+
+            THEN("No newline is transmitted either") {
+                CHECK(_noteSerialTransmit_fake.call_count == 0);
+            }
+
+            THEN("No error is returned") {
+                CHECK(err == NULL);
+            }
+
+            THEN("No attempt to query response availability is made") {
+                CHECK(_noteSerialAvailable_fake.call_count == 0);
+            }
+        }
+
+        AND_GIVEN("A bytes are available and a heartbeat response") {
+            char* rsp = NULL;
+            NoteMalloc_fake.custom_fake = malloc;
+            _noteSerialAvailable_fake.return_val = true;
+
+            // Custom receive function that returns a JSON response
+            _serialChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool,
+            uint32_t, uint32_t *available) -> const char* {
+                const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\"}\n";
+                size_t respLen = strlen(testResp);
+                memcpy(buf, testResp, respLen);
+                *size = respLen;
+                *available = 0;
+                return NULL;
+            };
+
+            WHEN("_serialNoteTransaction is called with a response pointer") {
+                const char *err = _serialNoteTransaction(req, reqLen, &rsp, timeoutMs);
+
+                THEN("_serialChunkedTransmit is not called") {
+                    CHECK(_serialChunkedTransmit_fake.call_count == 0);
+                }
+
+                THEN("No error is returned") {
+                    CHECK(err == NULL);
+                }
+
+                THEN("Response contains expected content") {
+                    CHECK(rsp != NULL);
+                    CHECK(strstr(rsp, "{heartbeat}") != NULL);
+                }
+
+                free(rsp);
+            }
+        }
+    }
+
+    GIVEN("A NULL request and zero-length") {
+        const char *req = NULL;
+        const size_t reqLen = 0;
+
+        WHEN("_serialNoteTransaction is called with a NULL response") {
+            err = _serialNoteTransaction(req, reqLen, NULL, timeoutMs);
+
+            THEN("_serialChunkedTransmit is not called") {
+                CHECK(_serialChunkedTransmit_fake.call_count == 0);
+            }
+
+            THEN("No newline is transmitted either") {
+                CHECK(_noteSerialTransmit_fake.call_count == 0);
+            }
+
+            THEN("No error is returned") {
+                CHECK(err == NULL);
+            }
+
+            THEN("No attempt to query response availability is made") {
+                CHECK(_noteSerialAvailable_fake.call_count == 0);
+            }
+        }
+
+        AND_GIVEN("A bytes are available and a heartbeat response") {
+            char* rsp = NULL;
+            NoteMalloc_fake.custom_fake = malloc;
+            _noteSerialAvailable_fake.return_val = true;
+
+            // Custom receive function that returns a JSON response
+            _serialChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool,
+            uint32_t, uint32_t *available) -> const char* {
+                const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\"}\n";
+                size_t respLen = strlen(testResp);
+                memcpy(buf, testResp, respLen);
+                *size = respLen;
+                *available = 0;
+                return NULL;
+            };
+
+            WHEN("_serialNoteTransaction is called with a response pointer") {
+                const char *err = _serialNoteTransaction(req, reqLen, &rsp, timeoutMs);
+
+                THEN("_serialChunkedTransmit is not called") {
+                    CHECK(_serialChunkedTransmit_fake.call_count == 0);
+                }
+
+                THEN("No error is returned") {
+                    CHECK(err == NULL);
+                }
+
+                THEN("Response contains expected content") {
+                    CHECK(rsp != NULL);
+                    CHECK(strstr(rsp, "{heartbeat}") != NULL);
+                }
+
+                free(rsp);
+            }
+        }
+    }
+
     RESET_FAKE(NoteMalloc);
     RESET_FAKE(_noteSerialAvailable);
     RESET_FAKE(_noteSerialTransmit);
@@ -350,5 +472,3 @@ SCENARIO("_serialNoteTransaction")
 }
 
 }
-
-
