@@ -23,9 +23,9 @@
   @param   request A string containing the JSON request object, which MUST BE
             terminated with a newline character.
   @param   reqLen the string length of the JSON request.
-  @param   response [out] A c-string buffer that will contain the newline ('\n')
-            terminated JSON response from the Notercard. If NULL, no response
-            will be captured.
+  @param   response [out] A pointer to a c-string buffer that will contain the
+            newline ('\n') terminated JSON response from the Notercard. If NULL,
+            no response will be captured.
   @param   timeoutMs The maximum amount of time, in milliseconds, to wait
             for data to arrive. Passing zero (0) disables the timeout.
 

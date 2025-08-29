@@ -40,7 +40,9 @@ NOTE_C_STATIC void _delayIO(void)
 
   @details  It is necessary to send a priming I2C transaction to understand
              the amount of data the Notecard is prepared to send before an
-             I2C read request can be issued.
+             I2C read request can be issued. This function will continue to
+             query the Notecard until data becomes available (_I2CReceive()
+             returns a value greater than 0) or the timeout has elapsed.
 */
 /**************************************************************************/
 NOTE_C_STATIC const char * _i2cNoteQueryLength(uint32_t * available,
@@ -73,9 +75,9 @@ NOTE_C_STATIC const char * _i2cNoteQueryLength(uint32_t * available,
   @param   request A string containing the JSON request object, which MUST BE
             terminated with a newline character.
   @param   reqLen the string length of the JSON request.
-  @param   response [out] A c-string buffer that will contain the newline ('\n')
-            terminated JSON response from the Notercard. If NULL, no response
-            will be captured.
+  @param   response [out] A pointer to a c-string buffer that will contain the
+            newline ('\n') terminated JSON response from the Notercard. If NULL,
+            no response will be captured.
   @param   timeoutMs The maximum amount of time, in milliseconds, to wait
             for data to arrive. Passing zero (0) disables the timeout.
 
