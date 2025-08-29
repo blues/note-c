@@ -264,7 +264,8 @@ SCENARIO("_i2cNoteTransaction")
             // Set up successful query length response
             _i2cNoteQueryLength_fake.custom_fake = [](uint32_t * available,
             uint32_t) -> const char* {
-                *available = 47;  // Small response size
+                const size_t HEARTBEAT_MESSAGE_SIZE = 47;
+                *available = HEARTBEAT_MESSAGE_SIZE;  // Small response size
                 return NULL;
             };
 
@@ -328,14 +329,15 @@ SCENARIO("_i2cNoteTransaction")
             // Set up successful query length response
             _i2cNoteQueryLength_fake.custom_fake = [](uint32_t * available,
             uint32_t) -> const char* {
-                *available = 48;  // Small response size
+                const size_t HEARTBEAT_MESSAGE_SIZE = 47;
+                *available = HEARTBEAT_MESSAGE_SIZE;  // Small response size
                 return NULL;
             };
 
             // Set up successful receive response
             _i2cChunkedReceive_fake.custom_fake = [](uint8_t *buf, uint32_t *size, bool, uint32_t,
             uint32_t *available) -> const char* {
-                const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\",}\n";
+                const char testResp[] = "{\"err\":{heartbeat},\"status\":\"testing stsafe\"}\n";
                 size_t respLen = strlen(testResp);
                 if (*size >= respLen)
                 {
