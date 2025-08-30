@@ -114,11 +114,89 @@ extern "C" {
 // Notecard hook functions
 
 /*!
- @typedef mutexFn
+ @typedef delayMsFn
 
- @brief The type for the various mutex (i.e. lock/unlock) hooks.
+ @brief The type for the millisecond delay hook.
+
+ @param ms The number of milliseconds to delay for.
  */
-typedef void (*mutexFn) (void);
+typedef void (*delayMsFn) (uint32_t ms);
+
+/*!
+ @typedef freeFn
+
+ @brief The type for the memory freeing hook.
+
+ @param mem Pointer to the memory to free.
+ */
+typedef void (*freeFn) (void * mem);
+
+/*!
+ @typedef getMsFn
+
+ @brief The type for the millisecond counter hook.
+
+ @returns The value of the millisecond counter.
+ */
+typedef uint32_t (*getMsFn) (void);
+
+typedef size_t (*debugOutputFn) (const char *text);
+
+/*!
+ @typedef heartbeatFn
+
+ @brief The type for a heartbeat notification
+
+ @param heartbeatJson The heartbeat status received
+ @param context User context passed to the heartbeat function
+ */
+typedef void (*heartbeatFn) (const char *heartbeatJson, void *context);
+
+/*!
+ @typedef i2cReceiveFn
+
+ @brief The type for the I2C receive hook.
+
+ This hook is used to receive a buffer of bytes from the Notecard.
+
+ @param address The I2C address of the Notecard sending the data to receive.
+ @param rxBuf A buffer to hold the data received from the Notecard.
+ @param rxBufSize The size, in bytes, of rxBuf.
+ @param available The number of bytes remaining to be received, if any.
+
+ @returns NULL on success and an error string on failure.
+ */
+typedef const char * (*i2cReceiveFn) (uint16_t address, uint8_t* rxBuf,
+                                      uint16_t rxBufSize, uint32_t *available);
+
+/*!
+ @typedef i2cResetFn
+
+ @brief The type for the I2C reset hook.
+
+ This hook is used to reset the I2C peripheral used to communicate with the
+ Notecard.
+
+ @param address The I2C address of the Notecard.
+ */
+typedef bool (*i2cResetFn) (uint16_t address);
+
+/*!
+ @typedef i2cTransmitFn
+
+ @brief The type for the I2C transmit hook.
+
+ This hook is used to send a buffer of bytes to the Notecard.
+
+ @param address The I2C address of the Notecard to transmit the data to.
+ @param txBuf A buffer of bytes to transmit to the Notecard.
+ @param txBufSize The size, in bytes, of `txBuf`.
+
+ @returns NULL on success and an error string on failure.
+ */
+typedef const char * (*i2cTransmitFn) (uint16_t address, uint8_t* txBuf,
+                                       uint16_t txBufSize);
+
 /*!
  @typedef mallocFn
 
@@ -129,53 +207,14 @@ typedef void (*mutexFn) (void);
  @returns A pointer to the newly allocated memory or NULL on failure.
  */
 typedef void * (*mallocFn) (size_t size);
-/*!
- @typedef freeFn
-
- @brief The type for the memory freeing hook.
-
- @param mem Pointer to the memory to free.
- */
-typedef void (*freeFn) (void * mem);
-/*!
- @typedef delayMsFn
-
- @brief The type for the millisecond delay hook.
-
- @param ms The number of milliseconds to delay for.
- */
-typedef void (*delayMsFn) (uint32_t ms);
-/*!
- @typedef getMsFn
-
- @brief The type for the millisecond counter hook.
-
- @returns The value of the millisecond counter.
- */
-typedef uint32_t (*getMsFn) (void);
-typedef size_t (*debugOutputFn) (const char *text);
 
 /*!
- @typedef serialResetFn
+ @typedef mutexFn
 
- @brief The type for the serial reset hook.
-
- This hook is used to reset the serial peripheral used to communicate with the
- Notecard.
-
- @returns `true` on success and `false` on failure.
+ @brief The type for the various mutex (i.e. lock/unlock) hooks.
  */
-typedef bool (*serialResetFn) (void);
-/*!
- @typedef serialTransmitFn
+typedef void (*mutexFn) (void);
 
- @brief The type for the serial transmit hook.
-
- @param txBuf A buffer of bytes to transmit to the Notecard.
- @param txBufSize The size, in bytes, of `txBuf`.
- @param flush If true, flush the serial peripheral's transmit buffer.
- */
-typedef void (*serialTransmitFn) (uint8_t *txBuf, size_t txBufSize, bool flush);
 /*!
  @typedef serialAvailableFn
 
@@ -193,48 +232,30 @@ typedef bool (*serialAvailableFn) (void);
  @return The received byte.
  */
 typedef char (*serialReceiveFn) (void);
+
 /*!
- @typedef i2cResetFn
+ @typedef serialResetFn
 
- @brief The type for the I2C reset hook.
+ @brief The type for the serial reset hook.
 
- This hook is used to reset the I2C peripheral used to communicate with the
+ This hook is used to reset the serial peripheral used to communicate with the
  Notecard.
 
- @param address The I2C address of the Notecard.
+ @returns `true` on success and `false` on failure.
  */
-typedef bool (*i2cResetFn) (uint16_t address);
+typedef bool (*serialResetFn) (void);
+
 /*!
- @typedef i2cTransmitFn
+ @typedef serialTransmitFn
 
- @brief The type for the I2C transmit hook.
+ @brief The type for the serial transmit hook.
 
- This hook is used to send a buffer of bytes to the Notecard.
-
- @param address The I2C address of the Notecard to transmit the data to.
  @param txBuf A buffer of bytes to transmit to the Notecard.
  @param txBufSize The size, in bytes, of `txBuf`.
-
- @returns NULL on success and an error string on failure.
+ @param flush If true, flush the serial peripheral's transmit buffer.
  */
-typedef const char * (*i2cTransmitFn) (uint16_t address, uint8_t* txBuf,
-                                       uint16_t txBufSize);
-/*!
- @typedef i2cReceiveFn
+typedef void (*serialTransmitFn) (uint8_t *txBuf, size_t txBufSize, bool flush);
 
- @brief The type for the I2C receive hook.
-
- This hook is used to receive a buffer of bytes from the Notecard.
-
- @param address The I2C address of the Notecard sending the data to receive.
- @param rxBuf A buffer to hold the data received from the Notecard.
- @param rxBufSize The size, in bytes, of rxBuf.
- @param available The number of bytes remaining to be received, if any.
-
- @returns NULL on success and an error string on failure.
- */
-typedef const char * (*i2cReceiveFn) (uint16_t address, uint8_t* rxBuf,
-                                      uint16_t rxBufSize, uint32_t *available);
 typedef bool (*txnStartFn) (uint32_t timeoutMs);
 typedef void (*txnStopFn) (void);
 
@@ -281,6 +302,8 @@ bool NoteErrorContains(const char *errstr, const char *errtype);
 void NoteErrorClean(char *errbuf);
 void NoteSetFnDebugOutput(debugOutputFn fn);
 void NoteGetFnDebugOutput(debugOutputFn *fn);
+void NoteSetFnHeartbeat(heartbeatFn fn, void *context);
+void NoteGetFnHeartbeat(heartbeatFn *fn, void **context);
 void NoteSetFnTransaction(txnStartFn startFn, txnStopFn stopFn);
 void NoteGetFnTransaction(txnStartFn *startFn, txnStopFn *stopFn);
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn,

@@ -170,6 +170,13 @@ NOTE_C_STATIC i2cTransmitFn hookI2CTransmit = NULL;
 NOTE_C_STATIC i2cReceiveFn hookI2CReceive = NULL;
 //**************************************************************************/
 /*!
+  @brief  Hook for a heartbeat notification
+*/
+/**************************************************************************/
+NOTE_C_STATIC heartbeatFn hookHeartbeat = NULL;
+NOTE_C_STATIC void *hookHeartbeatContext = NULL;
+//**************************************************************************/
+/*!
   @brief Variable used to determine the runtime logging level
 */
 /**************************************************************************/
@@ -293,6 +300,21 @@ void NoteSetFn(mallocFn mallocHook, freeFn freeHook, delayMsFn delayMsHook,
     hookFree = freeHook;
     hookDelayMs = delayMsHook;
     hookGetMs = getMsHook;
+    _UnlockNote();
+}
+
+//**************************************************************************/
+/*!
+  @brief  Set the heartbeat function
+  @param   fn  A function pointer to call for heart beat notifications.
+  @param   context  User context to pass to the heartbeat function.
+*/
+/**************************************************************************/
+void NoteSetFnHeartbeat(heartbeatFn fn, void *context)
+{
+    _LockNote();
+    hookHeartbeat = fn;
+    hookHeartbeatContext = context;
     _UnlockNote();
 }
 
@@ -765,6 +787,19 @@ void NoteUnlockI2C(void)
 
 //**************************************************************************/
 /*!
+  @brief  Call a heartbeat function if registered
+  @param   heartbeatJson Pointer to null-terminated heartbeat Json string.
+*/
+/**************************************************************************/
+void _noteHeartbeat(const char *heartbeatJson)
+{
+    if (hookHeartbeat != NULL) {
+        hookHeartbeat(heartbeatJson, hookHeartbeatContext);
+    }
+}
+
+//**************************************************************************/
+/*!
   @brief  Lock the Notecard using the platform-specific hook.
 */
 /**************************************************************************/
@@ -820,6 +855,21 @@ void NoteGetFnDebugOutput(debugOutputFn *fn)
 {
     if (fn != NULL) {
         *fn = hookDebugOutput;
+    }
+}
+
+/*!
+ @brief Get the user-defined heartbeat function.
+ @param fn Pointer to store the heartbeat function pointer.
+ @param context Pointer to store the heartbeat function context.
+ */
+void NoteGetFnHeartbeat(heartbeatFn *fn, void **context)
+{
+    if (fn != NULL) {
+        *fn = hookHeartbeat;
+    }
+    if (context != NULL) {
+        *context = hookHeartbeatContext;
     }
 }
 
