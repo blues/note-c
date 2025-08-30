@@ -799,7 +799,9 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         if (isHeartbeat) {
             // Heartbeat responses are not traditional errors, log and resume waiting
             _Free(rspJsonStr);
-            NOTE_C_LOG_DEBUG(ERRSTR(JGetString(rsp, c_status), c_heartbeat));
+            const char * const status = JGetString(rsp, c_status);
+            NOTE_C_LOG_DEBUG(ERRSTR(status, c_heartbeat));
+            _noteHeartbeat(status);
             --lastRequestRetries; // Heartbeats do not count against retry limit
             continue;
         } else if (isIoError || isBadBin) {
