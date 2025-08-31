@@ -834,7 +834,7 @@ SCENARIO("NoteTransaction")
     }
 
     SECTION("Heartbeat callback integration - callback invoked on heartbeat response") {
-        static char receivedHeartbeat[15];
+        static char receivedHeartbeat[sizeof("testing stsafe")];
         static void *receivedContext = nullptr;
         static int callbackCount = 0;
         static int testContext = 42;
@@ -877,7 +877,7 @@ SCENARIO("NoteTransaction")
     }
 
     SECTION("Heartbeat callback integration - multiple heartbeats invoke callback multiple times") {
-        static char lastReceivedHeartbeat[15];
+        static char lastReceivedHeartbeat[sizeof("testing stsafe")];
         static void *lastReceivedContext = nullptr;
         static int callbackCount = 0;
         static int testContext = 99;
@@ -941,7 +941,7 @@ SCENARIO("NoteTransaction")
     }
 
     SECTION("Heartbeat callback integration - callback with NULL context") {
-        static char receivedHeartbeat[15];
+        static char receivedHeartbeat[sizeof("testing stsafe")];
         static void *receivedContext = reinterpret_cast<void*>(0xDEADBEEF); // Non-null sentinel
         static int callbackCount = 0;
 
