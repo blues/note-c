@@ -840,7 +840,7 @@ SCENARIO("NoteTransaction")
         static int testContext = 42;
 
         auto heartbeatCallback = [](const char *heartbeatJson, void *context) {
-            strncpy(receivedHeartbeat, heartbeatJson, sizeof(receivedHeartbeat) - 1);
+            strlcpy(receivedHeartbeat, heartbeatJson, sizeof(receivedHeartbeat) - 1);
             receivedContext = context;
             callbackCount++;
         };
@@ -883,7 +883,8 @@ SCENARIO("NoteTransaction")
         static int testContext = 99;
 
         auto heartbeatCallback = [](const char *heartbeatJson, void *context) {
-            strncpy(lastReceivedHeartbeat, heartbeatJson, sizeof(lastReceivedHeartbeat) - 1);
+            strlcpy(lastReceivedHeartbeat, heartbeatJson, sizeof(lastReceivedHeartbeat) - 1);
+
             lastReceivedContext = context;
             callbackCount++;
         };
@@ -945,7 +946,7 @@ SCENARIO("NoteTransaction")
         static int callbackCount = 0;
 
         auto heartbeatCallback = [](const char *heartbeatJson, void *context) {
-            strncpy(receivedHeartbeat, heartbeatJson, sizeof(receivedHeartbeat) - 1);
+            strlcpy(receivedHeartbeat, heartbeatJson, sizeof(receivedHeartbeat) - 1);
             receivedContext = context;
             callbackCount++;
         };
