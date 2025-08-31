@@ -833,6 +833,154 @@ SCENARIO("NoteTransaction")
         JDelete(resp);
     }
 
+    SECTION("Heartbeat callback integration - callback invoked on heartbeat response") {
+        static char receivedHeartbeat[15];
+        static void *receivedContext = nullptr;
+        static int callbackCount = 0;
+        static int testContext = 42;
+
+        auto heartbeatCallback = [](const char *heartbeatJson, void *context) {
+            strncpy(receivedHeartbeat, heartbeatJson, sizeof(receivedHeartbeat) - 1);
+            receivedContext = context;
+            callbackCount++;
+        };
+
+        // Reset callback state
+        receivedHeartbeat[0] = '\0';
+        receivedContext = nullptr;
+        callbackCount = 0;
+
+        // Set the heartbeat callback
+        NoteSetFnHeartbeat(heartbeatCallback, &testContext);
+
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        HeartbeatThenValid::reset();
+        _noteJSONTransaction_fake.custom_fake = HeartbeatThenValid::fake;
+
+        J *resp = NoteTransaction(req);
+
+        // Verify transaction succeeded
+        CHECK(resp != NULL);
+        CHECK(!NoteResponseError(resp));
+
+        // Verify callback was invoked exactly once for the heartbeat
+        CHECK(callbackCount == 1);
+        CHECK(receivedHeartbeat != nullptr);
+        CHECK(strcmp(receivedHeartbeat, "testing stsafe") == 0);
+        CHECK(receivedContext == &testContext);
+
+        // Clean up callback
+        NoteSetFnHeartbeat(NULL, NULL);
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("Heartbeat callback integration - multiple heartbeats invoke callback multiple times") {
+        static char lastReceivedHeartbeat[15];
+        static void *lastReceivedContext = nullptr;
+        static int callbackCount = 0;
+        static int testContext = 99;
+
+        auto heartbeatCallback = [](const char *heartbeatJson, void *context) {
+            strncpy(lastReceivedHeartbeat, heartbeatJson, sizeof(lastReceivedHeartbeat) - 1);
+            lastReceivedContext = context;
+            callbackCount++;
+        };
+
+        // Reset callback state
+        lastReceivedHeartbeat[0] = '\0';
+        lastReceivedContext = nullptr;
+        callbackCount = 0;
+
+        // Set the heartbeat callback
+        NoteSetFnHeartbeat(heartbeatCallback, &testContext);
+
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        MultipleHeartbeatsThenValid::reset();
+        _noteJSONTransaction_fake.custom_fake = MultipleHeartbeatsThenValid::fake;
+
+        J *resp = NoteTransaction(req);
+
+        // Verify transaction succeeded
+        CHECK(resp != NULL);
+        CHECK(!NoteResponseError(resp));
+
+        // Verify callback was invoked exactly 3 times (once per heartbeat)
+        CHECK(callbackCount == 3);
+        CHECK(lastReceivedHeartbeat != nullptr);
+        CHECK(strcmp(lastReceivedHeartbeat, "testing stsafe") == 0);
+        CHECK(lastReceivedContext == &testContext);
+
+        // Clean up callback
+        NoteSetFnHeartbeat(NULL, NULL);
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("Heartbeat callback integration - no callback when none registered") {
+        // Ensure no callback is registered
+        NoteSetFnHeartbeat(NULL, NULL);
+
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        HeartbeatThenValid::reset();
+        _noteJSONTransaction_fake.custom_fake = HeartbeatThenValid::fake;
+
+        // This should not crash even though there's no callback
+        J *resp = NoteTransaction(req);
+
+        // Verify transaction succeeded
+        CHECK(resp != NULL);
+        CHECK(!NoteResponseError(resp));
+
+        JDelete(req);
+        JDelete(resp);
+    }
+
+    SECTION("Heartbeat callback integration - callback with NULL context") {
+        static char receivedHeartbeat[15];
+        static void *receivedContext = reinterpret_cast<void*>(0xDEADBEEF); // Non-null sentinel
+        static int callbackCount = 0;
+
+        auto heartbeatCallback = [](const char *heartbeatJson, void *context) {
+            strncpy(receivedHeartbeat, heartbeatJson, sizeof(receivedHeartbeat) - 1);
+            receivedContext = context;
+            callbackCount++;
+        };
+
+        // Reset callback state
+        receivedHeartbeat[0] = '\0';
+        receivedContext = reinterpret_cast<void*>(0xDEADBEEF);
+        callbackCount = 0;
+
+        // Set the heartbeat callback with NULL context
+        NoteSetFnHeartbeat(heartbeatCallback, NULL);
+
+        J *req = NoteNewRequest("note.add");
+        REQUIRE(req != NULL);
+        HeartbeatThenValid::reset();
+        _noteJSONTransaction_fake.custom_fake = HeartbeatThenValid::fake;
+
+        J *resp = NoteTransaction(req);
+
+        // Verify transaction succeeded
+        CHECK(resp != NULL);
+        CHECK(!NoteResponseError(resp));
+
+        // Verify callback was invoked with NULL context
+        CHECK(callbackCount == 1);
+        CHECK(receivedHeartbeat != nullptr);
+        CHECK(strcmp(receivedHeartbeat, "testing stsafe") == 0);
+        CHECK(receivedContext == NULL);
+
+        // Clean up callback
+        NoteSetFnHeartbeat(NULL, NULL);
+        JDelete(req);
+        JDelete(resp);
+    }
+
     RESET_FAKE(_crcAdd);
     RESET_FAKE(_crcError);
     RESET_FAKE(_noteHardReset);
