@@ -801,7 +801,9 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
             _Free(rspJsonStr);
             const char * const status = JGetString(rsp, c_status);
             NOTE_C_LOG_DEBUG(ERRSTR(status, c_heartbeat));
-            _noteHeartbeat(status);
+            if (_noteHeartbeat(status)) {
+                break;
+            }
             --lastRequestRetries; // Heartbeats do not count against retry limit
             continue;
         } else if (isIoError || isBadBin) {

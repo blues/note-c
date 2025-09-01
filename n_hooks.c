@@ -789,13 +789,15 @@ void NoteUnlockI2C(void)
 /*!
   @brief  Call a heartbeat function if registered
   @param   heartbeatJson Pointer to null-terminated heartbeat Json string.
+  @returns  `true` if the heartbeat callback wishes to abandon the request.
 */
 /**************************************************************************/
-void _noteHeartbeat(const char *heartbeatJson)
+bool _noteHeartbeat(const char *heartbeatJson)
 {
     if (hookHeartbeat != NULL) {
-        hookHeartbeat(heartbeatJson, hookHeartbeatContext);
+        return hookHeartbeat(heartbeatJson, hookHeartbeatContext);
     }
+    return false;
 }
 
 //**************************************************************************/

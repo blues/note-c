@@ -150,7 +150,7 @@ typedef size_t (*debugOutputFn) (const char *text);
  @param heartbeatJson The heartbeat status received
  @param context User context passed to the heartbeat function
  */
-typedef void (*heartbeatFn) (const char *heartbeatJson, void *context);
+typedef bool (*heartbeatFn) (const char *heartbeatJson, void *context);
 
 /*!
  @typedef i2cReceiveFn
