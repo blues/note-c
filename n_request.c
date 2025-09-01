@@ -801,7 +801,13 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
             _Free(rspJsonStr);
             const char * const status = JGetString(rsp, c_status);
             NOTE_C_LOG_DEBUG(ERRSTR(status, c_heartbeat));
-            _noteHeartbeat(status);
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
+            if (_noteHeartbeat(status)) {
+                errStr = ERRSTR("host abandoned transaction {heartbeat}", c_heartbeat);
+                NoteResetRequired();
+                break;
+            }
+#endif
             --lastRequestRetries; // Heartbeats do not count against retry limit
             continue;
         } else if (isIoError || isBadBin) {
