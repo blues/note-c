@@ -16,6 +16,8 @@
 
 #include "n_lib.h"
 
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
+
 DEFINE_FFF_GLOBALS
 
 namespace
@@ -24,12 +26,14 @@ namespace
 static const char *receivedHeartbeat = nullptr;
 static void *receivedContext = nullptr;
 static int callbackCallCount = 0;
+static bool callbackReturnValue = false;
 
-void mockHeartbeatCallback(const char *heartbeatJson, void *context)
+bool mockHeartbeatCallback(const char *heartbeatJson, void *context)
 {
     receivedHeartbeat = heartbeatJson;
     receivedContext = context;
     callbackCallCount++;
+    return callbackReturnValue;
 }
 
 void resetCallbackState()
@@ -37,10 +41,12 @@ void resetCallbackState()
     receivedHeartbeat = nullptr;
     receivedContext = nullptr;
     callbackCallCount = 0;
+    callbackReturnValue = false;
 }
 
 SCENARIO("_noteHeartbeat")
 {
+
     GIVEN("No heartbeat callback is registered") {
         NoteSetFnHeartbeat(NULL, NULL);
         resetCallbackState();
@@ -96,7 +102,7 @@ SCENARIO("_noteHeartbeat")
         WHEN("_noteHeartbeat is called multiple times") {
             const char *heartbeat1 = "first heartbeat";
             const char *heartbeat2 = "second heartbeat";
-            
+
             _noteHeartbeat(heartbeat1);
             _noteHeartbeat(heartbeat2);
 
@@ -126,3 +132,5 @@ SCENARIO("_noteHeartbeat")
 }
 
 }
+
+#endif // NOTE_C_HEARTBEAT_CALLBACK

@@ -807,6 +807,8 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
                 NoteResetRequired();
                 break;
             }
+#else
+            (void)status; // avoid unused variable warning when NOTE_C_LOW_MEM defined
 #endif
             --lastRequestRetries; // Heartbeats do not count against retry limit
             continue;

@@ -833,16 +833,18 @@ SCENARIO("NoteTransaction")
         JDelete(resp);
     }
 
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
     SECTION("Heartbeat callback integration - callback invoked on heartbeat response") {
         static char receivedHeartbeat[sizeof("testing stsafe")];
         static void *receivedContext = nullptr;
         static int callbackCount = 0;
         static int testContext = 42;
 
-        auto heartbeatCallback = [](const char *heartbeatJson, void *context) {
+        auto heartbeatCallback = [](const char *heartbeatJson, void *context) -> bool {
             strlcpy(receivedHeartbeat, heartbeatJson, sizeof(receivedHeartbeat));
             receivedContext = context;
             callbackCount++;
+            return false; // Continue processing
         };
 
         // Reset callback state
@@ -882,11 +884,12 @@ SCENARIO("NoteTransaction")
         static int callbackCount = 0;
         static int testContext = 99;
 
-        auto heartbeatCallback = [](const char *heartbeatJson, void *context) {
+        auto heartbeatCallback = [](const char *heartbeatJson, void *context) -> bool {
             strlcpy(lastReceivedHeartbeat, heartbeatJson, sizeof(lastReceivedHeartbeat));
 
             lastReceivedContext = context;
             callbackCount++;
+            return false; // Continue processing
         };
 
         // Reset callback state
@@ -945,10 +948,11 @@ SCENARIO("NoteTransaction")
         static void *receivedContext = reinterpret_cast<void*>(0xDEADBEEF); // Non-null sentinel
         static int callbackCount = 0;
 
-        auto heartbeatCallback = [](const char *heartbeatJson, void *context) {
+        auto heartbeatCallback = [](const char *heartbeatJson, void *context) -> bool {
             strlcpy(receivedHeartbeat, heartbeatJson, sizeof(receivedHeartbeat));
             receivedContext = context;
             callbackCount++;
+            return false; // Continue processing
         };
 
         // Reset callback state
@@ -981,6 +985,7 @@ SCENARIO("NoteTransaction")
         JDelete(req);
         JDelete(resp);
     }
+#endif // NOTE_C_HEARTBEAT_CALLBACK
 
     RESET_FAKE(_crcAdd);
     RESET_FAKE(_crcError);

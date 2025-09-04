@@ -15,15 +15,18 @@
 
 #include "n_lib.h"
 
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
+
 namespace
 {
 
 static int testContext = 42;
 
-void mockHeartbeatFn(const char *heartbeatJson, void *context)
+bool mockHeartbeatFn(const char *heartbeatJson, void *context)
 {
     (void)heartbeatJson;
     (void)context;
+    return false;
 }
 
 SCENARIO("NoteGetFnHeartbeat")
@@ -39,7 +42,7 @@ SCENARIO("NoteGetFnHeartbeat")
 
         WHEN("NoteGetFnHeartbeat is called with NULL function pointer") {
             void *retrievedContext = nullptr;
-            
+
             THEN("It should not crash and retrieve context") {
                 NoteGetFnHeartbeat(NULL, &retrievedContext);
                 REQUIRE(retrievedContext == &testContext);
@@ -48,7 +51,7 @@ SCENARIO("NoteGetFnHeartbeat")
 
         WHEN("NoteGetFnHeartbeat is called with NULL context pointer") {
             heartbeatFn retrievedFn = nullptr;
-            
+
             THEN("It should not crash and retrieve function") {
                 NoteGetFnHeartbeat(&retrievedFn, NULL);
                 REQUIRE(retrievedFn == mockHeartbeatFn);
@@ -84,3 +87,5 @@ SCENARIO("NoteGetFnHeartbeat")
 }
 
 }
+
+#endif // NOTE_C_HEARTBEAT_CALLBACK
