@@ -142,6 +142,7 @@ typedef uint32_t (*getMsFn) (void);
 
 typedef size_t (*debugOutputFn) (const char *text);
 
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
 /*!
  @typedef heartbeatFn
 
@@ -149,8 +150,11 @@ typedef size_t (*debugOutputFn) (const char *text);
 
  @param heartbeatJson The heartbeat status received
  @param context User context passed to the heartbeat function
+
+ @returns `true` if the heartbeat processing should abandon the transaction.
  */
-typedef void (*heartbeatFn) (const char *heartbeatJson, void *context);
+typedef bool (*heartbeatFn) (const char *heartbeatJson, void *context);
+#endif
 
 /*!
  @typedef i2cReceiveFn
@@ -302,8 +306,10 @@ bool NoteErrorContains(const char *errstr, const char *errtype);
 void NoteErrorClean(char *errbuf);
 void NoteSetFnDebugOutput(debugOutputFn fn);
 void NoteGetFnDebugOutput(debugOutputFn *fn);
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
 void NoteSetFnHeartbeat(heartbeatFn fn, void *context);
 void NoteGetFnHeartbeat(heartbeatFn *fn, void **context);
+#endif
 void NoteSetFnTransaction(txnStartFn startFn, txnStopFn stopFn);
 void NoteGetFnTransaction(txnStartFn *startFn, txnStopFn *stopFn);
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn,

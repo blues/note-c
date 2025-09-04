@@ -168,6 +168,7 @@ NOTE_C_STATIC i2cTransmitFn hookI2CTransmit = NULL;
 */
 /**************************************************************************/
 NOTE_C_STATIC i2cReceiveFn hookI2CReceive = NULL;
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
 //**************************************************************************/
 /*!
   @brief  Hook for a heartbeat notification
@@ -175,12 +176,13 @@ NOTE_C_STATIC i2cReceiveFn hookI2CReceive = NULL;
 /**************************************************************************/
 NOTE_C_STATIC heartbeatFn hookHeartbeat = NULL;
 NOTE_C_STATIC void *hookHeartbeatContext = NULL;
+#endif
+#ifndef NOTE_NODEBUG
 //**************************************************************************/
 /*!
   @brief Variable used to determine the runtime logging level
 */
 /**************************************************************************/
-#ifndef NOTE_NODEBUG
 NOTE_C_STATIC int noteLogLevel = NOTE_C_LOG_LEVEL;
 #endif
 
@@ -303,6 +305,7 @@ void NoteSetFn(mallocFn mallocHook, freeFn freeHook, delayMsFn delayMsHook,
     _UnlockNote();
 }
 
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
 //**************************************************************************/
 /*!
   @brief  Set the heartbeat function
@@ -317,6 +320,7 @@ void NoteSetFnHeartbeat(heartbeatFn fn, void *context)
     hookHeartbeatContext = context;
     _UnlockNote();
 }
+#endif
 
 //**************************************************************************/
 /*!
@@ -785,18 +789,22 @@ void NoteUnlockI2C(void)
     }
 }
 
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
 //**************************************************************************/
 /*!
   @brief  Call a heartbeat function if registered
-  @param   heartbeatJson Pointer to null-terminated heartbeat Json string.
+  @param   heartbeatJson Pointer to null-terminated heartbeat JSON string.
+  @returns  `true` if the heartbeat callback wishes to abandon the transaction.
 */
 /**************************************************************************/
-void _noteHeartbeat(const char *heartbeatJson)
+bool _noteHeartbeat(const char *heartbeatJson)
 {
     if (hookHeartbeat != NULL) {
-        hookHeartbeat(heartbeatJson, hookHeartbeatContext);
+        return hookHeartbeat(heartbeatJson, hookHeartbeatContext);
     }
+    return false;
 }
+#endif
 
 //**************************************************************************/
 /*!
@@ -858,6 +866,7 @@ void NoteGetFnDebugOutput(debugOutputFn *fn)
     }
 }
 
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
 /*!
  @brief Get the user-defined heartbeat function.
  @param fn Pointer to store the heartbeat function pointer.
@@ -872,6 +881,7 @@ void NoteGetFnHeartbeat(heartbeatFn *fn, void **context)
         *context = hookHeartbeatContext;
     }
 }
+#endif
 
 /*!
  @brief Get the platform-specific transaction functions.

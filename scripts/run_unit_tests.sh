@@ -1,6 +1,7 @@
 #!/bin/bash
 
 COVERAGE=0
+HEARTBEAT_CALLBACK=0
 MEM_CHECK=0
 LOW_MEM=0
 SHOW_MALLOC=0
@@ -11,6 +12,7 @@ VERBOSE=0
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --coverage) COVERAGE=1 ;;
+        --heartbeat-callback) HEARTBEAT_CALLBACK=1 ;;
         --low-mem) LOW_MEM=1 ;;
         --mem-check) MEM_CHECK=1 ;;
         --show-malloc) SHOW_MALLOC=1 ;;
@@ -58,6 +60,9 @@ if [[ $SHOW_MALLOC -eq 1 ]]; then
 fi
 if [[ $SINGLE_PRECISION -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_SINGLE_PRECISION:BOOL=ON"
+fi
+if [[ $HEARTBEAT_CALLBACK -eq 1 ]]; then
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_HEARTBEAT_CALLBACK:BOOL=ON"
 fi
 if [[ $VERBOSE -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON --log-level=VERBOSE"

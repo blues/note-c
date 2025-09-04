@@ -23,6 +23,7 @@ option(NOTE_C_MEM_CHECK "Run tests with Valgrind." OFF)
 option(NOTE_C_NO_LIBC "Build the library without linking against libc, generating errors for any undefined symbols." OFF)
 option(NOTE_C_SHOW_MALLOC "Build the library with flags required to log memory usage." OFF)
 option(NOTE_C_SINGLE_PRECISION "Use single precision for JSON floating point numbers." OFF)
+option(NOTE_C_HEARTBEAT_CALLBACK "Enable heartbeat callback support." OFF)
 
 set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 add_library(note_c SHARED)
@@ -117,6 +118,14 @@ if(NOTE_C_SINGLE_PRECISION)
         note_c
         PUBLIC
             NOTE_C_SINGLE_PRECISION
+    )
+endif()
+
+if(NOTE_C_HEARTBEAT_CALLBACK)
+    target_compile_definitions(
+        note_c
+        PUBLIC
+            NOTE_C_HEARTBEAT_CALLBACK
     )
 endif()
 

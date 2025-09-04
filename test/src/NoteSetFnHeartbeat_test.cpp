@@ -16,6 +16,8 @@
 
 #include "n_lib.h"
 
+#ifdef NOTE_C_HEARTBEAT_CALLBACK
+
 DEFINE_FFF_GLOBALS
 FAKE_VOID_FUNC(_noteLockNote)
 FAKE_VOID_FUNC(_noteUnlockNote)
@@ -30,10 +32,11 @@ static int testContext = 42;
 static const char *lastHeartbeat = nullptr;
 static void *lastContext = nullptr;
 
-void mockHeartbeatFn(const char *heartbeatJson, void *context)
+bool mockHeartbeatFn(const char *heartbeatJson, void *context)
 {
     lastHeartbeat = heartbeatJson;
     lastContext = context;
+    return false;
 }
 
 SCENARIO("NoteSetFnHeartbeat")
@@ -100,3 +103,5 @@ SCENARIO("NoteSetFnHeartbeat")
 }
 
 }
+
+#endif // NOTE_C_HEARTBEAT_CALLBACK
