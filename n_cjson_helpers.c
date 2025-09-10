@@ -361,8 +361,8 @@ bool JContainsString(J *json, const char *field, const char *substr)
 /*!
  @brief Add binary data as a Base64-encoded string field to a JSON object.
 
- @param json The JSON object.
- @param fieldName The name to use for the field.
+ @param json The JSON object to modify.
+ @param fieldName The field name to add.
  @param binaryData A buffer of binary data to encode.
  @param binaryDataLen The length of the binary data in bytes.
 
