@@ -308,19 +308,26 @@ void NoteResetRequired(void);
 /*!
  @brief Create a new request JSON object.
 
+ Creates a dynamically allocated `J` object with one field `"req"` whose value
+ is the passed in request string.
+
  @param request The name of the Notecard API request (e.g., "card.version").
 
- @returns A pointer to a newly allocated JSON object, or NULL on failure.
+ @returns A pointer to a newly allocated JSON object with the "req" field
+          populated, or NULL on failure.
  */
 J *NoteNewRequest(const char *request);
 /*!
  @brief Create a new command JSON object.
 
- Commands are similar to requests, but the Notecard does not send a response.
+ Create a dynamically allocated `J` object with one field `"cmd"` whose value is
+ the passed in request string. Commands are similar to requests, but the
+ Notecard does not send a response.
 
  @param request The name of the Notecard API command (e.g., "card.restart").
 
- @returns A pointer to a newly allocated JSON object, or NULL on failure.
+ @returns A pointer to a newly allocated JSON object with the "cmd" field
+          populated, or NULL on failure.
  */
 J *NoteNewCommand(const char *request);
 /*!
@@ -338,7 +345,8 @@ J *NoteNewCommand(const char *request);
  */
 J *NoteRequestResponse(J *req);
 /*!
- @brief Send a request to the Notecard, retrying until it succeeds or times out.
+ @brief Send a request to the Notecard, retrying until it succeeds or times out,
+        then return the response.
 
  The passed in request object is always freed, regardless of if the request was
  successful or not.
@@ -349,6 +357,9 @@ J *NoteRequestResponse(J *req);
  @returns A `J` object with the response or NULL if there was an error sending
           the request.
 
+ @note Timeouts may occur when either there is no response, or if the response
+       contains an I/O error.
+
  @see NoteResponseError to check the response for errors.
  */
 J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds);
@@ -357,12 +368,24 @@ J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds);
 
  Unlike NoteRequestResponse, this function expects the request to be a valid
  JSON C-string, rather than a `J` object. The string is expected to be
- newline-terminated.
+ newline-terminated, otherwise the call produces undefined behavior. The
+ response is returned as a dynamically allocated JSON C-string. The response
+ is newline-terminated, just like the request. The caller is responsible for
+ freeing the response string. If the request was a command (i.e. it uses "cmd"
+ instead of "req"), this function returns NULL, since commands do not have
+ a response.
 
  @param reqJSON A valid newline-terminated JSON C-string containing the request.
 
  @returns A newline-terminated JSON C-string with the response, or NULL
           if there was no response or if there was an error.
+
+ @note When a "cmd" is sent, it is not possible to determine if an error occurred.
+
+ @note Unlike the `NoteRequest*` functions, this function does not automatically
+       free the request JSON string. It is not possible to know if the parameter
+       is a string literal. As such, it is the caller's responsibility to manage
+       the memory associated with the request string.
  */
 char * NoteRequestResponseJSON(const char *reqJSON);
 NOTE_C_DEPRECATED void NoteSuspendTransactionDebug(void);
@@ -420,11 +443,14 @@ bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds);
 /*!
  @brief Set the request timeout for Notecard transactions.
 
- @param overrideSecsOrZeroForDefault The timeout in seconds, or 0 to use the default timeout.
+ Provides control for transactions which must be tailored based upon the nature
+ of the transaction being performed.
 
- @returns The previous timeout value in seconds.
+ @param overrideSecs The timeout in seconds (0 for default).
+
+ @returns The previous timeout value that was overridden.
  */
-uint32_t NoteSetRequestTimeout(uint32_t overrideSecsOrZeroForDefault);
+uint32_t NoteSetRequestTimeout(uint32_t overrideSecs);
 
 /*!
  @brief Check if the Notecard response contains an error.
@@ -459,22 +485,33 @@ J *NoteTransaction(J *req);
  @brief Check if an error string contains a specific error type.
 
  @param errstr The error string to check.
- @param errtype The error type to search for.
+ @param errtype The error type to search for in errstr.
 
  @returns `true` if the error string contains the specified error type,
           `false` otherwise.
+
+ @note Only Notecard errors enclosed in `{}` (e.g. `{io}` for an I/O error)
+       are guaranteed by the API.
  */
 bool NoteErrorContains(const char *errstr, const char *errtype);
 /*!
- @brief Clean up an error string by removing unwanted characters or formatting.
+ @brief Clean up an error string by removing all bracketed tags.
 
- @param errbuf The error buffer to clean.
+ Notecard errors are enclosed in `{}` (e.g. `{io}` for an I/O error). This
+ function takes the input string and removes all bracketed errors from it,
+ meaning it removes any substrings matching the pattern `{some error string}`,
+ including the braces.
+
+ @param errbuf A C-string to to clean of errors.
  */
 void NoteErrorClean(char *errbuf);
 /*!
  @brief Set the debug output function hook.
 
  @param fn Pointer to the debug output function.
+
+ @note This operation will lock Notecard access while in progress, if Notecard
+       mutex functions have been set.
  */
 void NoteSetFnDebugOutput(debugOutputFn fn);
 /*!
@@ -504,37 +541,46 @@ void NoteGetFnHeartbeat(heartbeatFn *fn, void **context);
 
  @param startFn Function to call when starting a transaction.
  @param stopFn Function to call when stopping a transaction.
+
+ @note This operation will lock Notecard access while in progress, if Notecard
+       mutex functions have been set.
  */
 void NoteSetFnTransaction(txnStartFn startFn, txnStopFn stopFn);
 /*!
- @brief Get the currently set transaction hook functions.
+ @brief Get the platform-specific transaction hook functions.
 
  @param startFn Pointer to store the current transaction start function.
  @param stopFn Pointer to store the current transaction stop function.
+
+ @note Any of the passed in pointers can be NULL if the caller is not
+       interested in that particular function pointer.
  */
 void NoteGetFnTransaction(txnStartFn *startFn, txnStopFn *stopFn);
 /*!
- @brief Set the mutex functions for I2C and Note access protection.
+ @brief Set the mutex functions for I2C and Notecard access protection.
 
  @param lockI2Cfn Function to lock I2C access.
  @param unlockI2Cfn Function to unlock I2C access.
- @param lockNotefn Function to lock Note access.
- @param unlockNotefn Function to unlock Note access.
+ @param lockNotefn Function to lock Notecard access.
+ @param unlockNotefn Function to unlock Notecard access.
  */
 void NoteSetFnMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn, mutexFn lockNotefn,
                     mutexFn unlockNotefn);
 /*!
- @brief Get the currently set mutex functions.
+ @brief Get the currently set mutex functions for I2C and Notecard.
 
  @param lockI2Cfn Pointer to store the current I2C lock function.
  @param unlockI2Cfn Pointer to store the current I2C unlock function.
  @param lockNotefn Pointer to store the current Note lock function.
  @param unlockNotefn Pointer to store the current Note unlock function.
+
+ @note Any of the passed in pointers can be NULL if the caller is not
+       interested in that particular function pointer.
  */
 void NoteGetFnMutex(mutexFn *lockI2Cfn, mutexFn *unlockI2Cfn, mutexFn *lockNotefn,
                     mutexFn *unlockNotefn);
 /*!
- @brief Set the I2C-specific mutex functions.
+ @brief Set the I2C mutex functions.
 
  @param lockI2Cfn Function to lock I2C access.
  @param unlockI2Cfn Function to unlock I2C access.
@@ -545,90 +591,125 @@ void NoteSetFnI2CMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn);
 
  @param lockI2Cfn Pointer to store the current I2C lock function.
  @param unlockI2Cfn Pointer to store the current I2C unlock function.
+
+ @note Any of the passed in pointers can be NULL if the caller is not
+       interested in that particular function pointer.
  */
 void NoteGetFnI2CMutex(mutexFn *lockI2Cfn, mutexFn *unlockI2Cfn);
 /*!
- @brief Set the Note-specific mutex functions.
+ @brief Set the Notecard mutex functions.
 
- @param lockFn Function to lock Note access.
- @param unlockFn Function to unlock Note access.
+ @param lockFn Function to lock Notecard access.
+ @param unlockFn Function to unlock Notecard access.
  */
 void NoteSetFnNoteMutex(mutexFn lockFn, mutexFn unlockFn);
 /*!
- @brief Get the currently set Note mutex functions.
+ @brief Get the currently set Notecard mutex functions.
 
- @param lockFn Pointer to store the current Note lock function.
- @param unlockFn Pointer to store the current Note unlock function.
+ @param lockFn Pointer to store the current Notecard lock function.
+ @param unlockFn Pointer to store the current Notecard unlock function.
+
+ @note Any of the passed in pointers can be NULL if the caller is not
+       interested in that particular function pointer.
  */
 void NoteGetFnNoteMutex(mutexFn *lockFn, mutexFn *unlockFn);
 /*!
  @brief Set the default system functions (memory allocation, delay, timing).
 
- @param mallocfn Function for memory allocation.
- @param freefn Function for memory deallocation.
- @param delayfn Function for millisecond delays.
- @param millisfn Function to get millisecond counter.
+ @param mallocfn The platform-specific function for memory allocation.
+ @param freefn The platform-specific function for memory deallocation.
+ @param delayfn The platform-specific function for millisecond delays.
+ @param millisfn The platform-specific function to get millisecond counter.
+
+ @note These functions are used if no other system functions are set.
+ @note This operation will lock Notecard access while in progress, if Notecard
+       mutex functions have been set.
  */
 void NoteSetFnDefault(mallocFn mallocfn, freeFn freefn, delayMsFn delayfn,
                       getMsFn millisfn);
 /*!
  @brief Set the system hook functions (memory allocation, delay, timing).
 
- @param mallocHook Function for memory allocation.
- @param freeHook Function for memory deallocation.
- @param delayMsHook Function for millisecond delays.
- @param getMsHook Function to get millisecond counter.
+ @param mallocHook The platform-specific function for memory allocation.
+ @param freeHook The platform-specific function for memory deallocation.
+ @param delayMsHook The platform-specific function for millisecond delays.
+ @param getMsHook The platform-specific function to get millisecond counter.
+
+ @note This function overrides any previously set system functions.
+ @note This operation will lock Notecard access while in progress, if Notecard
+       mutex functions have been set.
  */
 void NoteSetFn(mallocFn mallocHook, freeFn freeHook, delayMsFn delayMsHook,
                getMsFn getMsHook);
 /*!
- @brief Get the currently set system hook functions.
+ @brief Get the platform-specific memory and timing hook functions.
 
  @param mallocHook Pointer to store the current memory allocation function.
  @param freeHook Pointer to store the current memory deallocation function.
  @param delayMsHook Pointer to store the current delay function.
  @param getMsHook Pointer to store the current millisecond counter function.
+
+ @note Any of the passed in pointers can be NULL if the caller is not
+       interested in that particular function pointer.
  */
 void NoteGetFn(mallocFn *mallocHook, freeFn *freeHook, delayMsFn *delayMsHook,
                getMsFn *getMsHook);
 /*!
- @brief Set the serial communication hook functions.
+ @brief Set the platform-specific serial communication hook functions.
 
- @param resetFn Function to reset the serial peripheral.
- @param transmitFn Function to transmit data via serial.
- @param availFn Function to check if serial data is available.
- @param receiveFn Function to receive serial data.
+ @param resetFn The platform-specific function to reset the serial peripheral.
+ @param transmitFn The platform-specific function to transmit data via serial.
+ @param availFn The platform-specific function to check if serial data is available.
+ @param receiveFn The platform-specific function to receive serial data.
+
+ @note This function overrides any previously set serial functions.
+ @note This operation will set the active interface to serial.
+ @note This operation will lock Notecard access while in progress, if Notecard
+       mutex functions have been set.
  */
 void NoteSetFnSerial(serialResetFn resetFn, serialTransmitFn transmitFn,
                      serialAvailableFn availFn, serialReceiveFn receiveFn);
 /*!
  @brief Set the default serial communication hook functions.
 
- @param resetFn Function to reset the serial peripheral.
- @param transmitFn Function to transmit data via serial.
- @param availFn Function to check if serial data is available.
- @param receiveFn Function to receive serial data.
+ @param resetFn The platform-specific function to reset the serial peripheral.
+ @param transmitFn The platform-specific function to transmit data via serial.
+ @param availFn The platform-specific function to check if serial data is available.
+ @param receiveFn The platform-specific function to receive serial data.
+
+ @note These functions are used if no other serial functions are set.
+ @note This operation will set the active interface to serial, if unset.
+ @note This operation will lock Notecard access while in progress, if Notecard
+       mutex functions have been set.
  */
 void NoteSetFnSerialDefault(serialResetFn resetFn, serialTransmitFn transmitFn,
                             serialAvailableFn availFn, serialReceiveFn receiveFn);
 /*!
- @brief Get the currently set serial communication hook functions.
+ @brief Get the platform-specific serial communication hook functions.
 
  @param resetFn Pointer to store the current serial reset function.
  @param transmitFn Pointer to store the current serial transmit function.
  @param availFn Pointer to store the current serial available function.
  @param receiveFn Pointer to store the current serial receive function.
+
+ @note Any of the passed in pointers can be NULL if the caller is not
+       interested in that particular function pointer.
  */
 void NoteGetFnSerial(serialResetFn *resetFn, serialTransmitFn *transmitFn,
                      serialAvailableFn *availFn, serialReceiveFn *receiveFn);
 /*!
- @brief Set the I2C communication hook functions.
+ @brief Set the platform-specific I2C communication hook functions, address and MTU.
 
- @param notecardAddr I2C address of the Notecard.
- @param maxTransmitSize Maximum number of bytes to transmit in a single I2C transaction.
- @param resetFn Function to reset the I2C peripheral.
- @param transmitFn Function to transmit data via I2C.
- @param receiveFn Function to receive data via I2C.
+ @param notecardAddr I2C address of the Notecard (0 for default).
+ @param maxTransmitSize Maximum number of bytes to transmit in a single I2C segment (0 for default).
+ @param resetFn The platform-specific function to reset the I2C peripheral.
+ @param transmitFn The platform-specific function to transmit data via I2C.
+ @param receiveFn The platform-specific function to receive data via I2C.
+
+ @note This function overrides any previously set I2C functions.
+ @note This operation will set the active interface to I2C.
+ @note This operation will lock Notecard access while in progress, if Notecard
+       mutex functions have been set.
  */
 void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
                   i2cResetFn resetFn, i2cTransmitFn transmitFn,
@@ -636,23 +717,31 @@ void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
 /*!
  @brief Set the default I2C communication hook functions.
 
- @param notecardAddr I2C address of the Notecard.
- @param maxTransmitSize Maximum number of bytes to transmit in a single I2C transaction.
- @param resetFn Function to reset the I2C peripheral.
- @param transmitFn Function to transmit data via I2C.
- @param receiveFn Function to receive data via I2C.
+ @param notecardAddr I2C address of the Notecard (0 for default).
+ @param maxTransmitSize Maximum number of bytes to transmit in a single I2C segment (0 for default).
+ @param resetFn The platform-specific function to reset the I2C peripheral.
+ @param transmitFn The platform-specific function to transmit data via I2C.
+ @param receiveFn The platform-specific function to receive data via I2C.
+
+ @note These functions are used if no other I2C functions are set.
+ @note This operation will set the active interface to I2C, if unset.
+ @note This operation will lock Notecard access while in progress, if Notecard
+       mutex functions have been set.
  */
 void NoteSetFnI2cDefault(uint32_t notecardAddr, uint32_t maxTransmitSize,
                          i2cResetFn resetFn, i2cTransmitFn transmitFn,
                          i2cReceiveFn receiveFn);
 /*!
- @brief Get the currently set I2C communication hook functions.
+ @brief Get the platform-specific I2C communication hook functions.
 
  @param notecardAddr Pointer to store the current Notecard I2C address.
  @param maxTransmitSize Pointer to store the current maximum transmit size.
  @param resetFn Pointer to store the current I2C reset function.
  @param transmitFn Pointer to store the current I2C transmit function.
  @param receiveFn Pointer to store the current I2C receive function.
+
+ @note Any of the passed in pointers can be NULL if the caller is not
+       interested in that particular function pointer.
  */
 void NoteGetFnI2C(uint32_t *notecardAddr, uint32_t *maxTransmitSize,
                   i2cResetFn *resetFn, i2cTransmitFn *transmitFn,
@@ -660,7 +749,13 @@ void NoteGetFnI2C(uint32_t *notecardAddr, uint32_t *maxTransmitSize,
 /*!
  @brief Set the active communication interface.
 
- @param interface The interface to use (NOTE_C_INTERFACE_SERIAL or NOTE_C_INTERFACE_I2C).
+ @param   interface  The desired interface to use. One of:
+   - NOTE_C_INTERFACE_NONE (default)
+   - NOTE_C_INTERFACE_SERIAL
+   - NOTE_C_INTERFACE_I2C
+
+ @note This operation will lock Notecard access while in progress, if Notecard
+       mutex functions have been set.
  */
 void NoteSetActiveInterface(int interface);
 /*!
@@ -773,22 +868,23 @@ void NoteSetUserAgentCPU(int cpu_mem, int cpu_mhz, int cpu_cores, char *cpu_vend
 /*!
  @brief Output a debug message.
 
- @param message The debug message to output.
+ @param msg The debug message to output.
  */
-void NoteDebug(const char *message);
+void NoteDebug(const char *msg);
 /*!
  @brief Output a debug message followed by a newline.
 
- @param message The debug message to output.
+ @param msg The debug message to output.
  */
-void NoteDebugln(const char *message);
+void NoteDebugln(const char *msg);
 /*!
- @brief Output a debug message with an integer value, followed by a newline.
+ @brief Output a debug message with an integer value appended, terminated by
+        a newline.
 
- @param message The debug message to output.
+ @param msg The debug message to output.
  @param n The integer value to append to the message.
  */
-void NoteDebugIntln(const char *message, int n);
+void NoteDebugIntln(const char *msg, int n);
 /*!
  @brief Output a formatted debug message.
 
@@ -807,6 +903,10 @@ void NoteDebugf(const char *format, ...);
 
  @param level The log level for this message.
  @param msg The debug message to output.
+
+ @note The message will be dropped if the specified level is less than
+       or equal to the current log level.
+ @note See the NOTE_C_LOG_LEVEL_* macros for possible values.
  */
 void NoteDebugWithLevel(uint8_t level, const char *msg);
 /*!
@@ -814,6 +914,10 @@ void NoteDebugWithLevel(uint8_t level, const char *msg);
 
  @param level The log level for this message.
  @param msg The debug message to output.
+
+ @note The message will be dropped if the specified level is less than
+       or equal to the current log level.
+ @note See the NOTE_C_LOG_LEVEL_* macros for possible values.
  */
 void NoteDebugWithLevelLn(uint8_t level, const char *msg);
 
@@ -872,20 +976,24 @@ void NoteDebugWithLevelLn(uint8_t level, const char *msg);
 /*!
  @brief Set the current log level for debug output filtering.
 
- @param level The log level to set (NOTE_C_LOG_LEVEL_ERROR, NOTE_C_LOG_LEVEL_WARN, NOTE_C_LOG_LEVEL_INFO, or NOTE_C_LOG_LEVEL_DEBUG).
+ @param level The log level to set:
+              - NOTE_C_LOG_LEVEL_ERROR
+              - NOTE_C_LOG_LEVEL_WARN
+              - NOTE_C_LOG_LEVEL_INFO
+              - NOTE_C_LOG_LEVEL_DEBUG
  */
 void NoteSetLogLevel(int level);
 
 /*!
- @brief Allocate memory using the configured memory allocation function.
+ @brief Allocate memory chunk using the platform-specific hook.
 
- @param size Number of bytes to allocate.
+ @param size Minimum number of bytes to allocate.
 
  @returns Pointer to allocated memory, or NULL if allocation failed.
  */
 void *NoteMalloc(size_t size);
 /*!
- @brief Free memory using the configured memory deallocation function.
+ @brief Free memory using the platform-specific hook.
 
  @param ptr Pointer to memory to free.
  */
@@ -897,7 +1005,7 @@ void NoteFree(void *ptr);
  */
 uint32_t NoteGetMs(void);
 /*!
- @brief Delay for the specified number of milliseconds.
+ @brief Use platform hook to delay for the specified number of milliseconds.
 
  @param ms Number of milliseconds to delay.
  */
@@ -1006,25 +1114,40 @@ bool JIsPresent(J *json, const char *field);
  @param json The JSON object to query.
  @param field The field name to retrieve.
 
- @returns Pointer to the string value, or NULL if the field doesn't exist or isn't a string.
+ @returns Pointer to the string value, or an empty string ("") if the field
+          doesn't exist or isn't a string.
+
+ @note The returned string is a pointer to the string contained in the JSON
+       object. It is not a copy of the string, so once the JSON object is freed,
+       the pointer is no longer valid.
  */
 char *JGetString(J *json, const char *field);
 /*!
- @brief Get a numeric value from a JSON object field.
+ @brief Get the number field from a JSON object.
 
  @param json The JSON object to query.
  @param field The field name to retrieve.
 
- @returns The numeric value, or 0 if the field doesn't exist or isn't a number.
+ @returns The numeric value, or 0.0f if the field doesn't exist or isn't a number.
+
+ @note The returned value is the floating point representation of the number.
+
+ @see `JGetInt`
+ @see `JGetBool`
  */
 JNUMBER JGetNumber(J *json, const char *field);
 /*!
- @brief Get an array from a JSON object field.
+ @brief Get an array object from a JSON object field.
 
  @param json The JSON object to query.
  @param field The field name to retrieve.
 
- @returns Pointer to the JSON array, or NULL if the field doesn't exist or isn't an array.
+ @returns Pointer to the JSON array (`J *`), or `NULL` if the field doesn't
+          exist or isn't an array.
+
+ @note The returned JSON object is a pointer to the array contained in the
+       parent JSON object. It is not a copy, so once the parent JSON object is
+       freed, the pointer is no longer valid.
  */
 J *JGetArray(J *json, const char *field);
 /*!
@@ -1033,25 +1156,38 @@ J *JGetArray(J *json, const char *field);
  @param json The JSON object to query.
  @param field The field name to retrieve.
 
- @returns Pointer to the nested JSON object, or NULL if the field doesn't exist or isn't an object.
+ @returns Pointer to the nested JSON object, or NULL if the field doesn't exist
+          or isn't an object.
+
+ @note The returned JSON object is a pointer to the object contained in the
+       parent JSON object. It is not a copy, so once the parent JSON object is
+       freed, the pointer is no longer valid.
  */
 J *JGetObject(J *json, const char *field);
 /*!
- @brief Get an integer value from a JSON object field.
+ @brief Get the integer value of a number field from a JSON object.
 
  @param json The JSON object to query.
  @param field The field name to retrieve.
 
- @returns The integer value, or 0 if the field doesn't exist or isn't an integer.
+ @returns The integer value, or 0 if the field doesn't exist or isn't a number.
+
+ @note The returned value is the integer representation of the number.
+
+ @see `JGetBool`
+ @see `JGetNumber`
  */
 JINTEGER JGetInt(J *json, const char *field);
 /*!
- @brief Get a boolean value from a JSON object field.
+ @brief Get the value of a boolean field from a JSON object.
 
  @param json The JSON object to query.
  @param field The field name to retrieve.
 
- @returns The boolean value, or false if the field doesn't exist or isn't a boolean.
+ @returns The boolean value, or `false` if the field doesn't exist or isn't a boolean.
+
+ @see `JGetInt`
+ @see `JGetNumber`
  */
 bool JGetBool(J *json, const char *field);
 /*!
@@ -1059,7 +1195,7 @@ bool JGetBool(J *json, const char *field);
 
  @param item The JSON item to query.
 
- @returns The numeric value, or 0 if the item isn't a number.
+ @returns The numeric value, or 0.0f if the item isn't a number.
  */
 JNUMBER JNumberValue(J *item);
 /*!
@@ -1067,7 +1203,7 @@ JNUMBER JNumberValue(J *item);
 
  @param item The JSON item to query.
 
- @returns Pointer to the string value, or NULL if the item isn't a string.
+ @returns Pointer to the string value, or empty string if the item isn't a string.
  */
 char *JStringValue(J *item);
 /*!
@@ -1087,7 +1223,7 @@ bool JBoolValue(J *item);
  */
 JINTEGER JIntValue(J *item);
 /*!
- @brief Check if a JSON object field is null or an empty string.
+ @brief Check if a JSON object field is NULL or an empty string.
 
  @param json The JSON object to query.
  @param field The field name to check.
@@ -1112,7 +1248,7 @@ bool JIsExactString(J *json, const char *field, const char *teststr);
  @param field The field name to check.
  @param substr The substring to search for.
 
- @returns `true` if the field contains the substring, `false` otherwise.
+ @returns `true` if the field exists and contains the substring, `false` otherwise.
  */
 bool JContainsString(J *json, const char *field, const char *substr);
 /*!
@@ -1128,14 +1264,23 @@ bool JContainsString(J *json, const char *field, const char *substr);
  */
 bool JAddBinaryToObject(J *json, const char *fieldName, const void *binaryData, uint32_t binaryDataLen);
 /*!
- @brief Get binary data from a JSON object field (base64-decoded).
+ @brief Decode a Base64-encoded string field in a JSON object and return the
+        decoded bytes.
 
  @param json The JSON object to query.
  @param fieldName The field name to retrieve.
- @param retBinaryData Pointer to store the decoded binary data (caller must free).
- @param retBinaryDataLen Pointer to store the length of the decoded binary data.
+ @param retBinaryData A pointer to a pointer used to store the decoded binary
+          data (caller must free).
+ @param retBinaryDataLen A pointer to an unsigned integer used to store the
+          length of the decoded binary data.
 
  @returns `true` if the binary data was successfully decoded, `false` otherwise.
+
+ @note The returned binary buffer must be freed by the user with `JFree` when it
+       is no longer needed.
+
+ @note On error, the returned binary buffer and data length shall be set to
+       `NULL` and zero (0), respectively.
  */
 bool JGetBinaryFromObject(J *json, const char *fieldName, uint8_t **retBinaryData, uint32_t *retBinaryDataLen);
 /*!
@@ -1143,16 +1288,18 @@ bool JGetBinaryFromObject(J *json, const char *fieldName, uint8_t **retBinaryDat
 
  @param item The JSON item to query.
 
- @returns Pointer to the item's name/key, or NULL if the item has no name.
+ @returns Pointer to the item's name/key, or the empty string, if the item has no name.
  */
 const char *JGetItemName(const J * item);
 /*!
- @brief Allocate and create a JSON string from a buffer.
+ @brief Allocate a new JSON string and copy contents of the buffer.
 
  @param buffer The buffer containing the string data.
- @param len Length of the buffer.
+ @param len The length of buffer in bytes.
 
- @returns Pointer to the newly allocated JSON string, or NULL on failure.
+ @returns If buffer is NULL or length 0, the empty string. If allocation
+          fails, NULL. On success, the converted c-string. The returned
+          string must be freed with JFree.
  */
 char *JAllocString(uint8_t *buffer, uint32_t len);
 /*!
@@ -1180,7 +1327,7 @@ const char *JType(J *item);
 #define JTYPE_OBJECT			12
 #define JTYPE_ARRAY				13
 /*!
- @brief Get the type code of a JSON object field.
+ @brief  Get the type of a field, as an int usable in a switch statement.
 
  @param json The JSON object to query.
  @param field The field name to check.
@@ -1233,15 +1380,17 @@ JNUMBER JAtoN(const char *string, char **endPtr);
  @brief Convert an integer to a string.
 
  @param n The integer to convert.
- @param s Buffer to store the string result.
+ @param s Buffer to store the NULL-terminated string result.
+
+ @note The buffer must be large enough because no bounds checking is performed.
  */
 void JItoA(JINTEGER n, char *s);
 /*!
  @brief Convert a string to an integer.
 
- @param s The string to convert.
+ @param s A null-terminated text buffer.
 
- @returns The integer value.
+ @returns The integer value (0 if invalid)
  */
 JINTEGER JAtoI(const char *s);
 /*!
