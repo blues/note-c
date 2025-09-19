@@ -81,7 +81,7 @@ SCENARIO("_i2cChunkedTransmit")
         _noteI2CTransmit_fake.custom_fake = _noteI2CTransmitCapture;
 
         AND_GIVEN("The input buffer can be sent in one chunk") {
-            uint8_t oneChunkBuf[NOTE_I2C_MAX_DEFAULT];
+            uint8_t oneChunkBuf[NOTE_I2C_MTU_DEFAULT];
             buf = oneChunkBuf;
             size = sizeof(oneChunkBuf);
             memset(oneChunkBuf, 1, size);
@@ -96,7 +96,7 @@ SCENARIO("_i2cChunkedTransmit")
         }
 
         AND_GIVEN("The input buffer doesn't fit into a single chunk") {
-            uint8_t multiChunkBuf[NOTE_I2C_MAX_DEFAULT * 2];
+            uint8_t multiChunkBuf[NOTE_I2C_MTU_DEFAULT * 2];
             buf = multiChunkBuf;
             size = sizeof(multiChunkBuf);
             memset(multiChunkBuf, 2, size);

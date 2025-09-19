@@ -396,7 +396,7 @@ void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
     _UnlockNote();
 }
 
-void NoteSetFnI2cDefault(uint32_t notecardAddr, uint32_t maxTransmitSize,
+void NoteSetFnI2CDefault(uint32_t notecardAddr, uint32_t maxTransmitSize,
                          i2cResetFn resetFn, i2cTransmitFn transmitFn,
                          i2cReceiveFn receiveFn)
 {
@@ -827,6 +827,13 @@ void NoteGetI2CAddress(uint32_t *i2cAddr)
     }
 }
 
+void NoteGetI2CMtu(uint32_t *i2cMtu)
+{
+    if (i2cMtu != NULL) {
+        *i2cMtu = i2cMax;
+    }
+}
+
 //**************************************************************************/
 /*!
   @brief  Reset the Serial bus using the platform-specific hook.
@@ -956,6 +963,11 @@ void NoteSetI2CAddress(uint32_t i2cAddr)
     i2cAddress = i2cAddr;
 }
 
+void NoteSetI2CMtu(uint32_t i2cMtu)
+{
+    i2cMax = i2cMtu;
+}
+
 //**************************************************************************/
 /*!
   @brief  Determine the maximum number of bytes for each segment of
@@ -968,11 +980,11 @@ uint32_t NoteI2CMax(void)
     // Many Arduino libraries (such as ESP32) have a limit less than 32, so if the max isn't specified
     // we must assume the worst and segment the I2C messages into very tiny chunks.
     if (i2cMax == 0) {
-        return NOTE_I2C_MAX_DEFAULT;
+        return NOTE_I2C_MTU_DEFAULT;
     }
     // Note design specs
-    if (i2cMax > NOTE_I2C_MAX_MAX) {
-        i2cMax = NOTE_I2C_MAX_MAX;
+    if (i2cMax > NOTE_I2C_MTU_MAX) {
+        i2cMax = NOTE_I2C_MTU_MAX;
     }
     return i2cMax;
 }

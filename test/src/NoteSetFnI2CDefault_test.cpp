@@ -1,5 +1,5 @@
 /*!
- * @file NoteSetFnI2cDefault_test.cpp
+ * @file NoteSetFnI2CDefault_test.cpp
  *
  * Written by the Blues Inc. team.
  *
@@ -49,7 +49,7 @@ const char *MyI2cReceive(uint16_t addr, uint8_t* buffer, uint16_t size, uint32_t
     return NULL;
 }
 
-SCENARIO("NoteSetFnI2cDefault")
+SCENARIO("NoteSetFnI2CDefault")
 {
     GIVEN("I2C hooks and static variables have not been set (i.e. NULL)") {
         i2cAddress = 0;
@@ -59,8 +59,8 @@ SCENARIO("NoteSetFnI2cDefault")
         hookI2CReceive = NULL;
         hookActiveInterface = NOTE_C_INTERFACE_NONE;
 
-        WHEN("NoteSetFnI2cDefault is called") {
-            NoteSetFnI2cDefault(MyI2cAddress, MyI2cMax, MyI2cReset, MyI2cTransmit, MyI2cReceive);
+        WHEN("NoteSetFnI2CDefault is called") {
+            NoteSetFnI2CDefault(MyI2cAddress, MyI2cMax, MyI2cReset, MyI2cTransmit, MyI2cReceive);
 
             THEN("The static variables are set") {
                 CHECK(MyI2cAddress == i2cAddress);
@@ -93,7 +93,7 @@ SCENARIO("NoteSetFnI2cDefault")
         hookI2CReceive = MyI2cReceive;
         hookActiveInterface = NOTE_C_INTERFACE_I2C;
 
-        WHEN("NoteSetFnI2cDefault is called with different values") {
+        WHEN("NoteSetFnI2CDefault is called with different values") {
             const uint32_t otherAddress = 0x42;
             const uint32_t otherMax = 42;
 
@@ -101,7 +101,7 @@ SCENARIO("NoteSetFnI2cDefault")
             auto otherTransmit = [](uint16_t addr, uint8_t* buffer, uint16_t size) -> const char* { return "test"; };
             auto otherReceive = [](uint16_t addr, uint8_t* buffer, uint16_t size, uint32_t* available) -> const char* { return "test"; };
 
-            NoteSetFnI2cDefault(otherAddress, otherMax, otherReset, otherTransmit, otherReceive);
+            NoteSetFnI2CDefault(otherAddress, otherMax, otherReset, otherTransmit, otherReceive);
 
             THEN("The static variables are not changed") {
                 CHECK(MyI2cAddress == i2cAddress);
