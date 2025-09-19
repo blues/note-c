@@ -71,7 +71,9 @@ Macros
 
 .. doxygendefine:: NOTE_I2C_ADDR_DEFAULT
 
-.. doxygendefine:: NOTE_I2C_MAX_DEFAULT
+.. doxygendefine:: NOTE_I2C_MTU_DEFAULT
+
+.. doxygendefine:: NOTE_I2C_MTU_MAX
 
 Mutex Hooks
 ===========

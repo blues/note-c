@@ -47,7 +47,7 @@ I2C
 * Transmitting bytes
 * Receiving bytes
 
-:c:func:`NoteSetFnI2C` also requires two additional parameters: the I2C address of the Notecard and the maximum number of bytes to send to the Notecard in a single I2C chunk. To use the defaults for these two values, use the macros :c:macro:`NOTE_I2C_ADDR_DEFAULT` and :c:macro:`NOTE_I2C_MAX_DEFAULT`, respectively.
+:c:func:`NoteSetFnI2C` also requires two additional parameters: the I2C address of the Notecard and the maximum number of bytes to send to the Notecard in a single I2C chunk. To use the defaults for these two values, use the macros :c:macro:`NOTE_I2C_ADDR_DEFAULT` and :c:macro:`NOTE_I2C_MTU_DEFAULT`, respectively.
 
 The I2C hooks are slightly more complex than the serial hooks. The transmit and receive hooks must implement the Notecard's serial-over-I2C protocol:
 
@@ -144,7 +144,7 @@ The code below from `Src/main.c <https://github.com/blues/note-stm32l4/blob/mast
 .. code-block:: c
 
    #if NOTECARD_USE_I2C
-      NoteSetFnI2C(NOTE_I2C_ADDR_DEFAULT, NOTE_I2C_MAX_DEFAULT, _noteI2CReset, _noteI2CTransmit, _noteI2CReceive);
+      NoteSetFnI2C(NOTE_I2C_ADDR_DEFAULT, NOTE_I2C_MTU_DEFAULT, _noteI2CReset, _noteI2CTransmit, _noteI2CReceive);
    #else
       NoteSetFnSerial(_noteSerialReset, _noteSerialTransmit, _noteSerialAvailable, _noteSerialReceive);
    #endif

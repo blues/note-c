@@ -728,7 +728,7 @@ void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize,
  @note This operation will lock Notecard access while in progress, if Notecard
        mutex functions have been set.
  */
-void NoteSetFnI2cDefault(uint32_t notecardAddr, uint32_t maxTransmitSize,
+void NoteSetFnI2CDefault(uint32_t notecardAddr, uint32_t maxTransmitSize,
                          i2cResetFn resetFn, i2cTransmitFn transmitFn,
                          i2cReceiveFn receiveFn);
 /*!
@@ -777,11 +777,29 @@ void NoteSetFnDisabled(void);
  */
 void NoteSetI2CAddress(uint32_t i2cAddr);
 /*!
+ @brief Set the MTU for I2C communication with the Notecard.
+
+ The MTU is the maximum number of bytes that can be sent to or received
+ from the Notecard in a single I2C transaction.
+
+ @param i2cMtu The maximum transmission unit (MTU) for I2C communication.
+ */
+void NoteSetI2CMtu(uint32_t i2cMtu);
+/*!
  @brief Get the current I2C address for Notecard communication.
 
- @param i2cAddr Pointer to store the current I2C address.
+ @param [out] i2cAddr Pointer to store the current I2C address.
  */
 void NoteGetI2CAddress(uint32_t *i2cAddr);
+/*!
+ @brief Get the current MTU for I2C communication with the Notecard.
+
+ The MTU is the maximum number of bytes that can be sent to or received
+ from the Notecard in a single I2C transaction.
+
+ @param [out] i2cMtu Pointer to store the current I2C MTU.
+ */
+void NoteGetI2CMtu(uint32_t *i2cMtu);
 
 // The Notecard, whose default I2C address is below, uses a serial-to-i2c
 // protocol whose "byte count" must fit into a single byte and which must not
@@ -795,12 +813,23 @@ void NoteGetI2CAddress(uint32_t *i2cAddr);
 
 // Serial-to-i2c protocol header size in bytes
 #ifndef NOTE_I2C_HEADER_SIZE
-#define NOTE_I2C_HEADER_SIZE 2
+#  define NOTE_I2C_HEADER_SIZE 2
 #endif
 
 // Maximum bytes capable of being transmitted in a single read/write operation
-#ifndef NOTE_I2C_MAX_MAX
-#define NOTE_I2C_MAX_MAX (UCHAR_MAX - NOTE_I2C_HEADER_SIZE)
+#ifdef NOTE_I2C_MAX_MAX
+#  ifdef NOTE_I2C_MTU_MAX
+#    undef NOTE_I2C_MTU_MAX
+#  endif
+#else
+#  ifdef NOTE_I2C_MTU_MAX
+#    define NOTE_I2C_MAX_MAX NOTE_I2C_MTU_MAX
+#  else
+#    define NOTE_I2C_MAX_MAX (UCHAR_MAX - NOTE_I2C_HEADER_SIZE)
+#  endif
+#endif
+#ifndef NOTE_I2C_MTU_MAX
+#  define NOTE_I2C_MTU_MAX NOTE_I2C_MAX_MAX
 #endif
 
 // In ARDUINO implementations, which to date is the largest use of this library,
@@ -809,18 +838,29 @@ void NoteGetI2CAddress(uint32_t *i2cAddr);
 // which means that the maximum to be transmitted in a single I/O (given our
 // 2-byte serial-to-i2c protocol header) is 30 bytes.  However, if we know
 // the specific platform (such as STM32DUINO) we can relax this restriction.
-#if defined(NOTE_I2C_MAX_DEFAULT)
+#ifdef NOTE_I2C_MAX_DEFAULT
 // user is overriding it at compile time
-#elif defined(ARDUINO_ARCH_STM32)
-// we know that stm32duino dynamically allocates I/O buffer
-#define NOTE_I2C_MAX_DEFAULT NOTE_I2C_MAX_MAX
+#  ifdef NOTE_I2C_MTU_DEFAULT
+#    undef NOTE_I2C_MTU_DEFAULT
+#  endif
 #else
+#  if defined(NOTE_I2C_MTU_DEFAULT)
+// user is overriding it at compile time
+#    define NOTE_I2C_MAX_DEFAULT NOTE_I2C_MTU_DEFAULT
+#  elif defined(ARDUINO_ARCH_STM32)
+// we know that stm32duino dynamically allocates I/O buffer
+#    define NOTE_I2C_MAX_DEFAULT NOTE_I2C_MTU_MAX
+#  else
 // default to what's known to be safe for all Arduino implementations
 /*!
  @brief The maximum number of bytes to request from or transmit to the Notecard
         in a single chunk.
  */
-#define NOTE_I2C_MAX_DEFAULT	30
+#    define NOTE_I2C_MAX_DEFAULT	30
+#  endif
+#endif
+#ifndef NOTE_I2C_MTU_DEFAULT
+#  define NOTE_I2C_MTU_DEFAULT NOTE_I2C_MAX_DEFAULT
 #endif
 
 // User agent
@@ -1022,12 +1062,28 @@ void NoteUnlockI2C(void);
  @brief Get the current I2C address being used for Notecard communication.
 
  @returns The I2C address of the Notecard.
+
+ @note If the address remains unset or is set to 0x00 using `NoteSetI2CAddress`,
+       the address will be returned as `NOTE_I2C_ADDRESS_DEFAULT`.
+
+ @see NoteGetI2CAddress
  */
 uint32_t NoteI2CAddress(void);
 /*!
- @brief Get the maximum I2C transfer size.
+ @brief Get the current MTU for I2C communication with the Notecard.
+
+ The MTU is the maximum number of bytes that can be sent to or received
+ from the Notecard in a single I2C transaction.
 
  @returns Maximum number of bytes that can be transferred in a single I2C transaction.
+
+ @note If the MTU remains unset or is set to 0 using NoteSetI2CMtu, the
+       MTU will be returned as NOTE_I2C_MTU_DEFAULT.
+ @note The MTU value returned will always be less than or equal to
+       `NOTE_I2C_MTU_MAX`. If a value larger than `NOTE_I2C_MTU_MAX` was set using
+       `NoteSetI2CMtu`, the MTU will be silently reduced to `NOTE_I2C_MTU_MAX`.
+
+ @see NoteGetI2CMtu
  */
 uint32_t NoteI2CMax(void);
 /*!

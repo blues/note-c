@@ -28,20 +28,20 @@ SCENARIO("NoteI2CMax")
         WHEN("NoteI2CMax is called") {
             const uint32_t result = NoteI2CMax();
 
-            THEN("NOTE_I2C_MAX_DEFAULT is returned") {
-                CHECK(result == NOTE_I2C_MAX_DEFAULT);
+            THEN("It should return the default MTU") {
+                CHECK(result == NOTE_I2C_MTU_DEFAULT);
             }
         }
     }
 
-    GIVEN("i2cMax is greater than NOTE_I2C_MAX_MAX") {
-        i2cMax = NOTE_I2C_MAX_MAX + 1;
+    GIVEN("i2cMax is greater than NOTE_I2C_MTU_MAX") {
+        i2cMax = (NOTE_I2C_MTU_MAX + 1);
 
         WHEN("NoteI2CMax is called") {
             const uint32_t result = NoteI2CMax();
 
-            THEN("NOTE_I2C_MAX_MAX is returned") {
-                CHECK(result == NOTE_I2C_MAX_MAX);
+            THEN("It should return the max MTU") {
+                CHECK(NOTE_I2C_MTU_MAX == result);
             }
         }
     }

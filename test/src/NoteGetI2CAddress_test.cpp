@@ -15,28 +15,46 @@
 
 #include "n_lib.h"
 
+extern uint32_t i2cAddress;
+
 namespace
 {
 
-uint32_t notecardAddr = 0x09;
-
 SCENARIO("NoteGetI2CAddress")
 {
-    GIVEN("An I2C address") {
-        NoteSetI2CAddress(notecardAddr);
+    GIVEN("i2cAddress is unset (0x00)") {
+        i2cAddress = 0x00;
 
         AND_GIVEN("A valid pointer for the I2C address is provided") {
-            uint32_t i2cAddress = 0;
-            WHEN("NoteGetI2CAddress is called") {
-                NoteGetI2CAddress(&i2cAddress);
+            uint32_t i2cAddr = 0x01;
 
-                THEN("It should return the mock address") {
-                    CHECK(i2cAddress == notecardAddr);
+            WHEN("NoteGetI2CAddress is called") {
+                NoteGetI2CAddress(&i2cAddr);
+
+                THEN("It should return zero") {
+                    CHECK(i2cAddr == i2cAddress);
+                }
+            }
+        }
+    }
+
+    GIVEN("A valid I2C address has been set") {
+        i2cAddress = 0x79;
+
+        AND_GIVEN("A valid pointer for the I2C address is provided") {
+            uint32_t i2cAddr = 0x00;
+
+            WHEN("NoteGetI2CAddress is called") {
+                NoteGetI2CAddress(&i2cAddr);
+
+                THEN("It should return the address") {
+                    CHECK(i2cAddr == i2cAddress);
                 }
             }
         }
 
         AND_GIVEN("A NULL pointer for the I2C address is provided") {
+
             WHEN("NoteGetI2CAddress is called") {
                 NoteGetI2CAddress(NULL);
 

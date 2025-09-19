@@ -22,8 +22,8 @@ namespace
 
 SCENARIO("NoteI2CAddress")
 {
-    GIVEN("i2cAddress is unset (0)") {
-        i2cAddress = 0;
+    GIVEN("i2cAddress is unset (0x00)") {
+        i2cAddress = 0x00;
 
         WHEN("NoteI2CAddress is called") {
             const uint32_t result = NoteI2CAddress();
@@ -34,7 +34,7 @@ SCENARIO("NoteI2CAddress")
         }
     }
 
-    GIVEN("i2cAddress is set") {
+    GIVEN("A valid I2C address has been set") {
         i2cAddress = 0x79;
 
         WHEN("NoteI2CAddress is called") {
