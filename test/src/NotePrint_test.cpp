@@ -35,7 +35,11 @@ SCENARIO("NotePrint")
         _noteIsDebugOutputActive_fake.return_val = true;
 
         CHECK(NotePrint(msg));
+#ifdef NOTE_NODEBUG
+        CHECK(NoteDebug_fake.call_count == 0);
+#else
         CHECK(NoteDebug_fake.call_count > 0);
+#endif
     }
 
     SECTION("card.log") {

@@ -463,8 +463,12 @@ void NoteDebugIntln(const char *msg, int n)
 
 void NoteDebugln(const char *msg)
 {
+#ifndef NOTE_NODEBUG
     _Debug(msg);
     _Debug(c_newline);
+#else
+    (void)msg;
+#endif // !NOTE_NODEBUG
 }
 
 void NoteDebug(const char *msg)
@@ -474,7 +478,7 @@ void NoteDebug(const char *msg)
         hookDebugOutput(msg);
     }
 #else
-    (void)line;
+    (void)msg;
 #endif // !NOTE_NODEBUG
 }
 
@@ -494,8 +498,16 @@ void NoteDebugWithLevel(uint8_t level, const char *msg)
 
 void NoteDebugWithLevelLn(uint8_t level, const char *msg)
 {
+#ifndef NOTE_NODEBUG
+    if (level > noteLogLevel) {
+        return;
+    }
     _DebugWithLevel(level, msg);
     _DebugWithLevel(level, c_newline);
+#else
+    (void)level;
+    (void)msg;
+#endif // !NOTE_NODEBUG
 }
 
 //**************************************************************************/

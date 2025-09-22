@@ -134,7 +134,11 @@ SCENARIO("NoteDebugSyncStatus")
 
                 CHECK(NoteDebugSyncStatus(pollFrequencyMs, maxLevel));
 
+#ifdef NOTE_NODEBUG
+                CHECK(NoteDebug_fake.call_count == 0);
+#else
                 CHECK(NoteDebug_fake.call_count > 0);
+#endif
             }
 
             SECTION("Synclog level below max") {
@@ -142,7 +146,11 @@ SCENARIO("NoteDebugSyncStatus")
 
                 CHECK(NoteDebugSyncStatus(pollFrequencyMs, maxLevel));
 
+#ifdef NOTE_NODEBUG
+                CHECK(NoteDebug_fake.call_count == 0);
+#else
                 CHECK(NoteDebug_fake.call_count > 0);
+#endif
             }
 
             SECTION("Negative max level (log everything)") {
@@ -150,7 +158,11 @@ SCENARIO("NoteDebugSyncStatus")
 
                 CHECK(NoteDebugSyncStatus(pollFrequencyMs, -1));
 
+#ifdef NOTE_NODEBUG
+                CHECK(NoteDebug_fake.call_count == 0);
+#else
                 CHECK(NoteDebug_fake.call_count > 0);
+#endif
             }
         }
     }

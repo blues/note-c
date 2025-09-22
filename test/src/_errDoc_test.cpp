@@ -78,10 +78,16 @@ SCENARIO("_errDoc")
                 CHECK(strcmp(JGetString(result, "src"), "note-c") == 0);
             }
 
+#ifndef NOTE_NODEBUG
             THEN("The error is logged to the console") {
                 CHECK(NoteDebugWithLevel_fake.call_count > 0);
                 CHECK(NoteDebugWithLevel_fake.arg0_val == NOTE_C_LOG_LEVEL_ERROR);
             }
+#else
+            THEN("No errors are logged to the console") {
+                CHECK(NoteDebugWithLevel_fake.call_count == 0);
+            }
+#endif // NOTE_NODEBUG
 
             JDelete(result);
         }

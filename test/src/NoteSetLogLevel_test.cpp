@@ -23,15 +23,23 @@ namespace
 SCENARIO("NoteSetLogLevel")
 {
     GIVEN("noteLogLevel is set to the default value") {
+#ifndef NOTE_NODEBUG
         noteLogLevel = NOTE_C_LOG_LEVEL_DEFAULT;
+#endif
 
         WHEN("NoteSetLogLevel is called with a new value") {
             REQUIRE(NOTE_C_LOG_LEVEL_DEFAULT != NOTE_C_LOG_LEVEL_WARN);
             NoteSetLogLevel(NOTE_C_LOG_LEVEL_WARN);
 
+#ifndef NOTE_NODEBUG
             THEN("noteLogLevel is set to the new value") {
                 CHECK(noteLogLevel == NOTE_C_LOG_LEVEL_WARN);
             }
+#else
+            THEN("no errors occur") {
+                SUCCEED();
+            }
+#endif
         }
     }
 }
