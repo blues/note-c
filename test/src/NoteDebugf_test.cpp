@@ -33,7 +33,11 @@ SCENARIO("NoteDebugf")
     NoteSetFnDebugOutput(DebugHook);
 
     NoteDebugf("Hello %s!", "world");
+#ifdef NOTE_NODEBUG
+    CHECK(strcmp(buf, msg) != 0);
+#else
     CHECK(strcmp(buf, msg) == 0);
+#endif
     buf[0] = '\0';
 
     // Unset the hook and make sure it wasn't called again.

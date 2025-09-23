@@ -4,6 +4,7 @@ COVERAGE=0
 HEARTBEAT_CALLBACK=0
 MEM_CHECK=0
 LOW_MEM=0
+NO_DEBUG=0
 SHOW_MALLOC=0
 SINGLE_PRECISION=0
 VERBOSE=0
@@ -15,6 +16,7 @@ while [[ "$#" -gt 0 ]]; do
         --heartbeat-callback) HEARTBEAT_CALLBACK=1 ;;
         --low-mem) LOW_MEM=1 ;;
         --mem-check) MEM_CHECK=1 ;;
+        --no-debug) NO_DEBUG=1 ;;
         --show-malloc) SHOW_MALLOC=1 ;;
         --single-precision) SINGLE_PRECISION=1 ;;
         --verbose) VERBOSE=1 ;;
@@ -54,6 +56,9 @@ if [[ $MEM_CHECK -eq 1 ]]; then
     # This fixes a problem when running valgrind in a Docker container when the
     # host machine is running Fedora. See https://stackoverflow.com/a/75293014.
     ulimit -n 1024
+fi
+if [[ $NO_DEBUG -eq 1 ]]; then
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_NODEBUG:BOOL=ON"
 fi
 if [[ $SHOW_MALLOC -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_SHOW_MALLOC:BOOL=ON"

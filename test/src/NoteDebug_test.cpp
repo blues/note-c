@@ -70,7 +70,11 @@ SCENARIO("NoteDebug")
 
         SECTION("NoteDebugln") {
             NoteDebugln("test");
+#ifdef NOTE_NODEBUG
+            CHECK(!state.debugOutputCalled);
+#else
             CHECK(!strcmp(state.debugBuf, "test\r\n"));
+#endif
         }
 
         SECTION("NoteDebugIntln") {
