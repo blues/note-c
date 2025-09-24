@@ -40,37 +40,13 @@ target_sources(
         ${NOTE_C_SRC_DIR}/n_serial.c
         ${NOTE_C_SRC_DIR}/n_str.c
 )
-target_compile_options(
-    note_c
-    PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Werror
-        -Og
-        -ggdb
-    PUBLIC
-        -m32
-        -mfpmath=sse
-        -msse2
-)
+
 target_include_directories(
     note_c
     PUBLIC ${NOTE_C_SRC_DIR}
 )
-target_link_directories(
-    note_c
-    PUBLIC
-        /lib32
-        /usr/lib32
-        /usr/lib/gcc/x86_64-linux-gnu/12/32
-)
-target_link_options(
-    note_c
-    PUBLIC
-        -m32
-        -Wl,-melf_i386
-)
+
+include(CompileOptions.cmake)
 
 if(NOTE_C_LOW_MEM)
     target_compile_definitions(
