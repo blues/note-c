@@ -1,13 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 cmake_policy(SET CMP0095 NEW)
 
-if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-    message(FATAL_ERROR "In-source builds are not allowed.
-    Please create a build directory and use `cmake ..` inside it.
-    NOTE: cmake will now create CMakeCache.txt and CMakeFiles/*.
-          You must delete them, or cmake will refuse to work.")
-endif()
-
 project(note_c)
 
 # Automatically ignore CMake build directory.
