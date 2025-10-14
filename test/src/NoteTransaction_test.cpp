@@ -26,7 +26,6 @@ FAKE_VALUE_FUNC(const char *, _noteJSONTransaction, const char *, size_t, char *
 FAKE_VALUE_FUNC(bool, _noteTransactionStart, uint32_t)
 FAKE_VOID_FUNC(NoteDebugWithLevel, uint8_t, const char *)
 FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
-FAKE_VALUE_FUNC(bool, NoteReset)
 FAKE_VALUE_FUNC(J *, NoteUserAgent)
 
 namespace
@@ -180,7 +179,7 @@ SCENARIO("NoteTransaction")
 
     // NoteReset's mock should succeed unless the test explicitly instructs
     // it to fail.
-    NoteReset_fake.return_val = true;
+    _noteHardReset_fake.return_val = true;
     _noteTransactionStart_fake.return_val = true;
     _crcError_fake.return_val = false;
 
@@ -511,10 +510,10 @@ SCENARIO("NoteTransaction")
         REQUIRE(req != NULL);
         NoteResetRequired();
         // Force NoteReset failure.
-        NoteReset_fake.return_val = false;
+        _noteHardReset_fake.return_val = false;
 
         J *resp = NoteTransaction(req);
-        REQUIRE(NoteReset_fake.call_count == 1);
+        REQUIRE(_noteHardReset_fake.call_count == 1);
 
         // The transaction shouldn't be attempted if reset failed.
         CHECK(_noteJSONTransaction_fake.call_count == 0);
@@ -530,10 +529,10 @@ SCENARIO("NoteTransaction")
         REQUIRE(req != NULL);
         NoteResetRequired();
         // Force NoteReset failure.
-        NoteReset_fake.return_val = false;
+        _noteHardReset_fake.return_val = false;
 
         J *resp = NoteTransaction(req);
-        REQUIRE(NoteReset_fake.call_count == 1);
+        REQUIRE(_noteHardReset_fake.call_count == 1);
 
         // The transaction shouldn't be attempted if reset failed.
         CHECK(_noteJSONTransaction_fake.call_count == 0);
@@ -994,7 +993,6 @@ SCENARIO("NoteTransaction")
     RESET_FAKE(_noteTransactionStart);
     RESET_FAKE(NoteDebugWithLevel);
     RESET_FAKE(NoteDelayMs);
-    RESET_FAKE(NoteReset);
     RESET_FAKE(NoteUserAgent);
 }
 
