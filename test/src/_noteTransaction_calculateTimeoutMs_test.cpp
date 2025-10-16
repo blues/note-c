@@ -82,8 +82,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `seconds * 1000`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == (seconds * 1000));
+            THEN("The timeout value is set to `(seconds + 1) * 1000`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == ((seconds + 1) * 1000));
             }
 
             JDelete(resp);
@@ -103,8 +103,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `seconds * 1000`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == (seconds * 1000));
+            THEN("The timeout value is set to `(seconds + 1) * 1000`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == ((seconds + 1) * 1000));
             }
 
             JDelete(resp);
@@ -124,8 +124,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `milliseconds`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == milliseconds);
+            THEN("The timeout value is set to `(milliseconds + 1000)`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == (milliseconds + 1000));
             }
 
             JDelete(resp);
@@ -145,8 +145,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `milliseconds`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == milliseconds);
+            THEN("The timeout value is set to `(milliseconds + 1000)`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == (milliseconds + 1000));
             }
 
             JDelete(resp);
@@ -169,8 +169,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `milliseconds`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == milliseconds);
+            THEN("The timeout value is set to `(milliseconds + 1000)`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == (milliseconds + 1000));
             }
 
             JDelete(resp);
@@ -193,8 +193,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `milliseconds`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == milliseconds);
+            THEN("The timeout value is set to `(milliseconds + 1000)`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == (milliseconds + 1000));
             }
 
             JDelete(resp);
@@ -248,8 +248,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `seconds * 1000`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == (seconds * 1000));
+            THEN("The timeout value is set to `(seconds + 1) * 1000`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == ((seconds + 1) * 1000));
             }
 
             JDelete(resp);
@@ -269,8 +269,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `seconds * 1000`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == (seconds * 1000));
+            THEN("The timeout value is set to `(seconds + 1) * 1000`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == ((seconds + 1) * 1000));
             }
 
             JDelete(resp);
@@ -290,8 +290,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `milliseconds`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == milliseconds);
+            THEN("The timeout value is set to `(milliseconds + 1000)`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == (milliseconds + 1000));
             }
 
             JDelete(resp);
@@ -311,8 +311,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `milliseconds`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == milliseconds);
+            THEN("The timeout value is set to `(milliseconds + 1000)`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == (milliseconds + 1000));
             }
 
             JDelete(resp);
@@ -335,8 +335,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `milliseconds`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == milliseconds);
+            THEN("The timeout value is set to `(milliseconds + 1000)`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == (milliseconds + 1000));
             }
 
             JDelete(resp);
@@ -359,8 +359,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to `milliseconds`") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == milliseconds);
+            THEN("The timeout value is set to `(milliseconds + 1000)`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == (milliseconds + 1000));
             }
 
             JDelete(resp);
@@ -376,8 +376,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to 90 seconds") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == (90 * 1000));
+            THEN("The timeout value is set to `CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000));
             }
 
             JDelete(resp);
@@ -393,8 +393,8 @@ SCENARIO("_noteTransaction_calculateTimeoutMs")
         WHEN("NoteTransaction is called") {
             J *resp = NoteTransaction(req);
 
-            THEN("The timeout value is set to 90 seconds") {
-                CHECK(_noteJSONTransaction_fake.arg3_val == (90 * 1000));
+            THEN("The timeout value is set to `CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000`") {
+                CHECK(_noteJSONTransaction_fake.arg3_val == (CARD_INTER_TRANSACTION_TIMEOUT_SEC * 1000));
             }
 
             JDelete(resp);
