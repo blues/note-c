@@ -31,8 +31,11 @@ extensions = [
     'breathe',
     'sphinx.ext.autosectionlabel',
     'sphinxcontrib.jquery',
-    'sphinx_markdown_builder',
 ]
+
+# Only load sphinx_markdown_builder when building markdown
+if args.builder == 'markdown':
+    extensions.append('sphinx_markdown_builder')
 suppress_warnings = [
     'autosectionlabel.*',
     'config.cache',  # Suppress locale directory warnings
