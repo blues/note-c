@@ -197,34 +197,19 @@ jobs:
           go build .
           sudo cp notecard /usr/bin/
 
-      - name: Download and install latest notestation CLI dev release
+      - name: Download and install notestation CLI v1.0.1
         env:
           GH_TOKEN: ${{ secrets.NOTESTATION_RELEASE_DOWNLOAD_TOKEN }}
         run: |
-          api_url="https://api.github.com/repos/blues/notestation/releases/tags/dev"
-
-          # Query the release asset metadata.
-          asset_info=$(curl -s -H "Authorization: token $GH_TOKEN" "$api_url")
-
-          # Extract the release asset URL and name.
-          asset_url=$(echo "$asset_info" | jq -r '.assets[] | select(.name | endswith(".whl")) | .url')
-          asset_name=$(echo "$asset_info" | jq -r '.assets[] | select(.name | endswith(".whl")) | .name')
-
-          if [ -z "$asset_url" ] || [ -z "$asset_name" ]; then
-            echo "❌ No wheel found in release assets."
-            exit 1
-          fi
-
-          # Download the wheel using the original filename.
-          curl -L -H "Authorization: token $GH_TOKEN" \
-               -H "Accept: application/octet-stream" \
-               "$asset_url" -o "$asset_name"
+          # Download the v1.0.1 release wheel using gh CLI
+          gh release download v1.0.1 \
+            --repo blues/notestation \
+            --pattern "notestation-1.0.1-py3-none-any.whl"
 
           # Create a virtual environment and install the notestation CLI in it.
           python -m venv venv
           source venv/bin/activate
-          wheel_file=$(ls *.whl)
-          pip install "$wheel_file"
+          pip install notestation-1.0.1-py3-none-any.whl
 
       - name: Build and upload test firmware and run tests
         run: |
@@ -237,18 +222,11 @@ jobs:
 
           # For now, we're hardcoding the Notestation to
           # barcelona-notestation-1, which is the only one we've set up to run
-          # these tests. The --ready-file option creates a "ready" file at the
-          # given path once the notestation client is done reserving the
-          # notestation and, if relevant, the Notecard firmware upgrade is
-          # complete. This allows us to launch a notestation client in the
-          # background and then wait for it to be ready before moving on. This
-          # async pattern is used here.
-          READY_FILE=/tmp/ns_client_ready
+          # these tests. We launch the notestation client in the background and
+          # wait for the reservation.json file to be created, which indicates
+          # the reservation is ready.
           args+=(
-            --mcu-debug
             --notestation barcelona-notestation-1
-            --work-dir /tmp
-            --ready-file $READY_FILE
           )
 
           nohup notestation client reserve "${args[@]}" &> card_client.log &
@@ -258,9 +236,10 @@ jobs:
           interval=3   # Check every 3 seconds
           elapsed=0
 
-          # If we don't see the ready file after 10 minutes, or if the client
-          # fails, bail.
-          while [ ! -f $READY_FILE ]; do
+          # Wait for the reservation file to be created. If we don't see it after
+          # 10 minutes, or if the client fails, bail.
+          RES_FILE="$HOME/.notestation/pid-${PID}_barcelona-notestation-1/reservation.json"
+          while [ ! -f $RES_FILE ]; do
               sleep $interval
               elapsed=$((elapsed + interval))
 
@@ -272,7 +251,7 @@ jobs:
               fi
 
               if [ $elapsed -ge $timeout ]; then
-                  echo "Timeout reached: $READY_FILE did not appear."
+                  echo "Timeout reached: $RES_FILE did not appear."
                   kill $PID 2>/dev/null
                   echo "$(cat card_client.log)"
                   exit 1
@@ -281,21 +260,29 @@ jobs:
 
           echo "Notestation ready."
 
-          RES_FILE="/tmp/ns_reservation.json"
           # Set these environment variables, which are read in platformio.ini in
           # order to flash the Swan with the test firmware.
-          export MCU_GDB_SERVER_IP="$(jq -r '.notestation' $RES_FILE)"
-          export MCU_GDB_SERVER_PORT="$(jq -r '.mcu_openocd.gdb' $RES_FILE)"
+          export GDB_SERVER_IP="$(jq -r '.hostname' $RES_FILE)"
+          export HOST_MCU_GDB_SERVER_PORT="$(jq -r '.debug_servers[] | select(.target == "host_mcu") | .gdb_port' $RES_FILE)"
           export GDB_CMD="gdb-multiarch"
 
-          if [ -z "$MCU_GDB_SERVER_IP" ] || [ "$MCU_GDB_SERVER_IP" == "null" ]; then
-              echo "Error: MCU_GDB_SERVER_IP is empty or not defined."
+          # Extract the test_port path from the interfaces array
+          export HOST_MCU_USB_PATH="$(jq -r '.interfaces[] | select(.target == "host_mcu_usb") | .path' $RES_FILE)"
+
+          if [ -z "$GDB_SERVER_IP" ] || [ "$GDB_SERVER_IP" == "null" ]; then
+              echo "Error: GDB_SERVER_IP is empty or not defined."
               kill $PID 2>/dev/null
               exit 1
           fi
 
-          if [ -z "$MCU_GDB_SERVER_PORT" ] || [ "$MCU_GDB_SERVER_PORT" -eq 0 ]; then
-              echo "Error: MCU_GDB_SERVER_PORT is empty or zero."
+          if [ -z "$HOST_MCU_GDB_SERVER_PORT" ] || [ "$HOST_MCU_GDB_SERVER_PORT" -eq 0 ]; then
+              echo "Error: HOST_MCU_GDB_SERVER_PORT is empty or zero."
+              kill $PID 2>/dev/null
+              exit 1
+          fi
+
+          if [ -z "$HOST_MCU_USB_PATH" ] || [ "$HOST_MCU_USB_PATH" == "null" ]; then
+              echo "Error: HOST_MCU_USB_PATH is empty or not defined."
               kill $PID 2>/dev/null
               exit 1
           fi
