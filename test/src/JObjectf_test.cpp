@@ -1141,4 +1141,64 @@ SCENARIO("JObjectfv: va_list version")
     }
 }
 
+// ==========================================================================
+// VARARG FLOAT/DOUBLE PROMOTION
+// ==========================================================================
+
+SCENARIO("JObjectf: vararg float promotion to double")
+{
+    NoteSetFnDefault(malloc, free, NULL, NULL);
+
+    // When floats are passed through varargs (...), they are promoted to double.
+    // The implementation must use va_arg with double, not float/JNUMBER.
+
+    SECTION("Double literal passed directly") {
+        // 3.14159 is a double literal, tests double extraction
+        J *obj = JObjectf("val:%f", 3.14159);
+        REQUIRE(obj != NULL);
+        CHECK(std::abs(JGetNumber(obj, "val") - 3.14159) < 0.00001);
+        JDelete(obj);
+    }
+
+    SECTION("Float cast to double") {
+        float f = 2.5f;
+        J *obj = JObjectf("val:%f", (double)f);
+        REQUIRE(obj != NULL);
+        CHECK(std::abs(JGetNumber(obj, "val") - 2.5) < 0.0001);
+        JDelete(obj);
+    }
+
+    SECTION("Multiple double values") {
+        J *obj = JObjectf("a:%f b:%f c:%f", 1.1, 2.2, 3.3);
+        REQUIRE(obj != NULL);
+        CHECK(std::abs(JGetNumber(obj, "a") - 1.1) < 0.0001);
+        CHECK(std::abs(JGetNumber(obj, "b") - 2.2) < 0.0001);
+        CHECK(std::abs(JGetNumber(obj, "c") - 3.3) < 0.0001);
+        JDelete(obj);
+    }
+
+    SECTION("Large double value") {
+        J *obj = JObjectf("big:%f", 1.0e30);
+        REQUIRE(obj != NULL);
+        CHECK(JGetNumber(obj, "big") > 9.9e29);
+        JDelete(obj);
+    }
+
+    SECTION("Small double value") {
+        J *obj = JObjectf("small:%f", 1.0e-30);
+        REQUIRE(obj != NULL);
+        CHECK(JGetNumber(obj, "small") < 1.1e-30);
+        CHECK(JGetNumber(obj, "small") > 0.0);
+        JDelete(obj);
+    }
+
+    SECTION("JObjectfv with double values") {
+        J *obj = testJObjectfvWrapper("x:%f y:%f", 100.5, 200.75);
+        REQUIRE(obj != NULL);
+        CHECK(std::abs(JGetNumber(obj, "x") - 100.5) < 0.001);
+        CHECK(std::abs(JGetNumber(obj, "y") - 200.75) < 0.001);
+        JDelete(obj);
+    }
+}
+
 }
