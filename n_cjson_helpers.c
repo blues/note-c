@@ -1034,8 +1034,8 @@ static bool _jObjectf_parseValue(const char *p, J **value, va_list *args,
  - true / false: Boolean literals
  - 123 or -45: Integer literals
  - 3.14 or -0.5: Floating point literals
- - 'text': String literal with single quotes (use \\' for embedded quote)
- - "text": String literal with double quotes (use \\" for embedded quote)
+ - 'text': String literal with single quotes (use backslash-quote for embedded quote)
+ - "text": String literal with double quotes (use backslash-quote for embedded quote)
  - word: Unquoted string starting with letter (e.g., ok, hub.set, data.qo)
 
  @param format The format string describing the object structure.
@@ -1051,7 +1051,7 @@ static bool _jObjectf_parseValue(const char *p, J **value, va_list *args,
  @note If a %o/%a argument is NULL, that field is silently skipped.
 
  Example usage:
- @code{.c}
+ @code
  // Simple object with mixed types
  J *obj = JObjectf("name:%s age:%d active:%b", "Alice", 30, true);
 

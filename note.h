@@ -1559,7 +1559,7 @@ J *JObjectfv(const char *format, va_list args);
  @param ... Arguments corresponding to format specifiers.
 
  Example:
- @code{.c}
+ @code
  J *obj = JCreateObject();
  JAddf(obj, "name:%s age:%d", "Alice", 30);
  @endcode
