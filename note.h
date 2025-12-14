@@ -1532,25 +1532,19 @@ void JMerge(J *target, J *source);
 /*!
  @brief Create a JSON object using a printf-style format string.
 
- @param format The format string with field definitions (e.g., "name:%s age:%d").
- @param ... Arguments corresponding to format specifiers in the format string.
-
  @return A newly allocated J* object. Caller must call JDelete() when done.
          Returns NULL only on memory allocation failure.
 
- @see Full documentation in n_cjson_helpers.c
+ @see JObjectf() in n_cjson_helpers.c for full documentation.
  */
 J *JObjectf(const char *format, ...);
 
 /*!
  @brief Create a JSON object using a printf-style format string (va_list version).
 
- @param format The format string with field definitions.
- @param args The va_list containing arguments for format specifiers.
-
  @return A newly allocated J* object. Caller must call JDelete() when done.
 
- @see JObjectf for format string documentation.
+ @see JObjectfv() in n_cjson_helpers.c for full documentation.
  */
 J *JObjectfv(const char *format, va_list args);
 
