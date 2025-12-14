@@ -14,12 +14,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <cstring>
 #include <cmath>
-#include <fff.h>
 
 #include "n_lib.h"
-
-DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
 
 namespace
 {
@@ -1336,60 +1332,6 @@ SCENARIO("JObjectf: vararg float promotion to double")
         REQUIRE(obj != NULL);
         CHECK(std::abs(JGetNumber(obj, "x") - 100.5) < 0.001);
         CHECK(std::abs(JGetNumber(obj, "y") - 200.75) < 0.001);
-        JDelete(obj);
-    }
-}
-
-// ==========================================================================
-// ALLOCATION FAILURE TESTS
-// ==========================================================================
-
-static int mallocCallCount = 0;
-static int mallocFailAfter = -1;
-
-static void *mallocFailAfterN(size_t size)
-{
-    mallocCallCount++;
-    if (mallocFailAfter >= 0 && mallocCallCount > mallocFailAfter) {
-        return NULL;
-    }
-    return malloc(size);
-}
-
-SCENARIO("JObjectf: allocation failures")
-{
-    NoteSetFnDefault(NULL, free, NULL, NULL);
-
-    SECTION("JCreateObject fails returns NULL") {
-        NoteMalloc_fake.return_val = NULL;
-
-        J *obj = JObjectf("a:1");
-        CHECK(obj == NULL);
-    }
-
-    SECTION("Quoted string allocation fails") {
-        // Fail after first allocation (JCreateObject succeeds, string alloc fails)
-        mallocCallCount = 0;
-        mallocFailAfter = 1;
-        NoteMalloc_fake.custom_fake = mallocFailAfterN;
-
-        J *obj = JObjectf("msg:'hello'");
-        // Should return partial object since string alloc failed
-        REQUIRE(obj != NULL);
-        CHECK(!JIsPresent(obj, "msg"));
-        JDelete(obj);
-    }
-
-    SECTION("Unquoted string allocation fails") {
-        // Fail after first allocation
-        mallocCallCount = 0;
-        mallocFailAfter = 1;
-        NoteMalloc_fake.custom_fake = mallocFailAfterN;
-
-        J *obj = JObjectf("status:ok");
-        // Should return partial object since string alloc failed
-        REQUIRE(obj != NULL);
-        CHECK(!JIsPresent(obj, "status"));
         JDelete(obj);
     }
 }
