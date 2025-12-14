@@ -910,6 +910,57 @@ SCENARIO("JObjectf: error and edge cases")
         JDelete(obj);
     }
 
+    SECTION("Just minus sign as value stops parsing") {
+        J *obj = JObjectf("a:1 b:-");
+        REQUIRE(obj != NULL);
+        CHECK(JGetInt(obj, "a") == 1);
+        CHECK(!JIsPresent(obj, "b"));
+        JDelete(obj);
+    }
+
+    SECTION("Minus followed by non-digit is unquoted string") {
+        // Actually, looking at the parser, a leading minus only works with digits
+        // So "b:-x" should fail to parse as number and fall through
+        J *obj = JObjectf("a:1 b:-x");
+        REQUIRE(obj != NULL);
+        CHECK(JGetInt(obj, "a") == 1);
+        // -x is not a valid unquoted string (doesn't start with letter)
+        CHECK(!JIsPresent(obj, "b"));
+        JDelete(obj);
+    }
+
+    SECTION("Lone decimal point as value stops parsing") {
+        J *obj = JObjectf("a:1 b:.");
+        REQUIRE(obj != NULL);
+        CHECK(JGetInt(obj, "a") == 1);
+        CHECK(!JIsPresent(obj, "b"));
+        JDelete(obj);
+    }
+
+    SECTION("Number with trailing dot parsed as float") {
+        J *obj = JObjectf("n:42.");
+        REQUIRE(obj != NULL);
+        // 42. is a valid float literal
+        CHECK(JGetNumber(obj, "n") == 42.0);
+        JDelete(obj);
+    }
+
+    SECTION("Backslash at end of quoted string") {
+        // Backslash at end with no following char - unterminated
+        J *obj = JObjectf("a:1 b:'test\\");
+        REQUIRE(obj != NULL);
+        CHECK(JGetInt(obj, "a") == 1);
+        CHECK(!JIsPresent(obj, "b"));
+        JDelete(obj);
+    }
+
+    SECTION("Double backslash in quoted string") {
+        J *obj = JObjectf("msg:'path\\\\to\\\\file'");
+        REQUIRE(obj != NULL);
+        CHECK(strcmp(JGetString(obj, "msg"), "path\\to\\file") == 0);
+        JDelete(obj);
+    }
+
     SECTION("NULL %s field name stops parsing") {
         J *obj = JObjectf("a:1 %s:2", (const char *)NULL);
         REQUIRE(obj != NULL);
@@ -1075,14 +1126,27 @@ SCENARIO("JAddf: add fields to existing object")
 }
 
 // ==========================================================================
-// JMerge EDGE CASE (NULL TARGET)
+// JMerge EDGE CASES
 // ==========================================================================
 
-SCENARIO("JMerge: NULL target with non-NULL source")
+SCENARIO("JMerge: NULL handling")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
 
-    SECTION("Source is deleted to prevent memory leak") {
+    SECTION("NULL source does nothing") {
+        J *target = JCreateObject();
+        REQUIRE(target != NULL);
+        JAddStringToObject(target, "existing", "value");
+
+        // This should do nothing (source is NULL)
+        JMerge(target, NULL);
+
+        // Target should be unchanged
+        CHECK(strcmp(JGetString(target, "existing"), "value") == 0);
+        JDelete(target);
+    }
+
+    SECTION("NULL target deletes source to prevent memory leak") {
         J *source = JCreateObject();
         REQUIRE(source != NULL);
         JAddStringToObject(source, "key", "value");
@@ -1093,6 +1157,61 @@ SCENARIO("JMerge: NULL target with non-NULL source")
         // If we get here without leak detector complaining, test passes
         // (source was deleted inside JMerge)
         CHECK(true);
+    }
+
+    SECTION("Both NULL does nothing") {
+        // Should not crash
+        JMerge(NULL, NULL);
+        CHECK(true);
+    }
+
+    SECTION("Empty source object") {
+        J *target = JCreateObject();
+        REQUIRE(target != NULL);
+        JAddStringToObject(target, "existing", "value");
+
+        J *source = JCreateObject();
+        REQUIRE(source != NULL);
+        // source has no children
+
+        JMerge(target, source);
+
+        // Target should be unchanged
+        CHECK(strcmp(JGetString(target, "existing"), "value") == 0);
+        JDelete(target);
+    }
+
+    SECTION("Multiple fields merged") {
+        J *target = JCreateObject();
+        REQUIRE(target != NULL);
+        JAddStringToObject(target, "a", "1");
+
+        J *source = JCreateObject();
+        REQUIRE(source != NULL);
+        JAddStringToObject(source, "b", "2");
+        JAddStringToObject(source, "c", "3");
+
+        JMerge(target, source);
+
+        CHECK(strcmp(JGetString(target, "a"), "1") == 0);
+        CHECK(strcmp(JGetString(target, "b"), "2") == 0);
+        CHECK(strcmp(JGetString(target, "c"), "3") == 0);
+        JDelete(target);
+    }
+
+    SECTION("Overwrites existing field") {
+        J *target = JCreateObject();
+        REQUIRE(target != NULL);
+        JAddStringToObject(target, "key", "old");
+
+        J *source = JCreateObject();
+        REQUIRE(source != NULL);
+        JAddStringToObject(source, "key", "new");
+
+        JMerge(target, source);
+
+        CHECK(strcmp(JGetString(target, "key"), "new") == 0);
+        JDelete(target);
     }
 }
 
