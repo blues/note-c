@@ -937,7 +937,7 @@ static bool _jObjectf_parseValue(const char *p, J **value, va_list *args,
             return (*value != NULL);
         }
         case 'f': {
-            JNUMBER num = va_arg(*args, JNUMBER);
+            JNUMBER num = (JNUMBER)va_arg(*args, double);
             *value = JCreateNumber(num);
             return (*value != NULL);
         }
