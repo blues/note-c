@@ -1051,7 +1051,7 @@ static bool _jObjectf_parseValue(const char *p, J **value, va_list *args,
  @note If a %o/%a argument is NULL, that field is silently skipped.
 
  Example usage:
- @code
+ @code{.c}
  // Simple object with mixed types
  J *obj = JObjectf("name:%s age:%d active:%b", "Alice", 30, true);
 
