@@ -758,11 +758,11 @@ void NoteResetRequired(void)
     resetRequired = true;
 }
 
-/*!
- @brief Initialize or re-initialize the I/O inferface (I2C/UART).
+bool NoteConnect(void)
+{
+    return NoteReset();
+}
 
- @returns True if the reset was successful and false if not.
- */
 bool NoteReset(void)
 {
     _LockNote();

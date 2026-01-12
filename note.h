@@ -290,6 +290,15 @@ typedef void (*txnStopFn) (void);
 // External API
 
 /*!
+ @brief Connect to the Notecard
+
+ This function is used to establish the Notecard connection.
+
+ @returns `true` when connection has been established, `false` otherwise.
+ */
+bool NoteConnect(void);
+
+/*!
  @brief Reset the Notecard, clearing any error state.
 
  @returns `true` if the reset was successful, `false` otherwise.
