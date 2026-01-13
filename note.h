@@ -1118,6 +1118,7 @@ bool NotePrintf(const char *format, ...);
 
 // String helpers to help encourage the world to abandon the horribly-error-prone strn*
 
+#ifndef HAVE_STRLCPY
 /*!
  @brief Safe string copy function.
 
@@ -1130,7 +1131,14 @@ bool NotePrintf(const char *format, ...);
 
  @returns Length of src string.
  */
+#ifdef __cplusplus
+size_t strlcpy(char *dst, const char *src, size_t siz) noexcept;
+#else
 size_t strlcpy(char *dst, const char *src, size_t siz);
+#endif
+#endif
+
+#ifndef HAVE_STRLCAT
 /*!
  @brief Safe string concatenation function.
 
@@ -1143,7 +1151,12 @@ size_t strlcpy(char *dst, const char *src, size_t siz);
 
  @returns Total length of the string that would result from the concatenation.
  */
+#ifdef __cplusplus
+size_t strlcat(char *dst, const char *src, size_t siz) noexcept;
+#else
 size_t strlcat(char *dst, const char *src, size_t siz);
+#endif
+#endif
 
 // JSON helpers
 
