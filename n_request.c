@@ -758,9 +758,20 @@ void NoteResetRequired(void)
     resetRequired = true;
 }
 
-bool NoteConnect(void)
+bool NoteConnect(uint32_t timeoutSeconds_)
 {
-    return NoteReset();
+    bool result = false;
+    uint32_t startMs = _GetMs();
+    uint32_t timeoutMs = timeoutSeconds_ * 1000;
+
+    do {
+        if ((result = NoteReset())) { // Let the reset function manage locking
+            break;
+        }
+        _DelayMs(RETRY_DELAY_MS);
+    } while ((_GetMs() - startMs) < timeoutMs);
+
+    return result;
 }
 
 bool NoteReset(void)
