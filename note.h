@@ -370,8 +370,11 @@ J *NoteRequestResponse(J *req);
        contains an I/O error.
 
  @see NoteResponseError to check the response for errors.
+
+ @deprecated This function is deprecated. Please use `NoteConnect()` followed by
+             the standard `NoteRequestResponse()` function instead.
  */
-J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds);
+NOTE_C_DEPRECATED J *NoteRequestResponseWithRetry(J *req, uint32_t timeoutSeconds);
 /*!
  @brief Send a request to the Notecard and return the response as JSON string.
 
@@ -446,9 +449,10 @@ bool NoteRequest(J *req);
  @returns `true` if successful and `false` if an error occurs (e.g. out of
           memory or the response from the Notecard has an "err" field).
 
- @see NoteRequestResponseWithRetry if you need to work with the response.
+ @deprecated This function is deprecated. Please use `NoteConnect()` followed by
+             the standard `NoteRequest()` function instead.
  */
-bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds);
+NOTE_C_DEPRECATED bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds);
 /*!
  @brief Set the request timeout for Notecard transactions.
 
