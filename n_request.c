@@ -758,18 +758,15 @@ void NoteResetRequired(void)
     resetRequired = true;
 }
 
-bool NoteConnect(uint32_t timeoutSeconds_)
+bool NoteConnect(uint32_t timeoutSeconds)
 {
     bool result = false;
-    uint32_t startMs = _GetMs();
-    uint32_t timeoutMs = timeoutSeconds_ * 1000;
 
-    do {
-        if ((result = NoteReset())) { // Let the reset function manage locking
-            break;
-        }
-        _DelayMs(RETRY_DELAY_MS);
-    } while ((_GetMs() - startMs) < timeoutMs);
+    for (
+        uint32_t startMs = _GetMs(), timeoutMs = (timeoutSeconds * 1000) ;
+        (result = NoteReset()) && ((_GetMs() - startMs) < timeoutMs) ;
+        _DelayMs(RETRY_DELAY_MS)
+    );
 
     return result;
 }
