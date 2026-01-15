@@ -292,11 +292,13 @@ typedef void (*txnStopFn) (void);
 /*!
  @brief Connect to the Notecard
 
- This function is used to establish the Notecard connection.
+ This blocking, thread-safe function is used to establish the Notecard connection.
+
+ @param timeoutSeconds Time limit for connection attempts, in seconds.
 
  @returns `true` when connection has been established, `false` otherwise.
  */
-bool NoteConnect(void);
+bool NoteConnect(uint32_t timeoutSeconds);
 
 /*!
  @brief Reset the Notecard, clearing any error state.
