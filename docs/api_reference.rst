@@ -114,11 +114,7 @@ Functions
 
 .. doxygenfunction:: NoteRequestResponse
 
-.. doxygenfunction:: NoteRequestResponseWithRetry
-
 .. doxygenfunction:: NoteRequest
-
-.. doxygenfunction:: NoteRequestWithRetry
 
 .. doxygendefine:: NoteResponseError
 
