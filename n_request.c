@@ -204,7 +204,10 @@ bool NoteRequest(J *req)
 
 bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     J *rsp = NoteRequestResponseWithRetry(req, timeoutSeconds);
+#pragma GCC diagnostic pop
     // If there is no response return false
     if (rsp == NULL) {
         return false;
