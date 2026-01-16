@@ -761,12 +761,12 @@ void NoteResetRequired(void)
     resetRequired = true;
 }
 
-bool NoteConnect(uint32_t timeoutSeconds)
+bool NoteConnect(uint32_t timeoutMs)
 {
     bool result = false;
 
     for (
-        uint32_t startMs = _GetMs(), timeoutMs = (timeoutSeconds * 1000) ;
+        uint32_t startMs = _GetMs() ;
         (result = NoteReset()) && ((_GetMs() - startMs) < timeoutMs) ;
         _DelayMs(RETRY_DELAY_MS)
     );

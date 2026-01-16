@@ -40,8 +40,8 @@ enum {
 #define NOTE_C_STRINGIZE(x) _NOTE_C_STRINGIZE(x)
 
 #define NOTE_C_VERSION_MAJOR 2
-#define NOTE_C_VERSION_MINOR 5
-#define NOTE_C_VERSION_PATCH 3
+#define NOTE_C_VERSION_MINOR 6
+#define NOTE_C_VERSION_PATCH 1
 
 #define NOTE_C_VERSION NOTE_C_STRINGIZE(NOTE_C_VERSION_MAJOR) "." NOTE_C_STRINGIZE(NOTE_C_VERSION_MINOR) "." NOTE_C_STRINGIZE(NOTE_C_VERSION_PATCH)
 
@@ -294,11 +294,11 @@ typedef void (*txnStopFn) (void);
 
  This blocking, thread-safe function is used to establish the Notecard connection.
 
- @param timeoutSeconds Time limit for connection attempts, in seconds.
+ @param timeoutMs Time limit for connection attempts, in milliseconds.
 
  @returns `true` when connection has been established, `false` otherwise.
  */
-bool NoteConnect(uint32_t timeoutSeconds);
+bool NoteConnect(uint32_t timeoutMs);
 
 /*!
  @brief Reset the Notecard, clearing any error state.
