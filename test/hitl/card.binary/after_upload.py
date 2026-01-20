@@ -9,8 +9,8 @@ Import("env")
 
 # There's an issue with PlatformIO where, after uploading, it expects to see the
 # test port (i.e. the Swan's USB, which outputs test logging) too quickly. After
-# upload, it may take a second for the device (/tmp/ns_mcu_usb) to appear, and
-# so we don't want to proceed past the upload phase until it's appeared.
+# upload, it may take a second for the device to appear, and so we don't want to
+# proceed past the upload phase until it's appeared.
 def _wait_for_test_port(env):
     port = env.GetProjectOption("test_port")
     print("Waiting for test port: " + port)
