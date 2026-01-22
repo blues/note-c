@@ -197,11 +197,11 @@ jobs:
           go build .
           sudo cp notecard /usr/bin/
 
-      - name: Download and install latest notestation CLI dev release
+      - name: Download and install notestation CLI v2.2.0
         env:
           GH_TOKEN: ${{ secrets.NOTESTATION_RELEASE_DOWNLOAD_TOKEN }}
         run: |
-          api_url="https://api.github.com/repos/blues/notestation/releases/tags/dev"
+          api_url="https://api.github.com/repos/blues/notestation/releases/tags/v2.2.0"
 
           # Query the release asset metadata.
           asset_info=$(curl -s -H "Authorization: token $GH_TOKEN" "$api_url")
@@ -230,63 +230,51 @@ jobs:
         run: |
           source venv/bin/activate
 
-          args=()
-          if [ -n "${{ env.FIRMWARE_S3_URI }}" ]; then
-            args+=(--update-card-fw "${{ env.FIRMWARE_S3_URI }}")
-          fi
-
-          # For now, we're hardcoding the Notestation to
-          # barcelona-notestation-1, which is the only one we've set up to run
-          # these tests. The --ready-file option creates a "ready" file at the
-          # given path once the notestation client is done reserving the
-          # notestation and, if relevant, the Notecard firmware upgrade is
-          # complete. This allows us to launch a notestation client in the
-          # background and then wait for it to be ready before moving on. This
-          # async pattern is used here.
-          READY_FILE=/tmp/ns_client_ready
-          args+=(
-            --mcu-debug
-            --notestation barcelona-notestation-1
-            --work-dir /tmp
-            --ready-file $READY_FILE
-          )
-
-          nohup notestation client reserve "${args[@]}" &> card_client.log &
+          # Reserve the Notestation in the background
+          nohup notestation client reserve --notestation barcelona-notestation-1 &> card_client.log &
           PID=$!
 
           timeout=600  # 10 minutes in seconds
           interval=3   # Check every 3 seconds
           elapsed=0
 
-          # If we don't see the ready file after 10 minutes, or if the client
-          # fails, bail.
-          while [ ! -f $READY_FILE ]; do
+          # Wait for the reservation directory to appear under ~/.notestation
+          RESERVATION_DIR="$HOME/.notestation/pid-${PID}_barcelona-notestation-1"
+          while [ ! -d "$RESERVATION_DIR" ]; do
               sleep $interval
               elapsed=$((elapsed + interval))
 
-              # Check if the Python process is still running
+              # Check if the client process is still running
               if ! kill -0 $PID 2>/dev/null; then
-                  echo "Error: Process $PID has terminated unexpectedly."
+                  echo "Error: Notestation client process $PID has terminated unexpectedly."
                   echo "$(cat card_client.log)"
                   exit 1
               fi
 
               if [ $elapsed -ge $timeout ]; then
-                  echo "Timeout reached: $READY_FILE did not appear."
+                  echo "Timeout reached: Reservation directory $RESERVATION_DIR did not appear."
                   kill $PID 2>/dev/null
                   echo "$(cat card_client.log)"
                   exit 1
               fi
           done
 
-          echo "Notestation ready."
+          echo "Notestation reserved."
 
-          RES_FILE="/tmp/ns_reservation.json"
+          # If firmware update is requested, flash it using notestation client flash
+          if [ "${{ env.FIRMWARE_S3_URI }}" == "nightly" ]; then
+            echo "Flashing nightly firmware..."
+            notestation client flash --notecard-nightly
+            echo "Firmware flash complete."
+          fi
+
           # Set these environment variables, which are read in platformio.ini in
           # order to flash the Swan with the test firmware.
-          export MCU_GDB_SERVER_IP="$(jq -r '.notestation' $RES_FILE)"
-          export MCU_GDB_SERVER_PORT="$(jq -r '.mcu_openocd.gdb' $RES_FILE)"
+          RES_FILE="$RESERVATION_DIR/reservation.json"
+          export MCU_GDB_SERVER_IP="$(jq -r '.hostname' $RES_FILE)"
+          export MCU_GDB_SERVER_PORT="$(jq -r '.debug_servers[] | select(.target == "host_mcu") | .gdb_port' $RES_FILE)"
           export GDB_CMD="gdb-multiarch"
+          export TEST_PORT="$RESERVATION_DIR/host_mcu_usb"
 
           if [ -z "$MCU_GDB_SERVER_IP" ] || [ "$MCU_GDB_SERVER_IP" == "null" ]; then
               echo "Error: MCU_GDB_SERVER_IP is empty or not defined."
@@ -294,8 +282,8 @@ jobs:
               exit 1
           fi
 
-          if [ -z "$MCU_GDB_SERVER_PORT" ] || [ "$MCU_GDB_SERVER_PORT" -eq 0 ]; then
-              echo "Error: MCU_GDB_SERVER_PORT is empty or zero."
+          if [ -z "$MCU_GDB_SERVER_PORT" ] || [ "$MCU_GDB_SERVER_PORT" == "null" ]; then
+              echo "Error: MCU_GDB_SERVER_PORT is empty or not defined."
               kill $PID 2>/dev/null
               exit 1
           fi
