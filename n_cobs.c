@@ -42,9 +42,6 @@ uint32_t _cobsDecode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst)
         }
 
         // Read next code byte (indicates how many data bytes follow)
-        if (ptr >= end) {
-            break;
-        }
         code = (*ptr++) ^ eop;
 
         // code == 0 is the termination marker
