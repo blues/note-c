@@ -24,6 +24,15 @@ ARG USER
 # Local Environment Variable(s)
 ENV LC_ALL="C.UTF-8"
 
+# Install adduser package for user creation utilities
+RUN ["dash", "-c", "\
+    apt-get update --quiet \
+ && apt-get install --assume-yes --no-install-recommends --quiet \
+     adduser \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* \
+"]
+
 # Create Non-Root User
 RUN ["dash", "-c", "\
     addgroup \
@@ -70,6 +79,7 @@ RUN ["dash", "-c", "\
  && pip install --break-system-packages \
      breathe \
      sphinx-rtd-theme \
+     sphinx-markdown-builder \
  && apt-get clean \
  && apt-get purge \
  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
