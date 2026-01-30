@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="struct_note_payload_desc" kind="struct" language="C++" prot="public">
+    <compoundname>NotePayloadDesc</compoundname>
+    <includes refid="note_8h" local="no">note.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_note_payload_desc_1a05effe66a8c405ee11e9b1d8758d322a" prot="public" static="no" mutable="no">
+        <type>uint8_t *</type>
+        <definition>uint8_t* NotePayloadDesc::data</definition>
+        <argsstring></argsstring>
+        <name>data</name>
+        <qualifiedname>NotePayloadDesc::data</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Pointer to the payload data </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/note.h" line="2094" column="13" bodyfile="/home/runner/work/note-c/note-c/note.h" bodystart="2094" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_note_payload_desc_1afb8e03b00c614d92cde2695938cd8ef1" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t NotePayloadDesc::alloc</definition>
+        <argsstring></argsstring>
+        <name>alloc</name>
+        <qualifiedname>NotePayloadDesc::alloc</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Allocated size of the data buffer </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/note.h" line="2095" column="14" bodyfile="/home/runner/work/note-c/note-c/note.h" bodystart="2095" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_note_payload_desc_1ad28917f881294856b621632d318f5ea7" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t NotePayloadDesc::length</definition>
+        <argsstring></argsstring>
+        <name>length</name>
+        <qualifiedname>NotePayloadDesc::length</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Current length of data in the buffer </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/note.h" line="2096" column="14" bodyfile="/home/runner/work/note-c/note-c/note.h" bodystart="2096" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Structure for managing payload data with segments. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/note-c/note-c/note.h" line="2093" column="1" bodyfile="/home/runner/work/note-c/note-c/note.h" bodystart="2093" bodyend="2097"/>
+    <listofallmembers>
+      <member refid="struct_note_payload_desc_1afb8e03b00c614d92cde2695938cd8ef1" prot="public" virt="non-virtual"><scope>NotePayloadDesc</scope><name>alloc</name></member>
+      <member refid="struct_note_payload_desc_1a05effe66a8c405ee11e9b1d8758d322a" prot="public" virt="non-virtual"><scope>NotePayloadDesc</scope><name>data</name></member>
+      <member refid="struct_note_payload_desc_1ad28917f881294856b621632d318f5ea7" prot="public" virt="non-virtual"><scope>NotePayloadDesc</scope><name>length</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

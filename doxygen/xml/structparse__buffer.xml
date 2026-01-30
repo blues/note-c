@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structparse__buffer" kind="struct" language="C++" prot="public">
+    <compoundname>parse_buffer</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structparse__buffer_1a52ee1184576baa3d5171059ab0e942de" prot="public" static="no" mutable="no">
+        <type>const unsigned char *</type>
+        <definition>const unsigned char* parse_buffer::content</definition>
+        <argsstring></argsstring>
+        <name>content</name>
+        <qualifiedname>parse_buffer::content</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="240" column="25" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="240" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structparse__buffer_1a036970e9335896d3cee8459eda9e2eb9" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t parse_buffer::length</definition>
+        <argsstring></argsstring>
+        <name>length</name>
+        <qualifiedname>parse_buffer::length</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="241" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="241" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structparse__buffer_1af727920073077579942a79de519bb31a" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t parse_buffer::offset</definition>
+        <argsstring></argsstring>
+        <name>offset</name>
+        <qualifiedname>parse_buffer::offset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="242" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="242" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structparse__buffer_1af613c4ed7d73f76c60c50d1bcf4c67a0" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t parse_buffer::depth</definition>
+        <argsstring></argsstring>
+        <name>depth</name>
+        <qualifiedname>parse_buffer::depth</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="243" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="243" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="239" column="1" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="239" bodyend="244"/>
+    <listofallmembers>
+      <member refid="structparse__buffer_1a52ee1184576baa3d5171059ab0e942de" prot="public" virt="non-virtual"><scope>parse_buffer</scope><name>content</name></member>
+      <member refid="structparse__buffer_1af613c4ed7d73f76c60c50d1bcf4c67a0" prot="public" virt="non-virtual"><scope>parse_buffer</scope><name>depth</name></member>
+      <member refid="structparse__buffer_1a036970e9335896d3cee8459eda9e2eb9" prot="public" virt="non-virtual"><scope>parse_buffer</scope><name>length</name></member>
+      <member refid="structparse__buffer_1af727920073077579942a79de519bb31a" prot="public" virt="non-virtual"><scope>parse_buffer</scope><name>offset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

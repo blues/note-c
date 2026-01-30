@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structprintbuffer" kind="struct" language="C++" prot="public">
+    <compoundname>printbuffer</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structprintbuffer_1a754f63618e91db99f7ab6cfc4e629013" prot="public" static="no" mutable="no">
+        <type>unsigned char *</type>
+        <definition>unsigned char* printbuffer::buffer</definition>
+        <argsstring></argsstring>
+        <name>buffer</name>
+        <qualifiedname>printbuffer::buffer</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="341" column="19" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="341" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structprintbuffer_1a1a679f8b6fe9b413fb3a87203b0f5bc8" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t printbuffer::length</definition>
+        <argsstring></argsstring>
+        <name>length</name>
+        <qualifiedname>printbuffer::length</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="342" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="342" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structprintbuffer_1a3ed6f9d24d6591047680492a962dc7c9" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t printbuffer::offset</definition>
+        <argsstring></argsstring>
+        <name>offset</name>
+        <qualifiedname>printbuffer::offset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="343" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="343" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structprintbuffer_1aa7311b5da38ff8d1737824c611b48732" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t printbuffer::depth</definition>
+        <argsstring></argsstring>
+        <name>depth</name>
+        <qualifiedname>printbuffer::depth</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="344" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="344" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structprintbuffer_1a2055471b46a66241c72beffd81b67e66" prot="public" static="no" mutable="no">
+        <type><ref refid="n__cjson_8h_1abcfad9bdd54f2729b7e1c3891289f8dd" kindref="member">Jbool</ref></type>
+        <definition>Jbool printbuffer::noalloc</definition>
+        <argsstring></argsstring>
+        <name>noalloc</name>
+        <qualifiedname>printbuffer::noalloc</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="345" column="11" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="345" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structprintbuffer_1a38337d25a56957deebce187d9ab089ef" prot="public" static="no" mutable="no">
+        <type><ref refid="n__cjson_8h_1abcfad9bdd54f2729b7e1c3891289f8dd" kindref="member">Jbool</ref></type>
+        <definition>Jbool printbuffer::format</definition>
+        <argsstring></argsstring>
+        <name>format</name>
+        <qualifiedname>printbuffer::format</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="346" column="11" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="346" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structprintbuffer_1af746da3857d83e6c7cba29cc5bd7a123" prot="public" static="no" mutable="no">
+        <type><ref refid="n__cjson_8h_1abcfad9bdd54f2729b7e1c3891289f8dd" kindref="member">Jbool</ref></type>
+        <definition>Jbool printbuffer::omitempty</definition>
+        <argsstring></argsstring>
+        <name>omitempty</name>
+        <qualifiedname>printbuffer::omitempty</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="347" column="11" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="347" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="340" column="1" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="340" bodyend="348"/>
+    <listofallmembers>
+      <member refid="structprintbuffer_1a754f63618e91db99f7ab6cfc4e629013" prot="public" virt="non-virtual"><scope>printbuffer</scope><name>buffer</name></member>
+      <member refid="structprintbuffer_1aa7311b5da38ff8d1737824c611b48732" prot="public" virt="non-virtual"><scope>printbuffer</scope><name>depth</name></member>
+      <member refid="structprintbuffer_1a38337d25a56957deebce187d9ab089ef" prot="public" virt="non-virtual"><scope>printbuffer</scope><name>format</name></member>
+      <member refid="structprintbuffer_1a1a679f8b6fe9b413fb3a87203b0f5bc8" prot="public" virt="non-virtual"><scope>printbuffer</scope><name>length</name></member>
+      <member refid="structprintbuffer_1a2055471b46a66241c72beffd81b67e66" prot="public" virt="non-virtual"><scope>printbuffer</scope><name>noalloc</name></member>
+      <member refid="structprintbuffer_1a3ed6f9d24d6591047680492a962dc7c9" prot="public" virt="non-virtual"><scope>printbuffer</scope><name>offset</name></member>
+      <member refid="structprintbuffer_1af746da3857d83e6c7cba29cc5bd7a123" prot="public" virt="non-virtual"><scope>printbuffer</scope><name>omitempty</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

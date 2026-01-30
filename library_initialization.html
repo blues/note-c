@@ -1,0 +1,440 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library Initialization &mdash; note-c  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Calling the Notecard API" href="calling_the_notecard_api.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/blues_logo_no_text.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Library Initialization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dynamic-memory-and-timing-hooks">Dynamic Memory and Timing Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#i-o-hooks">I/O Hooks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#serial">Serial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i2c">I2C</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mutex-hooks">Mutex Hooks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#notecard-mutex">Notecard Mutex</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i2c-mutex">I2C Mutex</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#example-note-c-hooks-for-stm32l4">Example: note-c Hooks for STM32L4</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Dynamic Memory and Timing Hooks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#malloc"><code class="docutils literal notranslate"><span class="pre">malloc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#free"><code class="docutils literal notranslate"><span class="pre">free</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#delay"><code class="docutils literal notranslate"><span class="pre">delay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#millis"><code class="docutils literal notranslate"><span class="pre">millis</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">I/O Hooks</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#noteserialreset"><cite>_noteSerialReset</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#noteserialtransmit"><cite>_noteSerialTransmit</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#noteserialavailable"><cite>_noteSerialAvailable</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#noteserialreceive"><cite>_noteSerialReceive</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notei2creset"><cite>_noteI2CReset</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notei2ctransmit"><cite>_noteI2CTransmit</cite></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#notei2creceive"><cite>_noteI2CReceive</cite></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="calling_the_notecard_api.html">Calling the Notecard API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ports.html">Ports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">note-c</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Library Initialization</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/library_initialization.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="library-initialization">
+<h1><a class="toc-backref" href="#id5" role="doc-backlink">Library Initialization</a><a class="headerlink" href="#library-initialization" title="Link to this heading"></a></h1>
+<nav class="contents" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#library-initialization" id="id5">Library Initialization</a></p>
+<ul>
+<li><p><a class="reference internal" href="#dynamic-memory-and-timing-hooks" id="id6">Dynamic Memory and Timing Hooks</a></p></li>
+<li><p><a class="reference internal" href="#i-o-hooks" id="id7">I/O Hooks</a></p></li>
+<li><p><a class="reference internal" href="#mutex-hooks" id="id8">Mutex Hooks</a></p></li>
+<li><p><a class="reference internal" href="#example-note-c-hooks-for-stm32l4" id="id9">Example: note-c Hooks for STM32L4</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>In order to send and receive data to and from the Notecard, note-c requires several hooks (i.e. callbacks) to be set. The implementations of the hooks are platform-specific and hence cannot be provided by note-c itself.</p>
+<p>Blues develops several open source ports of these hooks for different platforms to accelerate getting started with note-c. The level of abstraction of these ports varies. For example, <a class="reference external" href="https://github.com/blues/note-stm32l4">note-stm32l4</a> implements these hooks for the STM32L4 series of MCUs using the STM32L4 HAL, while <a class="reference external" href="https://github.com/blues/note-arduino">note-arduino</a> is a more generic port that allows you to use note-c with essentially any Arduino-compatible board.</p>
+<p>For a comprehensive listing of note-c ports, go to <a class="reference internal" href="ports.html"><span class="doc">Ports</span></a>.</p>
+<p>For an example and detailed breakdown of implementing the hooks for a specific platform, go to <a class="reference internal" href="#example-note-c-hooks-for-stm32l4"><span class="std std-ref">Example: note-c Hooks for STM32L4</span></a>.</p>
+<section id="dynamic-memory-and-timing-hooks">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Dynamic Memory and Timing Hooks</a><a class="headerlink" href="#dynamic-memory-and-timing-hooks" title="Link to this heading"></a></h2>
+<p>A port must set the dynamic memory and timing hooks using <a class="reference internal" href="api_reference.html#c.NoteSetFn" title="NoteSetFn"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteSetFn()</span></code></a> for:</p>
+<ul class="simple">
+<li><p>Allocating memory</p></li>
+<li><p>Freeing memory</p></li>
+<li><p>Millisecond delay</p></li>
+<li><p>Millisecond counter</p></li>
+</ul>
+</section>
+<section id="i-o-hooks">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">I/O Hooks</a><a class="headerlink" href="#i-o-hooks" title="Link to this heading"></a></h2>
+<p>note-c maintains one active Notecard I/O interface (serial or I2C) at a time. Calling <a class="reference internal" href="api_reference.html#c.NoteSetFnSerial" title="NoteSetFnSerial"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteSetFnSerial()</span></code></a> sets the active interface to serial, and calling <a class="reference internal" href="api_reference.html#c.NoteSetFnI2C" title="NoteSetFnI2C"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteSetFnI2C()</span></code></a> sets the active interface to I2C.</p>
+<section id="serial">
+<h3>Serial<a class="headerlink" href="#serial" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="api_reference.html#c.NoteSetFnSerial" title="NoteSetFnSerial"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteSetFnSerial()</span></code></a> sets the serial hooks for:</p>
+<ul class="simple">
+<li><p>Resetting the serial peripheral</p></li>
+<li><p>Transmitting bytes</p></li>
+<li><p>Checking if there’s a byte available to receive</p></li>
+<li><p>Receiving a single byte</p></li>
+</ul>
+</section>
+<section id="i2c">
+<h3>I2C<a class="headerlink" href="#i2c" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="api_reference.html#c.NoteSetFnI2C" title="NoteSetFnI2C"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteSetFnI2C()</span></code></a> sets the I2C hooks for:</p>
+<ul class="simple">
+<li><p>Resetting the I2C peripheral</p></li>
+<li><p>Transmitting bytes</p></li>
+<li><p>Receiving bytes</p></li>
+</ul>
+<p><a class="reference internal" href="api_reference.html#c.NoteSetFnI2C" title="NoteSetFnI2C"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteSetFnI2C()</span></code></a> also requires two additional parameters: the I2C address of the Notecard and the maximum number of bytes to send to the Notecard in a single I2C chunk. To use the defaults for these two values, use the macros <a class="reference internal" href="api_reference.html#c.NOTE_I2C_ADDR_DEFAULT" title="NOTE_I2C_ADDR_DEFAULT"><code class="xref c c-macro docutils literal notranslate"><span class="pre">NOTE_I2C_ADDR_DEFAULT</span></code></a> and <a class="reference internal" href="api_reference.html#c.NOTE_I2C_MTU_DEFAULT" title="NOTE_I2C_MTU_DEFAULT"><code class="xref c c-macro docutils literal notranslate"><span class="pre">NOTE_I2C_MTU_DEFAULT</span></code></a>, respectively.</p>
+<p>The I2C hooks are slightly more complex than the serial hooks. The transmit and receive hooks must implement the Notecard’s serial-over-I2C protocol:</p>
+<blockquote>
+<div><p><em>Unlike many fixed-length and register-based I2C protocols, the Notecard defines a variable-length, serial-over-I2C protocol that allows developers to handle JSON requests and responses in a similar manner as a direct serial connection.</em></p>
+</div></blockquote>
+<p>Familiarize yourself with the protocol using <a class="reference external" href="https://dev.blues.io/guides-and-tutorials/notecard-guides/serial-over-i2c-protocol/">this guide</a> from the Blues developer site. <a class="reference internal" href="#example-note-c-hooks-for-stm32l4"><span class="std std-ref">Example: note-c Hooks for STM32L4</span></a> provides a detailed breakdown of implementing the protocol for STM32L4. While this example uses the STM32L4 HAL, the overall approach is generalizable to other platforms.</p>
+</section>
+</section>
+<section id="mutex-hooks">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Mutex Hooks</a><a class="headerlink" href="#mutex-hooks" title="Link to this heading"></a></h2>
+<section id="notecard-mutex">
+<h3>Notecard Mutex<a class="headerlink" href="#notecard-mutex" title="Link to this heading"></a></h3>
+<p>A port must set the Notecard mutex hooks using <a class="reference internal" href="api_reference.html#c.NoteSetFnNoteMutex" title="NoteSetFnNoteMutex"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteSetFnNoteMutex()</span></code></a> if it intends to support multiple concurrent tasks that communicate with the Notecard. Specifically, the port must set lock and unlock hooks. Internally, note-c will call the lock hook before every transaction with the Notecard begins, and it will call the unlock hook after every transaction ends. This ensures that one task doesn’t interrupt another task in the middle of a transaction.</p>
+<p>The simplest implementation of these hooks relies on a flag indicating if access to the Notecard is locked by some other task. The lock hook sleeps/yields until the flag indicates the Notecard is unlocked and then acquires the lock itself:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">lockNotecard</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">notecardLocked</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">NoteDelayMs</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span><span class="w"> </span><span class="c1">// sleep 10 ms between checks</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">notecardLocked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The unlock hook simply clears the flag:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">unlockNotecard</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">notecardLocked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="i2c-mutex">
+<h3>I2C Mutex<a class="headerlink" href="#i2c-mutex" title="Link to this heading"></a></h3>
+<p>A port must set the I2C mutex hooks using <a class="reference internal" href="api_reference.html#c.NoteSetFnI2CMutex" title="NoteSetFnI2CMutex"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteSetFnI2CMutex()</span></code></a> if it intends to support multiple concurrent tasks that drive the same I2C bus that the Notecard is on. Specifically, the port must set lock and unlock hooks. The simple lock-unlock implementation described previously in <a class="reference internal" href="#notecard-mutex"><span class="std std-ref">Notecard Mutex</span></a> can be used for these hooks, too. Internally, note-c will call the lock hook before every I2C transaction with the Notecard begins, and it will call the unlock hook after every I2C transaction ends. The other tasks using I2C must be amended to do the same.</p>
+</section>
+</section>
+<section id="example-note-c-hooks-for-stm32l4">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Example: note-c Hooks for STM32L4</a><a class="headerlink" href="#example-note-c-hooks-for-stm32l4" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://github.com/blues/note-stm32l4">note-stm32l4</a> is the note-c port for the STM32L4 series of MCUs. This section walks through how the various note-c hooks are implemented for this platform. Notecard and I2C mutex hooks are not covered.</p>
+<section id="id2">
+<h3>Dynamic Memory and Timing Hooks<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>This line in <a class="reference external" href="https://github.com/blues/note-stm32l4/blob/master/Src/main.c">Src/main.c</a> sets the dynamic memory and timing hooks:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">NoteSetFn</span><span class="p">(</span><span class="n">malloc</span><span class="p">,</span><span class="w"> </span><span class="n">free</span><span class="p">,</span><span class="w"> </span><span class="n">delay</span><span class="p">,</span><span class="w"> </span><span class="n">millis</span><span class="p">);</span>
+</pre></div>
+</div>
+<section id="malloc">
+<h4><code class="docutils literal notranslate"><span class="pre">malloc</span></code><a class="headerlink" href="#malloc" title="Link to this heading"></a></h4>
+<p>The memory allocation hook is set to <code class="docutils literal notranslate"><span class="pre">malloc</span></code> from libc.</p>
+</section>
+<section id="free">
+<h4><code class="docutils literal notranslate"><span class="pre">free</span></code><a class="headerlink" href="#free" title="Link to this heading"></a></h4>
+<p>The memory freeing hook is set to <code class="docutils literal notranslate"><span class="pre">free</span></code> from libc.</p>
+</section>
+<section id="delay">
+<h4><code class="docutils literal notranslate"><span class="pre">delay</span></code><a class="headerlink" href="#delay" title="Link to this heading"></a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">delay</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">ms</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">HAL_Delay</span><span class="p">(</span><span class="n">ms</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">delay</span></code> calls into the STM32 HAL to delay for the specified number of milliseconds.</p>
+</section>
+<section id="millis">
+<h4><code class="docutils literal notranslate"><span class="pre">millis</span></code><a class="headerlink" href="#millis" title="Link to this heading"></a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">long</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">millis</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">)</span><span class="w"> </span><span class="n">HAL_GetTick</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">millis</span></code> uses the HAL to get the value of a continuously running millisecond counter.</p>
+</section>
+</section>
+<section id="id3">
+<h3>I/O Hooks<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>The code below from <a class="reference external" href="https://github.com/blues/note-stm32l4/blob/master/Src/main.c">Src/main.c</a> determines which I/O interface gets used, depending on the value of the <code class="docutils literal notranslate"><span class="pre">NOTECARD_USE_I2C</span></code> macro.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#if NOTECARD_USE_I2C</span>
+<span class="w">   </span><span class="n">NoteSetFnI2C</span><span class="p">(</span><span class="n">NOTE_I2C_ADDR_DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">NOTE_I2C_MTU_DEFAULT</span><span class="p">,</span><span class="w"> </span><span class="n">_noteI2CReset</span><span class="p">,</span><span class="w"> </span><span class="n">_noteI2CTransmit</span><span class="p">,</span><span class="w"> </span><span class="n">_noteI2CReceive</span><span class="p">);</span>
+<span class="cp">#else</span>
+<span class="w">   </span><span class="n">NoteSetFnSerial</span><span class="p">(</span><span class="n">_noteSerialReset</span><span class="p">,</span><span class="w"> </span><span class="n">_noteSerialTransmit</span><span class="p">,</span><span class="w"> </span><span class="n">_noteSerialAvailable</span><span class="p">,</span><span class="w"> </span><span class="n">_noteSerialReceive</span><span class="p">);</span>
+<span class="cp">#endif</span>
+</pre></div>
+</div>
+<section id="noteserialreset">
+<h4><cite>_noteSerialReset</cite><a class="headerlink" href="#noteserialreset" title="Link to this heading"></a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="nf">_noteSerialReset</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="n">MX_USART1_UART_DeInit</span><span class="p">();</span>
+<span class="w">   </span><span class="n">MX_USART1_UART_Init</span><span class="p">();</span>
+
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The serial reset hook reinitializes the serial peripheral connected to the Notecard.</p>
+</section>
+<section id="noteserialtransmit">
+<h4><cite>_noteSerialTransmit</cite><a class="headerlink" href="#noteserialtransmit" title="Link to this heading"></a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">_noteSerialTransmit</span><span class="p">(</span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">text</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">flush</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">HAL_UART_Transmit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">huart1</span><span class="p">,</span><span class="w"> </span><span class="n">text</span><span class="p">,</span><span class="w"> </span><span class="n">len</span><span class="p">,</span><span class="w"> </span><span class="mi">5000</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The serial transmit hook uses the HAL to write the data in the buffer to the serial peripheral connected to the Notecard.</p>
+</section>
+<section id="noteserialavailable">
+<h4><cite>_noteSerialAvailable</cite><a class="headerlink" href="#noteserialavailable" title="Link to this heading"></a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="nf">_noteSerialAvailable</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">serialFillIndex</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">serialDrainIndex</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>For receiving serial data from the Notecard, note-stm32l4 uses a circular buffer. In the receive interrupt handler for the UART peripheral, this buffer gets populated with the received data. <code class="docutils literal notranslate"><span class="pre">serialFillIndex</span></code> is the write index into that buffer, and <code class="docutils literal notranslate"><span class="pre">serialDrainIndex</span></code> is the read index. If the two indices are equal, there’s nothing new to read. If they aren’t equal, there is something to read.</p>
+</section>
+<section id="noteserialreceive">
+<h4><cite>_noteSerialReceive</cite><a class="headerlink" href="#noteserialreceive" title="Link to this heading"></a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">char</span><span class="w"> </span><span class="nf">_noteSerialReceive</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">data</span><span class="p">;</span>
+<span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">_noteSerialAvailable</span><span class="p">())</span><span class="w"> </span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">serialDrainIndex</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">serialBuffer</span><span class="p">))</span>
+<span class="w">        </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">serialBuffer</span><span class="p">[</span><span class="n">serialDrainIndex</span><span class="o">++</span><span class="p">];</span>
+<span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">serialBuffer</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">        </span><span class="n">serialDrainIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">data</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The serial receive hook returns the byte from the circular receive buffer at the read index, handling the case where the index wraps around to 0.</p>
+</section>
+<section id="notei2creset">
+<h4><cite>_noteI2CReset</cite><a class="headerlink" href="#notei2creset" title="Link to this heading"></a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="nf">_noteI2CReset</span><span class="p">(</span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">DevAddress</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">MX_I2C1_DeInit</span><span class="p">();</span>
+<span class="w">    </span><span class="n">MX_I2C1_Init</span><span class="p">();</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The I2C reset hook reinitializes the I2C peripheral used to communicate with the Notecard.</p>
+</section>
+<section id="notei2ctransmit">
+<h4><cite>_noteI2CTransmit</cite><a class="headerlink" href="#notei2ctransmit" title="Link to this heading"></a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="nf">_noteI2CTransmit</span><span class="p">(</span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">DevAddress</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="o">*</span><span class="w"> </span><span class="n">pBuffer</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">errstr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">writelen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Size</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">writebuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="n">writelen</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">writebuf</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">errstr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;i2c: insufficient memory (write)&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">writebuf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Size</span><span class="p">;</span>
+<span class="w">        </span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">writebuf</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">pBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">Size</span><span class="p">);</span>
+<span class="w">        </span><span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="n">err_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_I2C_Master_Transmit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hi2c1</span><span class="p">,</span><span class="w"> </span><span class="n">DevAddress</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">writebuf</span><span class="p">,</span><span class="w"> </span><span class="n">writelen</span><span class="p">,</span><span class="w"> </span><span class="mi">250</span><span class="p">);</span>
+<span class="w">        </span><span class="n">free</span><span class="p">(</span><span class="n">writebuf</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err_code</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">HAL_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">errstr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;i2c: HAL_I2C_Master_Transmit error&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">errstr</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>To frame the data to transmit to the Notecard using the serial-over-I2C protocol, the host first adds a byte indicating the number of bytes in the payload, which is <code class="docutils literal notranslate"><span class="pre">Size</span></code>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">writebuf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Size</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Then, it adds on the payload of <code class="docutils literal notranslate"><span class="pre">Size</span></code> bytes, which is pointed to by <code class="docutils literal notranslate"><span class="pre">pBuffer</span></code>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">writebuf</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="w"> </span><span class="n">pBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">Size</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Then the host calls the platform-specific method to send those bytes over I2C, which is <code class="docutils literal notranslate"><span class="pre">HAL_I2C_Master_Transmit</span></code> in this case.</p>
+</section>
+<section id="notei2creceive">
+<h4><cite>_noteI2CReceive</cite><a class="headerlink" href="#notei2creceive" title="Link to this heading"></a></h4>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="nf">_noteI2CReceive</span><span class="p">(</span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">DevAddress</span><span class="p">,</span><span class="w"> </span><span class="kt">uint8_t</span><span class="o">*</span><span class="w"> </span><span class="n">pBuffer</span><span class="p">,</span><span class="w"> </span><span class="kt">uint16_t</span><span class="w"> </span><span class="n">Size</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="o">*</span><span class="n">available</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">errstr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="n">err_code</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Retry transmit errors several times, because it&#39;s harmless to do so</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">hdr</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+<span class="w">        </span><span class="n">hdr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">        </span><span class="n">hdr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="w"> </span><span class="n">Size</span><span class="p">;</span>
+<span class="w">        </span><span class="n">HAL_StatusTypeDef</span><span class="w"> </span><span class="n">err_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_I2C_Master_Transmit</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hi2c1</span><span class="p">,</span><span class="w"> </span><span class="n">DevAddress</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">hdr</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">hdr</span><span class="p">),</span><span class="w"> </span><span class="mi">250</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err_code</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">HAL_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">errstr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">            </span><span class="k">break</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="n">errstr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;i2c: HAL_I2C_Master_Transmit error&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Only receive if we successfully began transmission</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">errstr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+
+<span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">readlen</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="o">*</span><span class="mi">2</span><span class="p">);</span>
+<span class="w">        </span><span class="kt">uint8_t</span><span class="w"> </span><span class="o">*</span><span class="n">readbuf</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">malloc</span><span class="p">(</span><span class="n">readlen</span><span class="p">);</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">readbuf</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">errstr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;i2c: insufficient memory (read)&quot;</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="n">err_code</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">HAL_I2C_Master_Receive</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hi2c1</span><span class="p">,</span><span class="w"> </span><span class="n">DevAddress</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">readbuf</span><span class="p">,</span><span class="w"> </span><span class="n">readlen</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">err_code</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">HAL_OK</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="n">errstr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;i2c: HAL_I2C_Master_Receive error&quot;</span><span class="p">;</span>
+<span class="w">            </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">availbyte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readbuf</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="w">                </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">goodbyte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readbuf</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+<span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">goodbyte</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">Size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="n">errstr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;i2c: incorrect amount of data&quot;</span><span class="p">;</span>
+<span class="w">                </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="o">*</span><span class="n">available</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">availbyte</span><span class="p">;</span>
+<span class="w">                    </span><span class="n">memcpy</span><span class="p">(</span><span class="n">pBuffer</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">readbuf</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">Size</span><span class="p">);</span>
+<span class="w">                </span><span class="p">}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">            </span><span class="n">free</span><span class="p">(</span><span class="n">readbuf</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Done</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">errstr</span><span class="p">;</span>
+
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Setting aside the retry logic at the start and the error checking, the above code is simpler than it initially appears. To initiate a read with the Notecard, the serial-over-I2C protocol specifies that the host first send a 2-byte packet: a 0 followed by a byte indicating the max amount of data the host is prepared to receive. That’s <code class="docutils literal notranslate"><span class="pre">Size</span></code> in this case, which is the available space in the receive buffer <code class="docutils literal notranslate"><span class="pre">pBuffer</span></code>.</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">hdr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="n">hdr</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)</span><span class="w"> </span><span class="n">Size</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Then, the host calls the platform-specific method to send those bytes over I2C.</p>
+<p>Now, to read the data from the Notecard, the host calls the platform-specific method for an I2C read (<code class="docutils literal notranslate"><span class="pre">HAL_I2C_Master_Receive</span></code>). The packet it receives from the Notecard has a 2-byte header. The first byte indicates the number of bytes still available to read from the Notecard after this packet:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">availbyte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readbuf</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>The second byte is the number of bytes in the current packet:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">goodbyte</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">readbuf</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+</pre></div>
+</div>
+<p>The rest of the packet is the payload:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">memcpy</span><span class="p">(</span><span class="n">pBuffer</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">readbuf</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="w"> </span><span class="n">Size</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Note that the number of bytes still available is returned to the caller via the <code class="docutils literal notranslate"><span class="pre">available</span></code> parameter:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="o">*</span><span class="n">available</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">availbyte</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>This lets note-c know if it should call this hook again to keep reading.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Blues.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
