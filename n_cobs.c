@@ -6,6 +6,7 @@
 #include <string.h>
 
 #define COBS_EOP_OVERHEAD 1
+#define COBS_MAX_PACKET_SIZE 254
 
 //**************************************************************************/
 /*!
@@ -142,16 +143,11 @@ uint32_t _cobsEncode(uint8_t *ptr, uint32_t length, uint8_t eop, uint8_t *dst)
             chunkLen = searchLen;
         }
 
-        // OPTIMIZATION: Bulk copy with XOR applied
-        if (eop == 0) {
-            // Fast path: no XOR needed, use highly optimized memcpy()
-            memcpy(dst, ptr, chunkLen);
-        } else {
-            // XOR path: tight array-indexed loop enables SIMD/NEON auto-vectorization.
-            // This pattern allows compilers to generate optimal vector instructions
-            // (e.g., NEON: vld1 + veor + vst1 for 16-byte chunks).
+        // Bulk copy using memmove() for overlap safety, then XOR in-place if needed
+        memmove(dst, ptr, chunkLen);
+        if (eop != 0) {
             for (uint32_t i = 0; i < chunkLen; i++) {
-                dst[i] = ptr[i] ^ eop;
+                dst[i] ^= eop;
             }
         }
 
@@ -260,7 +256,7 @@ uint32_t _cobsEncodedLength(const uint8_t *ptr, uint32_t length)
 /**************************************************************************/
 uint32_t _cobsEncodedMaxLength(uint32_t length)
 {
-    const uint32_t overheadBytes = ((length / 254) + ((length % 254) > 0));
+    const uint32_t overheadBytes = (length == 0) + ((length != 0) * ((length / COBS_MAX_PACKET_SIZE) + ((length % COBS_MAX_PACKET_SIZE) > 0)));
     return (length + overheadBytes + COBS_EOP_OVERHEAD);
 }
 
@@ -273,12 +269,34 @@ uint32_t _cobsEncodedMaxLength(uint32_t length)
 
   @return the length of unencoded data
 
-  @note  The computation may leave additional space at the end.
-  @note  An additional byte is added for the EOP (end-of-packet) marker.
+  @note  An additional byte for the EOP (end-of-packet) marker is assumed.
  */
 /**************************************************************************/
 uint32_t _cobsGuaranteedFit(uint32_t bufLen)
 {
-    uint32_t cobsOverhead = 1 + (bufLen / 254) + COBS_EOP_OVERHEAD;
-    return (cobsOverhead > bufLen ? 0 : (bufLen - cobsOverhead));
+    // encodedLen = unencodedLen + codeBytesLen
+    // e = u + c (e = encoded (sorry Euler), and c = code bytes (sorry Einstein))
+    // u = e - c
+    // c = ⌈u / 254⌉ (the ceiling of u divided by 254)
+    //
+    // Rearranging the ceiling equation:
+    // (c - 1) < u / 254 <= c
+    // 254(c - 1) < u <= 254c
+    //
+    // Substitute u from first equation:
+    // 254(c - 1) < e - c <= 254c
+    // 254c - 254 < e - c <= 254c
+    // 255c < e + 254 AND e <= 255c
+    //
+    // Thus:
+    // e <= 255c < e + 254
+    // e / 255 <= c < (e + 254) / 255
+    //
+    // Knowing that c is an integer, we can express c as:
+    // c = ⌊(e + 254) / 255⌋ (the floor of (e + 254) divided by 255)
+    //
+    // Substitute c back into the original equation for u:
+    // u = e - ⌊(e + 254) / 255⌋
+    const uint32_t encodedLen = (bufLen == 0) + ((bufLen != 0) * (bufLen - COBS_EOP_OVERHEAD));
+    return (encodedLen - ((encodedLen + COBS_MAX_PACKET_SIZE) / 255));
 }
