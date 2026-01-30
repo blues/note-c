@@ -5,6 +5,13 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: 'Force rebuild and publish Docker image (even if Dockerfile unchanged)'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   check_dockerfile_changed:
@@ -30,7 +37,7 @@ jobs:
   build_ci_docker_image:
     runs-on: ubuntu-latest
     needs: [check_dockerfile_changed]
-    if: ${{ needs.check_dockerfile_changed.outputs.changed == 'true' }}
+    if: ${{ needs.check_dockerfile_changed.outputs.changed == 'true' || inputs.force_build == true }}
 
     steps:
       - name: Checkout code
@@ -192,8 +199,8 @@ jobs:
     runs-on: ubuntu-latest
     # Make sure unit tests unit tests passed before publishing.
     needs: [build_ci_docker_image, run_unit_tests]
-    # Only publish the image if this is a push event and the Docker image was rebuilt
-    if: ${{ github.event_name == 'push' && needs.build_ci_docker_image.result == 'success' }}
+    # Only publish the image if this is a push event (or manual trigger with force_build) and the Docker image was rebuilt
+    if: ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.force_build == true)) && needs.build_ci_docker_image.result == 'success' }}
 
     steps:
       - name: Download image artifact
