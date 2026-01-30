@@ -26,19 +26,24 @@ ENV LC_ALL="C.UTF-8"
 
 # Create Non-Root User
 RUN ["dash", "-c", "\
-    addgroup \
-     --gid ${UID} \
-     \"${USER}\" \
- && adduser \
-     --disabled-password \
-     --gecos \"\" \
-     --ingroup \"${USER}\" \
-     --uid ${UID} \
-     \"${USER}\" \
+    groupadd \
+      --gid ${UID} \
+      \"${USER}\" \
+ && useradd \
+      --uid ${UID} \
+      --gid ${UID} \
+      --no-create-home \
+      --shell /bin/bash \
+      --comment \"\" \
+      \"${USER}\" \
+ && mkdir -p /home/\"${USER}\" \
+ && chown \"${USER}\":\"${USER}\" /home/\"${USER}\" \
+ && groupadd \
+      --force gpio \
  && usermod \
-     --append \
-     --groups \"dialout,plugdev\" \
-     \"${USER}\" \
+      --append \
+      --groups dialout,gpio,plugdev \
+      \"${USER}\" \
 "]
 
 # Add 32-bit binaries to the index.
@@ -61,6 +66,7 @@ RUN ["dash", "-c", "\
      git \
      lcov \
      libc6-dbg:i386 \
+     libjson-xs-perl \
      make \
      nano \
      python3-pip \

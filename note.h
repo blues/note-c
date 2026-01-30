@@ -58,6 +58,7 @@ enum {
 #define NOTE_C_SINGLE_PRECISION
 #endif
 #else
+// cppcheck-suppress preprocessorErrorDirective
 #error What are floating point exponent length symbols for this compiler?
 #endif
 
