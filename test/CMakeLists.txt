@@ -253,8 +253,8 @@ if(NOTE_C_COVERAGE)
     # Run lcov to produce a coverage report in the coverage directory.
     add_custom_command(
         TARGET coverage POST_BUILD
-        COMMAND lcov --capture --no-external --directory ${NOTE_C_SRC_DIR} --rc lcov_branch_coverage=1 ${LCOV_EXCLUDE_LIST} --output-file lcov.info
-        COMMAND lcov --summary --rc lcov_branch_coverage=1 lcov.info
+        COMMAND lcov --capture --no-external --directory ${NOTE_C_SRC_DIR} --rc branch_coverage=1 ${LCOV_EXCLUDE_LIST} --output-file lcov.info
+        COMMAND lcov --summary --rc branch_coverage=1 lcov.info
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage
     )
     # The tests have to be built before we can generate the coverage report.

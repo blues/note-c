@@ -61,6 +61,7 @@ RUN ["dash", "-c", "\
      git \
      lcov \
      libc6-dbg:i386 \
+     libjson-xs-perl \
      make \
      nano \
      python3-pip \
