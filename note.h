@@ -27,6 +27,7 @@
 // In case they're not yet defined
 #include <float.h>
 #include <limits.h>
+#include <stdarg.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -1421,6 +1422,151 @@ int JGetItemType(J *item);
  @returns The base type code.
  */
 int JBaseItemType(int type);
+/*!
+ @brief Merge all fields from source object into target object.
+
+ Moves all fields from the source JSON object into the target object.
+ If a field with the same name already exists in the target, it is replaced.
+ The source object is deleted after the merge.
+
+ @param target The target JSON object to merge fields into.
+ @param source The source JSON object to merge fields from (will be deleted).
+ */
+void JMerge(J *target, J *source);
+
+/*****************************************************************************
+ * JObjectf / JAddf - printf-style JSON object construction
+ *****************************************************************************
+ *
+ * JObjectf creates JSON objects using a printf-inspired format string.
+ * Just as printf("name: %s", name) formats a string, JObjectf("name:%s", name)
+ * creates a JSON object {"name":"..."}.
+ *
+ * FORMAT SYNTAX:
+ *   Whitespace-separated field definitions: "field1:value1 field2:value2"
+ *   Whitespace includes: space, tab, newline, carriage return, comma
+ *
+ * FIELD NAMES:
+ *   literal  - Unquoted identifier (letters, digits, underscore)
+ *   %s       - Name taken from argument (const char*)
+ *
+ * VALUE SPECIFIERS (consume arguments):
+ *   %s - String (const char*)
+ *   %d - Integer (JINTEGER)
+ *   %f - Floating point (JNUMBER)
+ *   %b - Boolean (int: 0=false, non-zero=true)
+ *   %o - JSON object/array (J*) - MOVED into result, not copied
+ *   %a - Synonym for %o
+ *
+ * LITERAL VALUES (no argument):
+ *   true / false     - Boolean
+ *   123 / -45        - Integer
+ *   3.14 / -0.5      - Float
+ *   'text'           - String with single quotes (escape: \' and \\)
+ *   "text"           - String with double quotes (escape: \" and \\)
+ *   word             - Unquoted string (letters/digits/underscore/dot)
+ *                      e.g., ok, continuous, hub.set, com.blues.app
+ *
+ * EXAMPLES:
+ *
+ *   // Basic types with format specifiers
+ *   JObjectf("name:%s age:%d", "Alice", 30)     -> {"name":"Alice","age":30}
+ *   JObjectf("temp:%f", 98.6)                   -> {"temp":98.6}
+ *   JObjectf("active:%b", true)                 -> {"active":true}
+ *
+ *   // Unquoted string values (simple identifiers)
+ *   JObjectf("status:ok")                       -> {"status":"ok"}
+ *   JObjectf("mode:continuous")                 -> {"mode":"continuous"}
+ *   JObjectf("file:data.qo")                    -> {"file":"data.qo"}
+ *
+ *   // Quoted string values
+ *   JObjectf("msg:'hello world'")               -> {"msg":"hello world"}
+ *   JObjectf("msg:\"hello world\"")             -> {"msg":"hello world"}
+ *   JObjectf("text:'it\\'s ok'")                -> {"text":"it's ok"}
+ *
+ *   // Literal numbers and booleans
+ *   JObjectf("count:42 rate:3.14")              -> {"count":42,"rate":3.14}
+ *   JObjectf("enabled:true disabled:false")     -> {"enabled":true,...}
+ *   JObjectf("offset:-10")                      -> {"offset":-10}
+ *
+ *   // Dynamic field names with %s
+ *   JObjectf("%s:%d", "x", 10)                  -> {"x":10}
+ *   JObjectf("%s:%s", key, value)               -> {<key>:<value>}
+ *
+ *   // Notecard requests and commands
+ *   JObjectf("req:hub.set product:com.blues.app mode:continuous")
+ *       -> {"req":"hub.set","product":"com.blues.app","mode":"continuous"}
+ *   JObjectf("cmd:card.led mode:breathe")
+ *       -> {"cmd":"card.led","mode":"breathe"}
+ *
+ *   // Nested objects with %o
+ *   J *body = JObjectf("temp:%f", 72.5);
+ *   J *req = JObjectf("req:note.add file:sensors.qo body:%o", body);
+ *       -> {"req":"note.add","file":"sensors.qo","body":{"temp":72.5}}
+ *
+ *   // Inline nested object construction
+ *   J *req = JObjectf("req:note.add file:sensors.qo body:%o",
+ *                     JObjectf("temp:%f humidity:%f", 72.5, 45.0));
+ *       -> {"req":"note.add","file":"sensors.qo","body":{"temp":72.5,"humidity":45.0}}
+ *
+ *   // Arrays with %a (same as %o)
+ *   J *arr = JCreateArray();
+ *   JAddItemToArray(arr, JCreateNumber(1));
+ *   JObjectf("values:%a", arr)                  -> {"values":[1]}
+ *
+ *   // Comma separators (JSON-like style)
+ *   JObjectf("a:1, b:2, c:3")                   -> {"a":1,"b":2,"c":3}
+ *
+ *   // JAddf to add fields to existing object
+ *   J *obj = JObjectf("base:1");
+ *   JAddf(obj, "extra:2 more:3");               -> {"base":1,"extra":2,"more":3}
+ *
+ * MEMORY: Caller must JDelete() the result. Objects passed via %o/%a become
+ *         owned by the result and should NOT be freed separately.
+ *
+ * ERRORS: Returns partial object on parse error, empty object if format is NULL.
+ *         If %o/%a argument is NULL, that field is skipped.
+ *
+ * See implementation in n_cjson_helpers.c for comprehensive documentation.
+ *****************************************************************************/
+
+/*!
+ @brief Create a JSON object using a printf-style format string.
+
+ @return A newly allocated J* object. Caller must call JDelete() when done.
+         Returns NULL only on memory allocation failure.
+
+ @see JObjectf() in n_cjson_helpers.c for full documentation.
+ */
+J *JObjectf(const char *format, ...);
+
+/*!
+ @brief Create a JSON object using a printf-style format string (va_list version).
+
+ @return A newly allocated J* object. Caller must call JDelete() when done.
+
+ @see JObjectfv() in n_cjson_helpers.c for full documentation.
+ */
+J *JObjectfv(const char *format, va_list args);
+
+/*!
+ @brief Merge printf-style formatted fields into an existing JSON object.
+
+ Convenience macro equivalent to JMerge(obj, JObjectf(fmt, ...)).
+ Fields with duplicate names in obj will be overwritten.
+
+ @param obj The target JSON object to add fields to.
+ @param fmt The format string with field definitions.
+ @param ... Arguments corresponding to format specifiers.
+
+ Example:
+ @code
+ J *obj = JCreateObject();
+ JAddf(obj, "name:%s age:%d", "Alice", 30);
+ @endcode
+ */
+#define JAddf(obj, fmt, ...) JMerge(obj, JObjectf(fmt, ##__VA_ARGS__))
+
 #define JGetObjectItemName(j) (j->string)
 
 // Helper functions for apps that wish to limit their C library dependencies
