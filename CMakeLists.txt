@@ -1,13 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 cmake_policy(SET CMP0095 NEW)
 
-if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
-    message(FATAL_ERROR "In-source builds are not allowed.
-    Please create a build directory and use `cmake ..` inside it.
-    NOTE: cmake will now create CMakeCache.txt and CMakeFiles/*.
-          You must delete them, or cmake will refuse to work.")
-endif()
-
 project(note_c)
 
 # Automatically ignore CMake build directory.
@@ -47,37 +40,13 @@ target_sources(
         ${NOTE_C_SRC_DIR}/n_serial.c
         ${NOTE_C_SRC_DIR}/n_str.c
 )
-target_compile_options(
-    note_c
-    PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Werror
-        -Og
-        -ggdb
-    PUBLIC
-        -m32
-        -mfpmath=sse
-        -msse2
-)
+
 target_include_directories(
     note_c
     PUBLIC ${NOTE_C_SRC_DIR}
 )
-target_link_directories(
-    note_c
-    PUBLIC
-        /lib32
-        /usr/lib32
-        /usr/lib/gcc/x86_64-linux-gnu/12/32
-)
-target_link_options(
-    note_c
-    PUBLIC
-        -m32
-        -Wl,-melf_i386
-)
+
+include(CompileOptions.cmake)
 
 if(NOTE_C_LOW_MEM)
     target_compile_definitions(
@@ -168,3 +137,16 @@ endif(NOTE_C_BUILD_TESTS)
 if(NOTE_C_BUILD_DOCS)
     add_subdirectory(docs)
 endif(NOTE_C_BUILD_DOCS)
+
+set_target_properties(note_c PROPERTIES PRIVATE_HEADER "${NOTE_C_SRC_DIR}/n_cjson.h")
+set_target_properties(note_c PROPERTIES PUBLIC_HEADER "${NOTE_C_SRC_DIR}/note.h")
+
+install(TARGETS note_c
+    EXPORT note_c
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/note-c
+    PRIVATE_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/note-c
+    PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/note-c
+)
