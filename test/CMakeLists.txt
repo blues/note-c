@@ -17,7 +17,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 # Add specific build flags for Catch2
-if(TARGET Catch2)
+if(TARGET Catch2 AND NOT APPLE)
     target_compile_options(Catch2
         PUBLIC
             -m32
@@ -47,6 +47,10 @@ macro(add_test TEST_NAME)
         PRIVATE -Og
         PRIVATE -ggdb
     )
+    if(APPLE)
+        # Allow test fakes (FFF) to interpose symbols from the note_c dylib
+        target_link_options(${TEST_NAME} PRIVATE -Wl,-flat_namespace)
+    endif()
 
     list(APPEND TEST_TARGETS ${TEST_NAME})
 
