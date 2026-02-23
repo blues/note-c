@@ -70,6 +70,25 @@ SCENARIO("_crcError")
                 CHECK(!_crcError(json, seqNo));
             }
         }
+
+        AND_GIVEN("A hub.status response with a quote at the CRC check offset") {
+            // Regression: a real hub.status response during connection.
+            // {"connected":false,"status":"connecting"} is 41 bytes.
+            // Position 19 (41-22) is '"' — the opening quote of "status".
+            // With the memcmp size bug (comparing 1 byte instead of 7),
+            // this '"' would be mistaken for the start of a CRC field,
+            // permanently flipping notecardFirmwareSupportsCrc to true
+            // and breaking all subsequent non-CRC communication.
+            char json[] = "{\"connected\":false,\"status\":\"connecting\"}";
+
+            THEN("A CRC error SHALL NOT be reported") {
+                CHECK(!_crcError(json, seqNo));
+            }
+            THEN("notecardFirmwareSupportsCrc SHALL remain false") {
+                _crcError(json, seqNo);
+                CHECK(notecardFirmwareSupportsCrc == false);
+            }
+        }
     }
 
     GIVEN("The Notecard firmware supports CRC") {
@@ -115,6 +134,19 @@ SCENARIO("_crcError")
             char json[] = "{\"crc\":\"0009:10BAC79A\",\"req\": \"hub.sync\"}";
 
             THEN("A CRC error SHALL be reported") {
+                CHECK(_crcError(json, seqNo));
+            }
+        }
+
+        AND_GIVEN("A hub.status response with a quote at the CRC check offset") {
+            // When the firmware is known to support CRC, a response WITHOUT
+            // a CRC field is correctly flagged as an error (CRC expected but
+            // missing). The regression test for the false-detection bug is
+            // in the "does NOT support CRC" section above, where the bug
+            // would incorrectly flip notecardFirmwareSupportsCrc to true.
+            char json[] = "{\"connected\":false,\"status\":\"connecting\"}";
+
+            THEN("A CRC error SHALL be reported (CRC expected but missing)") {
                 CHECK(_crcError(json, seqNo));
             }
         }

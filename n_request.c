@@ -968,7 +968,7 @@ NOTE_C_STATIC bool _crcError(char *json, uint16_t shouldBeSeqno)
 
     // See if it has a compliant CRC field
     size_t fieldOffset = ((jsonLen - 1) - CRC_FIELD_LENGTH);
-    if (memcmp(&json[fieldOffset + CRC_FIELD_NAME_OFFSET], CRC_FIELD_NAME_TEST, ((sizeof(CRC_FIELD_NAME_TEST) - 1)) != 0)) {
+    if (memcmp(&json[fieldOffset + CRC_FIELD_NAME_OFFSET], CRC_FIELD_NAME_TEST, sizeof(CRC_FIELD_NAME_TEST) - 1) != 0) {
         // If we've seen a CRC before, we should see one every time
         return notecardFirmwareSupportsCrc;
     }
