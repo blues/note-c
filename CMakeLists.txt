@@ -56,28 +56,59 @@ target_compile_options(
         -Werror
         -Og
         -ggdb
-    PUBLIC
-        -m32
-        -mfpmath=sse
-        -msse2
 )
+if(NOT APPLE)
+    target_compile_options(
+        note_c
+        PUBLIC
+            -m32
+            -mfpmath=sse
+            -msse2
+    )
+endif()
 target_include_directories(
     note_c
     PUBLIC ${NOTE_C_SRC_DIR}
 )
-target_link_directories(
-    note_c
-    PUBLIC
-        /lib32
-        /usr/lib32
-        /usr/lib/gcc/x86_64-linux-gnu/12/32
-)
-target_link_options(
-    note_c
-    PUBLIC
-        -m32
-        -Wl,-melf_i386
-)
+if(NOT APPLE)
+    target_link_directories(
+        note_c
+        PUBLIC
+            /lib32
+            /usr/lib32
+            /usr/lib/gcc/x86_64-linux-gnu/12/32
+    )
+    target_link_options(
+        note_c
+        PUBLIC
+            -m32
+            -Wl,-melf_i386
+    )
+endif()
+if(APPLE)
+    target_compile_definitions(
+        note_c
+        PUBLIC
+            HAVE_STRLCPY
+            HAVE_STRLCAT
+    )
+    # Suppress warnings in upstream code that AppleClang treats as errors
+    target_compile_options(
+        note_c
+        PRIVATE
+            -Wno-deprecated-non-prototype
+            -Wno-unused-but-set-variable
+            -Wno-strict-prototypes
+    )
+    # macOS provides strlcpy/strlcat natively; exclude the bundled implementations
+    set_source_files_properties(${NOTE_C_SRC_DIR}/n_str.c PROPERTIES HEADER_FILE_ONLY TRUE)
+    # Use flat namespace so test fakes (FFF) can interpose library symbols
+    target_link_options(
+        note_c
+        PRIVATE
+            -Wl,-flat_namespace
+    )
+endif()
 
 if(NOTE_C_LOW_MEM)
     target_compile_definitions(
