@@ -953,7 +953,7 @@ NOTE_C_STATIC bool _crcError(char *json, uint16_t shouldBeSeqno)
     }
 
     // Valid JSON must begin with an opening "{" and end with a closing "}"
-    if ((json[0] != '{') || (json[jsonLen - 1] != '}')) {
+    if (jsonLen < 2 || json[0] != '{' || json[jsonLen - 1] != '}') {
         // Invalid JSON
         return false;
     }
