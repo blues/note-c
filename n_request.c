@@ -958,6 +958,16 @@ NOTE_C_STATIC bool _crcError(char *json, uint16_t shouldBeSeqno)
         return false;
     }
 
+    // Ignore CRC checks when error ("err") is present in JSON.
+    // This condition must be tested early-on, because Notecard errors should
+    // not be treated as a CRC errors (CRC errors are automatically retried).
+    // There is little value in attempting to retry a transaction that prompts
+    // an error condition in the Notecard.
+    if (strstr(json, ERR_FIELD_NAME_TEST)) {
+        // Error ("err") present in JSON
+        return false;
+    }
+
     // Minimum JSON length is "{}" (2 bytes) + CRC_FIELD_LENGTH
     if (jsonLen < (CRC_FIELD_LENGTH + 2)) {
         // JSON too short to contain a CRC parameter
@@ -965,13 +975,7 @@ NOTE_C_STATIC bool _crcError(char *json, uint16_t shouldBeSeqno)
         return notecardFirmwareSupportsCrc;
     }
 
-    // Ignore CRC check when error ("err") is present in JSON
-    if (strstr(json, ERR_FIELD_NAME_TEST)) {
-        // Error ("err") present in JSON
-        return false;
-    }
-
-    // Calculate CRC offset by substracting the length of a CRC value from the
+    // Calculate CRC offset by subtracting the length of a CRC value from the
     // end of the JSON.
     size_t crcOffset = ((jsonLen - 1) - CRC_FIELD_LENGTH);
     if (memcmp(&json[crcOffset + CRC_FIELD_NAME_OFFSET], CRC_FIELD_NAME_TEST, (sizeof(CRC_FIELD_NAME_TEST) - 1)) != 0) {
