@@ -17,7 +17,7 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(const char *, _noteI2CTransmit, uint16_t, uint8_t *, uint16_t)
+FAKE_VALUE_FUNC(const char *, _noteI2CTransmit, uint16_t, const uint8_t *, uint16_t)
 FAKE_VALUE_FUNC(bool, _noteI2CReset, uint16_t)
 FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
 
@@ -27,7 +27,7 @@ namespace
 uint8_t transmitBuf[CARD_REQUEST_I2C_SEGMENT_MAX_LEN * 2];
 size_t transmitBufIdx = 0;
 
-const char *_noteI2CTransmitCapture(uint16_t, uint8_t *buf, uint16_t size)
+const char *_noteI2CTransmitCapture(uint16_t, const uint8_t *buf, uint16_t size)
 {
     memcpy(transmitBuf + transmitBufIdx, buf, size);
 

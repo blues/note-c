@@ -21,8 +21,8 @@ FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
 FAKE_VALUE_FUNC(bool, _noteSerialAvailable)
 FAKE_VALUE_FUNC(char, _noteSerialReceive)
 FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
-FAKE_VOID_FUNC(_noteSerialTransmit, uint8_t *, size_t, bool)
-FAKE_VALUE_FUNC(const char *, _serialChunkedTransmit, uint8_t *, uint32_t, bool);
+FAKE_VOID_FUNC(_noteSerialTransmit, const uint8_t *, size_t, bool)
+FAKE_VALUE_FUNC(const char *, _serialChunkedTransmit, const uint8_t *, uint32_t, bool);
 FAKE_VALUE_FUNC(const char *, _serialChunkedReceive, uint8_t *, uint32_t *, bool, uint32_t, uint32_t *)
 
 namespace
@@ -32,7 +32,7 @@ char transmitBuf[CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN * 2];
 size_t transmitBufLen = 0;
 bool resetTransmitBufLen = false;
 
-void _noteSerialTransmitAppend(uint8_t *buf, size_t len, bool)
+void _noteSerialTransmitAppend(const uint8_t *buf, size_t len, bool)
 {
     if (resetTransmitBufLen) {
         transmitBufLen = 0;
@@ -51,7 +51,7 @@ void _noteSerialTransmitAppend(uint8_t *buf, size_t len, bool)
     transmitBufLen += len;
 }
 
-const char *_serialChunkedTransmitAppend(uint8_t *buf, uint32_t len, bool)
+const char *_serialChunkedTransmitAppend(const uint8_t *buf, uint32_t len, bool)
 {
     _noteSerialTransmitAppend(buf, len, true);
 

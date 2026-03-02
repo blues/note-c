@@ -21,7 +21,7 @@ FAKE_VOID_FUNC(_delayIO)
 FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
 FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 FAKE_VALUE_FUNC(bool, _noteI2CReset, uint16_t)
-FAKE_VALUE_FUNC(const char *, _noteI2CTransmit, uint16_t, uint8_t *, uint16_t)
+FAKE_VALUE_FUNC(const char *, _noteI2CTransmit, uint16_t, const uint8_t *, uint16_t)
 FAKE_VALUE_FUNC(const char *, _noteI2CReceive, uint16_t, uint8_t *, uint16_t,
                 uint32_t *)
 FAKE_VOID_FUNC(NoteLockI2C)

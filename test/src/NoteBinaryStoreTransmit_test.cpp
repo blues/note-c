@@ -17,7 +17,7 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(const char *, _noteChunkedTransmit, uint8_t *, uint32_t, bool)
+FAKE_VALUE_FUNC(const char *, _noteChunkedTransmit, const uint8_t *, uint32_t, bool)
 FAKE_VOID_FUNC(_noteLockNote)
 FAKE_VALUE_FUNC(J *, _noteTransactionShouldLock, J *, bool)
 FAKE_VOID_FUNC(_noteUnlockNote)

@@ -45,14 +45,14 @@ const char *_serialNoteTransaction(const char *request, size_t reqLen, char **re
             reqLen--; // remove carriage return if it exists
         }
 
-        err = _serialChunkedTransmit((uint8_t *)request, reqLen, true);
+        err = _serialChunkedTransmit((const uint8_t *)request, reqLen, true);
         if (err) {
             NOTE_C_LOG_ERROR(err);
             return err;
         }
 
         // Append the carriage return and newline to the transaction.
-        _SerialTransmit((uint8_t *)c_newline, c_newline_len, true);
+        _SerialTransmit((const uint8_t *)c_newline, c_newline_len, true);
     }
 
     // If no reply expected, we're done
@@ -167,7 +167,7 @@ bool _serialNoteReset(void)
         // NOTE: This MUST always be `\n` and not `\r\n`, because there are some
         //       versions of the Notecard firmware will not respond to `\r\n`
         //       after communicating over I2C.
-        _SerialTransmit((uint8_t *)"\n", 1, true);
+        _SerialTransmit((const uint8_t *)"\n", 1, true);
 
         // Drain all communications for 500ms
         bool somethingFound = false;
@@ -294,7 +294,7 @@ const char *_serialChunkedReceive(uint8_t *buffer, uint32_t *size, bool delay, u
   @returns  A c-string with an error, or `NULL` if no error ocurred.
 */
 /**************************************************************************/
-const char *_serialChunkedTransmit(uint8_t *buffer, uint32_t size, bool delay)
+const char *_serialChunkedTransmit(const uint8_t *buffer, uint32_t size, bool delay)
 {
 #if CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN > SIZE_MAX
 #  error "CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN exceeds SIZE_MAX. Use I2C interface instead."

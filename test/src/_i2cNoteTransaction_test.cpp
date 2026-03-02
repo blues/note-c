@@ -20,7 +20,7 @@ DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(void *, NoteMalloc, size_t)
 FAKE_VOID_FUNC(NoteLockI2C)
 FAKE_VOID_FUNC(NoteUnlockI2C)
-FAKE_VALUE_FUNC(const char *, _i2cChunkedTransmit, uint8_t *, uint32_t, bool)
+FAKE_VALUE_FUNC(const char *, _i2cChunkedTransmit, const uint8_t *, uint32_t, bool)
 FAKE_VALUE_FUNC(const char *, _i2cNoteQueryLength, uint32_t *, uint32_t)
 FAKE_VALUE_FUNC(const char *, _i2cChunkedReceive, uint8_t *, uint32_t *, bool,
                 uint32_t, uint32_t *)

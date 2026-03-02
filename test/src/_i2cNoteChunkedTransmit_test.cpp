@@ -17,7 +17,7 @@
 #include "n_lib.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VALUE_FUNC(const char *, _i2cChunkedTransmit, uint8_t *, uint32_t, bool)
+FAKE_VALUE_FUNC(const char *, _i2cChunkedTransmit, const uint8_t *, uint32_t, bool)
 FAKE_VOID_FUNC(NoteLockI2C)
 FAKE_VOID_FUNC(NoteUnlockI2C)
 
@@ -33,12 +33,12 @@ SCENARIO("_i2cNoteChunkedTransmit")
         uint32_t size = 79;
         const bool delay = true;
 
-        _i2cChunkedTransmit_fake.custom_fake = [](uint8_t *, uint32_t, bool) -> const char* {
+        _i2cChunkedTransmit_fake.custom_fake = [](const uint8_t *, uint32_t, bool) -> const char* {
             return result_val;
         };
 
         WHEN("_i2cNoteChunkedTransmit is called") {
-            const char *err = _i2cNoteChunkedTransmit((uint8_t *)buffer, size, delay);
+            const char *err = _i2cNoteChunkedTransmit(buffer, size, delay);
 
             THEN("_i2cChunkedTransmit is called with the same parameters") {
                 CHECK(_i2cChunkedTransmit_fake.arg0_val == buffer);
