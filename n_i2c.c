@@ -217,7 +217,10 @@ bool _i2cNoteReset(void)
         // NOTE: This MUST always be `\n` and not `\r\n`, because there are some
         //       versions of the Notecard firmware will not respond to `\r\n`
         //       after communicating over I2C.
-        const char *transmitErr = _I2CTransmit(_I2CAddress(), (uint8_t *)"\n", 1);
+        // Stack buffer used to avoid passing flash-resident data through the
+        // non-const hook. TODO: Remove when i2cTransmitFn accepts const uint8_t *.
+        uint8_t lf[] = {'\n'};
+        const char *transmitErr = _I2CTransmit(_I2CAddress(), lf, 1);
         // If we get a failure on transmitting the `\n`, it means that the
         // Notecard isn't present.
         if (transmitErr) {

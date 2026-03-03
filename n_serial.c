@@ -52,7 +52,10 @@ const char *_serialNoteTransaction(const char *request, size_t reqLen, char **re
         }
 
         // Append the carriage return and newline to the transaction.
-        _SerialTransmit((const uint8_t *)c_newline, c_newline_len, true);
+        // Stack buffer used to avoid passing flash-resident data through the
+        // non-const hook. TODO: Remove when serialTransmitFn accepts const uint8_t *.
+        uint8_t newline[] = {'\r', '\n'};
+        _SerialTransmit(newline, c_newline_len, true);
     }
 
     // If no reply expected, we're done
@@ -167,7 +170,10 @@ bool _serialNoteReset(void)
         // NOTE: This MUST always be `\n` and not `\r\n`, because there are some
         //       versions of the Notecard firmware will not respond to `\r\n`
         //       after communicating over I2C.
-        _SerialTransmit((const uint8_t *)"\n", 1, true);
+        // Stack buffer used to avoid passing flash-resident data through the
+        // non-const hook. TODO: Remove when serialTransmitFn accepts const uint8_t *.
+        uint8_t lf[] = {'\n'};
+        _SerialTransmit(lf, 1, true);
 
         // Drain all communications for 500ms
         bool somethingFound = false;
