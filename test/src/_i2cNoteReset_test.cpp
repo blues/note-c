@@ -152,6 +152,16 @@ const char * _noteI2CReceive_ClearMessageSeq3(uint16_t, uint8_t *buffer, uint16_
     return nullptr;
 }
 
+static uint8_t _noteI2CTransmit_captured_byte = 0;
+
+const char *_noteI2CTransmit_capture(uint16_t, const uint8_t *buf, uint16_t)
+{
+    if (buf) {
+        _noteI2CTransmit_captured_byte = buf[0];
+    }
+    return nullptr;
+}
+
 SCENARIO("_i2cNoteReset")
 {
     //TODO: Refactor GIVEN/WHEN/THEN block grouping and names
@@ -211,6 +221,7 @@ SCENARIO("_i2cNoteReset")
         NoteDelayMs_fake.custom_fake = NoteDelayMs_mock;
         NoteGetMs_fake.custom_fake = NoteGetMs_mock;
         _noteI2CReset_fake.return_val = true;
+        _noteI2CTransmit_fake.custom_fake = _noteI2CTransmit_capture;
         const bool success = _i2cNoteReset();
 
         THEN("`_noteI2CTransmit()` is called") {
@@ -220,7 +231,11 @@ SCENARIO("_i2cNoteReset")
             CHECK(_noteI2CTransmit_fake.arg0_history[0] == NoteI2CAddress());
         }
         THEN("The second parameter is a string containing a single newline") {
-            CHECK(_noteI2CTransmit_fake.arg1_history[0][0] == '\n');
+            // Use the captured byte rather than dereferencing arg1_history[0] after
+            // the call returns: arg1 now points to a stack buffer in _i2cNoteReset
+            // (introduced to avoid passing a flash-resident literal to a non-const
+            // hook), so the pointer is invalid once the callee returns.
+            CHECK(_noteI2CTransmit_captured_byte == '\n');
         }
         THEN("The third parameter is the string length of 1") {
             CHECK(_noteI2CTransmit_fake.arg2_history[0] == sizeof(char));
