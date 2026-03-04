@@ -15,7 +15,7 @@
 
 #include "n_lib.h"
 
-typedef const char * (*nTransmitFn) (uint8_t *, uint32_t, bool);
+typedef const char * (*nTransmitFn) (const uint8_t *, uint32_t, bool);
 
 extern volatile int hookActiveInterface;
 extern nTransmitFn notecardChunkedTransmit;
@@ -47,7 +47,7 @@ SCENARIO("_noteChunkedTransmit")
         }
 
         AND_GIVEN("notecardChunkedTransmit is set") {
-            notecardChunkedTransmit = [](uint8_t *buffer_, uint32_t size_, bool delay_) {
+            notecardChunkedTransmit = [](const uint8_t *buffer_, uint32_t size_, bool delay_) {
                 hookParameter_buffer = buffer_;
                 hookParameter_buffer_size = size_;
                 hookParameter_delay = delay_;
@@ -81,7 +81,7 @@ SCENARIO("_noteChunkedTransmit")
         }
 
         AND_GIVEN("notecardChunkedTransmit is set") {
-            notecardChunkedTransmit = [](uint8_t *buffer_, uint32_t size_, bool delay_) {
+            notecardChunkedTransmit = [](const uint8_t *buffer_, uint32_t size_, bool delay_) {
                 hookParameter_buffer = buffer_;
                 hookParameter_buffer_size = size_;
                 hookParameter_delay = delay_;
@@ -127,7 +127,7 @@ SCENARIO("_noteChunkedTransmit")
         }
 
         AND_GIVEN("notecardChunkedTransmit is set") {
-            notecardChunkedTransmit = [](uint8_t *buffer_, uint32_t size_, bool delay_) {
+            notecardChunkedTransmit = [](const uint8_t *buffer_, uint32_t size_, bool delay_) {
                 hookParameter_buffer = buffer_;
                 hookParameter_buffer_size = size_;
                 hookParameter_delay = delay_;

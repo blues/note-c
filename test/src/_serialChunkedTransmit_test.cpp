@@ -18,7 +18,7 @@
 #include "time_mocks.h"
 
 DEFINE_FFF_GLOBALS
-FAKE_VOID_FUNC(_noteSerialTransmit, uint8_t *, size_t, bool)
+FAKE_VOID_FUNC(_noteSerialTransmit, const uint8_t *, size_t, bool)
 FAKE_VOID_FUNC(NoteDelayMs, uint32_t)
 
 namespace
@@ -30,7 +30,7 @@ namespace
 uint8_t accumulatedBuf[CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN * 2];
 size_t accumulatedIdx = 0;
 
-void _noteSerialTransmitAccumulate(uint8_t *buf, size_t size, bool)
+void _noteSerialTransmitAccumulate(const uint8_t *buf, size_t size, bool)
 {
     memcpy(accumulatedBuf + accumulatedIdx, buf, size);
     accumulatedIdx += size;

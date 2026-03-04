@@ -18,7 +18,7 @@
 
 DEFINE_FFF_GLOBALS
 FAKE_VALUE_FUNC(bool, _noteSerialReset)
-FAKE_VOID_FUNC(_noteSerialTransmit, uint8_t *, size_t, bool)
+FAKE_VOID_FUNC(_noteSerialTransmit, const uint8_t *, size_t, bool)
 FAKE_VALUE_FUNC(bool, _noteSerialAvailable)
 FAKE_VALUE_FUNC(char, _noteSerialReceive)
 FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
