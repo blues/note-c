@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="struct_note_m_d5_context" kind="struct" language="C++" prot="public">
+    <compoundname>NoteMD5Context</compoundname>
+    <includes refid="note_8h" local="no">note.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_note_m_d5_context_1ad58666280287db0368333c2f50465f02" prot="public" static="no" mutable="no">
+        <type>unsigned long</type>
+        <definition>unsigned long NoteMD5Context::buf[4]</definition>
+        <argsstring>[4]</argsstring>
+        <name>buf</name>
+        <qualifiedname>NoteMD5Context::buf</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/note.h" line="1508" column="19" bodyfile="/home/runner/work/note-c/note-c/note.h" bodystart="1508" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_note_m_d5_context_1a79dcc9210c65fe4f31eb4295b2fc9510" prot="public" static="no" mutable="no">
+        <type>unsigned long</type>
+        <definition>unsigned long NoteMD5Context::bits[2]</definition>
+        <argsstring>[2]</argsstring>
+        <name>bits</name>
+        <qualifiedname>NoteMD5Context::bits</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/note.h" line="1509" column="19" bodyfile="/home/runner/work/note-c/note-c/note.h" bodystart="1509" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_note_m_d5_context_1af22373f810c98e50af1890c0a5e8cfa1" prot="public" static="no" mutable="no">
+        <type>unsigned char</type>
+        <definition>unsigned char NoteMD5Context::in[64]</definition>
+        <argsstring>[64]</argsstring>
+        <name>in</name>
+        <qualifiedname>NoteMD5Context::in</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/note.h" line="1510" column="19" bodyfile="/home/runner/work/note-c/note-c/note.h" bodystart="1510" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>MD5 context structure for incremental MD5 hashing. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/note-c/note-c/note.h" line="1507" column="1" bodyfile="/home/runner/work/note-c/note-c/note.h" bodystart="1507" bodyend="1511"/>
+    <listofallmembers>
+      <member refid="struct_note_m_d5_context_1a79dcc9210c65fe4f31eb4295b2fc9510" prot="public" virt="non-virtual"><scope>NoteMD5Context</scope><name>bits</name></member>
+      <member refid="struct_note_m_d5_context_1ad58666280287db0368333c2f50465f02" prot="public" virt="non-virtual"><scope>NoteMD5Context</scope><name>buf</name></member>
+      <member refid="struct_note_m_d5_context_1af22373f810c98e50af1890c0a5e8cfa1" prot="public" virt="non-virtual"><scope>NoteMD5Context</scope><name>in</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
