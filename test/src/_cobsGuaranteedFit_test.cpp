@@ -108,7 +108,7 @@ SCENARIO("_cobsGuaranteedFit")
     GIVEN("A buffer length of 256 bytes (255*1 + 1, boundary case)") {
         // BUG FIX: Old code returned 254. But encoding 254 non-zero bytes
         // produces 254 + 2 code bytes = 256, which with +1 EOP = 257 > 256.
-        // Correct answer: 253 (encodes to 253 + 1 code + 1 EOP = 255 ≤ 256).
+        // Correct answer: 253 (encodes to 253 + 1 code + 1 EOP = 255 <= 256).
         const uint32_t bufLen = 256;
 
         WHEN("The max unencoded length is calculated") {

@@ -78,7 +78,7 @@ SCENARIO("_cobsEncodedMaxLength")
     // The following tests verify the fix for the ceil(u/254) vs floor(u/254)+1
     // bug. At exact multiples of 254, the encoder emits an extra code byte
     // that ceil() misses. Example: 254 non-zero bytes encode as [0xFF, data
-    // x254, 0x01] — that's 2 code bytes, not ceil(254/254)=1.
+    // x254, 0x01] -- that's 2 code bytes, not ceil(254/254)=1.
 
     GIVEN("A buffer length of exactly 253 bytes (just under one full COBS block)") {
         const uint32_t bufLen = 253;

@@ -25,7 +25,7 @@ jobs:
 
   notecard-binary-test:
     needs: md5srv-test
-    # Skip on fork PRs, nightly builds, etc. —> Secrets (Tailscale, Notehub, ngrok) aren't available.
+    # Skip on fork PRs, nightly builds, etc. -> Secrets (Tailscale, Notehub, ngrok) aren't available.
     if: >-
       github.event.repository.fork != true &&
       (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
@@ -215,7 +215,7 @@ jobs:
           asset_name=$(echo "$asset_info" | jq -r '.assets[] | select(.name | endswith(".whl")) | .name')
 
           if [ -z "$asset_url" ] || [ -z "$asset_name" ]; then
-            echo "❌ No wheel found in release assets."
+            echo "ERROR: No wheel found in release assets."
             exit 1
           fi
 
