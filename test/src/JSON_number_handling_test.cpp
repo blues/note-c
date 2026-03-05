@@ -26,7 +26,7 @@ namespace
 #define FIELD "num"
 
 #define JINTEGER_MAX_STR "9223372036854775807"
-// "Integers between 2^(n) and 2^(n+1) round to a multiple of 2^(n−52)."
+// "Integers between 2^(n) and 2^(n+1) round to a multiple of 2^(n-52)."
 // (https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
 // 9223372036854775807 == 2^63 - 1, so its JNUMBER representation should be rounded
 // up to the nearest multiple of 2^10 (1024).

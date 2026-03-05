@@ -391,7 +391,7 @@ SCENARIO("NoteTransaction")
         J* req = NoteNewRequest("card.time");
         REQUIRE(req != NULL);
         _noteJSONTransaction_fake.custom_fake = [] (const char *, size_t, char **response, uint32_t) -> const char * {
-            const char rsp_str[] = "{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de México\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
+            const char rsp_str[] = "{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de Mexico\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
             *response = (char *)malloc(sizeof(rsp_str));
             strncpy(*response, rsp_str, sizeof(rsp_str));
             return nullptr;
@@ -410,7 +410,7 @@ SCENARIO("NoteTransaction")
         J* req = NoteNewRequest("card.time");
         REQUIRE(req != NULL);
         _noteJSONTransaction_fake.custom_fake = [] (const char *, size_t, char **response, uint32_t) -> const char * {
-            const char rsp_str[] = "{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de México\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
+            const char rsp_str[] = "{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de Mexico\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
             *response = (char *)malloc(sizeof(rsp_str));
             strncpy(*response, rsp_str, sizeof(rsp_str));
             return nullptr;
@@ -432,7 +432,7 @@ SCENARIO("NoteTransaction")
         J* req = NoteNewRequest("card.time");
         REQUIRE(req != NULL);
         _noteJSONTransaction_fake.custom_fake = [] (const char *, size_t, char **response, uint32_t) -> const char * {
-            const char16_t rsp_str[] = u"{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de México\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
+            const char16_t rsp_str[] = u"{\"minutes\":-300,\"lat\":19.432608,\"lon\":-99.133122,\"area\":\"Ciudad de Mexico\",\"country\":\"MX\",\"zone\":\"CDT,America/Mexico_City\",\"time\":1726006340}";
             *response = (char *)malloc(sizeof(rsp_str));
             memcpy(*response, rsp_str, sizeof(rsp_str));
             return nullptr;

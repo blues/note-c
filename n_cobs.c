@@ -283,7 +283,7 @@ uint32_t _cobsEncodedMaxLength(uint32_t length)
 
          IMPORTANT: This is NOT ceil(u / 254). They differ at exact multiples
          of 254. Example: encoding 254 non-zero bytes produces code 0xFF,
-         254 data bytes, then final code 0x01 — that's 2 code bytes, but
+         254 data bytes, then final code 0x01 -- that's 2 code bytes, but
          ceil(254/254) = 1 (wrong).
 
          Buffer requirement: bufLen >= u + floor(u/254) + 1 + 1(EOP)
