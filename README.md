@@ -16,6 +16,8 @@ it as a git subtree.
 
 The API documentation for this library can be found [here][note-c API docs].
 
+The documentation can also be built locally in either HTML or Markdown format. See [Building Markdown Documentation](docs/BUILDING_MARKDOWN.md) for details on generating Markdown documentation.
+
 ## Logging Control
 
 `note-c` provides a comprehensive and flexible logging functionality.
