@@ -23,7 +23,8 @@ jobs:
             note.h \
             n_lib.h \
             n_cjson.h \
-            n_*.c
+            n_*.c \
+            scripts/update_note_c.sh
           echo "ARCHIVE=${archive}" >> "$GITHUB_ENV"
 
       - name: Upload release asset
