@@ -63,6 +63,16 @@ class WebRequestHandler(BaseHTTPRequestHandler):
 
     @cached_property
     def post_data(self):
+        transfer_encoding = self.headers.get("Transfer-Encoding", "")
+        if "chunked" in transfer_encoding.lower():
+            data = b""
+            while True:
+                chunk_size = int(self.rfile.readline().strip(), 16)
+                if chunk_size == 0:
+                    break
+                data += self.rfile.read(chunk_size)
+                self.rfile.read(2)  # consume trailing \r\n after chunk data
+            return data
         content_length = int(self.headers.get("Content-Length", 0))
         return self.rfile.read(content_length)
 
@@ -107,15 +117,23 @@ class WebRequestHandler(BaseHTTPRequestHandler):
                 reply_body = reply_body + '\n'
                 self.wfile.write(reply_body.encode('utf-8'))
 
+    def log_request_headers(self):
+        content_length = self.headers.get("Content-Length", "<absent>")
+        transfer_encoding = self.headers.get("Transfer-Encoding", "<absent>")
+        content_type = self.headers.get("Content-Type", "<absent>")
+        log(f"{self.command} {self.path} | Content-Length: {content_length} | Transfer-Encoding: {transfer_encoding} | Content-Type: {content_type}")
+
     def do(self, handler):
         """ Handle a request. If an exception is thrown, raises an internal server error. """
         try:
-            # print(self.dump_request())
             self.validate_token()
             handler()
         except HTTPException as e:
+            self.log_request_headers()
+            log(f"HTTP {e.status_code}: {e.message}" + (f" | {e.detail}" if e.detail else ""))
             self.send_status(e.status_code, e.message, e.detail)
         except Exception as e:
+            self.log_request_headers()
             traceback.print_exc()
             self.send_status(500, "Internal server error.", str(e))
 
@@ -207,7 +225,7 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         self._write_file(name, chunk, length, payload, md5)
 
     def write_file(self):
-        length = int(self.headers['Content-Length'])
+        length = int(self.headers['Content-Length'] or len(self.post_data))
         if not length:
             raise HTTPException(400, "Request body is empty.")
         chunk = self.query_data.get("chunk", None)

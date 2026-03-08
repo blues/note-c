@@ -296,6 +296,14 @@ jobs:
           echo "build flags $PLATFORMIO_BUILD_FLAGS"
           cd $GITHUB_WORKSPACE/$PIO_PROJECT_DIR
 
+          # Enable Notecard USB trace output.
+          printf '{"req":"card.trace","mode":"usb","trace":"req,comm,sync,mem"}\n' > "$RESERVATION_DIR/notecard_usb"
+
+          # Stream Notecard USB output to trace.log in the background.
+          socat -u GOPEN:"$RESERVATION_DIR/notecard_usb",rawer - >> "$GITHUB_WORKSPACE/trace.log" &
+          TRACE_PID=$!
+          echo "Notecard trace capture started (PID: $TRACE_PID)."
+
           # Run the tests. It's important that we provided --no-reset here. If
           # we don't, PlatformIO tries to fiddle with DTR and RTS, and that
           # causes an exception because the serial port for the Swan isn't a
@@ -309,6 +317,7 @@ jobs:
             --json-output-path test.json \
             --junit-output-path test.xml
 
+          kill $TRACE_PID 2>/dev/null
           kill $PID 2>/dev/null
 
       - name: Publish test report
@@ -320,6 +329,22 @@ jobs:
           report_paths: '**/test/hitl/card.binary/test*.xml'
           check_name: Notecard Binary HIL Tests
           require_tests: true
+
+      - name: Upload trace log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: notecard-trace
+          path: trace.log
+          if-no-files-found: ignore
+
+      - name: Upload MD5 server log
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: md5srv-log
+          path: md5srv.log
+          if-no-files-found: ignore
 
       - name: Cleanup Notehub proxy route
         if: always()
