@@ -243,8 +243,12 @@ if(NOTE_C_COVERAGE)
     # ourselves, so we don't care about coverage for them.
     set(
         EXCLUDE_FROM_COVERAGE
-        "n_atof.c;n_b64.c;n_cjson.c;n_ftoa.c;n_md5.c;n_str.c"
+        "n_atof.c;n_b64.c;n_cjson.c;n_ftoa.c;n_md5.c"
     )
+    # n_str.c is only compiled when the system lacks strlcpy/strlcat.
+    if(NOT HAVE_STRLCPY OR NOT HAVE_STRLCAT)
+        list(APPEND EXCLUDE_FROM_COVERAGE "n_str.c")
+    endif()
     foreach(EXCLUDE_FILE ${EXCLUDE_FROM_COVERAGE})
         string(APPEND LCOV_EXCLUDE "--exclude '*/${EXCLUDE_FILE}' ")
     endforeach()
