@@ -79,13 +79,6 @@ target_compile_options(
         -Og
         -ggdb
 )
-# Suppress warnings in upstream code that AppleClang treats as errors.
-if(CMAKE_C_COMPILER_ID MATCHES "AppleClang")
-    target_compile_options(note_c PRIVATE
-        -Wno-strict-prototypes
-        -Wno-unused-but-set-variable
-    )
-endif()
 # The Linux CI runs tests in 32-bit mode. These flags are x86-specific and
 # unavailable on Apple toolchains or non-x86 architectures.
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|i[3-6]86")

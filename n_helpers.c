@@ -2403,7 +2403,7 @@ uint32_t NoteMemAvailable(void)
     objHeader *lastObj = NULL;
     static long int maxsize = 35000;
     for (long int i=maxsize; i>=(long int)sizeof(objHeader); i=i-sizeof(objHeader)) {
-        for (long int j=0;; j++) {
+        for (;;) {
             objHeader *thisObj;
             thisObj = (objHeader *) _Malloc(i);
             if (thisObj == NULL) {
@@ -2416,16 +2416,8 @@ uint32_t NoteMemAvailable(void)
     }
 
     // Free the objects backwards
-    long int lastLength = 0;
-    long int lastLengthCount = 0;
     uint32_t total = 0;
     while (lastObj != NULL) {
-        if (lastObj->length != lastLength) {
-            lastLength = lastObj->length;
-            lastLengthCount = 1;
-        } else {
-            lastLengthCount++;
-        }
         objHeader *thisObj = lastObj;
         lastObj = lastObj->prev;
         total += thisObj->length;
