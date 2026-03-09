@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.21)
 cmake_policy(SET CMP0095 NEW)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}")
@@ -16,7 +16,7 @@ if(NOT EXISTS ${PROJECT_BINARY_DIR}/.gitignore)
 endif()
 
 option(NOTE_C_BUILD_DOCS "Build docs." OFF)
-option(NOTE_C_BUILD_TESTS "Build tests." ON)
+option(NOTE_C_BUILD_TESTS "Build tests." ${PROJECT_IS_TOP_LEVEL})
 option(NOTE_C_COVERAGE "Compile for test NOTE_C_COVERAGE reporting." OFF)
 option(NOTE_C_LOW_MEM "Build the library tailored for low memory usage." OFF)
 option(NOTE_C_MEM_CHECK "Run tests with Valgrind." OFF)
@@ -35,8 +35,6 @@ set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 include(CheckSymbolExists)
 check_symbol_exists(strlcpy "string.h" HAVE_STRLCPY)
 check_symbol_exists(strlcat "string.h" HAVE_STRLCAT)
-
-add_library(note_c SHARED)
 
 set(NOTE_C_SOURCES
     ${NOTE_C_SRC_DIR}/n_atof.c
@@ -60,57 +58,31 @@ set(NOTE_C_SOURCES
 if(NOT HAVE_STRLCPY OR NOT HAVE_STRLCAT)
     list(APPEND NOTE_C_SOURCES ${NOTE_C_SRC_DIR}/n_str.c)
 endif()
-target_sources(note_c PRIVATE ${NOTE_C_SOURCES})
+# ---------------------------------------------------------------------------
+# note_c_lib — static library for downstream consumers.
+#
+# Projects that include note-c as a submodule can simply do:
+#
+#   add_subdirectory(note-c)
+#   target_link_libraries(my_app PRIVATE note_c_lib)
+#
+# This target carries the include path and platform compile definitions
+# (HAVE_STRLCPY, etc.) but no test flags, 32-bit cross-compile options,
+# or other CI-specific settings.
+# ---------------------------------------------------------------------------
+add_library(note_c_lib STATIC ${NOTE_C_SOURCES})
+target_include_directories(note_c_lib PUBLIC ${NOTE_C_SRC_DIR})
 
 if(HAVE_STRLCPY)
-    target_compile_definitions(note_c PUBLIC HAVE_STRLCPY)
+    target_compile_definitions(note_c_lib PUBLIC HAVE_STRLCPY)
 endif()
 if(HAVE_STRLCAT)
-    target_compile_definitions(note_c PUBLIC HAVE_STRLCAT)
-endif()
-
-target_compile_options(
-    note_c
-    PRIVATE
-        -Wall
-        -Wextra
-        -Wpedantic
-        -Werror
-        -Og
-        -ggdb
-)
-# The Linux CI runs tests in 32-bit mode. These flags are x86-specific and
-# unavailable on Apple toolchains or non-x86 architectures.
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|i[3-6]86")
-    target_compile_options(note_c PUBLIC -m32 -mfpmath=sse -msse2)
-endif()
-target_include_directories(
-    note_c
-    PUBLIC ${NOTE_C_SRC_DIR}
-)
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|i[3-6]86")
-    target_link_directories(
-        note_c
-        PUBLIC
-            /lib32
-            /usr/lib32
-            /usr/lib/gcc/x86_64-linux-gnu/12/32
-    )
-    target_link_options(
-        note_c
-        PUBLIC
-            -m32
-            -Wl,-melf_i386
-    )
-endif()
-if(APPLE)
-    # Use flat namespace so test fakes (FFF) can interpose library symbols
-    target_link_options(note_c PRIVATE -Wl,-flat_namespace)
+    target_compile_definitions(note_c_lib PUBLIC HAVE_STRLCAT)
 endif()
 
 if(NOTE_C_LOW_MEM)
     target_compile_definitions(
-        note_c
+        note_c_lib
         PUBLIC
             NOTE_C_LOW_MEM
     )
@@ -119,7 +91,7 @@ else()
     # about an empty translation unit, so we only add it to the build if
     # NOTE_C_LOW_MEM is false.
     target_sources(
-        note_c
+        note_c_lib
         PRIVATE
             ${NOTE_C_SRC_DIR}/n_ua.c
     )
@@ -127,7 +99,7 @@ endif()
 
 if(NOTE_C_NO_LIBC)
     target_link_options(
-        note_c
+        note_c_lib
         PRIVATE
             -nostdlib
             -nodefaultlibs
@@ -137,7 +109,7 @@ endif()
 
 if(NOTE_NODEBUG)
     target_compile_definitions(
-        note_c
+        note_c_lib
         PUBLIC
             NOTE_NODEBUG
     )
@@ -145,7 +117,7 @@ endif()
 
 if(NOTE_C_SHOW_MALLOC)
     target_compile_definitions(
-        note_c
+        note_c_lib
         PUBLIC
             NOTE_C_SHOW_MALLOC
     )
@@ -153,7 +125,7 @@ endif()
 
 if(NOTE_C_SINGLE_PRECISION)
     target_compile_definitions(
-        note_c
+        note_c_lib
         PUBLIC
             NOTE_C_SINGLE_PRECISION
     )
@@ -161,13 +133,124 @@ endif()
 
 if(NOTE_C_HEARTBEAT_CALLBACK)
     target_compile_definitions(
-        note_c
+        note_c_lib
         PUBLIC
             NOTE_C_HEARTBEAT_CALLBACK
     )
 endif()
 
+# ---------------------------------------------------------------------------
+# note_c — shared library used by the unit test harness.
+#
+# This target adds -Werror, 32-bit cross-compile flags (Linux CI), FFF
+# interposition support (macOS), and the NOTE_C_TEST define. It is NOT
+# intended for downstream consumption.
+# ---------------------------------------------------------------------------
 if(NOTE_C_BUILD_TESTS)
+    add_library(note_c SHARED ${NOTE_C_SOURCES})
+    target_include_directories(note_c PUBLIC ${NOTE_C_SRC_DIR})
+
+    if(HAVE_STRLCPY)
+        target_compile_definitions(note_c PUBLIC HAVE_STRLCPY)
+    endif()
+    if(HAVE_STRLCAT)
+        target_compile_definitions(note_c PUBLIC HAVE_STRLCAT)
+    endif()
+
+    target_compile_options(
+        note_c
+        PRIVATE
+            -Wall
+            -Wextra
+            -Wpedantic
+            -Werror
+            -Og
+            -ggdb
+    )
+    # The Linux CI runs tests in 32-bit mode. These flags are x86-specific and
+    # unavailable on Apple toolchains or non-x86 architectures.
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|i[3-6]86")
+        target_compile_options(note_c PUBLIC -m32 -mfpmath=sse -msse2)
+    endif()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|i[3-6]86")
+        target_link_directories(
+            note_c
+            PUBLIC
+                /lib32
+                /usr/lib32
+                /usr/lib/gcc/x86_64-linux-gnu/12/32
+        )
+        target_link_options(
+            note_c
+            PUBLIC
+                -m32
+                -Wl,-melf_i386
+        )
+    endif()
+    if(APPLE)
+        # Use flat namespace so test fakes (FFF) can interpose library symbols
+        target_link_options(note_c PRIVATE -Wl,-flat_namespace)
+    endif()
+
+    if(NOTE_C_LOW_MEM)
+        target_compile_definitions(
+            note_c
+            PUBLIC
+                NOTE_C_LOW_MEM
+        )
+    else()
+        # This file is empty if NOTE_C_LOW_MEM is defined, which leads to a warning
+        # about an empty translation unit, so we only add it to the build if
+        # NOTE_C_LOW_MEM is false.
+        target_sources(
+            note_c
+            PRIVATE
+                ${NOTE_C_SRC_DIR}/n_ua.c
+        )
+    endif()
+
+    if(NOTE_C_NO_LIBC)
+        target_link_options(
+            note_c
+            PRIVATE
+                -nostdlib
+                -nodefaultlibs
+                LINKER:--no-undefined
+        )
+    endif()
+
+    if(NOTE_NODEBUG)
+        target_compile_definitions(
+            note_c
+            PUBLIC
+                NOTE_NODEBUG
+        )
+    endif()
+
+    if(NOTE_C_SHOW_MALLOC)
+        target_compile_definitions(
+            note_c
+            PUBLIC
+                NOTE_C_SHOW_MALLOC
+        )
+    endif()
+
+    if(NOTE_C_SINGLE_PRECISION)
+        target_compile_definitions(
+            note_c
+            PUBLIC
+                NOTE_C_SINGLE_PRECISION
+        )
+    endif()
+
+    if(NOTE_C_HEARTBEAT_CALLBACK)
+        target_compile_definitions(
+            note_c
+            PUBLIC
+                NOTE_C_HEARTBEAT_CALLBACK
+        )
+    endif()
+
     # Including CTest here rather than in test/CMakeLists.txt allows us to run
     # ctest from the root build directory (e.g. build/ instead of build/test/).
     # We also need to set MEMORYCHECK_COMMAND_OPTIONS before including this.
