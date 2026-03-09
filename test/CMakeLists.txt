@@ -16,8 +16,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
-# Add specific build flags for Catch2
-if(TARGET Catch2 AND NOT APPLE)
+# Add specific build flags for Catch2 (32-bit mode for Linux x86 CI only)
+if(TARGET Catch2 AND CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|i[3-6]86")
     target_compile_options(Catch2
         PUBLIC
             -m32
