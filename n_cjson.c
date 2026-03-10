@@ -1822,7 +1822,9 @@ N_CJSON_PUBLIC(void) JAddItemToArray(J *array, J *item)
         JDelete(item);
         return;
     }
-    _add_item_to_array(array, item);
+    if (!_add_item_to_array(array, item)) {
+        JDelete(item);
+    }
 }
 
 #if defined(__clang__) || (defined(__GNUC__)  && ((__GNUC__ > 4) || ((__GNUC__ == 4) && (__GNUC_MINOR__ > 5))))
