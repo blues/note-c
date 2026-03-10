@@ -1819,6 +1819,7 @@ NOTE_C_STATIC Jbool _add_item_to_array(J *array, J *item)
 N_CJSON_PUBLIC(void) JAddItemToArray(J *array, J *item)
 {
     if (array == NULL || item == NULL) {
+        JDelete(item);
         return;
     }
     _add_item_to_array(array, item);
@@ -1874,18 +1875,24 @@ NOTE_C_STATIC Jbool _add_item_to_object(J * const object, const char * const str
 N_CJSON_PUBLIC(void) JAddItemToObject(J *object, const char *string, J *item)
 {
     if (object == NULL || string == NULL || item == NULL) {
+        JDelete(item);
         return;
     }
-    _add_item_to_object(object, string, item, false);
+    if (!_add_item_to_object(object, string, item, false)) {
+        JDelete(item);
+    }
 }
 
 /* Add an item to an object with constant string as key */
 N_CJSON_PUBLIC(void) JAddItemToObjectCS(J *object, const char *string, J *item)
 {
     if (object == NULL || string == NULL || item == NULL) {
+        JDelete(item);
         return;
     }
-    _add_item_to_object(object, string, item, true);
+    if (!_add_item_to_object(object, string, item, true)) {
+        JDelete(item);
+    }
 }
 
 N_CJSON_PUBLIC(void) JAddItemReferenceToArray(J *array, J *item)
@@ -1901,7 +1908,10 @@ N_CJSON_PUBLIC(void) JAddItemReferenceToObject(J *object, const char *string, J 
     if (object == NULL || string == NULL || item == NULL) {
         return;
     }
-    _add_item_to_object(object, string, _create_reference(item), false);
+    J *ref = _create_reference(item);
+    if (!_add_item_to_object(object, string, ref, false)) {
+        JDelete(ref);
+    }
 }
 
 N_CJSON_PUBLIC(J*) JAddTrueToObject(J * const object, const char * const name)
