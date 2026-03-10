@@ -1902,7 +1902,10 @@ N_CJSON_PUBLIC(void) JAddItemReferenceToArray(J *array, J *item)
     if (array == NULL || item == NULL) {
         return;
     }
-    _add_item_to_array(array, _create_reference(item));
+    J *ref = _create_reference(item);
+    if (!_add_item_to_array(array, ref)) {
+        JDelete(ref);
+    }
 }
 
 N_CJSON_PUBLIC(void) JAddItemReferenceToObject(J *object, const char *string, J *item)
