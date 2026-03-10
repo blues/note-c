@@ -376,16 +376,15 @@ NOTE_C_STATIC unsigned char* _ensure(printbuffer * const p, size_t needed)
         return NULL;
     }
 
-    /* calculate new buffer size */
-    if (needed > (INT_MAX / 2)) {
-        /* overflow of int, use INT_MAX if possible */
+    /* calculate new buffer size (linear growth to reduce memory waste) */
+    if (needed > (INT_MAX - 256)) {
         if (needed <= INT_MAX) {
             newsize = INT_MAX;
         } else {
             return NULL;
         }
     } else {
-        newsize = needed * 2;
+        newsize = needed + 256;
     }
 
     /* otherwise reallocate manually */
