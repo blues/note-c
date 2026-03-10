@@ -600,7 +600,7 @@ void NoteFree(void *ptr)
             hookDebugOutput("free ");
             // Convert the pointer to a string and print
             char str[16];
-            _n_ptoa32(p, str);
+            _n_ptoa32(ptr, str);
             hookDebugOutput(str);
         }
 #endif // NOTE_C_SHOW_MALLOC && !defined(NOTE_C_LOW_MEM)

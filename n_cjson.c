@@ -2185,18 +2185,22 @@ N_CJSON_PUBLIC(void) JDeleteItemFromObjectCaseSensitive(J *object, const char *s
 N_CJSON_PUBLIC(void) JInsertItemInArray(J *array, int which, J *newitem)
 {
     if (array == NULL || newitem == NULL) {
+        JDelete(newitem);
         return;
     }
 
     J *after_inserted = NULL;
 
     if (which < 0) {
+        JDelete(newitem);
         return;
     }
 
     after_inserted = _get_array_item(array, (size_t)which);
     if (after_inserted == NULL) {
-        _add_item_to_array(array, newitem);
+        if (!_add_item_to_array(array, newitem)) {
+            JDelete(newitem);
+        }
         return;
     }
 
@@ -2243,14 +2247,18 @@ N_CJSON_PUBLIC(Jbool) JReplaceItemViaPointer(J * const parent, J * const item, J
 N_CJSON_PUBLIC(void) JReplaceItemInArray(J *array, int which, J *newitem)
 {
     if (array == NULL || newitem == NULL) {
+        JDelete(newitem);
         return;
     }
 
     if (which < 0) {
+        JDelete(newitem);
         return;
     }
 
-    JReplaceItemViaPointer(array, _get_array_item(array, (size_t)which), newitem);
+    if (!JReplaceItemViaPointer(array, _get_array_item(array, (size_t)which), newitem)) {
+        JDelete(newitem);
+    }
 }
 
 NOTE_C_STATIC Jbool _replace_item_in_object(J *object, const char *string, J *replacement, Jbool case_sensitive)
@@ -2259,14 +2267,24 @@ NOTE_C_STATIC Jbool _replace_item_in_object(J *object, const char *string, J *re
         return false;
     }
 
+    J *existing = _get_object_item(object, string, case_sensitive);
+    if (existing == NULL) {
+        return false;
+    }
+
+    char *new_key = (char*)_j_strdup((const unsigned char*)string);
+    if (new_key == NULL) {
+        return false;
+    }
+
     /* replace the name in the replacement */
     if (!(replacement->type & JStringIsConst) && (replacement->string != NULL)) {
         _Free(replacement->string);
     }
-    replacement->string = (char*)_j_strdup((const unsigned char*)string);
+    replacement->string = new_key;
     replacement->type &= ~JStringIsConst;
 
-    JReplaceItemViaPointer(object, _get_object_item(object, string, case_sensitive), replacement);
+    JReplaceItemViaPointer(object, existing, replacement);
 
     return true;
 }
@@ -2274,17 +2292,23 @@ NOTE_C_STATIC Jbool _replace_item_in_object(J *object, const char *string, J *re
 N_CJSON_PUBLIC(void) JReplaceItemInObject(J *object, const char *string, J *newitem)
 {
     if (object == NULL || newitem == NULL) {
+        JDelete(newitem);
         return;
     }
-    _replace_item_in_object(object, string, newitem, false);
+    if (!_replace_item_in_object(object, string, newitem, false)) {
+        JDelete(newitem);
+    }
 }
 
 N_CJSON_PUBLIC(void) JReplaceItemInObjectCaseSensitive(J *object, const char *string, J *newitem)
 {
     if (object == NULL || newitem == NULL) {
+        JDelete(newitem);
         return;
     }
-    _replace_item_in_object(object, string, newitem, true);
+    if (!_replace_item_in_object(object, string, newitem, true)) {
+        JDelete(newitem);
+    }
 }
 
 N_CJSON_PUBLIC(J *) JCreateTrue(void)
