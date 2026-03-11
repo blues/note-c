@@ -362,12 +362,12 @@ NOTE_C_STATIC unsigned char* _ensure(printbuffer * const p, size_t needed)
         return NULL;
     }
 
+    needed += p->offset + 1;
     if (needed > INT_MAX) {
         /* sizes bigger than INT_MAX are currently not supported */
         return NULL;
     }
 
-    needed += p->offset + 1;
     if (needed <= p->length) {
         return p->buffer + p->offset;
     }
@@ -376,18 +376,8 @@ NOTE_C_STATIC unsigned char* _ensure(printbuffer * const p, size_t needed)
         return NULL;
     }
 
-    /* calculate new buffer size (linear growth to reduce memory waste) */
-    if (needed > (INT_MAX - 256)) {
-        if (needed <= INT_MAX) {
-            newsize = INT_MAX;
-        } else {
-            return NULL;
-        }
-    } else {
-        newsize = needed + 256;
-    }
-
     /* otherwise reallocate manually */
+    newsize = (ALLOC_CHUNK * ((needed / ALLOC_CHUNK) + ((needed % ALLOC_CHUNK) > 0)));  // chunked, linear calculation for new buffer to reduce memory waste
     newbuffer = (unsigned char*)_Malloc(newsize);
     if (!newbuffer) {
         _Free(p->buffer);
