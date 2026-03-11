@@ -27,26 +27,48 @@ option(NOTE_C_SINGLE_PRECISION "Use single precision for JSON floating point num
 option(NOTE_C_HEARTBEAT_CALLBACK "Enable heartbeat callback support." OFF)
 
 set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Detect whether the system already provides strlcpy/strlcat (macOS, *BSD).
+# When present, we skip the bundled implementations in n_str.c and define
+# guards so note.h doesn't redeclare them (which collides with the platform's
+# fortified macros).
+include(CheckSymbolExists)
+check_symbol_exists(strlcpy "string.h" HAVE_STRLCPY)
+check_symbol_exists(strlcat "string.h" HAVE_STRLCAT)
+
 add_library(note_c SHARED)
-target_sources(
-    note_c
-    PRIVATE
-        ${NOTE_C_SRC_DIR}/n_atof.c
-        ${NOTE_C_SRC_DIR}/n_b64.c
-        ${NOTE_C_SRC_DIR}/n_cjson.c
-        ${NOTE_C_SRC_DIR}/n_cjson_helpers.c
-        ${NOTE_C_SRC_DIR}/n_cobs.c
-        ${NOTE_C_SRC_DIR}/n_const.c
-        ${NOTE_C_SRC_DIR}/n_ftoa.c
-        ${NOTE_C_SRC_DIR}/n_helpers.c
-        ${NOTE_C_SRC_DIR}/n_hooks.c
-        ${NOTE_C_SRC_DIR}/n_i2c.c
-        ${NOTE_C_SRC_DIR}/n_md5.c
-        ${NOTE_C_SRC_DIR}/n_printf.c
-        ${NOTE_C_SRC_DIR}/n_request.c
-        ${NOTE_C_SRC_DIR}/n_serial.c
-        ${NOTE_C_SRC_DIR}/n_str.c
+
+set(NOTE_C_SOURCES
+    ${NOTE_C_SRC_DIR}/n_atof.c
+    ${NOTE_C_SRC_DIR}/n_b64.c
+    ${NOTE_C_SRC_DIR}/n_cjson.c
+    ${NOTE_C_SRC_DIR}/n_cjson_helpers.c
+    ${NOTE_C_SRC_DIR}/n_cobs.c
+    ${NOTE_C_SRC_DIR}/n_const.c
+    ${NOTE_C_SRC_DIR}/n_ftoa.c
+    ${NOTE_C_SRC_DIR}/n_helpers.c
+    ${NOTE_C_SRC_DIR}/n_hooks.c
+    ${NOTE_C_SRC_DIR}/n_i2c.c
+    ${NOTE_C_SRC_DIR}/n_md5.c
+    ${NOTE_C_SRC_DIR}/n_printf.c
+    ${NOTE_C_SRC_DIR}/n_request.c
+    ${NOTE_C_SRC_DIR}/n_serial.c
 )
+# n_str.c provides weak strlcpy/strlcat. On systems that already have them
+# the file won't compile because the platform headers define these as
+# fortified macros that conflict with the function definitions.
+if(NOT HAVE_STRLCPY OR NOT HAVE_STRLCAT)
+    list(APPEND NOTE_C_SOURCES ${NOTE_C_SRC_DIR}/n_str.c)
+endif()
+target_sources(note_c PRIVATE ${NOTE_C_SOURCES})
+
+if(HAVE_STRLCPY)
+    target_compile_definitions(note_c PUBLIC HAVE_STRLCPY)
+endif()
+if(HAVE_STRLCAT)
+    target_compile_definitions(note_c PUBLIC HAVE_STRLCAT)
+endif()
+
 target_compile_options(
     note_c
     PRIVATE
@@ -56,28 +78,35 @@ target_compile_options(
         -Werror
         -Og
         -ggdb
-    PUBLIC
-        -m32
-        -mfpmath=sse
-        -msse2
 )
+# The Linux CI runs tests in 32-bit mode. These flags are x86-specific and
+# unavailable on Apple toolchains or non-x86 architectures.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|i[3-6]86")
+    target_compile_options(note_c PUBLIC -m32 -mfpmath=sse -msse2)
+endif()
 target_include_directories(
     note_c
     PUBLIC ${NOTE_C_SRC_DIR}
 )
-target_link_directories(
-    note_c
-    PUBLIC
-        /lib32
-        /usr/lib32
-        /usr/lib/gcc/x86_64-linux-gnu/12/32
-)
-target_link_options(
-    note_c
-    PUBLIC
-        -m32
-        -Wl,-melf_i386
-)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|i[3-6]86")
+    target_link_directories(
+        note_c
+        PUBLIC
+            /lib32
+            /usr/lib32
+            /usr/lib/gcc/x86_64-linux-gnu/12/32
+    )
+    target_link_options(
+        note_c
+        PUBLIC
+            -m32
+            -Wl,-melf_i386
+    )
+endif()
+if(APPLE)
+    # Use flat namespace so test fakes (FFF) can interpose library symbols
+    target_link_options(note_c PRIVATE -Wl,-flat_namespace)
+endif()
 
 if(NOTE_C_LOW_MEM)
     target_compile_definitions(
