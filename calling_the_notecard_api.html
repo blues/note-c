@@ -1,0 +1,174 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calling the Notecard API &mdash; note-c  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Ports" href="ports.html" />
+    <link rel="prev" title="Library Initialization" href="library_initialization.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/blues_logo_no_text.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library_initialization.html">Library Initialization</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Calling the Notecard API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ports.html">Ports</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">note-c</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Calling the Notecard API</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/calling_the_notecard_api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="calling-the-notecard-api">
+<h1>Calling the Notecard API<a class="headerlink" href="#calling-the-notecard-api" title="Link to this heading"></a></h1>
+<p>The <a class="reference external" href="https://dev.blues.io/api-reference/notecard-api/introduction/">Notecard API</a> is JSON-based. note-c uses a modified version of the <a class="reference external" href="https://github.com/DaveGamble/cJSON">cJSON library</a> for working with JSON. The core JSON struct used in note-c is <code class="docutils literal notranslate"><span class="pre">J</span></code>. You should treat this type as opaque; you will only ever need to work with <code class="docutils literal notranslate"><span class="pre">J</span> <span class="pre">*</span></code> when using note-c.</p>
+<p>To make a Notecard API call, first create a JSON request:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">J</span><span class="w"> </span><span class="o">*</span><span class="n">req</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NoteNewRequest</span><span class="p">(</span><span class="s">&quot;note.add&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>When <code class="docutils literal notranslate"><span class="pre">req</span></code> is serialized to a string, it looks like this:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;req&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;note.add&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>To add fields to the request, there are a number of <code class="docutils literal notranslate"><span class="pre">JAdd*</span></code> functions:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="api_reference.html#c.JAddBoolToObject" title="JAddBoolToObject"><code class="xref c c-func docutils literal notranslate"><span class="pre">JAddBoolToObject()</span></code></a></p></li>
+<li><p><a class="reference internal" href="api_reference.html#c.JAddNumberToObject" title="JAddNumberToObject"><code class="xref c c-func docutils literal notranslate"><span class="pre">JAddNumberToObject()</span></code></a></p></li>
+<li><p><a class="reference internal" href="api_reference.html#c.JAddStringToObject" title="JAddStringToObject"><code class="xref c c-func docutils literal notranslate"><span class="pre">JAddStringToObject()</span></code></a></p></li>
+<li><p><a class="reference internal" href="api_reference.html#c.JAddObjectToObject" title="JAddObjectToObject"><code class="xref c c-func docutils literal notranslate"><span class="pre">JAddObjectToObject()</span></code></a></p></li>
+<li><p><a class="reference internal" href="api_reference.html#c.JAddArrayToObject" title="JAddArrayToObject"><code class="xref c c-func docutils literal notranslate"><span class="pre">JAddArrayToObject()</span></code></a></p></li>
+</ul>
+<p>For example, to add the field <code class="docutils literal notranslate"><span class="pre">&quot;file&quot;:</span> <span class="pre">&quot;data.qo&quot;</span></code> to <code class="docutils literal notranslate"><span class="pre">req</span></code>, use <a class="reference internal" href="api_reference.html#c.JAddStringToObject" title="JAddStringToObject"><code class="xref c c-func docutils literal notranslate"><span class="pre">JAddStringToObject()</span></code></a>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">JAddStringToObject</span><span class="p">(</span><span class="n">req</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;file&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;data.qo&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, when <code class="docutils literal notranslate"><span class="pre">req</span></code> is serialized, it will have the <code class="docutils literal notranslate"><span class="pre">&quot;file&quot;</span></code> field:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="nt">&quot;req&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;note.add&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;file&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;data.qo&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Once the request has been prepared, send it to the Notecard with <a class="reference internal" href="api_reference.html#c.NoteRequestResponse" title="NoteRequestResponse"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteRequestResponse()</span></code></a>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">J</span><span class="w"> </span><span class="o">*</span><span class="n">rsp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">NoteRequestResponse</span><span class="p">(</span><span class="n">req</span><span class="p">);</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">rsp</span></code> holds the JSON response from the Notecard. Use <a class="reference internal" href="api_reference.html#c.NoteResponseError" title="NoteResponseError"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteResponseError()</span></code></a> to check the response for errors:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">rsp</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="nb">NULL</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">NoteResponseError</span><span class="p">(</span><span class="n">rsp</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="c1">// handle error</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">NoteRequestResponse</span></code> will take care of freeing the passed in request object, but you must free the response with <a class="reference internal" href="api_reference.html#c.NoteDeleteResponse" title="NoteDeleteResponse"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteDeleteResponse()</span></code></a>:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">NoteDeleteResponse</span><span class="p">(</span><span class="n">rsp</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The function <a class="reference internal" href="api_reference.html#c.NoteRequest" title="NoteRequest"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteRequest()</span></code></a> is useful when you don’t care about the details of the Notecard’s response, just whether the API call was successful or not. It returns true if the API call was successful and false if there was an error sending the request or if there was an error in the response (i.e. it calls <a class="reference internal" href="api_reference.html#c.NoteResponseError" title="NoteResponseError"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteResponseError()</span></code></a> internally):</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">NoteRequest</span><span class="p">(</span><span class="n">req</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="c1">// success</span>
+<span class="p">}</span>
+<span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="c1">// handle error</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="api_reference.html#c.NoteRequest" title="NoteRequest"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteRequest()</span></code></a> frees the request object for you.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To use plain C-strings as the JSON interface into note-c, rather than <code class="docutils literal notranslate"><span class="pre">J</span> <span class="pre">*</span></code>, check out <a class="reference internal" href="api_reference.html#c.NoteRequestResponseJSON" title="NoteRequestResponseJSON"><code class="xref c c-func docutils literal notranslate"><span class="pre">NoteRequestResponseJSON()</span></code></a></p>
+</div>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<p>For examples of real applications calling the Notecard API with note-c, check out some of the <a class="reference external" href="https://zephyrproject.org/">Zephyr</a>-based <a class="reference external" href="https://github.com/blues/app-accelerators">Blues App Accelerators</a>:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/blues/app-accelerators/tree/main/09-valve-monitor/firmware/zephyr">Valve Monitor and Control</a></p></li>
+<li><p><a class="reference external" href="https://github.com/blues/app-accelerators/tree/main/18-temperature-and-humidity-monitor/firmware/zephyr">Temperature and Humidity Monitor</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Blues.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
