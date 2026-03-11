@@ -436,7 +436,6 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
     // Serialize the JSON request
     char *json = JPrintUnformatted(req); // `json` allocated, must be freed
     if (json == NULL) {
-        _TransactionStop();
         NOTE_C_LOG_ERROR(ERRSTR("failed to serialize JSON request", c_mem));
         return NULL;
     }
