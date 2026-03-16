@@ -11,6 +11,10 @@ set(DOCS_SRC_DIR ${PROJECT_SOURCE_DIR}/docs)
 set(SPHINX_OPTS "-j auto -W --keep-going -T -v")
 separate_arguments(SPHINX_OPTS)
 
+# Options for markdown build (without -W to allow extension warnings)
+set(SPHINX_OPTS_MARKDOWN "-j auto --keep-going -T -v")
+separate_arguments(SPHINX_OPTS_MARKDOWN)
+
 add_custom_target(
     docs
     COMMAND ${CMAKE_COMMAND} -E env
@@ -23,4 +27,19 @@ add_custom_target(
         ${DOCS_BUILD_DIR}
     USES_TERMINAL
     COMMENT "Running Sphinx HTML build..."
+)
+
+add_custom_target(
+    docs-markdown
+    COMMAND ${CMAKE_COMMAND} -E env
+        ${SPHINX_BUILD}
+        -b markdown
+        -c ${DOCS_CFG_DIR}
+        -w ${DOCS_BUILD_DIR}/markdown_build.log
+        ${SPHINX_OPTS_MARKDOWN}
+        ${DOCS_SRC_DIR}
+        ${DOCS_BUILD_DIR}/markdown
+    COMMAND python3 ${DOCS_CFG_DIR}/fix_markdown_anchors.py ${DOCS_BUILD_DIR}/markdown
+    USES_TERMINAL
+    COMMENT "Running Sphinx Markdown build and fixing anchors..."
 )
