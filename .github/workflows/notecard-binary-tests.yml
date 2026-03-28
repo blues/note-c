@@ -99,18 +99,6 @@ jobs:
           sudo apt update
           sudo apt install gdb-multiarch ngrok jq
 
-      # We need socat 1.7.4.4 because prior to that there are some issues with
-      # setting the baud rate properly. socat is used by the card_client code
-      # for various tunnels (e.g. Swan USB port, Swan OpenOCD server, etc.).
-      - name: Install socat 1.7.4.4
-        run: |
-          wget http://www.dest-unreach.org/socat/download/socat-1.7.4.4.tar.gz
-          tar xvf socat-1.7.4.4.tar.gz
-          cd socat-1.7.4.4
-          ./configure
-          make -j
-          sudo make install
-
       - name: Install PlatformIO dependencies
         run: |
           python -m pip install --upgrade pip
