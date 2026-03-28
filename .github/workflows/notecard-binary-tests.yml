@@ -195,12 +195,12 @@ jobs:
           fi
 
       - name: Reserve Notestation and flash firmware
-        uses: blues/notestation/.github/actions/reserve_notestation@notestation/v3.0.0-rc1
+        uses: blues/notestation/.github/actions/reserve_notestation@notestation-v3.0.0-rc1
         with:
           notestation: barcelona-notestation-1
           notecard-firmware: ${{ env.FIRMWARE_S3_URI }}
           timeout: '600'
-          version: 'notestation/v3.0.0-rc1'
+          version: 'notestation-v3.0.0-rc1'
           token: ${{ secrets.NOTESTATION_RELEASE_DOWNLOAD_TOKEN }}
 
       - name: Extract GDB server info
