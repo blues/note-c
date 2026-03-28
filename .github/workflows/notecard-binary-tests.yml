@@ -51,6 +51,7 @@ jobs:
         DELETE_NOTEHUB_ROUTES: true
         # CREATE_NOTEHUB_ROUTES set to false to use the already created routes on notehub
         CREATE_NOTEHUB_ROUTES: true
+
     steps:
       - name: Connect to Tailscale
         uses: tailscale/github-action@v3
@@ -193,105 +194,35 @@ jobs:
             exit 1
           fi
 
-      # The notestation CLI uses the notecard CLI.
-      - name: Install notecard CLI
+      - name: Reserve Notestation and flash firmware
+        uses: blues/notestation/.github/actions/reserve_notestation@notestation/v3.0.0-rc1
+        with:
+          notestation: barcelona-notestation-1
+          notecard-firmware: ${{ env.FIRMWARE_S3_URI }}
+          timeout: '600'
+          version: 'notestation/v3.0.0-rc1'
+          token: ${{ secrets.NOTESTATION_RELEASE_DOWNLOAD_TOKEN }}
+
+      - name: Extract GDB server info
         run: |
-          git clone --depth=1 https://github.com/blues/note-cli.git
-          cd note-cli/notecard
-          go build .
-          sudo cp notecard /usr/bin/
-
-      - name: Download and install notestation CLI v2.2.0
-        env:
-          GH_TOKEN: ${{ secrets.NOTESTATION_RELEASE_DOWNLOAD_TOKEN }}
-        run: |
-          api_url="https://api.github.com/repos/blues/notestation/releases/tags/v2.2.0"
-
-          # Query the release asset metadata.
-          asset_info=$(curl -s -H "Authorization: token $GH_TOKEN" "$api_url")
-
-          # Extract the release asset URL and name.
-          asset_url=$(echo "$asset_info" | jq -r '.assets[] | select(.name | endswith(".whl")) | .url')
-          asset_name=$(echo "$asset_info" | jq -r '.assets[] | select(.name | endswith(".whl")) | .name')
-
-          if [ -z "$asset_url" ] || [ -z "$asset_name" ]; then
-            echo "❌ No wheel found in release assets."
+          RES_FILE="$NS_RESERVATION_DIR/reservation.json"
+          MCU_IP=$(jq -r '.hostname' "$RES_FILE")
+          MCU_PORT=$(jq -r '.debug_servers[] | select(.target == "host_mcu") | .gdb_port' "$RES_FILE")
+          if [ -z "$MCU_IP" ] || [ "$MCU_IP" = "null" ]; then
+            echo "Error: MCU_GDB_SERVER_IP is empty or not defined."
             exit 1
           fi
+          if [ -z "$MCU_PORT" ] || [ "$MCU_PORT" = "null" ]; then
+            echo "Error: MCU_GDB_SERVER_PORT is empty or not defined."
+            exit 1
+          fi
+          echo "MCU_GDB_SERVER_IP=$MCU_IP" >> $GITHUB_ENV
+          echo "MCU_GDB_SERVER_PORT=$MCU_PORT" >> $GITHUB_ENV
 
-          # Download the wheel using the original filename.
-          curl -L -H "Authorization: token $GH_TOKEN" \
-               -H "Accept: application/octet-stream" \
-               "$asset_url" -o "$asset_name"
-
-          # Create a virtual environment and install the notestation CLI in it.
-          python -m venv venv
-          source venv/bin/activate
-          wheel_file=$(ls *.whl)
-          pip install "$wheel_file"
-
-      - name: Build and upload test firmware and run tests
+      - name: Build and run tests
         run: |
-          source venv/bin/activate
-
-          # Reserve the Notestation in the background
-          nohup notestation client reserve --notestation barcelona-notestation-1 &> card_client.log &
-          PID=$!
-
-          timeout=600  # 10 minutes in seconds
-          interval=3   # Check every 3 seconds
-          elapsed=0
-
-          # Wait for the reservation directory to appear under ~/.notestation
-          RESERVATION_DIR="$HOME/.notestation/pid-${PID}_barcelona-notestation-1"
-          while [ ! -d "$RESERVATION_DIR" ]; do
-              sleep $interval
-              elapsed=$((elapsed + interval))
-
-              # Check if the client process is still running
-              if ! kill -0 $PID 2>/dev/null; then
-                  echo "Error: Notestation client process $PID has terminated unexpectedly."
-                  echo "$(cat card_client.log)"
-                  exit 1
-              fi
-
-              if [ $elapsed -ge $timeout ]; then
-                  echo "Timeout reached: Reservation directory $RESERVATION_DIR did not appear."
-                  kill $PID 2>/dev/null
-                  echo "$(cat card_client.log)"
-                  exit 1
-              fi
-          done
-
-          echo "Notestation reserved."
-
-          # If firmware update is requested, flash it using notestation client flash
-          if [ "${{ env.FIRMWARE_S3_URI }}" == "nightly" ]; then
-            echo "Flashing nightly firmware..."
-            notestation client flash --notecard-nightly
-            echo "Firmware flash complete."
-          fi
-
-          # Set these environment variables, which are read in platformio.ini in
-          # order to flash the Swan with the test firmware.
-          RES_FILE="$RESERVATION_DIR/reservation.json"
-          export MCU_GDB_SERVER_IP="$(jq -r '.hostname' $RES_FILE)"
-          export MCU_GDB_SERVER_PORT="$(jq -r '.debug_servers[] | select(.target == "host_mcu") | .gdb_port' $RES_FILE)"
           export GDB_CMD="gdb-multiarch"
-          export TEST_PORT="$RESERVATION_DIR/host_mcu_usb"
-
-          if [ -z "$MCU_GDB_SERVER_IP" ] || [ "$MCU_GDB_SERVER_IP" == "null" ]; then
-              echo "Error: MCU_GDB_SERVER_IP is empty or not defined."
-              kill $PID 2>/dev/null
-              exit 1
-          fi
-
-          if [ -z "$MCU_GDB_SERVER_PORT" ] || [ "$MCU_GDB_SERVER_PORT" == "null" ]; then
-              echo "Error: MCU_GDB_SERVER_PORT is empty or not defined."
-              kill $PID 2>/dev/null
-              exit 1
-          fi
-
+          export TEST_PORT="$NS_HOST_MCU_USB"
           export PLATFORMIO_BUILD_FLAGS="'-D NOTEHUB_PROXY_ROUTE_ALIAS=\"$NOTEHUB_PROXY_ROUTE_ALIAS\"' '-D PRODUCT_UID=\"$NOTEHUB_PRODUCT_UID\"'"
           echo "build flags $PLATFORMIO_BUILD_FLAGS"
           cd $GITHUB_WORKSPACE/$PIO_PROJECT_DIR
@@ -308,8 +239,6 @@ jobs:
             --no-reset \
             --json-output-path test.json \
             --junit-output-path test.xml
-
-          kill $PID 2>/dev/null
 
       - name: Publish test report
         uses: mikepenz/action-junit-report@v3
