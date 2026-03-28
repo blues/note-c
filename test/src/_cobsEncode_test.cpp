@@ -197,7 +197,8 @@ SCENARIO("_cobsEncode")
                                           0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8,
                                           0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF, 0xF0,
                                           0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8,
-                                          0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF};
+                                          0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF
+                                         };
 
                 WHEN("The array is COBS-encoded") {
                     const uint32_t encodedLen = _cobsEncode(unencoded, 255, eop, encoded);
@@ -248,7 +249,8 @@ SCENARIO("_cobsEncode")
                                                      0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
                                                      0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7,
                                                      0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0x02,
-                                                     0xFF};
+                                                     0xFF
+                                                    };
                         REQUIRE(encodedLen == sizeof(expectedEncoded));
                         CHECK(memcmp(encoded, expectedEncoded, sizeof(expectedEncoded)) == 0);
                     }
