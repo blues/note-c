@@ -201,7 +201,6 @@ jobs:
           notecard-firmware: ${{ env.FIRMWARE_S3_URI }}
           timeout: '600'
           version: 'notestation-v3.0.0-rc1'
-          token: ${{ secrets.NOTESTATION_RELEASE_DOWNLOAD_TOKEN }}
 
       - name: Extract GDB server info
         run: |
