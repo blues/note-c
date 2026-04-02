@@ -183,12 +183,12 @@ jobs:
           fi
 
       - name: Reserve Notestation and flash firmware
-        uses: blues/notestation-actions/reserve_notestation@notestation-v3.0.0-rc1
+        uses: blues/notestation-actions/reserve_notestation@v1.0.0
         with:
           notestation: barcelona-notestation-1
           notecard-firmware: ${{ env.FIRMWARE_S3_URI }}
           timeout: '600'
-          version: 'notestation-v3.0.0-rc1'
+          version: 'notestation-v3.0.0'
 
       - name: Extract GDB server info
         run: |
