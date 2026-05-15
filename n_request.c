@@ -527,13 +527,22 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         _LockNote();
     }
 
-    // Make sure that if anything was pending in the notecard's receive buffer,
-	// that it is line-terminated so that the request we're about to send
-	// begins on a new line.
+    // If a reset of the I/O interface is required for any reason, do it now.
     if (resetRequired) {
         NOTE_C_LOG_DEBUG("Resetting Notecard I/O Interface...");
-        _Reset();
-        resetRequired = false;
+        if ((resetRequired = !_Reset())) {
+            if (lockNotecard) {
+                _UnlockNote();
+            }
+            _Free(json);
+            _TransactionStop();
+            const char *errStr = ERRSTR("failed to reset Notecard interface {io}", c_iobad);
+            if (cmdFound) {
+                NOTE_C_LOG_ERROR(errStr);
+                return NULL;
+            }
+            return _errDoc(id, errStr);
+        }
     }
 
     // If we're performing retries, this is where we come back to
