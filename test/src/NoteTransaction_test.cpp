@@ -505,7 +505,7 @@ SCENARIO("NoteTransaction")
         JDelete(req);
     }
 
-    SECTION("A reset is required and it fails") {
+    SECTION("A reset is required and it fails before a command") {
         J *req = NoteNewCommand("note.add");
         REQUIRE(req != NULL);
         NoteResetRequired();
@@ -515,31 +515,34 @@ SCENARIO("NoteTransaction")
         J *resp = NoteTransaction(req);
         REQUIRE(_noteHardReset_fake.call_count == 1);
 
-        // The transaction shouldn't be attempted if reset failed.
-        CHECK(_noteJSONTransaction_fake.call_count == 0);
+        // Reset is best effort; the transaction is still attempted.
+        CHECK(_noteJSONTransaction_fake.call_count == 1);
+        CHECK(resetRequired == false);
 
-        // The response should be null if reset failed.
-        CHECK(resp == NULL);
+        // Commands return an empty response object after the transaction attempt.
+        CHECK(resp != NULL);
 
         JDelete(req);
+        JDelete(resp);
     }
 
-    SECTION("A reset is required and it fails") {
+    SECTION("A reset is required and it fails before a request") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
         NoteResetRequired();
         // Force NoteReset failure.
         _noteHardReset_fake.return_val = false;
+        _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
 
         J *resp = NoteTransaction(req);
         REQUIRE(_noteHardReset_fake.call_count == 1);
 
-        // The transaction shouldn't be attempted if reset failed.
-        CHECK(_noteJSONTransaction_fake.call_count == 0);
+        // Reset is best effort; the transaction is still attempted.
+        CHECK(_noteJSONTransaction_fake.call_count == 1);
+        CHECK(resetRequired == false);
 
-        // The response should be null if reset failed.
         CHECK(resp != NULL);
-        CHECK(NoteResponseError(resp));
+        CHECK(!NoteResponseError(resp));
 
         JDelete(req);
         JDelete(resp);
