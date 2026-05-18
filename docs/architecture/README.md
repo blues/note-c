@@ -21,6 +21,8 @@ After code changes:
 ## File Types
 
 - `../../ARCHITECTURE.md`: repository-level architecture entrypoint.
+- `architecture.html`: single-file visual map for humans.
+- `architecture.json`: structured map for AI agents and tooling.
 - `decisions/*.md`: architecture decision records.
 - `templates/repo-architecture.md`: template for future architecture docs.
 - `../../AGENTS.md`, `../../CLAUDE.md`, `../../GEMINI.md`, `../../.github/copilot-instructions.md`, and `../../.cursor/rules/architecture-docs.mdc`: AI entrypoints that point future tools back to these docs.
@@ -35,6 +37,8 @@ Architecture docs should capture:
 - Runtime and platform assumptions.
 - Testing strategy for behavior that crosses module boundaries.
 - Important tradeoffs, especially when there were plausible alternatives.
+
+Keep `../../ARCHITECTURE.md`, `architecture.html`, and `architecture.json` synchronized when architecture changes.
 
 Architecture docs should not become:
 

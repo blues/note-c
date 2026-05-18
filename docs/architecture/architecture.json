@@ -1,0 +1,188 @@
+{
+  "schemaVersion": "1.0",
+  "name": "note-c architecture map",
+  "repository": "blues/note-c",
+  "purpose": "Portable C SDK for communicating with a Blues Notecard over serial or I2C.",
+  "lastReviewed": "2026-05-18",
+  "principles": [
+    "Keep the core SDK platform-neutral.",
+    "Put platform-specific behavior behind hooks or adapter libraries.",
+    "Treat note.h and hook signatures as compatibility contracts.",
+    "Update this map, architecture.html, and ARCHITECTURE.md when architecture-relevant code changes land."
+  ],
+  "components": [
+    {
+      "id": "public-api",
+      "name": "Public API",
+      "paths": [
+        "note.h"
+      ],
+      "responsibility": "Public functions, constants, typedefs, version metadata, request helpers, and hook contracts.",
+      "publicContract": true
+    },
+    {
+      "id": "internal-api",
+      "name": "Internal declarations",
+      "paths": [
+        "n_lib.h"
+      ],
+      "responsibility": "Private declarations shared across implementation files.",
+      "publicContract": false
+    },
+    {
+      "id": "request-core",
+      "name": "Request/response core",
+      "paths": [
+        "n_request.c"
+      ],
+      "responsibility": "Request lifecycle, transaction orchestration, response parsing, timeout/retry flow.",
+      "publicContract": false
+    },
+    {
+      "id": "hooks",
+      "name": "Platform hooks",
+      "paths": [
+        "n_hooks.c"
+      ],
+      "responsibility": "Registration and invocation of memory, mutex, timing, debug, serial, and I2C hooks.",
+      "publicContract": true
+    },
+    {
+      "id": "serial-transport",
+      "name": "Serial transport",
+      "paths": [
+        "n_serial.c"
+      ],
+      "responsibility": "Serial send/receive and chunked serial transport behavior.",
+      "publicContract": false
+    },
+    {
+      "id": "i2c-transport",
+      "name": "I2C transport",
+      "paths": [
+        "n_i2c.c"
+      ],
+      "responsibility": "I2C send/receive and chunked I2C transport behavior.",
+      "publicContract": false
+    },
+    {
+      "id": "json",
+      "name": "JSON model and helpers",
+      "paths": [
+        "n_cjson.c",
+        "n_cjson.h",
+        "n_cjson_helpers.c"
+      ],
+      "responsibility": "Bundled JSON object representation and helper APIs.",
+      "publicContract": true
+    },
+    {
+      "id": "portable-helpers",
+      "name": "Portable helpers",
+      "paths": [
+        "n_helpers.c",
+        "n_str.c",
+        "n_printf.c",
+        "n_atof.c",
+        "n_ftoa.c",
+        "n_b64.c",
+        "n_cobs.c",
+        "n_md5.c",
+        "n_const.c",
+        "n_ua.c"
+      ],
+      "responsibility": "Utility behavior, formatting/parsing helpers, encoding, constants, and user-agent support.",
+      "publicContract": false
+    },
+    {
+      "id": "tests",
+      "name": "Unit tests",
+      "paths": [
+        "test/"
+      ],
+      "responsibility": "Mock-backed tests for core SDK behavior without physical Notecard hardware.",
+      "publicContract": false
+    },
+    {
+      "id": "docs",
+      "name": "Architecture and API docs",
+      "paths": [
+        "ARCHITECTURE.md",
+        "docs/architecture/",
+        "docs/"
+      ],
+      "responsibility": "Human and agent-facing architecture, ADRs, and generated API documentation.",
+      "publicContract": false
+    }
+  ],
+  "flows": [
+    {
+      "id": "request-flow",
+      "name": "Request flow",
+      "steps": [
+        "application or adapter library",
+        "note.h public API",
+        "request/response core",
+        "JSON helpers",
+        "transport selection",
+        "serial or I2C hook",
+        "platform driver or hardware bus",
+        "Notecard"
+      ]
+    },
+    {
+      "id": "hook-flow",
+      "name": "Hook initialization flow",
+      "steps": [
+        "application or adapter library",
+        "hook registration API",
+        "n_hooks.c",
+        "transport/memory/time/mutex/debug callbacks",
+        "platform implementation"
+      ]
+    },
+    {
+      "id": "test-flow",
+      "name": "Unit test flow",
+      "steps": [
+        "test harness",
+        "mock hooks and transports",
+        "note-c core",
+        "asserted request, JSON, hook, or transport behavior"
+      ]
+    }
+  ],
+  "externalSystems": [
+    {
+      "name": "Notecard",
+      "role": "Device that receives JSON requests and returns JSON responses over serial or I2C."
+    },
+    {
+      "name": "Notehub",
+      "role": "Cloud service reached by Notecard; note-c does not communicate with Notehub directly."
+    },
+    {
+      "name": "Adapter SDKs",
+      "examples": [
+        "note-arduino",
+        "note-zephyr",
+        "note-espidf",
+        "note-posix"
+      ],
+      "role": "Provide platform-specific integration around note-c."
+    }
+  ],
+  "updateTriggers": [
+    "Changes to note.h public APIs, typedefs, constants, or hook signatures.",
+    "Changes to request lifecycle, timeout, retry, memory ownership, or response handling.",
+    "Changes to serial/I2C framing, chunking, transmit, or receive behavior.",
+    "Changes to JSON representation or helper semantics.",
+    "Changes to adapter expectations, build/test strategy, release strategy, or versioning."
+  ],
+  "filesToUpdateTogether": [
+    "ARCHITECTURE.md",
+    "docs/architecture/architecture.json",
+    "docs/architecture/architecture.html",
+    "docs/architecture/decisions/*.md when a durable design decision changes"
+  ]
+}

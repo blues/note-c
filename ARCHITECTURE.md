@@ -2,6 +2,11 @@
 
 This file is the architecture entrypoint for `note-c`. Keep it current when code changes alter system boundaries, public contracts, transport behavior, build/test strategy, or cross-repo expectations.
 
+Companion architecture artifacts:
+
+- `docs/architecture/architecture.html`: human-readable visual architecture map.
+- `docs/architecture/architecture.json`: structured architecture map for AI agents and tooling.
+
 ## Purpose
 
 `note-c` is the portable C SDK for communicating with a Blues Notecard over serial or I2C. It owns the core request/response model, bundled JSON helpers, protocol framing, transport orchestration, and hook-based platform abstraction.
@@ -85,3 +90,5 @@ Update this file or `docs/architecture/` when a change affects:
 - JSON representation or helper semantics.
 - Cross-repo expectations for adapter libraries.
 - Build, test, CI, release, or versioning strategy.
+
+When updating architecture, keep this Markdown overview, `docs/architecture/architecture.html`, and `docs/architecture/architecture.json` consistent.

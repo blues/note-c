@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>note-c Architecture Map</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #5a6872;
+      --line: #cfd8df;
+      --panel: #ffffff;
+      --soft: #f5f7f9;
+      --blue: #0065a8;
+      --teal: #008575;
+      --amber: #b56b00;
+      --red: #b42318;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #eef3f6;
+      line-height: 1.5;
+    }
+    header {
+      padding: 28px 32px 18px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+    h1, h2, h3 { margin: 0; line-height: 1.2; }
+    h1 { font-size: 30px; letter-spacing: 0; }
+    h2 { font-size: 20px; margin-bottom: 14px; }
+    h3 { font-size: 15px; margin-bottom: 8px; }
+    p { margin: 8px 0 0; color: var(--muted); }
+    main {
+      display: grid;
+      gap: 18px;
+      padding: 20px;
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .span-4 { grid-column: span 4; }
+    .span-6 { grid-column: span 6; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(105px, 1fr));
+      gap: 10px;
+      align-items: stretch;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .node {
+      min-height: 86px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--blue);
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--soft);
+      position: relative;
+    }
+    .node:not(:last-child)::after {
+      content: ">";
+      position: absolute;
+      right: -11px;
+      top: 32px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+    .node.transport { border-top-color: var(--teal); }
+    .node.external { border-top-color: var(--amber); }
+    .node.contract { border-top-color: var(--red); }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 12px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #ffffff;
+    }
+    .card strong, .node strong { display: block; font-size: 14px; }
+    .paths {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    code {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 5px;
+      background: #e8eef2;
+      color: #26333b;
+      font-size: 12px;
+    }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    li { margin: 4px 0; }
+    .badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: #e5f3ff;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .muted { color: var(--muted); }
+    @media (max-width: 860px) {
+      header { padding: 22px 18px 16px; }
+      main { padding: 14px; }
+      .span-4, .span-6, .span-8 { grid-column: span 12; }
+      .flow { grid-template-columns: repeat(8, minmax(150px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>note-c Architecture Map</h1>
+    <p>Portable C SDK core for Notecard request/response behavior, hook-backed serial and I2C transports, and bundled JSON helpers.</p>
+  </header>
+  <main>
+    <section>
+      <h2>Primary Request Flow</h2>
+      <div class="flow" aria-label="Architecture request flow">
+        <div class="node"><strong>Application or adapter</strong><span class="muted">Arduino, Zephyr, ESP-IDF, POSIX, tests</span></div>
+        <div class="node contract"><strong>Public API</strong><code>note.h</code></div>
+        <div class="node"><strong>Request core</strong><code>n_request.c</code></div>
+        <div class="node"><strong>JSON helpers</strong><code>n_cjson*</code></div>
+        <div class="node transport"><strong>Transport selection</strong><code>n_serial.c</code><code>n_i2c.c</code></div>
+        <div class="node transport"><strong>Registered hook</strong><code>n_hooks.c</code></div>
+        <div class="node external"><strong>Platform bus</strong><span class="muted">UART, USB serial, I2C</span></div>
+        <div class="node external"><strong>Notecard</strong><span class="muted">JSON request/response device</span></div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="span-8">
+        <h2>Components</h2>
+        <div class="cards">
+          <div class="card"><strong>Public API</strong><p>Compatibility surface: functions, typedefs, constants, hooks, version metadata.</p><div class="paths"><code>note.h</code></div><span class="badge">public contract</span></div>
+          <div class="card"><strong>Request/response core</strong><p>Transaction orchestration, response parsing, timeout and retry behavior.</p><div class="paths"><code>n_request.c</code><code>n_lib.h</code></div></div>
+          <div class="card"><strong>Platform hooks</strong><p>Registration and invocation of platform-provided memory, time, mutex, debug, serial, and I2C callbacks.</p><div class="paths"><code>n_hooks.c</code></div><span class="badge">public contract</span></div>
+          <div class="card"><strong>Transports</strong><p>Serial and I2C byte movement, framing, and chunking behavior.</p><div class="paths"><code>n_serial.c</code><code>n_i2c.c</code></div></div>
+          <div class="card"><strong>JSON model</strong><p>Bundled JSON object representation and helper functions used by callers and internals.</p><div class="paths"><code>n_cjson.c</code><code>n_cjson.h</code><code>n_cjson_helpers.c</code></div><span class="badge">public contract</span></div>
+          <div class="card"><strong>Portable helpers</strong><p>Formatting, parsing, encoding, constants, user-agent support, and utility functions.</p><div class="paths"><code>n_helpers.c</code><code>n_str.c</code><code>n_printf.c</code><code>n_b64.c</code><code>n_cobs.c</code></div></div>
+        </div>
+      </section>
+
+      <section class="span-4">
+        <h2>Design Principles</h2>
+        <ul>
+          <li>Keep the SDK core platform-neutral.</li>
+          <li>Put platform behavior behind hooks or adapter libraries.</li>
+          <li>Treat <code>note.h</code> and hook signatures as compatibility contracts.</li>
+          <li>Use tests to protect public API, request lifecycle, memory ownership, and transport behavior.</li>
+        </ul>
+      </section>
+
+      <section class="span-6">
+        <h2>External Boundaries</h2>
+        <ul>
+          <li><strong>Notecard:</strong> receives JSON requests and returns JSON responses over serial or I2C.</li>
+          <li><strong>Notehub:</strong> cloud service reached by Notecard; note-c does not call it directly.</li>
+          <li><strong>Adapter SDKs:</strong> note-arduino, note-zephyr, note-espidf, note-posix, and similar integrations supply platform behavior.</li>
+        </ul>
+      </section>
+
+      <section class="span-6">
+        <h2>Update This Map When</h2>
+        <ul>
+          <li>Public APIs, typedefs, constants, or hook signatures change.</li>
+          <li>Request lifecycle, timeout, retry, or memory ownership changes.</li>
+          <li>Serial/I2C framing, chunking, transmit, or receive behavior changes.</li>
+          <li>JSON helper semantics or adapter expectations change.</li>
+          <li>Build, test, release, or versioning strategy changes.</li>
+        </ul>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
+
