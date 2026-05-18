@@ -7,195 +7,519 @@
   <style>
     :root {
       color-scheme: light;
-      --ink: #172026;
-      --muted: #5a6872;
-      --line: #cfd8df;
-      --panel: #ffffff;
-      --soft: #f5f7f9;
-      --blue: #0065a8;
-      --teal: #008575;
-      --amber: #b56b00;
+      --bg: #eef3f6;
+      --surface: #ffffff;
+      --surface-2: #f7fafc;
+      --ink: #15232d;
+      --muted: #62717d;
+      --line: #cbd7df;
+      --blue: #005ea8;
+      --cyan: #0e7490;
+      --green: #16754c;
+      --amber: #a85f00;
       --red: #b42318;
+      --violet: #6750a4;
+      --shadow: 0 14px 32px rgba(23, 32, 38, 0.12);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
+      min-width: 1180px;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
       color: var(--ink);
-      background: #eef3f6;
-      line-height: 1.5;
+      line-height: 1.45;
     }
     header {
-      padding: 28px 32px 18px;
-      background: #ffffff;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: end;
+      padding: 24px 28px 18px;
+      background: var(--surface);
       border-bottom: 1px solid var(--line);
     }
-    h1, h2, h3 { margin: 0; line-height: 1.2; }
-    h1 { font-size: 30px; letter-spacing: 0; }
-    h2 { font-size: 20px; margin-bottom: 14px; }
-    h3 { font-size: 15px; margin-bottom: 8px; }
-    p { margin: 8px 0 0; color: var(--muted); }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 28px; letter-spacing: 0; }
+    header p { margin-top: 7px; color: var(--muted); max-width: 880px; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    button {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: 7px;
+      padding: 8px 11px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    button.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
     main {
       display: grid;
-      gap: 18px;
-      padding: 20px;
-      max-width: 1280px;
+      grid-template-columns: 270px 1fr 330px;
+      gap: 16px;
+      padding: 16px;
+      height: calc(100vh - 92px);
+      min-height: 740px;
+    }
+    aside, .map-wrap, .details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    aside, .details {
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-head {
+      padding: 14px 15px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .panel-head h2 {
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+    .panel-body {
+      padding: 12px;
+      overflow: auto;
+    }
+    .legend-item, .hotspot-item {
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      gap: 9px;
+      align-items: start;
+      padding: 8px 6px;
+      border-radius: 7px;
+    }
+    .hotspot-item {
+      grid-template-columns: 1fr;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    .hotspot-item:hover {
+      background: var(--surface-2);
+      border-color: var(--line);
+    }
+    .dot {
+      width: 12px;
+      height: 12px;
+      margin-top: 4px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+    .dot.consumer { background: var(--violet); }
+    .dot.contract { background: var(--red); }
+    .dot.core { background: var(--blue); }
+    .dot.hook { background: var(--green); }
+    .dot.transport { background: var(--cyan); }
+    .dot.external { background: var(--amber); }
+    .dot.test { background: #4b5563; }
+    .map-wrap {
+      position: relative;
+      min-width: 0;
+      overflow: auto;
+      background:
+        linear-gradient(rgba(255,255,255,0.86), rgba(255,255,255,0.86)),
+        linear-gradient(90deg, rgba(203,215,223,0.45) 1px, transparent 1px),
+        linear-gradient(rgba(203,215,223,0.45) 1px, transparent 1px);
+      background-size: auto, 32px 32px, 32px 32px;
+    }
+    .map {
+      position: relative;
+      width: 1160px;
+      height: 720px;
       margin: 0 auto;
     }
-    section {
-      background: var(--panel);
-      border: 1px solid var(--line);
+    .layer {
+      position: absolute;
+      left: 24px;
+      right: 24px;
+      height: 116px;
+      border: 1px dashed #b7c6cf;
       border-radius: 8px;
-      padding: 18px;
+      background: rgba(255,255,255,0.68);
     }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 14px;
+    .layer-label {
+      position: absolute;
+      left: 14px;
+      top: 10px;
+      width: 150px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
-    .span-4 { grid-column: span 4; }
-    .span-6 { grid-column: span 6; }
-    .span-8 { grid-column: span 8; }
-    .span-12 { grid-column: span 12; }
-    .flow {
-      display: grid;
-      grid-template-columns: repeat(8, minmax(105px, 1fr));
-      gap: 10px;
-      align-items: stretch;
-      overflow-x: auto;
-      padding-bottom: 4px;
+    .layer-role {
+      display: block;
+      margin-top: 4px;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      line-height: 1.25;
     }
     .node {
-      min-height: 86px;
-      border: 1px solid var(--line);
-      border-top: 4px solid var(--blue);
-      border-radius: 8px;
-      padding: 10px;
-      background: var(--soft);
-      position: relative;
-    }
-    .node:not(:last-child)::after {
-      content: ">";
       position: absolute;
-      right: -11px;
-      top: 32px;
-      color: var(--muted);
-      font-weight: 700;
-    }
-    .node.transport { border-top-color: var(--teal); }
-    .node.external { border-top-color: var(--amber); }
-    .node.contract { border-top-color: var(--red); }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-      gap: 12px;
-    }
-    .card {
+      width: 170px;
+      min-height: 76px;
+      padding: 10px 11px;
       border: 1px solid var(--line);
+      border-top: 5px solid var(--blue);
       border-radius: 8px;
-      padding: 12px;
-      background: #ffffff;
+      background: var(--surface);
+      box-shadow: 0 8px 18px rgba(23, 32, 38, 0.08);
+      cursor: pointer;
+      transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+      z-index: 3;
     }
-    .card strong, .node strong { display: block; font-size: 14px; }
+    .node:hover, .node.selected {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .node.dimmed { opacity: 0.24; }
+    .node.consumer { border-top-color: var(--violet); }
+    .node.contract { border-top-color: var(--red); }
+    .node.core { border-top-color: var(--blue); }
+    .node.hook { border-top-color: var(--green); }
+    .node.transport { border-top-color: var(--cyan); }
+    .node.external { border-top-color: var(--amber); }
+    .node.test { border-top-color: #4b5563; }
+    .node h3 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .node p {
+      color: var(--muted);
+      font-size: 12px;
+    }
     .paths {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
       margin-top: 8px;
+    }
+    code {
+      display: inline-block;
+      padding: 2px 5px;
+      border-radius: 5px;
+      background: #e7eef4;
+      color: #24323c;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    svg.edges {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .edge {
+      stroke: #7e8d98;
+      stroke-width: 1.6;
+      fill: none;
+      marker-end: url(#arrow);
+      opacity: 0.74;
+    }
+    .edge.highlight {
+      stroke: var(--blue);
+      stroke-width: 3;
+      opacity: 1;
+    }
+    .edge.dimmed { opacity: 0.12; }
+    .edge-label {
+      font-size: 11px;
+      fill: #4e5d68;
+      paint-order: stroke;
+      stroke: #fff;
+      stroke-width: 4px;
+      stroke-linejoin: round;
+    }
+    .edge-label.dimmed { opacity: 0.18; }
+    .detail-card {
+      border-bottom: 1px solid var(--line);
+      padding: 14px;
+    }
+    .detail-card h2 {
+      font-size: 19px;
+      margin-bottom: 7px;
+    }
+    .detail-card p { color: var(--muted); }
+    .detail-section {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .detail-section h3 {
+      font-size: 13px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+    li { margin: 5px 0; }
+    .flow-strip {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
     }
-    code {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: 5px;
-      background: #e8eef2;
-      color: #26333b;
-      font-size: 12px;
-    }
-    ul { margin: 8px 0 0; padding-left: 20px; }
-    li { margin: 4px 0; }
-    .badge {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 2px 7px;
+    .pill {
+      border: 1px solid var(--line);
       border-radius: 999px;
-      background: #e5f3ff;
-      color: var(--blue);
+      padding: 4px 8px;
+      background: var(--surface-2);
       font-size: 12px;
-      font-weight: 700;
     }
-    .muted { color: var(--muted); }
-    @media (max-width: 860px) {
-      header { padding: 22px 18px 16px; }
-      main { padding: 14px; }
-      .span-4, .span-6, .span-8 { grid-column: span 12; }
-      .flow { grid-template-columns: repeat(8, minmax(150px, 1fr)); }
+    .note {
+      margin-top: 12px;
+      padding: 10px;
+      border-left: 4px solid var(--amber);
+      background: #fff8ec;
+      color: #664000;
+      border-radius: 6px;
+      font-size: 13px;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>note-c Architecture Map</h1>
-    <p>Portable C SDK core for Notecard request/response behavior, hook-backed serial and I2C transports, and bundled JSON helpers.</p>
+    <div>
+      <h1>note-c Architecture Map</h1>
+      <p>A visual map of the portable SDK core: who calls it, what contracts it exposes, how requests move through JSON and transport layers, and where platform-specific behavior plugs in.</p>
+    </div>
+    <div class="toolbar" aria-label="View controls">
+      <button class="active" data-view="all" type="button">All</button>
+      <button data-view="runtime" type="button">Runtime Flow</button>
+      <button data-view="contracts" type="button">Contracts</button>
+      <button data-view="tests" type="button">Tests</button>
+    </div>
   </header>
+
   <main>
-    <section>
-      <h2>Primary Request Flow</h2>
-      <div class="flow" aria-label="Architecture request flow">
-        <div class="node"><strong>Application or adapter</strong><span class="muted">Arduino, Zephyr, ESP-IDF, POSIX, tests</span></div>
-        <div class="node contract"><strong>Public API</strong><code>note.h</code></div>
-        <div class="node"><strong>Request core</strong><code>n_request.c</code></div>
-        <div class="node"><strong>JSON helpers</strong><code>n_cjson*</code></div>
-        <div class="node transport"><strong>Transport selection</strong><code>n_serial.c</code><code>n_i2c.c</code></div>
-        <div class="node transport"><strong>Registered hook</strong><code>n_hooks.c</code></div>
-        <div class="node external"><strong>Platform bus</strong><span class="muted">UART, USB serial, I2C</span></div>
-        <div class="node external"><strong>Notecard</strong><span class="muted">JSON request/response device</span></div>
+    <aside>
+      <div class="panel-head"><h2>Legend</h2></div>
+      <div class="panel-body">
+        <div class="legend-item"><span class="dot consumer"></span><div><strong>Consumers</strong><br><span class="muted">Apps, adapters, tests</span></div></div>
+        <div class="legend-item"><span class="dot contract"></span><div><strong>Public contract</strong><br><span class="muted">Compatibility surface</span></div></div>
+        <div class="legend-item"><span class="dot core"></span><div><strong>Portable core</strong><br><span class="muted">Request, JSON, helpers</span></div></div>
+        <div class="legend-item"><span class="dot transport"></span><div><strong>Transports</strong><br><span class="muted">Serial and I2C</span></div></div>
+        <div class="legend-item"><span class="dot hook"></span><div><strong>Hooks</strong><br><span class="muted">Platform boundary</span></div></div>
+        <div class="legend-item"><span class="dot external"></span><div><strong>External</strong><br><span class="muted">Bus, Notecard, Notehub</span></div></div>
+
+        <div class="note">Click a box to highlight its dependencies and see source paths, contracts, and update guidance.</div>
+      </div>
+      <div class="panel-head"><h2>Architecture Hotspots</h2></div>
+      <div class="panel-body" id="hotspots"></div>
+    </aside>
+
+    <section class="map-wrap" aria-label="Interactive note-c architecture graph">
+      <div class="map" id="map">
+        <svg class="edges" viewBox="0 0 1160 720" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#7e8d98"></path>
+            </marker>
+          </defs>
+          <g id="edgeLayer"></g>
+        </svg>
       </div>
     </section>
 
-    <div class="grid">
-      <section class="span-8">
-        <h2>Components</h2>
-        <div class="cards">
-          <div class="card"><strong>Public API</strong><p>Compatibility surface: functions, typedefs, constants, hooks, version metadata.</p><div class="paths"><code>note.h</code></div><span class="badge">public contract</span></div>
-          <div class="card"><strong>Request/response core</strong><p>Transaction orchestration, response parsing, timeout and retry behavior.</p><div class="paths"><code>n_request.c</code><code>n_lib.h</code></div></div>
-          <div class="card"><strong>Platform hooks</strong><p>Registration and invocation of platform-provided memory, time, mutex, debug, serial, and I2C callbacks.</p><div class="paths"><code>n_hooks.c</code></div><span class="badge">public contract</span></div>
-          <div class="card"><strong>Transports</strong><p>Serial and I2C byte movement, framing, and chunking behavior.</p><div class="paths"><code>n_serial.c</code><code>n_i2c.c</code></div></div>
-          <div class="card"><strong>JSON model</strong><p>Bundled JSON object representation and helper functions used by callers and internals.</p><div class="paths"><code>n_cjson.c</code><code>n_cjson.h</code><code>n_cjson_helpers.c</code></div><span class="badge">public contract</span></div>
-          <div class="card"><strong>Portable helpers</strong><p>Formatting, parsing, encoding, constants, user-agent support, and utility functions.</p><div class="paths"><code>n_helpers.c</code><code>n_str.c</code><code>n_printf.c</code><code>n_b64.c</code><code>n_cobs.c</code></div></div>
-        </div>
-      </section>
-
-      <section class="span-4">
-        <h2>Design Principles</h2>
-        <ul>
-          <li>Keep the SDK core platform-neutral.</li>
-          <li>Put platform behavior behind hooks or adapter libraries.</li>
-          <li>Treat <code>note.h</code> and hook signatures as compatibility contracts.</li>
-          <li>Use tests to protect public API, request lifecycle, memory ownership, and transport behavior.</li>
-        </ul>
-      </section>
-
-      <section class="span-6">
-        <h2>External Boundaries</h2>
-        <ul>
-          <li><strong>Notecard:</strong> receives JSON requests and returns JSON responses over serial or I2C.</li>
-          <li><strong>Notehub:</strong> cloud service reached by Notecard; note-c does not call it directly.</li>
-          <li><strong>Adapter SDKs:</strong> note-arduino, note-zephyr, note-espidf, note-posix, and similar integrations supply platform behavior.</li>
-        </ul>
-      </section>
-
-      <section class="span-6">
-        <h2>Update This Map When</h2>
-        <ul>
-          <li>Public APIs, typedefs, constants, or hook signatures change.</li>
-          <li>Request lifecycle, timeout, retry, or memory ownership changes.</li>
-          <li>Serial/I2C framing, chunking, transmit, or receive behavior changes.</li>
-          <li>JSON helper semantics or adapter expectations change.</li>
-          <li>Build, test, release, or versioning strategy changes.</li>
-        </ul>
-      </section>
-    </div>
+    <aside class="details" aria-label="Selected architecture details">
+      <div class="panel-head"><h2>Details</h2></div>
+      <div id="details"></div>
+    </aside>
   </main>
+
+  <script>
+    const architecture = {"schemaVersion":"1.1","name":"note-c architecture map","repository":"blues/note-c","purpose":"Portable C SDK for communicating with a Blues Notecard over serial or I2C.","lastReviewed":"2026-05-18","viewArtifacts":{"humanMap":"docs/architecture/architecture.html","agentMap":"docs/architecture/architecture.json","narrative":"ARCHITECTURE.md"},"principles":["Keep the core SDK platform-neutral.","Put platform-specific behavior behind hooks or adapter libraries.","Treat note.h and hook signatures as compatibility contracts.","Update the Markdown, HTML, and JSON maps when architecture-relevant code changes land."],"layers":[{"id":"consumers","name":"Consumers and adapters","role":"Applications, platform SDKs, and tests that call note-c."},{"id":"api","name":"Public contract","role":"The API and hook surface downstream code depends on."},{"id":"core","name":"Portable core","role":"Request lifecycle, JSON, helpers, binary codecs, and utility behavior."},{"id":"transport","name":"Transport and hooks","role":"Transport selection, chunking, and platform callback boundaries."},{"id":"external","name":"Hardware and cloud boundary","role":"Physical bus, Notecard, and Notehub reached by the Notecard."}],"nodes":[{"id":"apps","layer":"consumers","name":"Applications","kind":"consumer","paths":[],"summary":"User firmware or host apps that build requests and consume responses.","contracts":["Calls public APIs in note.h"]},{"id":"adapters","layer":"consumers","name":"Adapter SDKs","kind":"consumer","paths":[],"summary":"Platform integrations such as note-arduino, note-zephyr, note-espidf, and POSIX integrations.","contracts":["Own platform setup and hook implementations"]},{"id":"tests","layer":"consumers","name":"Unit Tests","kind":"test","paths":["test/"],"summary":"Mock-backed tests for JSON, request flow, hooks, transports, helpers, and edge cases.","contracts":["Protects behavior without hardware"]},{"id":"api","layer":"api","name":"note.h Public API","kind":"contract","paths":["note.h"],"summary":"Public functions, typedefs, constants, version metadata, request helpers, and hook signatures.","contracts":["Compatibility boundary","Breaking changes require versioning and migration notes"]},{"id":"request","layer":"core","name":"Request Core","kind":"core","paths":["n_request.c","n_lib.h"],"summary":"Creates, serializes, sends, retries, parses, and releases Notecard request/response transactions.","contracts":["Owns transaction lifecycle","Coordinates active interface"]},{"id":"json","layer":"core","name":"JSON Model","kind":"core","paths":["n_cjson.c","n_cjson.h","n_cjson_helpers.c"],"summary":"Bundled JSON object model and helper APIs used by callers and internals.","contracts":["J object semantics","Allocation ownership"]},{"id":"helpers","layer":"core","name":"High-level Helpers","kind":"core","paths":["n_helpers.c"],"summary":"Convenience APIs for common Notecard operations: time, env, location, sync, payload, binary store, and status helpers.","contracts":["Builds JSON requests on top of public request APIs"]},{"id":"utilities","layer":"core","name":"Portable Utilities","kind":"core","paths":["n_str.c","n_printf.c","n_atof.c","n_ftoa.c","n_b64.c","n_cobs.c","n_md5.c","n_const.c","n_ua.c"],"summary":"String, number, formatting, encoding, hashing, constants, and user-agent support.","contracts":["No platform runtime assumptions"]},{"id":"hooks","layer":"transport","name":"Platform Hooks","kind":"hook","paths":["n_hooks.c"],"summary":"Registration and invocation of memory, time, mutex, debug, transaction, serial, I2C, and JSON transaction callbacks.","contracts":["Platform boundary","Hook signatures are public contracts"]},{"id":"serial","layer":"transport","name":"Serial Transport","kind":"transport","paths":["n_serial.c"],"summary":"Serial transaction, reset, receive, transmit, and chunking behavior.","contracts":["Uses serial hooks","Protects byte-level request/response flow"]},{"id":"i2c","layer":"transport","name":"I2C Transport","kind":"transport","paths":["n_i2c.c"],"summary":"I2C transaction, reset, query length, receive, transmit, MTU, and chunking behavior.","contracts":["Uses I2C hooks","Owns I2C timing and chunking behavior"]},{"id":"bus","layer":"external","name":"Platform Bus","kind":"external","paths":[],"summary":"UART, USB serial, I2C, or test doubles supplied by the host platform.","contracts":["Implemented outside note-c"]},{"id":"notecard","layer":"external","name":"Notecard","kind":"external","paths":[],"summary":"Device that accepts JSON requests and returns JSON responses.","contracts":["Serial or I2C protocol boundary"]},{"id":"notehub","layer":"external","name":"Notehub","kind":"external","paths":[],"summary":"Cloud service reached by the Notecard; note-c does not communicate with Notehub directly.","contracts":["Indirect dependency only"]}],"edges":[{"from":"apps","to":"api","label":"calls"},{"from":"adapters","to":"api","label":"wraps"},{"from":"tests","to":"api","label":"exercises"},{"from":"api","to":"request","label":"request APIs"},{"from":"api","to":"json","label":"J helpers"},{"from":"api","to":"hooks","label":"hook registration"},{"from":"helpers","to":"request","label":"builds requests"},{"from":"request","to":"json","label":"serialize/parse"},{"from":"request","to":"hooks","label":"active interface"},{"from":"request","to":"serial","label":"serial path"},{"from":"request","to":"i2c","label":"I2C path"},{"from":"serial","to":"hooks","label":"serial callbacks"},{"from":"i2c","to":"hooks","label":"I2C callbacks"},{"from":"hooks","to":"bus","label":"platform calls"},{"from":"bus","to":"notecard","label":"bytes"},{"from":"notecard","to":"notehub","label":"syncs"},{"from":"tests","to":"hooks","label":"mocks"},{"from":"tests","to":"serial","label":"transport tests"},{"from":"tests","to":"i2c","label":"transport tests"},{"from":"utilities","to":"request","label":"support"},{"from":"utilities","to":"json","label":"support"}],"hotspots":[{"id":"public-api","title":"Public API and hook compatibility","nodes":["api","hooks"],"updateRule":"Update docs and consider versioning whenever note.h contracts change."},{"id":"transaction-flow","title":"Request lifecycle","nodes":["request","json","serial","i2c"],"updateRule":"Update docs when timeout, retry, serialization, parsing, memory ownership, or active-interface behavior changes."},{"id":"transport-boundary","title":"Transport and platform boundary","nodes":["serial","i2c","hooks","bus"],"updateRule":"Update docs when byte framing, chunking, MTU, reset, or hook invocation semantics change."},{"id":"adapter-impact","title":"Adapter impact","nodes":["adapters","api","hooks"],"updateRule":"Update docs when note-arduino, note-zephyr, note-espidf, POSIX, or other adapters need coordinated changes."}],"updateTriggers":["Changes to note.h public APIs, typedefs, constants, or hook signatures.","Changes to request lifecycle, timeout, retry, memory ownership, or response handling.","Changes to serial/I2C framing, chunking, transmit, receive, reset, or MTU behavior.","Changes to JSON representation or helper semantics.","Changes to adapter expectations, build/test strategy, release strategy, or versioning."],"filesToUpdateTogether":["ARCHITECTURE.md","docs/architecture/architecture.json","docs/architecture/architecture.html","docs/architecture/decisions/*.md when a durable design decision changes"]};
+
+    const positions = {
+      apps: [210, 46], adapters: [455, 46], tests: [700, 46],
+      api: [455, 182],
+      helpers: [180, 318], request: [395, 318], json: [610, 318], utilities: [825, 318],
+      serial: [285, 468], hooks: [500, 468], i2c: [715, 468],
+      bus: [285, 606], notecard: [500, 606], notehub: [715, 606]
+    };
+
+    const layerTops = { consumers: 24, api: 160, core: 296, transport: 446, external: 584 };
+    const viewFilters = {
+      all: null,
+      runtime: new Set(["apps","adapters","api","request","json","serial","i2c","hooks","bus","notecard","notehub"]),
+      contracts: new Set(["adapters","api","hooks","json","serial","i2c"]),
+      tests: new Set(["tests","api","request","json","hooks","serial","i2c","utilities"])
+    };
+
+    const map = document.getElementById("map");
+    const edgeLayer = document.getElementById("edgeLayer");
+    const details = document.getElementById("details");
+    const hotspots = document.getElementById("hotspots");
+
+    function colorForKind(kind) {
+      return {
+        consumer: "consumer",
+        contract: "contract",
+        core: "core",
+        hook: "hook",
+        transport: "transport",
+        external: "external",
+        test: "test"
+      }[kind] || "core";
+    }
+
+    function renderLayers() {
+      architecture.layers.forEach(layer => {
+        const div = document.createElement("div");
+        div.className = "layer";
+        div.style.top = layerTops[layer.id] + "px";
+        div.innerHTML = '<div class="layer-label">' + layer.name + '<span class="layer-role">' + layer.role + '</span></div>';
+        map.appendChild(div);
+      });
+    }
+
+    function renderNodes() {
+      architecture.nodes.forEach(node => {
+        const div = document.createElement("button");
+        const pos = positions[node.id];
+        div.type = "button";
+        div.className = "node " + colorForKind(node.kind);
+        div.id = "node-" + node.id;
+        div.dataset.node = node.id;
+        div.style.left = pos[0] + "px";
+        div.style.top = pos[1] + "px";
+        const pathHtml = (node.paths || []).slice(0, 3).map(path => "<code>" + path + "</code>").join("");
+        div.innerHTML = "<h3>" + node.name + "</h3><p>" + node.summary + "</p><div class='paths'>" + pathHtml + "</div>";
+        div.addEventListener("click", () => selectNode(node.id));
+        map.appendChild(div);
+      });
+    }
+
+    function center(id) {
+      const p = positions[id];
+      return [p[0] + 85, p[1] + 38];
+    }
+
+    function renderEdges() {
+      edgeLayer.innerHTML = "";
+      architecture.edges.forEach((edge, i) => {
+        const a = center(edge.from);
+        const b = center(edge.to);
+        const midY = (a[1] + b[1]) / 2;
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("id", "edge-" + i);
+        path.setAttribute("class", "edge");
+        path.dataset.from = edge.from;
+        path.dataset.to = edge.to;
+        path.setAttribute("d", "M " + a[0] + " " + a[1] + " C " + a[0] + " " + midY + ", " + b[0] + " " + midY + ", " + b[0] + " " + b[1]);
+        edgeLayer.appendChild(path);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("class", "edge-label");
+        label.dataset.from = edge.from;
+        label.dataset.to = edge.to;
+        label.setAttribute("x", (a[0] + b[0]) / 2);
+        label.setAttribute("y", midY - 6);
+        label.setAttribute("text-anchor", "middle");
+        label.textContent = edge.label;
+        edgeLayer.appendChild(label);
+      });
+    }
+
+    function renderHotspots() {
+      architecture.hotspots.forEach(hotspot => {
+        const div = document.createElement("button");
+        div.type = "button";
+        div.className = "hotspot-item";
+        div.innerHTML = "<strong>" + hotspot.title + "</strong><span class='muted'>" + hotspot.updateRule + "</span>";
+        div.addEventListener("click", () => highlightSet(new Set(hotspot.nodes), hotspot));
+        hotspots.appendChild(div);
+      });
+    }
+
+    function relatedIds(id) {
+      const ids = new Set([id]);
+      architecture.edges.forEach(edge => {
+        if (edge.from === id) ids.add(edge.to);
+        if (edge.to === id) ids.add(edge.from);
+      });
+      return ids;
+    }
+
+    function setHighlight(ids) {
+      document.querySelectorAll(".node").forEach(el => {
+        el.classList.toggle("dimmed", !ids.has(el.dataset.node));
+        el.classList.toggle("selected", ids.has(el.dataset.node));
+      });
+      document.querySelectorAll(".edge, .edge-label").forEach(el => {
+        const on = ids.has(el.dataset.from) && ids.has(el.dataset.to);
+        el.classList.toggle("dimmed", !on);
+        el.classList.toggle("highlight", on && el.classList.contains("edge"));
+      });
+    }
+
+    function highlightSet(ids, hotspot) {
+      setHighlight(ids);
+      details.innerHTML = "<div class='detail-card'><h2>" + hotspot.title + "</h2><p>" + hotspot.updateRule + "</p></div>" +
+        "<div class='detail-section'><h3>Nodes</h3><div class='flow-strip'>" +
+        Array.from(ids).map(id => "<span class='pill'>" + architecture.nodes.find(n => n.id === id).name + "</span>").join("") +
+        "</div></div>";
+    }
+
+    function selectNode(id) {
+      const node = architecture.nodes.find(n => n.id === id);
+      const ids = relatedIds(id);
+      setHighlight(ids);
+      const incoming = architecture.edges.filter(e => e.to === id);
+      const outgoing = architecture.edges.filter(e => e.from === id);
+      details.innerHTML =
+        "<div class='detail-card'><h2>" + node.name + "</h2><p>" + node.summary + "</p></div>" +
+        "<div class='detail-section'><h3>Source paths</h3><div class='flow-strip'>" +
+        (node.paths.length ? node.paths.map(p => "<code>" + p + "</code>").join("") : "<span class='muted'>External to this repository</span>") +
+        "</div></div>" +
+        "<div class='detail-section'><h3>Contracts</h3><ul>" +
+        (node.contracts || []).map(c => "<li>" + c + "</li>").join("") +
+        "</ul></div>" +
+        "<div class='detail-section'><h3>Incoming</h3><ul>" +
+        (incoming.length ? incoming.map(e => "<li>" + architecture.nodes.find(n => n.id === e.from).name + " - " + e.label + "</li>").join("") : "<li>None</li>") +
+        "</ul></div>" +
+        "<div class='detail-section'><h3>Outgoing</h3><ul>" +
+        (outgoing.length ? outgoing.map(e => "<li>" + e.label + " - " + architecture.nodes.find(n => n.id === e.to).name + "</li>").join("") : "<li>None</li>") +
+        "</ul></div>";
+    }
+
+    function applyView(view) {
+      document.querySelectorAll(".toolbar button").forEach(button => button.classList.toggle("active", button.dataset.view === view));
+      const filter = viewFilters[view];
+      if (!filter) {
+        document.querySelectorAll(".node, .edge, .edge-label").forEach(el => el.classList.remove("dimmed", "highlight", "selected"));
+        selectNode("request");
+        return;
+      }
+      setHighlight(filter);
+      details.innerHTML = "<div class='detail-card'><h2>" + document.querySelector('[data-view="' + view + '"]').textContent + "</h2><p>Focused view of the architecture graph.</p></div>";
+    }
+
+    document.querySelectorAll(".toolbar button").forEach(button => {
+      button.addEventListener("click", () => applyView(button.dataset.view));
+    });
+
+    renderLayers();
+    renderNodes();
+    renderEdges();
+    renderHotspots();
+    selectNode("request");
+  </script>
 </body>
 </html>
-
