@@ -263,7 +263,7 @@
     .edge.horizontal {
       stroke: var(--green);
       stroke-width: 2.1;
-      marker-end: none;
+      marker-end: url(#arrow-green);
       opacity: 0.9;
     }
     .edge.highlight {
@@ -283,13 +283,7 @@
       stroke-width: 4px;
       stroke-linejoin: round;
     }
-    .row-arrow {
-      fill: var(--green);
-      stroke: #fff;
-      stroke-width: 2px;
-      stroke-linejoin: round;
-    }
-    .edge-label.dimmed, .row-arrow.dimmed { opacity: 0.18; }
+    .edge-label.dimmed { opacity: 0.18; }
     .detail-card {
       border-bottom: 1px solid var(--line);
       padding: 14px;
@@ -380,6 +374,9 @@
             <defs>
               <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="#7e8d98"></path>
+              </marker>
+              <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#16754c"></path>
               </marker>
             </defs>
             <g id="edgeLayer"></g>
@@ -478,38 +475,26 @@
       const to = nodeBounds(edge.to);
       const leftToRight = from.centerX < to.centerX;
       const longSameRow = Math.abs(from.centerX - to.centerX) > nodeWidth + 160;
-      if (longSameRow) {
-        const routeY = Math.max(from.bottom, to.bottom) + 64;
-        return {
-          d: "M " + from.centerX + " " + from.bottom + " L " + from.centerX + " " + routeY + " L " + to.centerX + " " + routeY + " L " + to.centerX + " " + to.bottom,
-          labelX: (from.centerX + to.centerX) / 2,
-          labelY: routeY - 8,
-          arrowX: to.centerX + (leftToRight ? -12 : 12),
-          arrowY: routeY + 4,
-          arrowDirection: leftToRight ? "right" : "left"
-        };
-      }
       const startX = leftToRight ? from.right : from.left;
       const endX = leftToRight ? to.left : to.right;
       const y = from.centerY;
-      const arcY = y - 46;
-      return {
-        d: "M " + startX + " " + y + " C " + startX + " " + arcY + ", " + endX + " " + arcY + ", " + endX + " " + y,
-        labelX: (startX + endX) / 2,
-        labelY: arcY - 8,
-        arrowX: endX + (leftToRight ? -10 : 10),
-        arrowY: y + 4,
-        arrowDirection: leftToRight ? "right" : "left"
-      };
-    }
-
-    function rowArrowPoints(x, y, direction) {
-      const width = 8;
-      const height = 6;
-      if (direction === "right") {
-        return (x - width / 2) + "," + (y - height / 2) + " " + (x - width / 2) + "," + (y + height / 2) + " " + (x + width / 2) + "," + y;
+      if (longSameRow) {
+        const routeY = Math.max(from.bottom, to.bottom) + 64;
+        const targetTurnX = endX + (leftToRight ? -28 : 28);
+        return {
+          d: "M " + startX + " " + y + " L " + startX + " " + routeY + " L " + targetTurnX + " " + routeY + " L " + targetTurnX + " " + y + " L " + endX + " " + y,
+          labelX: (from.centerX + to.centerX) / 2,
+          labelY: routeY - 8
+        };
       }
-      return (x + width / 2) + "," + (y - height / 2) + " " + (x + width / 2) + "," + (y + height / 2) + " " + (x - width / 2) + "," + y;
+      const arcY = y - 46;
+      const startTurnX = startX + (leftToRight ? 28 : -28);
+      const endTurnX = endX + (leftToRight ? -28 : 28);
+      return {
+        d: "M " + startX + " " + y + " C " + startTurnX + " " + arcY + ", " + endTurnX + " " + arcY + ", " + endTurnX + " " + y + " L " + endX + " " + y,
+        labelX: (startX + endX) / 2,
+        labelY: arcY - 8
+      };
     }
 
     function defaultPath(edge) {
@@ -551,14 +536,6 @@
         label.textContent = edge.label;
         edgeLayer.appendChild(label);
 
-        if (sameRow) {
-          const arrow = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-          arrow.setAttribute("class", "row-arrow");
-          arrow.dataset.from = edge.from;
-          arrow.dataset.to = edge.to;
-          arrow.setAttribute("points", rowArrowPoints(geometry.arrowX, geometry.arrowY, geometry.arrowDirection));
-          edgeLayer.appendChild(arrow);
-        }
       });
     }
 
@@ -587,7 +564,7 @@
         el.classList.toggle("dimmed", !ids.has(el.dataset.node));
         el.classList.toggle("selected", ids.has(el.dataset.node));
       });
-      document.querySelectorAll(".edge, .edge-label, .row-arrow").forEach(el => {
+      document.querySelectorAll(".edge, .edge-label").forEach(el => {
         const on = ids.has(el.dataset.from) && ids.has(el.dataset.to);
         el.classList.toggle("dimmed", !on);
         el.classList.toggle("highlight", on && el.classList.contains("edge"));
