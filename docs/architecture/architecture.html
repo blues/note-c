@@ -722,10 +722,11 @@
       if (!filter) {
         document.querySelectorAll(".node, .edge, .edge-label").forEach(el => el.classList.remove("dimmed", "highlight", "selected"));
         setHighlight(relatedIds("request"));
+        closeDetails();
         return;
       }
       setHighlight(filter);
-      openDetails("<div class='detail-card'><h2>" + document.querySelector('[data-view="' + view + '"]').textContent + "</h2><p>Focused view of the architecture graph.</p></div>");
+      closeDetails();
     }
 
     document.querySelectorAll(".toolbar button").forEach(button => {
