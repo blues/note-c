@@ -271,6 +271,9 @@
       stroke-width: 3;
       opacity: 1;
     }
+    .edge.horizontal.highlight {
+      stroke: var(--green);
+    }
     .edge.dimmed { opacity: 0.12; }
     .edge-label {
       font-size: 12px;
@@ -282,11 +285,8 @@
     }
     .row-arrow {
       fill: var(--green);
-      font-size: 13px;
-      font-weight: 700;
-      paint-order: stroke;
       stroke: #fff;
-      stroke-width: 4px;
+      stroke-width: 2px;
       stroke-linejoin: round;
     }
     .edge-label.dimmed, .row-arrow.dimmed { opacity: 0.18; }
@@ -477,7 +477,6 @@
       const from = nodeBounds(edge.from);
       const to = nodeBounds(edge.to);
       const leftToRight = from.centerX < to.centerX;
-      const arrowText = leftToRight ? ">" : "<";
       const longSameRow = Math.abs(from.centerX - to.centerX) > nodeWidth + 160;
       if (longSameRow) {
         const routeY = Math.max(from.bottom, to.bottom) + 64;
@@ -487,7 +486,7 @@
           labelY: routeY - 8,
           arrowX: to.centerX + (leftToRight ? -12 : 12),
           arrowY: routeY + 4,
-          arrowText
+          arrowDirection: leftToRight ? "right" : "left"
         };
       }
       const startX = leftToRight ? from.right : from.left;
@@ -500,8 +499,17 @@
         labelY: arcY - 8,
         arrowX: endX + (leftToRight ? -10 : 10),
         arrowY: y + 4,
-        arrowText
+        arrowDirection: leftToRight ? "right" : "left"
       };
+    }
+
+    function rowArrowPoints(x, y, direction) {
+      const width = 8;
+      const height = 6;
+      if (direction === "right") {
+        return (x - width / 2) + "," + (y - height / 2) + " " + (x - width / 2) + "," + (y + height / 2) + " " + (x + width / 2) + "," + y;
+      }
+      return (x + width / 2) + "," + (y - height / 2) + " " + (x + width / 2) + "," + (y + height / 2) + " " + (x - width / 2) + "," + y;
     }
 
     function defaultPath(edge) {
@@ -544,14 +552,11 @@
         edgeLayer.appendChild(label);
 
         if (sameRow) {
-          const arrow = document.createElementNS("http://www.w3.org/2000/svg", "text");
+          const arrow = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
           arrow.setAttribute("class", "row-arrow");
           arrow.dataset.from = edge.from;
           arrow.dataset.to = edge.to;
-          arrow.setAttribute("x", geometry.arrowX);
-          arrow.setAttribute("y", geometry.arrowY);
-          arrow.setAttribute("text-anchor", "middle");
-          arrow.textContent = geometry.arrowText;
+          arrow.setAttribute("points", rowArrowPoints(geometry.arrowX, geometry.arrowY, geometry.arrowDirection));
           edgeLayer.appendChild(arrow);
         }
       });
