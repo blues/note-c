@@ -419,23 +419,28 @@
     }
 
     const nodeWidth = 170;
-    const nodeCenterX = nodeWidth / 2;
-    const nodeCenterY = 38;
 
-    function center(id) {
+    function nodeBounds(id) {
       const p = positions[id];
-      return [p[0] + nodeCenterX, p[1] + nodeCenterY];
+      const el = document.getElementById("node-" + id);
+      const height = el ? el.offsetHeight : 76;
+      return {
+        left: p[0],
+        right: p[0] + nodeWidth,
+        top: p[1],
+        bottom: p[1] + height,
+        centerX: p[0] + (nodeWidth / 2),
+        centerY: p[1] + (height / 2)
+      };
     }
 
     function sameRowPath(edge) {
-      const from = positions[edge.from];
-      const to = positions[edge.to];
-      const fromRight = from[0] + nodeWidth;
-      const toRight = to[0] + nodeWidth;
-      const leftToRight = from[0] < to[0];
-      const startX = leftToRight ? fromRight : from[0];
-      const endX = leftToRight ? to[0] : toRight;
-      const y = from[1] + nodeCenterY;
+      const from = nodeBounds(edge.from);
+      const to = nodeBounds(edge.to);
+      const leftToRight = from.left < to.left;
+      const startX = leftToRight ? from.right : from.left;
+      const endX = leftToRight ? to.left : to.right;
+      const y = from.centerY;
       const arcY = y - 46;
       return {
         d: "M " + startX + " " + y + " C " + startX + " " + arcY + ", " + endX + " " + arcY + ", " + endX + " " + y,
@@ -445,12 +450,17 @@
     }
 
     function defaultPath(edge) {
-      const a = center(edge.from);
-      const b = center(edge.to);
-      const midY = (a[1] + b[1]) / 2;
+      const from = nodeBounds(edge.from);
+      const to = nodeBounds(edge.to);
+      const down = from.top < to.top;
+      const startX = from.centerX;
+      const startY = down ? from.bottom : from.top;
+      const endX = to.centerX;
+      const endY = down ? to.top : to.bottom;
+      const midY = (startY + endY) / 2;
       return {
-        d: "M " + a[0] + " " + a[1] + " C " + a[0] + " " + midY + ", " + b[0] + " " + midY + ", " + b[0] + " " + b[1],
-        labelX: (a[0] + b[0]) / 2,
+        d: "M " + startX + " " + startY + " C " + startX + " " + midY + ", " + endX + " " + midY + ", " + endX + " " + endY,
+        labelX: (startX + endX) / 2,
         labelY: midY - 6
       };
     }
