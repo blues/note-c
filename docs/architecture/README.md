@@ -21,8 +21,9 @@ After code changes:
 ## File Types
 
 - `../../ARCHITECTURE.md`: repository-level architecture entrypoint.
-- `architecture.html`: single-file visual map for humans.
+- `architecture.html`: single-file visual map for humans. It embeds data from `architecture.json` so it can be opened directly from disk.
 - `architecture.json`: structured map for AI agents and tooling.
+- `embed-architecture-json.mjs`: refreshes the embedded JSON block in `architecture.html` from `architecture.json`.
 - `decisions/*.md`: architecture decision records.
 - `templates/repo-architecture.md`: template for future architecture docs.
 - `../../AGENTS.md`, `../../CLAUDE.md`, `../../GEMINI.md`, `../../.github/copilot-instructions.md`, and `../../.cursor/rules/architecture-docs.mdc`: AI entrypoints that point future tools back to these docs.
@@ -38,7 +39,11 @@ Architecture docs should capture:
 - Testing strategy for behavior that crosses module boundaries.
 - Important tradeoffs, especially when there were plausible alternatives.
 
-Keep `../../ARCHITECTURE.md`, `architecture.html`, and `architecture.json` synchronized when architecture changes.
+Keep `../../ARCHITECTURE.md`, `architecture.html`, and `architecture.json` synchronized when architecture changes. When changing graph data, edit `architecture.json`, then run:
+
+```bash
+node docs/architecture/embed-architecture-json.mjs
+```
 
 Architecture docs should not become:
 
