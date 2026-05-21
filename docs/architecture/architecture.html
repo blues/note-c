@@ -625,6 +625,14 @@
           labelY: api.bottom + 72
         };
       }
+      if (edge.from === "tests" && edge.to === "serial") {
+        const tests = nodeBounds("tests");
+        return {
+          ...geometry,
+          labelX: tests.centerX - 90,
+          labelY: tests.bottom + 105
+        };
+      }
       return geometry;
     }
 
