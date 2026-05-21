@@ -35,14 +35,13 @@
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 24px;
-      align-items: end;
-      padding: 24px 28px 18px;
+      align-items: center;
+      padding: 20px 28px;
       background: var(--surface);
       border-bottom: 1px solid var(--line);
     }
     h1, h2, h3, p { margin: 0; }
     h1 { font-size: 28px; letter-spacing: 0; }
-    header p { margin-top: 7px; color: var(--muted); max-width: 880px; }
     .toolbar {
       display: flex;
       align-items: center;
@@ -412,7 +411,6 @@
   <header>
     <div>
       <h1>note-c Architecture Map</h1>
-      <p>A visual map of the portable SDK core: who calls it, what contracts it exposes, how requests move through JSON and transport layers, and where platform-specific behavior plugs in.</p>
     </div>
     <div class="toolbar" aria-label="View controls">
       <button class="active" data-view="all" type="button">All</button>
