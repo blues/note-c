@@ -67,21 +67,27 @@
       display: grid;
       grid-template-columns: 1fr 280px;
       grid-template-areas:
+        "legend legend"
         "map reference";
-      gap: 16px;
+      gap: 10px 16px;
       padding: 16px;
       min-height: calc(100vh - 92px);
       align-items: start;
     }
+    .legend-strip {
+      grid-area: legend;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 34px;
+      padding: 6px 12px;
+    }
     .reference {
       grid-area: reference;
-      height: calc(100vh - 124px);
-      min-height: 740px;
+      height: 760px;
+      min-height: 0;
     }
-    .reference .support-panel + .support-panel {
-      border-top: 1px solid var(--line);
-    }
-    aside, .map-wrap {
+    aside, .map-wrap, .legend-strip {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -120,6 +126,39 @@
     .hotspot-item:hover {
       background: var(--surface-2);
       border-color: var(--line);
+    }
+    .legend-strip .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 0;
+      font-size: 11px;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+    .legend-strip .dot {
+      width: 8px;
+      height: 8px;
+      margin-top: 0;
+      flex: 0 0 auto;
+    }
+    .legend-strip strong {
+      font-size: 11px;
+      font-weight: 650;
+    }
+    .legend-strip br,
+    .legend-strip .muted {
+      display: none;
+    }
+    .hotspot-panel {
+      display: flex;
+      flex: 1 1 auto;
+      min-height: 0;
+      flex-direction: column;
+    }
+    .hotspot-panel .panel-body {
+      flex: 1 1 auto;
+      min-height: 0;
     }
     .dot {
       width: 12px;
@@ -379,21 +418,17 @@
   </header>
 
   <main>
-    <aside class="reference">
-      <div class="support-panel">
-        <div class="panel-head"><h2>Legend</h2></div>
-        <div class="panel-body">
-          <div class="legend-item"><span class="dot consumer"></span><div><strong>Consumers</strong><br><span class="muted">Apps, adapters, tests</span></div></div>
-          <div class="legend-item"><span class="dot contract"></span><div><strong>Public contract</strong><br><span class="muted">Compatibility surface</span></div></div>
-          <div class="legend-item"><span class="dot core"></span><div><strong>Portable core</strong><br><span class="muted">Request, JSON, helpers</span></div></div>
-          <div class="legend-item"><span class="dot transport"></span><div><strong>Transports</strong><br><span class="muted">Serial and I2C</span></div></div>
-          <div class="legend-item"><span class="dot hook"></span><div><strong>Hooks</strong><br><span class="muted">Platform boundary</span></div></div>
-          <div class="legend-item"><span class="dot external"></span><div><strong>External</strong><br><span class="muted">Bus, Notecard, Notehub</span></div></div>
+    <section class="legend-strip" aria-label="Architecture map legend">
+      <div class="legend-item"><span class="dot consumer"></span><div><strong>Consumers</strong><br><span class="muted">Apps, adapters, tests</span></div></div>
+      <div class="legend-item"><span class="dot contract"></span><div><strong>Public contract</strong><br><span class="muted">Compatibility surface</span></div></div>
+      <div class="legend-item"><span class="dot core"></span><div><strong>Portable core</strong><br><span class="muted">Request, JSON, helpers</span></div></div>
+      <div class="legend-item"><span class="dot transport"></span><div><strong>Transports</strong><br><span class="muted">Serial and I2C</span></div></div>
+      <div class="legend-item"><span class="dot hook"></span><div><strong>Hooks</strong><br><span class="muted">Platform boundary</span></div></div>
+      <div class="legend-item"><span class="dot external"></span><div><strong>External</strong><br><span class="muted">Bus, Notecard, Notehub</span></div></div>
+    </section>
 
-          <div class="note">Click a box to highlight its dependencies and see source paths, contracts, and update guidance.</div>
-        </div>
-      </div>
-      <div class="support-panel">
+    <aside class="reference">
+      <div class="support-panel hotspot-panel">
         <div class="panel-head"><h2>Architecture Hotspots</h2></div>
         <div class="panel-body" id="hotspots"></div>
       </div>
