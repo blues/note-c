@@ -514,11 +514,31 @@
       };
     }
 
+    function placeLabel(edge, geometry) {
+      if (edge.from === "utilities" && edge.to === "request") {
+        const request = nodeBounds("request");
+        return {
+          ...geometry,
+          labelX: request.right + 54,
+          labelY: geometry.labelY + 16
+        };
+      }
+      if (edge.from === "request" && edge.to === "i2c") {
+        const i2c = nodeBounds("i2c");
+        return {
+          ...geometry,
+          labelX: i2c.left - 34,
+          labelY: i2c.top - 30
+        };
+      }
+      return geometry;
+    }
+
     function renderEdges() {
       edgeLayer.innerHTML = "";
       architecture.edges.forEach((edge, i) => {
         const sameRow = positions[edge.from][1] === positions[edge.to][1];
-        const geometry = sameRow ? sameRowPath(edge) : defaultPath(edge);
+        const geometry = placeLabel(edge, sameRow ? sameRowPath(edge) : defaultPath(edge));
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("id", "edge-" + i);
         path.setAttribute("class", sameRow ? "edge horizontal" : "edge");
