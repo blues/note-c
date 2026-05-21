@@ -418,31 +418,62 @@
       });
     }
 
+    const nodeWidth = 170;
+    const nodeCenterX = nodeWidth / 2;
+    const nodeCenterY = 38;
+
     function center(id) {
       const p = positions[id];
-      return [p[0] + 85, p[1] + 38];
+      return [p[0] + nodeCenterX, p[1] + nodeCenterY];
+    }
+
+    function sameRowPath(edge) {
+      const from = positions[edge.from];
+      const to = positions[edge.to];
+      const fromRight = from[0] + nodeWidth;
+      const toRight = to[0] + nodeWidth;
+      const leftToRight = from[0] < to[0];
+      const startX = leftToRight ? fromRight : from[0];
+      const endX = leftToRight ? to[0] : toRight;
+      const y = from[1] + nodeCenterY;
+      const arcY = y - 46;
+      return {
+        d: "M " + startX + " " + y + " C " + startX + " " + arcY + ", " + endX + " " + arcY + ", " + endX + " " + y,
+        labelX: (startX + endX) / 2,
+        labelY: arcY - 8
+      };
+    }
+
+    function defaultPath(edge) {
+      const a = center(edge.from);
+      const b = center(edge.to);
+      const midY = (a[1] + b[1]) / 2;
+      return {
+        d: "M " + a[0] + " " + a[1] + " C " + a[0] + " " + midY + ", " + b[0] + " " + midY + ", " + b[0] + " " + b[1],
+        labelX: (a[0] + b[0]) / 2,
+        labelY: midY - 6
+      };
     }
 
     function renderEdges() {
       edgeLayer.innerHTML = "";
       architecture.edges.forEach((edge, i) => {
-        const a = center(edge.from);
-        const b = center(edge.to);
-        const midY = (a[1] + b[1]) / 2;
+        const sameRow = positions[edge.from][1] === positions[edge.to][1];
+        const geometry = sameRow ? sameRowPath(edge) : defaultPath(edge);
         const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("id", "edge-" + i);
         path.setAttribute("class", "edge");
         path.dataset.from = edge.from;
         path.dataset.to = edge.to;
-        path.setAttribute("d", "M " + a[0] + " " + a[1] + " C " + a[0] + " " + midY + ", " + b[0] + " " + midY + ", " + b[0] + " " + b[1]);
+        path.setAttribute("d", geometry.d);
         edgeLayer.appendChild(path);
 
         const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
         label.setAttribute("class", "edge-label");
         label.dataset.from = edge.from;
         label.dataset.to = edge.to;
-        label.setAttribute("x", (a[0] + b[0]) / 2);
-        label.setAttribute("y", midY - 6);
+        label.setAttribute("x", geometry.labelX);
+        label.setAttribute("y", geometry.labelY);
         label.setAttribute("text-anchor", "middle");
         label.textContent = edge.label;
         edgeLayer.appendChild(label);
