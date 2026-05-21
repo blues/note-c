@@ -483,12 +483,18 @@
       const startX = leftToRight ? from.right : from.left;
       const endX = leftToRight ? to.left : to.right;
       const y = from.centerY;
-      const labelX = longSameRow ? endX + (leftToRight ? -55 : 55) : (startX + endX) / 2;
-      const labelY = y - 10;
+      if (longSameRow) {
+        const arcY = Math.max(from.bottom, to.bottom) + 82;
+        return {
+          d: "M " + startX + " " + y + " C " + startX + " " + arcY + ", " + endX + " " + arcY + ", " + endX + " " + y,
+          labelX: (startX + endX) / 2,
+          labelY: arcY - 10
+        };
+      }
       return {
         d: "M " + startX + " " + y + " L " + endX + " " + y,
-        labelX,
-        labelY
+        labelX: (startX + endX) / 2,
+        labelY: y - 10
       };
     }
 
