@@ -516,11 +516,11 @@
 
     function placeLabel(edge, geometry) {
       if (edge.from === "utilities" && edge.to === "request") {
-        const request = nodeBounds("request");
+        const json = nodeBounds("json");
         return {
           ...geometry,
-          labelX: request.right + 54,
-          labelY: geometry.labelY + 16
+          labelX: json.centerX,
+          labelY: json.bottom + 24
         };
       }
       if (edge.from === "request" && edge.to === "i2c") {
