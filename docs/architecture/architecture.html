@@ -461,6 +461,15 @@
     function sameRowPath(edge) {
       const from = nodeBounds(edge.from);
       const to = nodeBounds(edge.to);
+      const longSameRow = Math.abs(from.centerX - to.centerX) > nodeWidth + 160;
+      if (longSameRow) {
+        const routeY = Math.max(from.bottom, to.bottom) + 64;
+        return {
+          d: "M " + from.centerX + " " + from.bottom + " L " + from.centerX + " " + routeY + " L " + to.centerX + " " + routeY + " L " + to.centerX + " " + to.bottom,
+          labelX: (from.centerX + to.centerX) / 2,
+          labelY: routeY - 8
+        };
+      }
       const leftToRight = from.left < to.left;
       const startX = leftToRight ? from.right : from.left;
       const endX = leftToRight ? to.left : to.right;
