@@ -138,7 +138,7 @@
     .map {
       position: relative;
       width: 800px;
-      height: 497px;
+      height: 690px;
       margin: 0 auto;
     }
     .map-canvas {
@@ -146,7 +146,7 @@
       left: 0;
       top: 0;
       width: 1160px;
-      height: 720px;
+      height: 1000px;
       transform: scale(var(--map-scale));
       transform-origin: left top;
     }
@@ -154,7 +154,7 @@
       position: absolute;
       left: 24px;
       right: 24px;
-      height: 116px;
+      height: 148px;
       border: 1px dashed #b7c6cf;
       border-radius: 8px;
       background: rgba(255,255,255,0.68);
@@ -337,7 +337,7 @@
     <section class="map-wrap" aria-label="Interactive note-c architecture graph">
       <div class="map">
         <div class="map-canvas" id="map">
-          <svg class="edges" viewBox="0 0 1160 720" preserveAspectRatio="none" aria-hidden="true">
+          <svg class="edges" viewBox="0 0 1160 1000" preserveAspectRatio="none" aria-hidden="true">
             <defs>
               <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
                 <path d="M 0 0 L 10 5 L 0 10 z" fill="#7e8d98"></path>
@@ -359,14 +359,14 @@
     const architecture = {"schemaVersion":"1.1","name":"note-c architecture map","repository":"blues/note-c","purpose":"Portable C SDK for communicating with a Blues Notecard over serial or I2C.","lastReviewed":"2026-05-18","viewArtifacts":{"humanMap":"docs/architecture/architecture.html","agentMap":"docs/architecture/architecture.json","narrative":"ARCHITECTURE.md"},"principles":["Keep the core SDK platform-neutral.","Put platform-specific behavior behind hooks or adapter libraries.","Treat note.h and hook signatures as compatibility contracts.","Update the Markdown, HTML, and JSON maps when architecture-relevant code changes land."],"layers":[{"id":"consumers","name":"Consumers and adapters","role":"Applications, platform SDKs, and tests that call note-c."},{"id":"api","name":"Public contract","role":"The API and hook surface downstream code depends on."},{"id":"core","name":"Portable core","role":"Request lifecycle, JSON, helpers, binary codecs, and utility behavior."},{"id":"transport","name":"Transport and hooks","role":"Transport selection, chunking, and platform callback boundaries."},{"id":"external","name":"Hardware and cloud boundary","role":"Physical bus, Notecard, and Notehub reached by the Notecard."}],"nodes":[{"id":"apps","layer":"consumers","name":"Applications","kind":"consumer","paths":[],"summary":"User firmware or host apps that build requests and consume responses.","contracts":["Calls public APIs in note.h"]},{"id":"adapters","layer":"consumers","name":"Adapter SDKs","kind":"consumer","paths":[],"summary":"Platform integrations such as note-arduino, note-zephyr, note-espidf, and POSIX integrations.","contracts":["Own platform setup and hook implementations"]},{"id":"tests","layer":"consumers","name":"Unit Tests","kind":"test","paths":["test/"],"summary":"Mock-backed tests for JSON, request flow, hooks, transports, helpers, and edge cases.","contracts":["Protects behavior without hardware"]},{"id":"api","layer":"api","name":"note.h Public API","kind":"contract","paths":["note.h"],"summary":"Public functions, typedefs, constants, version metadata, request helpers, and hook signatures.","contracts":["Compatibility boundary","Breaking changes require versioning and migration notes"]},{"id":"request","layer":"core","name":"Request Core","kind":"core","paths":["n_request.c","n_lib.h"],"summary":"Creates, serializes, sends, retries, parses, and releases Notecard request/response transactions.","contracts":["Owns transaction lifecycle","Coordinates active interface"]},{"id":"json","layer":"core","name":"JSON Model","kind":"core","paths":["n_cjson.c","n_cjson.h","n_cjson_helpers.c"],"summary":"Bundled JSON object model and helper APIs used by callers and internals.","contracts":["J object semantics","Allocation ownership"]},{"id":"helpers","layer":"core","name":"High-level Helpers","kind":"core","paths":["n_helpers.c"],"summary":"Convenience APIs for common Notecard operations: time, env, location, sync, payload, binary store, and status helpers.","contracts":["Builds JSON requests on top of public request APIs"]},{"id":"utilities","layer":"core","name":"Portable Utilities","kind":"core","paths":["n_str.c","n_printf.c","n_atof.c","n_ftoa.c","n_b64.c","n_cobs.c","n_md5.c","n_const.c","n_ua.c"],"summary":"String, number, formatting, encoding, hashing, constants, and user-agent support.","contracts":["No platform runtime assumptions"]},{"id":"hooks","layer":"transport","name":"Platform Hooks","kind":"hook","paths":["n_hooks.c"],"summary":"Registration and invocation of memory, time, mutex, debug, transaction, serial, I2C, and JSON transaction callbacks.","contracts":["Platform boundary","Hook signatures are public contracts"]},{"id":"serial","layer":"transport","name":"Serial Transport","kind":"transport","paths":["n_serial.c"],"summary":"Serial transaction, reset, receive, transmit, and chunking behavior.","contracts":["Uses serial hooks","Protects byte-level request/response flow"]},{"id":"i2c","layer":"transport","name":"I2C Transport","kind":"transport","paths":["n_i2c.c"],"summary":"I2C transaction, reset, query length, receive, transmit, MTU, and chunking behavior.","contracts":["Uses I2C hooks","Owns I2C timing and chunking behavior"]},{"id":"bus","layer":"external","name":"Platform Bus","kind":"external","paths":[],"summary":"UART, USB serial, I2C, or test doubles supplied by the host platform.","contracts":["Implemented outside note-c"]},{"id":"notecard","layer":"external","name":"Notecard","kind":"external","paths":[],"summary":"Device that accepts JSON requests and returns JSON responses.","contracts":["Serial or I2C protocol boundary"]},{"id":"notehub","layer":"external","name":"Notehub","kind":"external","paths":[],"summary":"Cloud service reached by the Notecard; note-c does not communicate with Notehub directly.","contracts":["Indirect dependency only"]}],"edges":[{"from":"apps","to":"api","label":"calls"},{"from":"adapters","to":"api","label":"wraps"},{"from":"tests","to":"api","label":"exercises"},{"from":"api","to":"request","label":"request APIs"},{"from":"api","to":"json","label":"J helpers"},{"from":"api","to":"hooks","label":"hook registration"},{"from":"helpers","to":"request","label":"builds requests"},{"from":"request","to":"json","label":"serialize/parse"},{"from":"request","to":"hooks","label":"active interface"},{"from":"request","to":"serial","label":"serial path"},{"from":"request","to":"i2c","label":"I2C path"},{"from":"serial","to":"hooks","label":"serial callbacks"},{"from":"i2c","to":"hooks","label":"I2C callbacks"},{"from":"hooks","to":"bus","label":"platform calls"},{"from":"bus","to":"notecard","label":"bytes"},{"from":"notecard","to":"notehub","label":"syncs"},{"from":"tests","to":"hooks","label":"mocks"},{"from":"tests","to":"serial","label":"transport tests"},{"from":"tests","to":"i2c","label":"transport tests"},{"from":"utilities","to":"request","label":"support"},{"from":"utilities","to":"json","label":"support"}],"hotspots":[{"id":"public-api","title":"Public API and hook compatibility","nodes":["api","hooks"],"updateRule":"Update docs and consider versioning whenever note.h contracts change."},{"id":"transaction-flow","title":"Request lifecycle","nodes":["request","json","serial","i2c"],"updateRule":"Update docs when timeout, retry, serialization, parsing, memory ownership, or active-interface behavior changes."},{"id":"transport-boundary","title":"Transport and platform boundary","nodes":["serial","i2c","hooks","bus"],"updateRule":"Update docs when byte framing, chunking, MTU, reset, or hook invocation semantics change."},{"id":"adapter-impact","title":"Adapter impact","nodes":["adapters","api","hooks"],"updateRule":"Update docs when note-arduino, note-zephyr, note-espidf, POSIX, or other adapters need coordinated changes."}],"updateTriggers":["Changes to note.h public APIs, typedefs, constants, or hook signatures.","Changes to request lifecycle, timeout, retry, memory ownership, or response handling.","Changes to serial/I2C framing, chunking, transmit, receive, reset, or MTU behavior.","Changes to JSON representation or helper semantics.","Changes to adapter expectations, build/test strategy, release strategy, or versioning."],"filesToUpdateTogether":["ARCHITECTURE.md","docs/architecture/architecture.json","docs/architecture/architecture.html","docs/architecture/decisions/*.md when a durable design decision changes"]};
 
     const positions = {
-      apps: [210, 46], adapters: [455, 46], tests: [700, 46],
-      api: [455, 182],
-      helpers: [180, 318], request: [395, 318], json: [610, 318], utilities: [825, 318],
-      serial: [285, 468], hooks: [500, 468], i2c: [715, 468],
-      bus: [285, 606], notecard: [500, 606], notehub: [715, 606]
+      apps: [210, 58], adapters: [455, 58], tests: [700, 58],
+      api: [455, 238],
+      helpers: [180, 428], request: [395, 428], json: [610, 428], utilities: [825, 428],
+      serial: [285, 650], hooks: [500, 650], i2c: [715, 650],
+      bus: [285, 852], notecard: [500, 852], notehub: [715, 852]
     };
 
-    const layerTops = { consumers: 24, api: 160, core: 296, transport: 446, external: 584 };
+    const layerTops = { consumers: 32, api: 212, core: 402, transport: 624, external: 826 };
     const viewFilters = {
       all: null,
       runtime: new Set(["apps","adapters","api","request","json","serial","i2c","hooks","bus","notecard","notehub"]),
