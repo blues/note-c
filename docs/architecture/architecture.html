@@ -181,7 +181,7 @@
     .node {
       position: absolute;
       width: 170px;
-      min-height: 76px;
+      min-height: 52px;
       padding: 10px 11px;
       border: 1px solid var(--line);
       border-top: 5px solid var(--blue);
@@ -206,17 +206,13 @@
     .node.test { border-top-color: #4b5563; }
     .node h3 {
       font-size: 14px;
-      margin-bottom: 4px;
-    }
-    .node p {
-      color: var(--muted);
-      font-size: 12px;
+      margin-bottom: 0;
     }
     .paths {
       display: flex;
       flex-wrap: wrap;
       gap: 5px;
-      margin-top: 8px;
+      margin-top: 7px;
     }
     code {
       display: inline-block;
@@ -412,7 +408,7 @@
         div.style.left = pos[0] + "px";
         div.style.top = pos[1] + "px";
         const pathHtml = (node.paths || []).slice(0, 3).map(path => "<code>" + path + "</code>").join("");
-        div.innerHTML = "<h3>" + node.name + "</h3><p>" + node.summary + "</p><div class='paths'>" + pathHtml + "</div>";
+        div.innerHTML = "<h3>" + node.name + "</h3><div class='paths'>" + pathHtml + "</div>";
         div.addEventListener("click", () => selectNode(node.id));
         map.appendChild(div);
       });
