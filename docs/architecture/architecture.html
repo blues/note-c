@@ -531,6 +531,14 @@
           labelY: i2c.top - 30
         };
       }
+      if (edge.from === "api" && edge.to === "hooks") {
+        const api = nodeBounds("api");
+        return {
+          ...geometry,
+          labelX: api.right + 56,
+          labelY: api.bottom + 18
+        };
+      }
       return geometry;
     }
 
