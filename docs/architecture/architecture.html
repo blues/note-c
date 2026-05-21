@@ -485,7 +485,7 @@
       const y = from.centerY;
       if (longSameRow) {
         const routeY = Math.max(from.bottom, to.bottom) + 64;
-        const targetTurnX = endX + (leftToRight ? -10 : 10);
+        const targetTurnX = endX + (leftToRight ? -36 : 36);
         return {
           d: "M " + startX + " " + y + " L " + startX + " " + routeY + " L " + targetTurnX + " " + routeY + " L " + targetTurnX + " " + y + " L " + endX + " " + y,
           labelX: (from.centerX + to.centerX) / 2,
@@ -494,7 +494,7 @@
       }
       const arcY = y - 46;
       const startTurnX = startX + (leftToRight ? 28 : -28);
-      const endTurnX = endX + (leftToRight ? -10 : 10);
+      const endTurnX = endX + (leftToRight ? -36 : 36);
       return {
         d: "M " + startX + " " + y + " C " + startTurnX + " " + arcY + ", " + endTurnX + " " + arcY + ", " + endTurnX + " " + y + " L " + endX + " " + y,
         labelX: (startX + endX) / 2,
