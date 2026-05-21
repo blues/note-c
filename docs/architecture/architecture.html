@@ -483,22 +483,12 @@
       const startX = leftToRight ? from.right : from.left;
       const endX = leftToRight ? to.left : to.right;
       const y = from.centerY;
-      if (longSameRow) {
-        const routeY = Math.max(from.bottom, to.bottom) + 64;
-        const targetTurnX = endX + (leftToRight ? -10 : 10);
-        return {
-          d: "M " + startX + " " + y + " L " + startX + " " + routeY + " L " + targetTurnX + " " + routeY + " L " + targetTurnX + " " + y + " L " + endX + " " + y,
-          labelX: (from.centerX + to.centerX) / 2,
-          labelY: routeY - 8
-        };
-      }
-      const arcY = y - 46;
-      const startTurnX = startX + (leftToRight ? 28 : -28);
-      const endTurnX = endX + (leftToRight ? -10 : 10);
+      const labelX = longSameRow ? endX + (leftToRight ? -55 : 55) : (startX + endX) / 2;
+      const labelY = y - 10;
       return {
-        d: "M " + startX + " " + y + " C " + startTurnX + " " + arcY + ", " + endTurnX + " " + arcY + ", " + endTurnX + " " + y + " L " + endX + " " + y,
-        labelX: (startX + endX) / 2,
-        labelY: arcY - 8
+        d: "M " + startX + " " + y + " L " + endX + " " + y,
+        labelX,
+        labelY
       };
     }
 
