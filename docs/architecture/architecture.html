@@ -57,7 +57,7 @@
       font-size: 13px;
       cursor: pointer;
     }
-    button.active {
+    .toolbar button.active {
       background: var(--blue);
       border-color: var(--blue);
       color: #fff;
@@ -117,6 +117,14 @@
       padding: 8px 6px;
       border-radius: 7px;
     }
+    .legend-item {
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    .legend-item:hover, .legend-item.active {
+      background: var(--surface-2);
+      border-color: var(--line);
+    }
     .hotspot-item {
       grid-template-columns: 1fr;
       border: 1px solid transparent;
@@ -130,7 +138,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 0;
+      padding: 3px 5px;
       font-size: 11px;
       line-height: 1.2;
       white-space: nowrap;
@@ -423,12 +431,13 @@
   <main>
     <section class="legend-strip" aria-label="Architecture map legend">
       <span class="legend-title">Legend:</span>
-      <div class="legend-item"><span class="dot consumer"></span><div><strong>Consumers</strong><br><span class="muted">Apps, adapters, tests</span></div></div>
-      <div class="legend-item"><span class="dot contract"></span><div><strong>Public contract</strong><br><span class="muted">Compatibility surface</span></div></div>
-      <div class="legend-item"><span class="dot core"></span><div><strong>Portable core</strong><br><span class="muted">Request, JSON, helpers</span></div></div>
-      <div class="legend-item"><span class="dot transport"></span><div><strong>Transports</strong><br><span class="muted">Serial and I2C</span></div></div>
-      <div class="legend-item"><span class="dot hook"></span><div><strong>Hooks</strong><br><span class="muted">Platform boundary</span></div></div>
-      <div class="legend-item"><span class="dot external"></span><div><strong>External</strong><br><span class="muted">Bus, Notecard, Notehub</span></div></div>
+      <button class="legend-item" data-kinds="consumer" type="button"><span class="dot consumer"></span><span><strong>Consumers</strong><br><span class="muted">Apps, adapters</span></span></button>
+      <button class="legend-item" data-kinds="contract" type="button"><span class="dot contract"></span><span><strong>Public contract</strong><br><span class="muted">Compatibility surface</span></span></button>
+      <button class="legend-item" data-kinds="core" type="button"><span class="dot core"></span><span><strong>Portable core</strong><br><span class="muted">Request, JSON, helpers</span></span></button>
+      <button class="legend-item" data-kinds="transport" type="button"><span class="dot transport"></span><span><strong>Transports</strong><br><span class="muted">Serial and I2C</span></span></button>
+      <button class="legend-item" data-kinds="hook" type="button"><span class="dot hook"></span><span><strong>Hooks</strong><br><span class="muted">Platform boundary</span></span></button>
+      <button class="legend-item" data-kinds="external" type="button"><span class="dot external"></span><span><strong>External</strong><br><span class="muted">Bus, Notecard, Notehub</span></span></button>
+      <button class="legend-item" data-kinds="test" type="button"><span class="dot test"></span><span><strong>Tests</strong><br><span class="muted">Unit test coverage</span></span></button>
     </section>
 
     <aside class="reference">
@@ -699,6 +708,10 @@
       });
     }
 
+    function nodeIdsForKinds(kinds) {
+      return new Set(architecture.nodes.filter(node => kinds.has(node.kind)).map(node => node.id));
+    }
+
     function highlightSet(ids) {
       setHighlight(ids);
       closeDetails();
@@ -728,6 +741,7 @@
 
     function applyView(view) {
       document.querySelectorAll(".toolbar button").forEach(button => button.classList.toggle("active", button.dataset.view === view));
+      document.querySelectorAll(".legend-item").forEach(button => button.classList.remove("active"));
       const filter = viewFilters[view];
       if (!filter) {
         document.querySelectorAll(".node, .edge, .edge-label").forEach(el => el.classList.remove("dimmed", "highlight", "selected"));
@@ -739,8 +753,17 @@
       closeDetails();
     }
 
+    function applyLegend(button) {
+      document.querySelectorAll(".toolbar button").forEach(toolbarButton => toolbarButton.classList.remove("active"));
+      document.querySelectorAll(".legend-item").forEach(legendButton => legendButton.classList.toggle("active", legendButton === button));
+      highlightSet(nodeIdsForKinds(new Set(button.dataset.kinds.split(" "))));
+    }
+
     document.querySelectorAll(".toolbar button").forEach(button => {
       button.addEventListener("click", () => applyView(button.dataset.view));
+    });
+    document.querySelectorAll(".legend-item").forEach(button => {
+      button.addEventListener("click", () => applyLegend(button));
     });
     modalClose.addEventListener("click", closeDetails);
     detailModal.addEventListener("click", event => {
