@@ -15,6 +15,57 @@
     "Treat note.h and hook signatures as compatibility contracts.",
     "Update the Markdown, HTML, and JSON maps when architecture-relevant code changes land."
   ],
+  "legend": [
+    {
+      "label": "Consumers",
+      "description": "Apps, adapters",
+      "kinds": [
+        "consumer"
+      ]
+    },
+    {
+      "label": "Public contract",
+      "description": "Compatibility surface",
+      "kinds": [
+        "contract"
+      ]
+    },
+    {
+      "label": "Portable core",
+      "description": "Request, JSON, helpers",
+      "kinds": [
+        "core"
+      ]
+    },
+    {
+      "label": "Transports",
+      "description": "Serial and I2C",
+      "kinds": [
+        "transport"
+      ]
+    },
+    {
+      "label": "Hooks",
+      "description": "Platform boundary",
+      "kinds": [
+        "hook"
+      ]
+    },
+    {
+      "label": "External",
+      "description": "Bus, Notecard, Notehub",
+      "kinds": [
+        "external"
+      ]
+    },
+    {
+      "label": "Tests",
+      "description": "Unit test coverage",
+      "kinds": [
+        "test"
+      ]
+    }
+  ],
   "layers": [
     {
       "id": "consumers",
