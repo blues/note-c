@@ -68,6 +68,18 @@ jobs:
           name: note_c_ci_image
           path: /tmp/note_c_ci_image.tar
 
+  check_architecture_docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check embedded architecture graph data
+        run: |
+          node docs/architecture/embed-architecture-json.mjs
+          git diff --exit-code docs/architecture/architecture.html
+
   build_docs:
     runs-on: ubuntu-latest
     if: ${{ always() }}

@@ -1,0 +1,18 @@
+---
+description: Keep architecture documentation current with code changes
+globs:
+  - "**/*"
+alwaysApply: true
+---
+
+Before non-trivial code changes, read the repository architecture context:
+
+- `AGENTS.md`
+- `ARCHITECTURE.md`
+- `docs/architecture/architecture.json`
+- `docs/architecture/architecture.html` when a visual overview helps
+- Relevant files under `docs/architecture/`
+
+When a change affects module boundaries, public APIs, hook signatures, dependencies, data/control flow, transport behavior, runtime assumptions, or build/test strategy, update the closest relevant architecture docs in the same change. Keep the Markdown, JSON, and HTML architecture maps synchronized when applicable.
+
+If no architecture doc update is needed, say so explicitly in the final response or PR notes.
