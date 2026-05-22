@@ -24,6 +24,7 @@ After code changes:
 - `architecture.html`: single-file visual map for humans. It embeds data from `architecture.json` so it can be opened directly from disk.
 - `architecture.json`: structured map for AI agents and tooling.
 - `embed-architecture-json.mjs`: refreshes the embedded JSON block in `architecture.html` from `architecture.json`.
+- `../architecture.rst`: Sphinx documentation page that links to the published architecture map and JSON artifact.
 - `decisions/*.md`: architecture decision records.
 - `templates/repo-architecture.md`: template for future architecture docs.
 - `../../AGENTS.md`, `../../CLAUDE.md`, `../../GEMINI.md`, `../../.github/copilot-instructions.md`, and `../../.cursor/rules/architecture-docs.mdc`: AI entrypoints that point future tools back to these docs.
