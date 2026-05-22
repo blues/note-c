@@ -348,6 +348,7 @@
         "api",
         "hooks"
       ],
+      "description": "The stable SDK surface that applications and adapter libraries compile against, including public request helpers and platform hook signatures.",
       "updateRule": "Update docs and consider versioning whenever note.h contracts change."
     },
     {
@@ -359,6 +360,7 @@
         "serial",
         "i2c"
       ],
+      "description": "The path a Notecard transaction follows as requests are built, serialized, sent over an active transport, parsed, and returned to callers.",
       "updateRule": "Update docs when timeout, retry, serialization, parsing, memory ownership, or active-interface behavior changes."
     },
     {
@@ -370,6 +372,7 @@
         "hooks",
         "bus"
       ],
+      "description": "The byte-level boundary between portable note-c transport code and host-provided UART, USB serial, I2C, or test-double implementations.",
       "updateRule": "Update docs when byte framing, chunking, MTU, reset, or hook invocation semantics change."
     },
     {
@@ -380,6 +383,7 @@
         "api",
         "hooks"
       ],
+      "description": "The parts of note-c most likely to require coordinated changes in downstream platform SDKs and integration layers.",
       "updateRule": "Update docs when note-arduino, note-zephyr, note-espidf, POSIX, or other adapters need coordinated changes."
     }
   ],
