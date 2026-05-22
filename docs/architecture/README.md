@@ -45,6 +45,8 @@ Keep `../../ARCHITECTURE.md`, `architecture.html`, and `architecture.json` synch
 node docs/architecture/embed-architecture-json.mjs
 ```
 
+The CI pipeline runs the same embed script and fails if `docs/architecture/architecture.html` changes afterward. Treat `architecture.json` as the hand-edited graph source and commit the refreshed HTML artifact with it.
+
 Architecture docs should not become:
 
 - Full API reference.
