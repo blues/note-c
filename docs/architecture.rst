@@ -11,4 +11,6 @@ Open the `interactive architecture map`_ for the visual graph, or inspect the
 .. _interactive architecture map: architecture/architecture.html
 .. _structured architecture data: architecture/architecture.json
 
-For the narrative overview, see the repository-level ``ARCHITECTURE.md`` file.
+For the narrative overview, see the repository-level `ARCHITECTURE.md`_ file.
+
+.. _ARCHITECTURE.md: https://github.com/blues/note-c/blob/master/ARCHITECTURE.md
