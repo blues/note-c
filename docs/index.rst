@@ -11,7 +11,7 @@ note-c is the official C library for communicating with a `Blues Notecard <https
 Architecture
 ------------
 
-Use the `architecture overview <architecture.html>`_ to understand note-c's
+Use the :doc:`architecture overview <architecture>` to understand note-c's
 module boundaries, public contracts, runtime flow, and update triggers. The
 overview links to the `interactive architecture map`_ and the
 `structured architecture data`_ used to render it.
