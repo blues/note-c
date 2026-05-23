@@ -75,6 +75,7 @@ RUN ["dash", "-c", "\
      valgrind \
  && pip install --break-system-packages \
      breathe \
+     scancode-toolkit \
      sphinx-rtd-theme \
  && apt-get clean \
  && apt-get purge \

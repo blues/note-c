@@ -55,22 +55,6 @@
             }
         },
         {
-            "label": "Note-C: Run `astyle` Formatter",
-            "type": "shell",
-            "command": "./scripts/run_astyle.sh",
-            "args": [],
-            "options": {
-                "cwd": "${workspaceFolder}",
-                "env": {
-                    "LC_ALL": "C"
-                }
-            },
-            "problemMatcher": [],
-            "group": {
-                "kind": "none"
-            }
-        },
-        {
             "label": "Note-C: Generate Coverage HTML",
             "type": "shell",
             "command": "genhtml lcov.info -o tmp",
@@ -104,6 +88,35 @@
             "group": {
                 "kind": "none"
             }
+        },
+        {
+            "label": "Note-C: Run `astyle` Formatter",
+            "type": "shell",
+            "command": "./scripts/run_astyle.sh",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "LC_ALL": "C"
+                }
+            },
+            "problemMatcher": [],
+            "group": {
+                "kind": "none"
+            }
+        },
+        {
+            "label": "Note-C: Run License Compliance Check",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run_scancode.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "LC_ALL": "C"
+                }
+            },
+            "problemMatcher": [],
+            "group": "test"
         },
         {
             "label": "Note-C: Run Static Analysis",
