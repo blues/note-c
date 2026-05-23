@@ -13,9 +13,11 @@ Architecture
 
 Use the `architecture overview <architecture.html>`_ to understand note-c's
 module boundaries, public contracts, runtime flow, and update triggers. The
-overview links to the `interactive architecture map
-<architecture/architecture.html>`_ and the `structured architecture data
-<architecture/architecture.json>`_ used to render it.
+overview links to the `interactive architecture map`_ and the
+`structured architecture data`_ used to render it.
+
+.. _interactive architecture map: architecture/architecture.html
+.. _structured architecture data: architecture/architecture.json
 
 .. toctree::
    :maxdepth: 1
