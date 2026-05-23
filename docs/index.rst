@@ -8,6 +8,17 @@ note-c
 
 note-c is the official C library for communicating with a `Blues Notecard <https://blues.com/products/notecard/>`_. The source code is open source and `available on GitHub <https://github.com/blues/note-c>`_ under the MIT license.
 
+Architecture
+------------
+
+Use the :doc:`architecture overview <architecture>` to understand note-c's
+module boundaries, public contracts, runtime flow, and update triggers. The
+overview links to the `interactive architecture map`_ and the
+`structured architecture data`_ used to render it.
+
+.. _interactive architecture map: architecture/architecture.html
+.. _structured architecture data: architecture/architecture.json
+
 .. toctree::
    :maxdepth: 1
 
@@ -16,3 +27,4 @@ note-c is the official C library for communicating with a `Blues Notecard <https
    calling_the_notecard_api
    ports
    api_reference
+   architecture

@@ -21,6 +21,13 @@ add_custom_target(
         ${SPHINX_OPTS}
         ${DOCS_SRC_DIR}
         ${DOCS_BUILD_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${DOCS_BUILD_DIR}/architecture
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${DOCS_SRC_DIR}/architecture/architecture.html
+        ${DOCS_BUILD_DIR}/architecture/architecture.html
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${DOCS_SRC_DIR}/architecture/architecture.json
+        ${DOCS_BUILD_DIR}/architecture/architecture.json
     USES_TERMINAL
     COMMENT "Running Sphinx HTML build..."
 )
