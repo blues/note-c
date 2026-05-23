@@ -119,6 +119,21 @@
                 "$gcc"
             ],
             "group": "test"
+        },
+        {
+            "label": "Note-C: Run License Compliance Scan",
+            "type": "shell",
+            "command": "${workspaceFolder}/scripts/run_license_scan.sh",
+            "options": {
+                "cwd": "${workspaceFolder}",
+                "env": {
+                    "LC_ALL": "C"
+                }
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "test"
         }
     ]
 }
