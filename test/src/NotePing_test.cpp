@@ -102,23 +102,7 @@ const char *pingTransaction(const char *request, size_t reqLen, char **response,
     lastRequestLength = reqLen;
     lastTransactionTimeoutMs = timeoutMs;
     lastRequestEndedWithNewline = (reqLen > 0 && request[reqLen - 1] == '\n');
-    lastRequestHadCrc = (strstr(request, "\"crc\"") != NULL);
     serialBytesRemainingAtTransaction = serialBytesRemaining;
-
-    if (pingResponse == PingResponse::TransactionError) {
-        return ERRSTR("transaction failed {io}", c_ioerr);
-    }
-    if (response == NULL || pingResponse == PingResponse::NoResponse) {
-        return NULL;
-    }
-    if (pingResponse == PingResponse::InvalidJson) {
-        *response = copyString("not-json");
-        return NULL;
-    }
-    if (pingResponse == PingResponse::Error) {
-        *response = copyString("{\"err\":\"failed\"}");
-        return NULL;
-    }
 
     char *requestCopy = static_cast<char *>(malloc(reqLen + 1));
     if (requestCopy == NULL) {
@@ -126,6 +110,27 @@ const char *pingTransaction(const char *request, size_t reqLen, char **response,
     }
     memcpy(requestCopy, request, reqLen);
     requestCopy[reqLen] = '\0';
+    lastRequestHadCrc = (strstr(requestCopy, "\"crc\"") != NULL);
+
+    if (pingResponse == PingResponse::TransactionError) {
+        free(requestCopy);
+        return ERRSTR("transaction failed {io}", c_ioerr);
+    }
+    if (response == NULL || pingResponse == PingResponse::NoResponse) {
+        free(requestCopy);
+        return NULL;
+    }
+    if (pingResponse == PingResponse::InvalidJson) {
+        *response = copyString("not-json");
+        free(requestCopy);
+        return NULL;
+    }
+    if (pingResponse == PingResponse::Error) {
+        *response = copyString("{\"err\":\"failed\"}");
+        free(requestCopy);
+        return NULL;
+    }
+
     if (reqLen > 0 && requestCopy[reqLen - 1] == '\n') {
         requestCopy[reqLen - 1] = '\0';
     }
