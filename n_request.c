@@ -899,6 +899,7 @@ bool NotePing(void)
     // are doing exactly one attempt.
     char *rspJson = NULL;
     const char *err = _Transaction(json, jsonLen + 1, &rspJson, pingTimeoutMs);
+    json[jsonLen] = '\0';
 
     _UnlockNote();
     _TransactionStop();
@@ -925,7 +926,7 @@ bool NotePing(void)
     }
 
     bool ok = JIsNullString(rsp, c_err)
-              && (strcmp(JGetString(rsp, "text"), nonce) == 0);
+              && JIsExactString(rsp, "text", nonce);
 
     JDelete(rsp);
     return ok;
