@@ -819,7 +819,9 @@ static void _notePingDrainInput(void)
         // Notecard has queued and read it off in chunks.
         uint8_t scratch[32];
         uint32_t available = 0;
+        _LockI2C();
         if (_I2CReceive(_I2CAddress(), scratch, 0, &available) != NULL) {
+            _UnlockI2C();
             return;
         }
         while (available > 0) {
@@ -827,9 +829,11 @@ static void _notePingDrainInput(void)
                              ? (uint16_t)sizeof(scratch)
                              : (uint16_t)available;
             if (_I2CReceive(_I2CAddress(), scratch, chunk, &available) != NULL) {
+                _UnlockI2C();
                 return;
             }
         }
+        _UnlockI2C();
     }
 }
 

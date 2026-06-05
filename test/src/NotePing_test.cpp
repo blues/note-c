@@ -24,9 +24,12 @@ FAKE_VALUE_FUNC(bool, _noteTransactionStart, uint32_t)
 FAKE_VOID_FUNC(_noteTransactionStop)
 FAKE_VOID_FUNC(_noteLockNote)
 FAKE_VOID_FUNC(_noteUnlockNote)
+FAKE_VOID_FUNC(NoteLockI2C)
+FAKE_VOID_FUNC(NoteUnlockI2C)
 FAKE_VALUE_FUNC(const char *, _noteJSONTransaction, const char *, size_t, char **, uint32_t)
 FAKE_VALUE_FUNC(bool, _noteSerialAvailable)
 FAKE_VALUE_FUNC(char, _noteSerialReceive)
+FAKE_VALUE_FUNC(const char *, _noteI2CReceive, uint16_t, uint8_t *, uint16_t, uint32_t *)
 FAKE_VALUE_FUNC(bool, _noteHardReset)
 
 extern volatile int hookActiveInterface;
@@ -51,6 +54,8 @@ size_t lastRequestLength = 0;
 uint32_t lastTransactionTimeoutMs = 0;
 bool lastRequestEndedWithNewline = false;
 bool lastRequestHadCrc = false;
+size_t i2cLockDepth = 0;
+bool i2cReceiveSawLock = false;
 
 char *copyString(const char *src)
 {
@@ -83,6 +88,27 @@ char serialReceive()
         --serialBytesRemaining;
     }
     return 'x';
+}
+
+void lockI2C()
+{
+    ++i2cLockDepth;
+}
+
+void unlockI2C()
+{
+    if (i2cLockDepth > 0) {
+        --i2cLockDepth;
+    }
+}
+
+const char *i2cReceive(uint16_t, uint8_t *, uint16_t, uint32_t *available)
+{
+    i2cReceiveSawLock = (i2cLockDepth > 0);
+    if (available != NULL) {
+        *available = 0;
+    }
+    return NULL;
 }
 
 char *makeResponse(const char *text)
@@ -154,9 +180,12 @@ void resetTestState(void)
     RESET_FAKE(_noteTransactionStop);
     RESET_FAKE(_noteLockNote);
     RESET_FAKE(_noteUnlockNote);
+    RESET_FAKE(NoteLockI2C);
+    RESET_FAKE(NoteUnlockI2C);
     RESET_FAKE(_noteJSONTransaction);
     RESET_FAKE(_noteSerialAvailable);
     RESET_FAKE(_noteSerialReceive);
+    RESET_FAKE(_noteI2CReceive);
     RESET_FAKE(_noteHardReset);
 
     pingResponse = PingResponse::Echo;
@@ -167,6 +196,8 @@ void resetTestState(void)
     lastTransactionTimeoutMs = 0;
     lastRequestEndedWithNewline = false;
     lastRequestHadCrc = false;
+    i2cLockDepth = 0;
+    i2cReceiveSawLock = false;
     resetRequired = false;
 
     NoteSetFnDefault(malloc, free, delayMs, getMs);
@@ -178,6 +209,9 @@ void resetTestState(void)
     _noteJSONTransaction_fake.custom_fake = pingTransaction;
     _noteSerialAvailable_fake.custom_fake = serialAvailable;
     _noteSerialReceive_fake.custom_fake = serialReceive;
+    _noteI2CReceive_fake.custom_fake = i2cReceive;
+    NoteLockI2C_fake.custom_fake = lockI2C;
+    NoteUnlockI2C_fake.custom_fake = unlockI2C;
 }
 
 SCENARIO("NotePing")
@@ -256,6 +290,19 @@ SCENARIO("NotePing")
         CHECK(NotePing());
         CHECK(_noteSerialReceive_fake.call_count == 3);
         CHECK(serialBytesRemainingAtTransaction == 0);
+        CHECK(NoteLockI2C_fake.call_count == 0);
+        CHECK(NoteUnlockI2C_fake.call_count == 0);
+    }
+
+    SECTION("locks the I2C mutex while draining I2C input") {
+        hookActiveInterface = NOTE_C_INTERFACE_I2C;
+
+        CHECK(NotePing());
+        CHECK(_noteI2CReceive_fake.call_count == 1);
+        CHECK(NoteLockI2C_fake.call_count == 1);
+        CHECK(NoteUnlockI2C_fake.call_count == 1);
+        CHECK(i2cReceiveSawLock);
+        CHECK(i2cLockDepth == 0);
     }
 
     resetTestState();
