@@ -106,6 +106,22 @@ jobs:
         run: |
           docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/check_libc_dependencies.sh ghcr.io/blues/note_c_ci:latest
 
+  run_integration_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure add_subdirectory integration test
+        run: cmake -S test/integration -B build-integration
+
+      - name: Build add_subdirectory integration test
+        run: cmake --build build-integration --parallel $(nproc)
+
+      - name: Run add_subdirectory integration test
+        run: ctest --test-dir build-integration --output-on-failure
+
   run_unit_tests:
     runs-on: ubuntu-latest
     if: ${{ always() }}

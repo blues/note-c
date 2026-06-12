@@ -21,10 +21,23 @@ option(NOTE_C_COVERAGE "Compile for test NOTE_C_COVERAGE reporting." OFF)
 option(NOTE_C_LOW_MEM "Build the library tailored for low memory usage." OFF)
 option(NOTE_C_MEM_CHECK "Run tests with Valgrind." OFF)
 option(NOTE_NODEBUG "Build the library without debug information." OFF)
-option(NOTE_C_NO_LIBC "Build the library without linking against libc, generating errors for any undefined symbols." OFF)
+option(NOTE_C_NO_LIBC "Audit libc dependencies by linking the note_c test/audit library without libc, generating errors for any undefined symbols." OFF)
 option(NOTE_C_SHOW_MALLOC "Build the library with flags required to log memory usage." OFF)
 option(NOTE_C_SINGLE_PRECISION "Use single precision for JSON floating point numbers." OFF)
 option(NOTE_C_HEARTBEAT_CALLBACK "Enable heartbeat callback support." OFF)
+
+# NOTE_C_NO_LIBC is a link-time undefined-symbol audit (see
+# scripts/check_libc_dependencies.sh). It only has any effect on the shared
+# `note_c` test/audit target, which is built when NOTE_C_BUILD_TESTS is ON. The
+# static `note_c_lib` is archived with `ar` (no link step), so the flag would
+# silently do nothing there. Fail loudly rather than appear to audit when it
+# can't.
+if(NOTE_C_NO_LIBC AND NOT NOTE_C_BUILD_TESTS)
+    message(FATAL_ERROR
+        "NOTE_C_NO_LIBC is only meaningful for the note_c shared test/audit "
+        "target. Enable NOTE_C_BUILD_TESTS, or leave NOTE_C_NO_LIBC disabled "
+        "when consuming note_c_lib.")
+endif()
 
 set(NOTE_C_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -97,15 +110,9 @@ else()
     )
 endif()
 
-if(NOTE_C_NO_LIBC)
-    target_link_options(
-        note_c_lib
-        PRIVATE
-            -nostdlib
-            -nodefaultlibs
-            LINKER:--no-undefined
-    )
-endif()
+# NOTE_C_NO_LIBC is intentionally NOT applied to note_c_lib: it is a static
+# archive, so target_link_options has no effect (no link step), and the audit
+# is performed against the shared note_c target below.
 
 if(NOTE_NODEBUG)
     target_compile_definitions(
