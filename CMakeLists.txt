@@ -71,6 +71,43 @@ set(NOTE_C_SOURCES
 if(NOT HAVE_STRLCPY OR NOT HAVE_STRLCAT)
     list(APPEND NOTE_C_SOURCES ${NOTE_C_SRC_DIR}/n_str.c)
 endif()
+
+# Apply the include path and compile-definition configuration shared by every
+# note-c library target. Build- and test-specific settings (warnings, 32-bit
+# cross-compile, FFF interposition, NOTE_C_TEST, NOTE_C_NO_LIBC) are applied at
+# each target's own definition site, not here.
+function(note_c_configure_common target)
+    target_include_directories(${target} PUBLIC ${NOTE_C_SRC_DIR})
+
+    if(HAVE_STRLCPY)
+        target_compile_definitions(${target} PUBLIC HAVE_STRLCPY)
+    endif()
+    if(HAVE_STRLCAT)
+        target_compile_definitions(${target} PUBLIC HAVE_STRLCAT)
+    endif()
+
+    if(NOTE_C_LOW_MEM)
+        target_compile_definitions(${target} PUBLIC NOTE_C_LOW_MEM)
+    else()
+        # n_ua.c is empty when NOTE_C_LOW_MEM is defined, which leads to an
+        # empty-translation-unit warning, so only compile it otherwise.
+        target_sources(${target} PRIVATE ${NOTE_C_SRC_DIR}/n_ua.c)
+    endif()
+
+    if(NOTE_NODEBUG)
+        target_compile_definitions(${target} PUBLIC NOTE_NODEBUG)
+    endif()
+    if(NOTE_C_SHOW_MALLOC)
+        target_compile_definitions(${target} PUBLIC NOTE_C_SHOW_MALLOC)
+    endif()
+    if(NOTE_C_SINGLE_PRECISION)
+        target_compile_definitions(${target} PUBLIC NOTE_C_SINGLE_PRECISION)
+    endif()
+    if(NOTE_C_HEARTBEAT_CALLBACK)
+        target_compile_definitions(${target} PUBLIC NOTE_C_HEARTBEAT_CALLBACK)
+    endif()
+endfunction()
+
 # ---------------------------------------------------------------------------
 # note_c_lib — static library for downstream consumers.
 #
@@ -84,67 +121,11 @@ endif()
 # or other CI-specific settings.
 # ---------------------------------------------------------------------------
 add_library(note_c_lib STATIC ${NOTE_C_SOURCES})
-target_include_directories(note_c_lib PUBLIC ${NOTE_C_SRC_DIR})
-
-if(HAVE_STRLCPY)
-    target_compile_definitions(note_c_lib PUBLIC HAVE_STRLCPY)
-endif()
-if(HAVE_STRLCAT)
-    target_compile_definitions(note_c_lib PUBLIC HAVE_STRLCAT)
-endif()
-
-if(NOTE_C_LOW_MEM)
-    target_compile_definitions(
-        note_c_lib
-        PUBLIC
-            NOTE_C_LOW_MEM
-    )
-else()
-    # This file is empty if NOTE_C_LOW_MEM is defined, which leads to a warning
-    # about an empty translation unit, so we only add it to the build if
-    # NOTE_C_LOW_MEM is false.
-    target_sources(
-        note_c_lib
-        PRIVATE
-            ${NOTE_C_SRC_DIR}/n_ua.c
-    )
-endif()
+note_c_configure_common(note_c_lib)
 
 # NOTE_C_NO_LIBC is intentionally NOT applied to note_c_lib: it is a static
 # archive, so target_link_options has no effect (no link step), and the audit
 # is performed against the shared note_c target below.
-
-if(NOTE_NODEBUG)
-    target_compile_definitions(
-        note_c_lib
-        PUBLIC
-            NOTE_NODEBUG
-    )
-endif()
-
-if(NOTE_C_SHOW_MALLOC)
-    target_compile_definitions(
-        note_c_lib
-        PUBLIC
-            NOTE_C_SHOW_MALLOC
-    )
-endif()
-
-if(NOTE_C_SINGLE_PRECISION)
-    target_compile_definitions(
-        note_c_lib
-        PUBLIC
-            NOTE_C_SINGLE_PRECISION
-    )
-endif()
-
-if(NOTE_C_HEARTBEAT_CALLBACK)
-    target_compile_definitions(
-        note_c_lib
-        PUBLIC
-            NOTE_C_HEARTBEAT_CALLBACK
-    )
-endif()
 
 # ---------------------------------------------------------------------------
 # note_c — shared library used by the unit test harness.
@@ -155,14 +136,7 @@ endif()
 # ---------------------------------------------------------------------------
 if(NOTE_C_BUILD_TESTS)
     add_library(note_c SHARED ${NOTE_C_SOURCES})
-    target_include_directories(note_c PUBLIC ${NOTE_C_SRC_DIR})
-
-    if(HAVE_STRLCPY)
-        target_compile_definitions(note_c PUBLIC HAVE_STRLCPY)
-    endif()
-    if(HAVE_STRLCAT)
-        target_compile_definitions(note_c PUBLIC HAVE_STRLCAT)
-    endif()
+    note_c_configure_common(note_c)
 
     target_compile_options(
         note_c
@@ -199,23 +173,10 @@ if(NOTE_C_BUILD_TESTS)
         target_link_options(note_c PRIVATE -Wl,-flat_namespace)
     endif()
 
-    if(NOTE_C_LOW_MEM)
-        target_compile_definitions(
-            note_c
-            PUBLIC
-                NOTE_C_LOW_MEM
-        )
-    else()
-        # This file is empty if NOTE_C_LOW_MEM is defined, which leads to a warning
-        # about an empty translation unit, so we only add it to the build if
-        # NOTE_C_LOW_MEM is false.
-        target_sources(
-            note_c
-            PRIVATE
-                ${NOTE_C_SRC_DIR}/n_ua.c
-        )
-    endif()
-
+    # The libc dependency audit (scripts/check_libc_dependencies.sh) links this
+    # shared target without libc so the linker reports undefined symbols. This
+    # only works on a target that is actually linked, hence note_c, not the
+    # static note_c_lib.
     if(NOTE_C_NO_LIBC)
         target_link_options(
             note_c
@@ -223,38 +184,6 @@ if(NOTE_C_BUILD_TESTS)
                 -nostdlib
                 -nodefaultlibs
                 LINKER:--no-undefined
-        )
-    endif()
-
-    if(NOTE_NODEBUG)
-        target_compile_definitions(
-            note_c
-            PUBLIC
-                NOTE_NODEBUG
-        )
-    endif()
-
-    if(NOTE_C_SHOW_MALLOC)
-        target_compile_definitions(
-            note_c
-            PUBLIC
-                NOTE_C_SHOW_MALLOC
-        )
-    endif()
-
-    if(NOTE_C_SINGLE_PRECISION)
-        target_compile_definitions(
-            note_c
-            PUBLIC
-                NOTE_C_SINGLE_PRECISION
-        )
-    endif()
-
-    if(NOTE_C_HEARTBEAT_CALLBACK)
-        target_compile_definitions(
-            note_c
-            PUBLIC
-                NOTE_C_HEARTBEAT_CALLBACK
         )
     endif()
 
