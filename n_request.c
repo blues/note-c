@@ -770,6 +770,172 @@ bool NoteReset(void)
     return !resetRequired;
 }
 
+/*!
+ @internal
+
+ @brief Drain any residual bytes from the transport input buffer.
+
+ On serial, read-and-discard whatever is already buffered, then wait for a
+ short quiescent period to confirm no further bytes arrive. This handles
+ stale bytes left over from a prior ping at a different baud rate. On
+ I2C, query and consume whatever the Notecard has queued. The adaptive
+ loop on serial has a hard cap so it cannot run away in the presence of
+ continuous line noise.
+ */
+static void _notePingDrainInput(void)
+{
+    const int iface = NoteGetActiveInterface();
+
+    if (iface == NOTE_C_INTERFACE_SERIAL) {
+        // Tuned for the `echo` probe used by NotePing: the only residual
+        // traffic possible is a short echo response or error from a prior
+        // wrong-baud ping, both well under 80 bytes. At 9600 baud a byte is
+        // ~1 ms, so a 20 ms quiet window (~19 byte-times) confirms the stream
+        // has ended, and a 100 ms total cap covers ~77 bytes of continuous
+        // residual transmission.
+        const uint32_t quietMs = 20;
+        const uint32_t maxMs   = 100;
+        const uint32_t startMs = _GetMs();
+        uint32_t lastByteMs = startMs;
+        for (;;) {
+            bool drained = false;
+            while (_SerialAvailable()) {
+                (void)_SerialReceive();
+                drained = true;
+            }
+            if (drained) {
+                lastByteMs = _GetMs();
+            }
+            if ((_GetMs() - lastByteMs) >= quietMs) {
+                return;
+            }
+            if ((_GetMs() - startMs) >= maxMs) {
+                return;
+            }
+            _DelayMs(1);
+        }
+    } else if (iface == NOTE_C_INTERFACE_I2C) {
+        // I2C is synchronous — no "in-flight" case. Just query what the
+        // Notecard has queued and read it off in chunks.
+        uint8_t scratch[32];
+        uint32_t available = 0;
+        _LockI2C();
+        if (_I2CReceive(_I2CAddress(), scratch, 0, &available) != NULL) {
+            _UnlockI2C();
+            return;
+        }
+        while (available > 0) {
+            uint16_t chunk = (available > sizeof(scratch))
+                             ? (uint16_t)sizeof(scratch)
+                             : (uint16_t)available;
+            if (_I2CReceive(_I2CAddress(), scratch, chunk, &available) != NULL) {
+                _UnlockI2C();
+                return;
+            }
+        }
+        _UnlockI2C();
+    }
+}
+
+bool NotePing(void)
+{
+    // Short, fixed timeout. Long enough for a round-trip `echo` at 9600 baud
+    // with comfortable Notecard-side processing headroom; short enough that
+    // an autobaud scan across many rates completes quickly.
+    const uint32_t pingTimeoutMs = 500;
+
+    // Generate a 16-character random nonce using xorshift32 seeded from the
+    // current millisecond clock. No file- or function-scope static state, so
+    // if this function is never called the linker can drop it all.
+    char nonce[17];
+    uint32_t x = _GetMs() | 1u;   // avoid the all-zero xorshift fixed point
+    for (int i = 0; i < 16; i++) {
+        x ^= x << 13;
+        x ^= x >> 17;
+        x ^= x << 5;
+        nonce[i] = (char)('A' + (x % 26));
+    }
+    nonce[16] = '\0';
+
+    // Build the request with note-c's own J* primitives (cleaner than
+    // hand-assembling the JSON, and avoids pulling in snprintf which is
+    // not on the libc whitelist).
+    J *req = JCreateObject();
+    if (req == NULL) {
+        return false;
+    }
+    JAddStringToObject(req, c_req, "echo");
+    JAddStringToObject(req, "text", nonce);
+    char *json = JPrintUnformatted(req);
+    JDelete(req);
+    if (json == NULL) {
+        return false;
+    }
+
+    // _Transaction requires a newline-terminated request with an explicit
+    // length. JPrintUnformatted returns a tightly-sized NUL-terminated
+    // buffer; overwrite the NUL with '\n' and pass length+1. This mirrors
+    // the pattern used in _noteTransactionShouldLock() above.
+    const size_t jsonLen = strlen(json);
+    json[jsonLen] = '\n';
+
+    // Suppress the normal request/response INFO trace: at a wrong baud rate
+    // both sides will look like garbage in the log, which is alarming but
+    // expected during an autobaud scan.
+    _noteSuspendTransactionDebug();
+
+    if (!_TransactionStart(pingTimeoutMs)) {
+        _Free(json);
+        _noteResumeTransactionDebug();
+        return false;
+    }
+    _LockNote();
+
+    // Drain residual bytes from the transport before pinging. Must happen
+    // inside the lock so nothing else can refill the buffer between the
+    // drain and the transaction.
+    _notePingDrainInput();
+
+    // Deliberately do NOT honor `resetRequired` and do NOT call _Reset():
+    // reset has its own retries/delays and can itself fail at a wrong baud
+    // rate, defeating the purpose of a fast connectivity ping.
+    // Deliberately do NOT add a CRC: CRCs exist to enable retries, and we
+    // are doing exactly one attempt.
+    char *rspJson = NULL;
+    const char *err = _Transaction(json, jsonLen + 1, &rspJson, pingTimeoutMs);
+    json[jsonLen] = '\0';
+
+    _UnlockNote();
+    _TransactionStop();
+    _noteResumeTransactionDebug();
+
+    _Free(json);
+
+    // Deliberately do NOT call NoteResetRequired() on failure: the caller
+    // (e.g. autobaud) needs to keep probing at other baud rates without
+    // paying a reset penalty on the next attempt.
+    if (err != NULL || rspJson == NULL) {
+        _Free(rspJson);
+        return false;
+    }
+
+    // Parse and verify. The response must be valid JSON, must not carry
+    // an "err" field, and must contain a "text" field whose value is an
+    // exact match for the nonce we sent. Any other fields in the response
+    // (e.g. "cmd":"echo") are ignored.
+    J *rsp = JParse(rspJson);
+    _Free(rspJson);
+    if (rsp == NULL) {
+        return false;
+    }
+
+    bool ok = JIsNullString(rsp, c_err)
+              && JIsExactString(rsp, "text", nonce);
+
+    JDelete(rsp);
+    return ok;
+}
+
 bool NoteErrorContains(const char *errstr, const char *errtype)
 {
     return (strstr(errstr, errtype) != NULL);

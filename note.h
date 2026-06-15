@@ -297,6 +297,22 @@ typedef void (*txnStopFn) (void);
  */
 bool NoteReset(void);
 /*!
+ @brief Ping the Notecard to quickly verify that it is reachable.
+
+ Sends a single `echo` request containing a random nonce and verifies that
+ the Notecard echoes the nonce back. Performs no retries, uses a short
+ fixed timeout, and does not trigger a Notecard reset on failure. Intended
+ for fast connectivity checks such as serial autobaud detection.
+
+ On serial, the host UART input buffer is drained before the ping to
+ discard any residual bytes left over from a prior failed ping at a
+ different baud rate.
+
+ @returns `true` if the Notecard is present and responded correctly,
+          `false` otherwise.
+ */
+bool NotePing(void);
+/*!
  @brief Mark that a Notecard reset is required on the next transaction.
 
  This function sets an internal flag indicating that the Notecard should be
