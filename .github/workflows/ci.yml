@@ -118,6 +118,22 @@ jobs:
         run: |
           docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/check_libc_dependencies.sh ghcr.io/blues/note_c_ci:latest
 
+  run_integration_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure add_subdirectory integration test
+        run: cmake -S test/integration -B build-integration
+
+      - name: Build add_subdirectory integration test
+        run: cmake --build build-integration --parallel $(nproc)
+
+      - name: Run add_subdirectory integration test
+        run: ctest --test-dir build-integration --output-on-failure
+
   run_unit_tests:
     runs-on: ubuntu-latest
     if: ${{ always() }}
@@ -206,6 +222,30 @@ jobs:
       - name: Run cppcheck
         run: |
           docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_cppcheck.sh ghcr.io/blues/note_c_ci:latest
+
+  run_macos_unit_tests:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -B build -DNOTE_C_BUILD_TESTS=ON
+
+      - name: Build
+        run: cmake --build build --parallel $(sysctl -n hw.ncpu)
+
+      # NOTE: ctest is not run here. A subset of tests that rely on FFF
+      # symbol interposition fail on macOS due to two-level namespace
+      # linking. The build step above verifies that all sources and tests
+      # compile and link successfully.
+      #
+      # Even with -Wl,-flat_namespace, intra-library calls within the
+      # note_c dylib are resolved at link time as direct calls, so FFF
+      # fakes in the test executable cannot interpose them. Fully fixing
+      # this would require linking note-c as a static library for tests
+      # or using a different mocking approach on macOS.
 
   publish_ci_image:
     runs-on: ubuntu-latest

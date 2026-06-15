@@ -30,6 +30,8 @@ LIBC_WHITELIST=(
     "strchr"
     "strcmp"
     "strlen"
+    "strlcpy"   # bundled in n_str.c; also available in glibc 2.38+
+    "strlcat"   # bundled in n_str.c; also available in glibc 2.38+
     "strncmp"
     "strstr"
     "strtol"    # required by atoi in NoteGenEnvInt

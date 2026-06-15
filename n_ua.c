@@ -92,9 +92,9 @@ __attribute__((weak)) void NoteUserAgentUpdate(J *ua)
 */
 /**************************************************************************/
 #if defined(_MSC_VER)
-J *NoteUserAgent()
+J *NoteUserAgent(void)
 #else
-__attribute__((weak)) J *NoteUserAgent()
+__attribute__((weak)) J *NoteUserAgent(void)
 #endif
 {
 

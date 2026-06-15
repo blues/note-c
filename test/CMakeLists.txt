@@ -16,8 +16,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
-# Add specific build flags for Catch2
-if(TARGET Catch2)
+# Add specific build flags for Catch2 (32-bit mode for Linux x86 CI only)
+if(TARGET Catch2 AND CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|i[3-6]86")
     target_compile_options(Catch2
         PUBLIC
             -m32
@@ -47,6 +47,10 @@ macro(add_test TEST_NAME)
         PRIVATE -Og
         PRIVATE -ggdb
     )
+    if(APPLE)
+        # Allow test fakes (FFF) to interpose symbols from the note_c dylib
+        target_link_options(${TEST_NAME} PRIVATE -Wl,-flat_namespace)
+    endif()
 
     list(APPEND TEST_TARGETS ${TEST_NAME})
 
@@ -239,8 +243,12 @@ if(NOTE_C_COVERAGE)
     # ourselves, so we don't care about coverage for them.
     set(
         EXCLUDE_FROM_COVERAGE
-        "n_atof.c;n_b64.c;n_cjson.c;n_ftoa.c;n_md5.c;n_str.c"
+        "n_atof.c;n_b64.c;n_cjson.c;n_ftoa.c;n_md5.c"
     )
+    # n_str.c is only compiled when the system lacks strlcpy/strlcat.
+    if(NOT HAVE_STRLCPY OR NOT HAVE_STRLCAT)
+        list(APPEND EXCLUDE_FROM_COVERAGE "n_str.c")
+    endif()
     foreach(EXCLUDE_FILE ${EXCLUDE_FROM_COVERAGE})
         string(APPEND LCOV_EXCLUDE "--exclude '*/${EXCLUDE_FILE}' ")
     endforeach()
