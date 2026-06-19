@@ -527,22 +527,12 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         _LockNote();
     }
 
-    // If a reset of the I/O interface is required for any reason, do it now.
+    // If a reset of the I/O interface is required for any reason, make a best
+    // effort to resynchronize before continuing with the transaction.
     if (resetRequired) {
         NOTE_C_LOG_DEBUG("Resetting Notecard I/O Interface...");
-        if ((resetRequired = !_Reset())) {
-            if (lockNotecard) {
-                _UnlockNote();
-            }
-            _Free(json);
-            _TransactionStop();
-            const char *errStr = ERRSTR("failed to reset Notecard interface {io}", c_iobad);
-            if (cmdFound) {
-                NOTE_C_LOG_ERROR(errStr);
-                return NULL;
-            }
-            return _errDoc(id, errStr);
-        }
+        _Reset();
+        resetRequired = false;
     }
 
     // If we're performing retries, this is where we come back to
