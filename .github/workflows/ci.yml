@@ -75,10 +75,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Check embedded architecture graph data
+      - name: Check architecture docs do not reference removed JSON map
         run: |
-          node docs/architecture/embed-architecture-json.mjs
-          git diff --exit-code docs/architecture/architecture.html
+          architecture_json_pattern='architecture[.]''json'
+          embed_script_pattern='embed-architecture''-json'
+          for pattern in "$architecture_json_pattern" "$embed_script_pattern"; do
+            ! grep -R "$pattern" \
+              AGENTS.md ARCHITECTURE.md CLAUDE.md GEMINI.md \
+              .github/copilot-instructions.md .cursor/rules/architecture-docs.mdc \
+              docs
+          done
 
   build_docs:
     runs-on: ubuntu-latest

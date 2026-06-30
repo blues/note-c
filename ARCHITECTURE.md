@@ -4,8 +4,22 @@ This file is the architecture entrypoint for `note-c`. Keep it current when code
 
 Companion architecture artifacts:
 
-- `docs/architecture/architecture.html`: human-readable visual architecture map.
-- `docs/architecture/architecture.json`: structured architecture map for AI agents and tooling.
+- `docs/architecture/architecture.html`: human-readable graph traversal view.
+- `source-research/`: source-derived structured evidence for symbols, dependencies, claims, and build variants.
+
+## How To Use This File
+
+`ARCHITECTURE.md` is the curated architecture entrypoint. It describes the intended system shape, durable boundaries, public contracts, runtime model, portability constraints, and testing strategy that maintainers should preserve when changing `note-c`.
+
+For source-backed implementation evidence, use `source-research/`:
+
+- `source-research/research-index.md`: re-entry point and validation status.
+- `source-research/overview.md`: source-derived system summary.
+- `source-research/inventory/dependency-graph.json`: caller/callee and dependency graph.
+- `source-research/inventory/symbol-index.json`: symbol and artifact lookup.
+- `source-research/inventory/claims-ledger.json`: finalized source-backed claims.
+
+Use this file to understand what the architecture is meant to be. Use `source-research/` to verify how the current source implements it and to scope impact before code changes. Source remains authoritative: if implementation, `source-research/`, and architecture docs disagree, inspect the source, then update the stale architecture or research artifact in the same change.
 
 ## Purpose
 
@@ -17,10 +31,10 @@ Companion architecture artifacts:
 
 - `note.h`: public SDK API, version constants, hook typedefs, request helpers, and compatibility surface.
 - `n_lib.h`: internal declarations shared across implementation files.
-- `n_request.c`: request/response lifecycle, transaction orchestration, and high-level Notecard communication behavior.
-- `n_serial.c`: serial transport implementation and chunked serial transmit/receive behavior.
-- `n_i2c.c`: I2C transport implementation and chunked I2C transmit/receive behavior.
-- `n_hooks.c`: registration and invocation of platform hooks for memory, time, mutexes, debug output, and transports.
+- `n_request.c`: request/response lifecycle, transaction orchestration, retry/timeout behavior, and request ownership boundaries.
+- `n_serial.c`: serial transport implementation and chunked newline-framed serial transmit/receive behavior.
+- `n_i2c.c`: I2C transport implementation and chunked newline-framed I2C transmit/receive behavior.
+- `n_hooks.c`: global function-pointer hook registry, active-interface dispatch, and invocation of platform hooks for memory, time, mutexes, debug output, and transports.
 - `n_cjson.c`, `n_cjson.h`, `n_cjson_helpers.c`: bundled JSON representation and helper APIs.
 - `n_helpers.c`, `n_str.c`, `n_printf.c`, `n_atof.c`, `n_ftoa.c`, `n_b64.c`, `n_cobs.c`, `n_md5.c`, `n_const.c`, `n_ua.c`: portability helpers, encoding, formatting, constants, and utility behavior.
 - `test/`: unit tests and mocks for protecting SDK behavior without requiring real hardware.
@@ -50,7 +64,9 @@ platform driver / hardware bus
 Notecard
 ```
 
-Applications normally build requests as `J` objects, send them through `NoteRequest`, `NoteRequestResponse`, or higher-level helpers, then release responses through the JSON/delete APIs. Transport and platform behavior is supplied through hooks so the same core code can run on microcontrollers, embedded Linux, tests, and other C/C++ environments.
+Applications normally build requests as `J` objects, send them through `NoteRequest`, `NoteRequestResponse`, retrying variants, or higher-level helpers, then release returned responses through the JSON/delete APIs. The consuming request wrappers delete the input request object after transaction; lower-level `NoteTransaction` paths leave request ownership with the caller. `NoteRequestResponseJSON` is a separate raw newline-delimited JSON string path with caller-owned request and response strings.
+
+Transport and platform behavior is supplied through hooks so the same core code can run on microcontrollers, embedded Linux, tests, and other C/C++ environments. Serial and I2C transports move raw newline-framed bytes through hook dispatch. Binary payload helpers, not the transport implementations, own COBS framing and MD5 verification.
 
 ## Public Contracts
 
@@ -58,8 +74,10 @@ The main compatibility contracts are:
 
 - Public functions, typedefs, constants, and macros in `note.h`.
 - JSON object behavior exposed through `J` and helper functions.
+- Request/response ownership semantics for public transaction APIs.
 - Hook signatures for serial, I2C, memory, mutex, time, and debug output.
 - Notecard request/response semantics and timeout/retry behavior.
+- Build configuration behavior for low-memory, single-precision, user-agent, CRC, and portability-helper variants.
 - Version constants and release expectations documented in `README.md`.
 
 Breaking changes to these contracts require deliberate versioning, migration notes, and architecture documentation updates.
@@ -68,9 +86,13 @@ Breaking changes to these contracts require deliberate versioning, migration not
 
 `note-c` is intentionally self-contained and portable. It vendors the JSON implementation and avoids mandatory platform runtime dependencies. Adapter repositories may embed or wrap this repository, including `note-arduino`, `note-zephyr`, `note-espidf`, and POSIX-focused integrations.
 
+Build configuration is part of the portability model. CMake detects platform `strlcpy`/`strlcat` support and only includes bundled `n_str.c` helpers when needed. Low-memory builds disable user-agent support and request CRC paths, omit `n_ua.c`, use compact error/log constants, and reduce allocation chunk size.
+
 ## Runtime Model
 
 At runtime, host code initializes the relevant hooks, constructs Notecard requests, and calls `note-c` APIs. `note-c` serializes requests, sends bytes through the selected hook-backed transport, parses responses, and returns JSON objects or status to the caller.
+
+Hook state is global to the SDK instance. Hook registration stores caller-owned function pointers, and `_noteSetActiveInterface` selects the active serial or I2C dispatch table. Mutex hooks are optional: many hook setters/getters and transport paths use the internal lock macros when available, but not every hook accessor is lock-protected.
 
 Unit tests use mocks to validate behavior without hardware. Hardware validation may be performed through adapter libraries or Notestation-backed workflows when bus-level or device-level behavior matters.
 
@@ -91,4 +113,4 @@ Update this file or `docs/architecture/` when a change affects:
 - Cross-repo expectations for adapter libraries.
 - Build, test, CI, release, or versioning strategy.
 
-When updating architecture, keep this Markdown overview, `docs/architecture/architecture.html`, and `docs/architecture/architecture.json` consistent.
+When updating architecture, keep this Markdown overview, `docs/architecture/architecture.html`, and relevant `source-research/` artifacts consistent with the source.

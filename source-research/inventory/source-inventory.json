@@ -1,0 +1,291 @@
+{
+  "files": [
+    {
+      "bytes": 2734,
+      "classification": "build/interface",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "Dockerfile",
+      "lines": 103,
+      "path": ".devcontainer/ci/Dockerfile",
+      "sha256": "195b7293603315f3d294f4e8366d69e02b6c93e8b8c7b03facaef09e26f8ee30"
+    },
+    {
+      "bytes": 8490,
+      "classification": "build/interface",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "txt",
+      "lines": 218,
+      "path": "CMakeLists.txt",
+      "sha256": "7fbb2619f6910deadafc0f7f14e9f78e861e177c8fb4359756fa51131192416a"
+    },
+    {
+      "bytes": 8103,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 293,
+      "path": "n_atof.c",
+      "sha256": "d7522a1b49b1938968078ba5fbeab19cda920c079d84965a4d0af8cc8a5e5992"
+    },
+    {
+      "bytes": 7951,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 200,
+      "path": "n_b64.c",
+      "sha256": "605c93f094a44765a0fbd7a99a835978893907229ae3aa164d186ac553ec4c63"
+    },
+    {
+      "bytes": 79151,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 2851,
+      "path": "n_cjson.c",
+      "sha256": "543b4555ff6716c4a76807cf1d0d71a0e8a94da276e39fa7bdd89b5e5f74c92b"
+    },
+    {
+      "bytes": 15633,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "h",
+      "lines": 332,
+      "path": "n_cjson.h",
+      "sha256": "1fdd7e8eda80ad5f6aa3958fabce76006f5b52169c53df4827d37faf86b12f33"
+    },
+    {
+      "bytes": 10613,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 467,
+      "path": "n_cjson_helpers.c",
+      "sha256": "f32dc124f9fe6cca0b89a3d10af967e763a0a347561b514859bd2777be07fbf0"
+    },
+    {
+      "bytes": 12033,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 312,
+      "path": "n_cobs.c",
+      "sha256": "e5d5d9a026096eba207ecf1ecd957482aecd4cca7976b165ebe821ecd70b820a"
+    },
+    {
+      "bytes": 901,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 32,
+      "path": "n_const.c",
+      "sha256": "099f0639d6429d161aa7bbb09d1078286232c044f6b3e7c5868d6281fa33bb0a"
+    },
+    {
+      "bytes": 15720,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 510,
+      "path": "n_ftoa.c",
+      "sha256": "f7b9a0db6d77ccde9e31ca0c77b8f30e50c0d1c1ecd1d9624d38f2d1575abaf3"
+    },
+    {
+      "bytes": 90276,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 2592,
+      "path": "n_helpers.c",
+      "sha256": "0b744e62eb77c82e4d0016296b3a250b36fc3bf155c018f18272622e5edc933e"
+    },
+    {
+      "bytes": 33567,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 1093,
+      "path": "n_hooks.c",
+      "sha256": "438d73aa7a13508b0fa86529ab3fa9fb1cee6f3fe8a9bd26957618e81c88c355"
+    },
+    {
+      "bytes": 20084,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 513,
+      "path": "n_i2c.c",
+      "sha256": "fa0e09390f62db7d708dd506e38cb24d2a9c98e37c45a06317b403f822266895"
+    },
+    {
+      "bytes": 9295,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "h",
+      "lines": 266,
+      "path": "n_lib.h",
+      "sha256": "f5e7ddd0c5ebc7381baec815caa41306372fa44d9773c91e6b71f7ce1fce2593"
+    },
+    {
+      "bytes": 10743,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 321,
+      "path": "n_md5.c",
+      "sha256": "5d5771b4a59d971480ab6b334792c0406bad67b83cbfab0f99c72122d067c59e"
+    },
+    {
+      "bytes": 2018,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 69,
+      "path": "n_printf.c",
+      "sha256": "a0dc94541320844ab377fe7ff2882aec8a4436ba8321361a4c53ef2ddc93f013"
+    },
+    {
+      "bytes": 39080,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 1168,
+      "path": "n_request.c",
+      "sha256": "25941aff06aeca53c9e042816bd07948891a2c1ea0430c38c9da22b3ed4843de"
+    },
+    {
+      "bytes": 13096,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 335,
+      "path": "n_serial.c",
+      "sha256": "52ded5a631993c92917b663f9cfefe9e3574f62f5c417f200c2a84c31fca06c7"
+    },
+    {
+      "bytes": 2873,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 99,
+      "path": "n_str.c",
+      "sha256": "3a68b8c153d016b372f3ef384fe7281e22f074b706e7ada77670428915e72e46"
+    },
+    {
+      "bytes": 6880,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "c",
+      "lines": 223,
+      "path": "n_ua.c",
+      "sha256": "f89ebeec5169f1931139b9af77ecba0eebc374a5759b8a6a09dba17f1073e6e4"
+    },
+    {
+      "bytes": 74502,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "h",
+      "lines": 2214,
+      "path": "note.h",
+      "sha256": "a4d3708fcf7d45443259a3763d99ad76194381475aa4ed4854c53a996259c43d"
+    },
+    {
+      "bytes": 979,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "sh",
+      "lines": 34,
+      "path": "scripts/build_docs.sh",
+      "sha256": "6715fc7a7f84f45fb07e66bcd91e1618a982d73f8b1ebd6b1ef4ccb3ee562980"
+    },
+    {
+      "bytes": 3218,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "sh",
+      "lines": 107,
+      "path": "scripts/check_libc_dependencies.sh",
+      "sha256": "d7d9e2e53e942184b1d8402a0e8377087b526927805a9078248f60711ecb06dc"
+    },
+    {
+      "bytes": 1304,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "sh",
+      "lines": 43,
+      "path": "scripts/run_astyle.sh",
+      "sha256": "535a0fcf7e07aa429b74864fa54d27a1933609f785630c8dee16e6e29ca46cc7"
+    },
+    {
+      "bytes": 2945,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "sh",
+      "lines": 94,
+      "path": "scripts/run_cppcheck.sh",
+      "sha256": "b936924bd736856fed95e7862aa95a64da65d9f324302ce75e1b8077e5b363d2"
+    },
+    {
+      "bytes": 143,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "sh",
+      "lines": 3,
+      "path": "scripts/run_md5srv.sh",
+      "sha256": "dd6bfe8102ad6d0ba2a5bf316831cdc1cede3b18b4e4bbd9f7bfd2de641a05be"
+    },
+    {
+      "bytes": 1361,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "sh",
+      "lines": 55,
+      "path": "scripts/run_ngrok.sh",
+      "sha256": "fb935b65c8fcc998c2c09f4a6d1ef238961e3077eb48eefc1e357e90c6032ed8"
+    },
+    {
+      "bytes": 2966,
+      "classification": "source",
+      "is_documentation": false,
+      "is_test": false,
+      "language_hint": "sh",
+      "lines": 101,
+      "path": "scripts/run_unit_tests.sh",
+      "sha256": "3a24d02c974450c4d93330191030c3f006fe4d29860ef6ac3fb971a12db1d48a"
+    }
+  ],
+  "schema_version": 1,
+  "summary": {
+    "excluded_documentation_files": 1236,
+    "excluded_other_files": 224,
+    "excluded_test_files": 0,
+    "included_files": 28
+  }
+}

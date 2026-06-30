@@ -1,0 +1,279 @@
+{
+  "cmake_validation": {
+    "artifact_compile_databases": {
+      "default": "inventory/compile_commands.default.json",
+      "lowmem_single": "inventory/compile_commands.lowmem-single.json"
+    },
+    "ast_validation": {
+      "ambiguous_edge_candidates_after_revalidation": 0,
+      "ast_call_edges_added_to_graph": 38,
+      "ast_function_definitions": 335,
+      "ast_project_call_edges": 768,
+      "edge_candidates_after_revalidation": 0,
+      "graph_defs_not_seen_by_default_cmake_ast": [
+        {
+          "file": "n_hooks.c",
+          "name": "NoteGetFnHeartbeat"
+        },
+        {
+          "file": "n_hooks.c",
+          "name": "NoteSetFnHeartbeat"
+        },
+        {
+          "file": "n_hooks.c",
+          "name": "_n_ptoa32"
+        },
+        {
+          "file": "n_hooks.c",
+          "name": "_noteHeartbeat"
+        }
+      ],
+      "graph_function_definitions_in_compiled_c_files": 339,
+      "lowmem_single_revalidation": {
+        "ambiguous_edge_candidates_after_revalidation": 0,
+        "ast_function_definitions": 325,
+        "ast_project_call_edges": 750,
+        "edge_candidates_after_revalidation": 0,
+        "graph_defs_not_seen_by_ast": [
+          {
+            "file": "n_hooks.c",
+            "name": "NoteGetFnHeartbeat"
+          },
+          {
+            "file": "n_hooks.c",
+            "name": "NoteSetFnHeartbeat"
+          },
+          {
+            "file": "n_hooks.c",
+            "name": "_n_htoa32"
+          },
+          {
+            "file": "n_hooks.c",
+            "name": "_n_ptoa32"
+          },
+          {
+            "file": "n_hooks.c",
+            "name": "_noteHeartbeat"
+          },
+          {
+            "file": "n_request.c",
+            "name": "_crc32"
+          },
+          {
+            "file": "n_request.c",
+            "name": "_crcAdd"
+          },
+          {
+            "file": "n_request.c",
+            "name": "_crcError"
+          },
+          {
+            "file": "n_request.c",
+            "name": "_n_atoh"
+          }
+        ],
+        "graph_function_definitions_in_compiled_c_files": 334,
+        "missing_ast_definitions_in_graph": 0,
+        "raw_ast_call_edges_covered_by_existing_macro_alias_edges": 206,
+        "raw_ast_call_edges_missing_from_graph_by_name": 206,
+        "translation_units": 14,
+        "unresolved_missing_call_edges": 0,
+        "warnings": 2
+      },
+      "missing_ast_definitions_in_graph": 0,
+      "raw_ast_call_edges_covered_by_existing_macro_alias_edges": 207,
+      "raw_ast_call_edges_missing_from_graph_by_name": 207,
+      "report": "inventory/cmake-ast-validation.json",
+      "revalidated_at_utc": "2026-07-02T23:45:52+00:00",
+      "translation_units": 15,
+      "unresolved_missing_call_edges": 0
+    },
+    "build_directories": {
+      "default": "/private/tmp/note-c-cmake-default",
+      "lowmem_single": "/private/tmp/note-c-cmake-lowmem"
+    },
+    "build_results": {
+      "default": "passed_with_warnings",
+      "lowmem_single": "passed_with_warnings",
+      "warnings_summary": [
+        "n_cjson.c warns at lines 307, 329, and 2338 about INT64_MAX conversion to JNUMBER.",
+        "n_ftoa.c warns at line 473 about UINTMAX_MAX conversion to JNUMBER.",
+        "Warnings match the earlier manual clang syntax-check substrate report."
+      ]
+    },
+    "cmake_version": "cmake version 4.3.4",
+    "default_variant": {
+      "commands": 15,
+      "defines": [
+        "HAVE_STRLCAT",
+        "HAVE_STRLCPY"
+      ],
+      "files": [
+        "n_atof.c",
+        "n_b64.c",
+        "n_cjson.c",
+        "n_cjson_helpers.c",
+        "n_cobs.c",
+        "n_const.c",
+        "n_ftoa.c",
+        "n_helpers.c",
+        "n_hooks.c",
+        "n_i2c.c",
+        "n_md5.c",
+        "n_printf.c",
+        "n_request.c",
+        "n_serial.c",
+        "n_ua.c"
+      ],
+      "include_paths": [
+        "/Users/zak/Development/GitHub/blues/note-c"
+      ],
+      "source_files": 15
+    },
+    "generated_at_utc": "2026-07-02T23:45:52+00:00",
+    "lowmem_single_variant": {
+      "commands": 14,
+      "defines": [
+        "HAVE_STRLCAT",
+        "HAVE_STRLCPY",
+        "NOTE_C_LOW_MEM",
+        "NOTE_C_SINGLE_PRECISION"
+      ],
+      "files": [
+        "n_atof.c",
+        "n_b64.c",
+        "n_cjson.c",
+        "n_cjson_helpers.c",
+        "n_cobs.c",
+        "n_const.c",
+        "n_ftoa.c",
+        "n_helpers.c",
+        "n_hooks.c",
+        "n_i2c.c",
+        "n_md5.c",
+        "n_printf.c",
+        "n_request.c",
+        "n_serial.c"
+      ],
+      "include_paths": [
+        "/Users/zak/Development/GitHub/blues/note-c"
+      ],
+      "source_files": 14
+    }
+  },
+  "extracted_facts": {
+    "ast_function_definitions": 335,
+    "ast_nodes": 0,
+    "ast_project_call_edges": 768,
+    "clang_ast_edge_candidates_after_revalidation": 0,
+    "clang_ast_edges_added_to_graph": 38,
+    "compile_database": 2,
+    "graph_edges_after_cmake_validation": 1342,
+    "include_edges": 0,
+    "lexical_graph_edges": 896,
+    "lexical_graph_nodes": 585,
+    "macro_expansions": 0,
+    "references": 0
+  },
+  "generated_at_utc": "2026-07-02T23:45:52+00:00",
+  "limits": [
+    "Function-pointer hook dispatch and macro alias behavior must be verified during source slices.",
+    "Clang AST validation covers direct AST-visible calls in configured CMake variants; function-pointer dispatch, macro alias semantics, and feature-disabled code still require source inspection or separate variant checks.",
+    "CMake validation was performed for default production and NOTE_C_LOW_MEM/NOTE_C_SINGLE_PRECISION production variants with tests disabled; test harness compile commands were not used as production graph evidence."
+  ],
+  "schema_version": 1,
+  "source_root": "/Users/zak/Development/GitHub/blues/note-c",
+  "substrate_summary": {
+    "best_available_substrate": "cmake-compile-database-plus-clang-ast-validation",
+    "compiler_database": "available",
+    "confidence": "high for CMake source/define sets and AST-visible direct calls; medium for macro/dynamic/function-pointer behavior requiring source inspection",
+    "dependency_graph_source": "source_inventory lexical graph, source-inspected repairs, and CMake/Clang AST validation edges",
+    "notes": [
+      "CMake 4.3.4 was installed via Homebrew and used to generate compile_commands.json out of tree.",
+      "Default macOS CMake configuration exactly confirmed the previously inferred source set: 15 production C translation units, HAVE_STRLCPY, HAVE_STRLCAT, n_str.c excluded, n_ua.c included.",
+      "Low-memory/single-precision CMake configuration exactly confirmed the previously inferred source set: 14 production C translation units, HAVE_STRLCPY, HAVE_STRLCAT, NOTE_C_LOW_MEM, NOTE_C_SINGLE_PRECISION, n_str.c and n_ua.c excluded.",
+      "CMake builds succeeded for both variants with the same numeric conversion warnings previously recorded from manual clang syntax checks.",
+      "Clang AST found no compiled C function definitions missing from the graph. Four graph functions are absent from the default variant because they are gated by NOTE_C_HEARTBEAT_CALLBACK or NOTE_C_SHOW_MALLOC.",
+      "CMake/Clang AST comparison added 38 high-confidence unverified calls_static edges and found 207 raw AST call differences already represented by existing macro-alias paths.",
+      "2026-07-02 revalidation against current HEAD found 0 AST definitions missing from the graph and 0 unresolved direct-call edge candidates for both default and low-memory/single-precision CMake variants; no dependency graph edges were added."
+    ]
+  },
+  "tools": [
+    {
+      "available": true,
+      "command": "cmake --version",
+      "name": "cmake",
+      "version": "cmake version 4.3.4"
+    },
+    {
+      "available": true,
+      "command": "clang --version",
+      "name": "clang",
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101); Target: arm64-apple-darwin25.5.0"
+    },
+    {
+      "available": true,
+      "command": "clangd --version",
+      "name": "clangd",
+      "version": "Apple clangd version 21.0.0 (clang-2100.1.1.101); Features: mac+xpc; Platform: arm64-apple-darwin25.5.0"
+    },
+    {
+      "available": "limited",
+      "command": "ctags --version",
+      "name": "ctags",
+      "result": "/Library/Developer/CommandLineTools/usr/bin/ctags supports BSD ctags flags only; no --version support."
+    }
+  ],
+  "variants": [
+    {
+      "command": "clang -fsyntax-only -I. n_atof.c n_b64.c n_cjson.c n_cjson_helpers.c n_cobs.c n_const.c n_ftoa.c n_helpers.c n_hooks.c n_i2c.c n_md5.c n_printf.c n_request.c n_serial.c n_str.c n_ua.c",
+      "diagnostics_summary": [
+        "Fails in note.h and n_str.c because macOS secure string headers define fortified strlcpy/strlcat macros.",
+        "CMakeLists.txt checks HAVE_STRLCPY/HAVE_STRLCAT and omits n_str.c on platforms that provide strlcpy/strlcat."
+      ],
+      "id": "raw-macos-without-cmake-defines",
+      "purpose": "Confirm platform-specific CMake defines are required.",
+      "source_files": 16,
+      "status": "failed"
+    },
+    {
+      "command": "clang -fsyntax-only -I. -DHAVE_STRLCPY -DHAVE_STRLCAT n_atof.c n_b64.c n_cjson.c n_cjson_helpers.c n_cobs.c n_const.c n_ftoa.c n_helpers.c n_hooks.c n_i2c.c n_md5.c n_printf.c n_request.c n_serial.c n_ua.c",
+      "defines": [
+        "HAVE_STRLCPY",
+        "HAVE_STRLCAT"
+      ],
+      "diagnostics_summary": [
+        "n_cjson.c warns about implicit conversion from INT64_MAX to JNUMBER at lines 307, 329, and 2338.",
+        "n_ftoa.c warns about implicit conversion from UINTMAX_MAX to JNUMBER at line 473."
+      ],
+      "excluded_sources": [
+        "n_str.c"
+      ],
+      "id": "default-macos-cmake-equivalent",
+      "purpose": "Syntax-check default macOS source set inferred from CMakeLists.txt.",
+      "source_files": 15,
+      "status": "passed_with_warnings"
+    },
+    {
+      "command": "clang -fsyntax-only -I. -DHAVE_STRLCPY -DHAVE_STRLCAT -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION n_atof.c n_b64.c n_cjson.c n_cjson_helpers.c n_cobs.c n_const.c n_ftoa.c n_helpers.c n_hooks.c n_i2c.c n_md5.c n_printf.c n_request.c n_serial.c",
+      "defines": [
+        "HAVE_STRLCPY",
+        "HAVE_STRLCAT",
+        "NOTE_C_LOW_MEM",
+        "NOTE_C_SINGLE_PRECISION"
+      ],
+      "diagnostics_summary": [
+        "n_cjson.c warns about implicit conversion from INT64_MAX to JNUMBER at lines 307, 329, and 2338.",
+        "n_ftoa.c warns about implicit conversion from UINTMAX_MAX to JNUMBER at line 473."
+      ],
+      "excluded_sources": [
+        "n_str.c",
+        "n_ua.c"
+      ],
+      "id": "low-mem-macos-cmake-equivalent",
+      "purpose": "Syntax-check low-memory source set inferred from CMakeLists.txt and note.h precision behavior.",
+      "source_files": 14,
+      "status": "passed_with_warnings"
+    }
+  ]
+}

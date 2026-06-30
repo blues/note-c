@@ -1,0 +1,49 @@
+{
+  "artifacts": {
+    "lifecycle_status_counts": {
+      "finalized": 585
+    },
+    "missing_artifacts": 0,
+    "orphan_artifacts": 640,
+    "tracked_artifacts": 585
+  },
+  "claims": {
+    "status": {
+      "finalized": 29
+    },
+    "total": 29
+  },
+  "generated_at_utc": "2026-07-02T23:46:50+00:00",
+  "manifest_research_state": "complete",
+  "nodes": {
+    "behavior_status": {
+      "finalized": 585
+    },
+    "by_kind": {
+      "function": 341,
+      "macro": 205,
+      "struct": 5,
+      "typedef": 34
+    },
+    "callee_status": {
+      "verified": 585
+    },
+    "caller_status": {
+      "none-found": 180,
+      "verified": 405
+    },
+    "confidence": {
+      "high": 585
+    },
+    "identity_status": {
+      "verified": 585
+    },
+    "test_evidence_status": {
+      "focused": 431,
+      "none": 154
+    },
+    "total": 585
+  },
+  "recommended_research_state": "complete",
+  "schema_version": 1
+}

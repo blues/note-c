@@ -1,0 +1,3212 @@
+{
+  "actions": [
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_after_upload_py__L14__wait_for_test_port.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_after_upload_py__L30__start_tests.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_after_upload_py__L36__after_upload.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_cpp__L13__BinaryGenerator.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_lib_notecard_binary_NotecardComms_cpp__L106__readDataUntilTimeout.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_lib_notecard_binary_NotecardComms_cpp__L11__set_aux_serial_baudrate.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_lib_notecard_binary_NotecardComms_cpp__L52__initialize_notecard_interface.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_lib_notecard_binary_NotecardComms_cpp__L79__uninitialize_notecard_interface.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_src_main_cpp__L14__loop.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_src_main_cpp__L4__setup.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_src_main_cpp__L9__showHelp.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_binary_generators_cpp__L13__testsuite_binary_generators_setUp.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_binary_generators_cpp__L17__testsuite_binary_generators_tearDown.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_binary_generators_cpp__L23__check_binary.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_binary_generators_cpp__L41__check_content_fixed_value.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_binary_generators_cpp__L53__TEST.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_binary_generators_cpp__L64__TEST.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_binary_generators_cpp__L84__testsuite_binary_generators.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_binary_generators_cpp__L8__testsuite_binary_generators_filter.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L121__binaryTransferTest.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L308__get_expected_max_binary_length.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L30__testsuite_card_binary_filter.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L338__test_get_max_binary_length.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L35__testsuite_card_binary_setUp.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L370__base_test_max_length.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L388__TEST.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L393__TEST.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L398__TEST.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L40__testsuite_card_binary_tearDown.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L429__waitForNotecardConnected.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L439__testsuite_card_binary.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L44__assert_initialize_notecard.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_card_binary_cpp__L53__AssertNoteBinaryReset.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_main_cpp__L20__waitForStartCommand.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_main_cpp__L41__setup.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_main_cpp__L60__loop.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_main_cpp__L8__runUnityTests.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_unity_util_cpp__L15__setUp.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_unity_util_cpp__L22__tearDown.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_unity_util_cpp__L29__filterTest.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_card_binary_test_test_unity_util_cpp__L8__test_suite_hooks.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L120__WebRequestHandler_log_request_headers.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L126__WebRequestHandler_do.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L13__log.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L140__WebRequestHandler_validate_token.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L148__WebRequestHandler_get_md5.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L163__WebRequestHandler_chunk_content.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L166__WebRequestHandler_md5_for_directory.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L189__WebRequestHandler_delete_files.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L196__WebRequestHandler_write_file_or_note.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L202__WebRequestHandler_write_note.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L20__log_sensitive.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L227__WebRequestHandler_write_file.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L235__WebRequestHandler__read_file.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L243__WebRequestHandler__chunk_file.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L251__WebRequestHandler__write_file.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L27__HTTPException___init.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L286__WebRequestHandler_validate_url_path.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L290__WebRequestHandler_validate_path.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L297__WebRequestHandler_dump_request.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L306__main.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L315__main_build_request_handler.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L49__WebRequestHandler___init.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L57__WebRequestHandler_url.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L61__WebRequestHandler_query_data.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L65__WebRequestHandler_post_data.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L80__WebRequestHandler_form_data.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L83__WebRequestHandler_do_GET.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L86__WebRequestHandler_do_DELETE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L89__WebRequestHandler_do_POST.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L92__WebRequestHandler_do_PUT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_hitl_scripts_md5srv_py__L95__WebRequestHandler_send_status.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1013__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1096__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1182__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L122__reset.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1271__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1363__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1458__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1556__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1638__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L166__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1690__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1745__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1803__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1864__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1928__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L1995__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2065__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L207__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2138__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2214__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2293__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2375__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2460__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L251__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2548__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2639__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2733__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2830__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L2930__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L298__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3033__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3139__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3248__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3338__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3391__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3447__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L348__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3506__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3568__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3633__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3701__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3772__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3846__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L3923__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4003__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L401__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4086__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4172__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4261__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4353__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4448__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4546__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L457__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4647__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4751__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4841__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4905__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L4972__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5042__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5115__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L516__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5191__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5270__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5352__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5437__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5525__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5616__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5710__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L578__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5807__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L5907__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L6010__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L6116__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L6225__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L6337__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L643__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L6452__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L711__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L782__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L856__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_fff_h__L933__FUNCNAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_include_time_mocks_h__L16__NoteGetMsIncrement.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_integration_link_test_c__L9__main.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_src_NoteResponseError_test_cpp__L26__SCENARIO.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/functions/test_src_NoteUserAgent_test_cpp__L29__NoteUserAgentUpdate.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L15__TINY_SIZE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L16__TINY_SIZE_NAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L17__SMALL_SIZE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L18__SMALL_SIZE_NAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L19__MEDIUM_SIZE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L20__MEDIUM_SIZE_NAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L21__LARGE_SIZE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L22__LARGE_SIZE_NAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L23__XLARGE_SIZE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L24__XLARGE_SIZE_NAME.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L320__PRODUCT_UID.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L325__PRODUCT_UID.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L785__NOT_CONNECTED_TIMEOUT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L789__MIME_APPLICATION_OCTETSTREAM.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardComms_cpp__L8__FEATHER_AUX_EN_PIN.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardComms_h__L13__NOTECARD_IF_SERIAL_PORT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardComms_h__L17__NOTECARD_IF_SERIAL_BAUDRATE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardComms_h__L21__NOTECARD_IF_AUX_SERIAL_PORT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardComms_h__L25__NOTECARD_IF_AUX_SERIAL_BAUDRATE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardComms_h__L29__NOTECARD_IF_I2C_ADDRESS.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardComms_h__L34__dbgSerial.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_lib_notecard_binary_NotecardComms_h__L36__dbgSerial.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L15__NOTEHUB_PROXY_ROUTE_ALIAS.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L216__RUN_SIZE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L227__RUN_ALL_SIZES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L236__RUN_ALL_SIZES_ALL_IFACES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L242__RUN_AUX_SERIAL_BAUDRATE_CHUNK.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L250__RUN_AUX_SERIAL_BAUDRATE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L258__RUN_AUX_SERIAL_ALL_CHUNK_SIZES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L265__RUN_AUX_SERIAL_SELECT_CHUNK_SIZES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L271__RUN_AUX_SERIAL_ALL_BAUDRATES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L279__RUN_AUX_SERIAL_SELECT_BAUDRATES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L27__TEST_CARD_BINARY_FILTER.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L285__TEST_AUX_SERIAL_EXHAUSTIVELY.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L289__RUN_AUX_SERIAL_BAUDRATES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L291__RUN_AUX_SERIAL_BAUDRATES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L298__RUN_AUX_SERIAL_ALL_SIZES_ALL_BAUDRATES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L404__RUN_AUX_SERIAL_ALL_SIZES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L416__RUN_SMOKE_TESTS.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_card_binary_cpp__L8__TEST_CARD_BINARY_EXHAUSTIVELY.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_unity_util_h__L11__TEST.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_unity_util_h__L19__TEST_SUITE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_hitl_card_binary_test_test_unity_util_h__L29__RUN_FILTER.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1011__DEFINE_FAKE_VOID_FUNC14.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L101__RETURN_FAKE_RESULT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1063__FAKE_VOID_FUNC14.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1068__DECLARE_FAKE_VOID_FUNC15.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1094__DEFINE_FAKE_VOID_FUNC15.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1148__FAKE_VOID_FUNC15.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L114__FFF_EXTERN_C.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1153__DECLARE_FAKE_VOID_FUNC16.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L115__FFF_END_EXTERN_C.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L117__FFF_EXTERN_C.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1180__DEFINE_FAKE_VOID_FUNC16.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L118__FFF_END_EXTERN_C.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L121__DEFINE_RESET_FUNCTION.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1236__FAKE_VOID_FUNC16.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1241__DECLARE_FAKE_VOID_FUNC17.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1269__DEFINE_FAKE_VOID_FUNC17.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1327__FAKE_VOID_FUNC17.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1332__DECLARE_FAKE_VOID_FUNC18.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1361__DEFINE_FAKE_VOID_FUNC18.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L140__DEFINE_FFF_GLOBALS.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1421__FAKE_VOID_FUNC18.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1426__DECLARE_FAKE_VOID_FUNC19.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1456__DEFINE_FAKE_VOID_FUNC19.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L145__FFF_RESET_HISTORY.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L149__REGISTER_CALL.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1518__FAKE_VOID_FUNC19.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1523__DECLARE_FAKE_VOID_FUNC20.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L153__DECLARE_FAKE_VOID_FUNC0.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1554__DEFINE_FAKE_VOID_FUNC20.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1618__FAKE_VOID_FUNC20.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1623__DECLARE_FAKE_VALUE_FUNC0.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1636__DEFINE_FAKE_VALUE_FUNC0.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L164__DEFINE_FAKE_VOID_FUNC0.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1669__FAKE_VALUE_FUNC0.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1674__DECLARE_FAKE_VALUE_FUNC1.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1688__DEFINE_FAKE_VALUE_FUNC1.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1723__FAKE_VALUE_FUNC1.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1728__DECLARE_FAKE_VALUE_FUNC2.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1743__DEFINE_FAKE_VALUE_FUNC2.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1780__FAKE_VALUE_FUNC2.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1785__DECLARE_FAKE_VALUE_FUNC3.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1801__DEFINE_FAKE_VALUE_FUNC3.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1840__FAKE_VALUE_FUNC3.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1845__DECLARE_FAKE_VALUE_FUNC4.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1862__DEFINE_FAKE_VALUE_FUNC4.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L188__FAKE_VOID_FUNC0.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1903__FAKE_VALUE_FUNC4.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1908__DECLARE_FAKE_VALUE_FUNC5.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1926__DEFINE_FAKE_VALUE_FUNC5.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L193__DECLARE_FAKE_VOID_FUNC1.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1969__FAKE_VALUE_FUNC5.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1974__DECLARE_FAKE_VALUE_FUNC6.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L1993__DEFINE_FAKE_VALUE_FUNC6.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2038__FAKE_VALUE_FUNC6.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2043__DECLARE_FAKE_VALUE_FUNC7.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L205__DEFINE_FAKE_VOID_FUNC1.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2063__DEFINE_FAKE_VALUE_FUNC7.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2110__FAKE_VALUE_FUNC7.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2115__DECLARE_FAKE_VALUE_FUNC8.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2136__DEFINE_FAKE_VALUE_FUNC8.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2185__FAKE_VALUE_FUNC8.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2190__DECLARE_FAKE_VALUE_FUNC9.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2212__DEFINE_FAKE_VALUE_FUNC9.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2263__FAKE_VALUE_FUNC9.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2268__DECLARE_FAKE_VALUE_FUNC10.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2291__DEFINE_FAKE_VALUE_FUNC10.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L231__FAKE_VOID_FUNC1.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2344__FAKE_VALUE_FUNC10.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2349__DECLARE_FAKE_VALUE_FUNC11.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L236__DECLARE_FAKE_VOID_FUNC2.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2373__DEFINE_FAKE_VALUE_FUNC11.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2428__FAKE_VALUE_FUNC11.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2433__DECLARE_FAKE_VALUE_FUNC12.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2458__DEFINE_FAKE_VALUE_FUNC12.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L249__DEFINE_FAKE_VOID_FUNC2.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2515__FAKE_VALUE_FUNC12.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2520__DECLARE_FAKE_VALUE_FUNC13.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2546__DEFINE_FAKE_VALUE_FUNC13.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2605__FAKE_VALUE_FUNC13.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2610__DECLARE_FAKE_VALUE_FUNC14.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2637__DEFINE_FAKE_VALUE_FUNC14.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2698__FAKE_VALUE_FUNC14.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2703__DECLARE_FAKE_VALUE_FUNC15.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2731__DEFINE_FAKE_VALUE_FUNC15.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L277__FAKE_VOID_FUNC2.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2794__FAKE_VALUE_FUNC15.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2799__DECLARE_FAKE_VALUE_FUNC16.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2828__DEFINE_FAKE_VALUE_FUNC16.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L282__DECLARE_FAKE_VOID_FUNC3.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2893__FAKE_VALUE_FUNC16.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2898__DECLARE_FAKE_VALUE_FUNC17.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2928__DEFINE_FAKE_VALUE_FUNC17.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L296__DEFINE_FAKE_VOID_FUNC3.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L2995__FAKE_VALUE_FUNC17.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3000__DECLARE_FAKE_VALUE_FUNC18.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3031__DEFINE_FAKE_VALUE_FUNC18.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3100__FAKE_VALUE_FUNC18.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3105__DECLARE_FAKE_VALUE_FUNC19.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3137__DEFINE_FAKE_VALUE_FUNC19.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3208__FAKE_VALUE_FUNC19.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3213__DECLARE_FAKE_VALUE_FUNC20.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3246__DEFINE_FAKE_VALUE_FUNC20.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L326__FAKE_VOID_FUNC3.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L32__FFF_MAX_ARGS.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3319__FAKE_VALUE_FUNC20.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L331__DECLARE_FAKE_VOID_FUNC4.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3324__DECLARE_FAKE_VOID_FUNC2_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3336__DEFINE_FAKE_VOID_FUNC2_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3371__FAKE_VOID_FUNC2_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3376__DECLARE_FAKE_VOID_FUNC3_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3389__DEFINE_FAKE_VOID_FUNC3_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3426__FAKE_VOID_FUNC3_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3431__DECLARE_FAKE_VOID_FUNC4_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3445__DEFINE_FAKE_VOID_FUNC4_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L346__DEFINE_FAKE_VOID_FUNC4.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3484__FAKE_VOID_FUNC4_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3489__DECLARE_FAKE_VOID_FUNC5_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L34__FFF_ARG_HISTORY_LEN.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3504__DEFINE_FAKE_VOID_FUNC5_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3545__FAKE_VOID_FUNC5_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3550__DECLARE_FAKE_VOID_FUNC6_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3566__DEFINE_FAKE_VOID_FUNC6_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3609__FAKE_VOID_FUNC6_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3614__DECLARE_FAKE_VOID_FUNC7_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3631__DEFINE_FAKE_VOID_FUNC7_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3676__FAKE_VOID_FUNC7_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3681__DECLARE_FAKE_VOID_FUNC8_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3699__DEFINE_FAKE_VOID_FUNC8_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3746__FAKE_VOID_FUNC8_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3751__DECLARE_FAKE_VOID_FUNC9_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3770__DEFINE_FAKE_VOID_FUNC9_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L378__FAKE_VOID_FUNC4.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L37__FFF_CALL_HISTORY_LEN.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3819__FAKE_VOID_FUNC9_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3824__DECLARE_FAKE_VOID_FUNC10_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L383__DECLARE_FAKE_VOID_FUNC5.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3844__DEFINE_FAKE_VOID_FUNC10_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3895__FAKE_VOID_FUNC10_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3900__DECLARE_FAKE_VOID_FUNC11_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3921__DEFINE_FAKE_VOID_FUNC11_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3974__FAKE_VOID_FUNC11_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L3979__DECLARE_FAKE_VOID_FUNC12_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L399__DEFINE_FAKE_VOID_FUNC5.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4001__DEFINE_FAKE_VOID_FUNC12_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4056__FAKE_VOID_FUNC12_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4061__DECLARE_FAKE_VOID_FUNC13_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4084__DEFINE_FAKE_VOID_FUNC13_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4141__FAKE_VOID_FUNC13_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4146__DECLARE_FAKE_VOID_FUNC14_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4170__DEFINE_FAKE_VOID_FUNC14_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4229__FAKE_VOID_FUNC14_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4234__DECLARE_FAKE_VOID_FUNC15_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4259__DEFINE_FAKE_VOID_FUNC15_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4320__FAKE_VOID_FUNC15_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4325__DECLARE_FAKE_VOID_FUNC16_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L433__FAKE_VOID_FUNC5.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4351__DEFINE_FAKE_VOID_FUNC16_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L438__DECLARE_FAKE_VOID_FUNC6.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L43__CUSTOM_FFF_FUNCTION_TEMPLATE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4414__FAKE_VOID_FUNC16_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4419__DECLARE_FAKE_VOID_FUNC17_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4446__DEFINE_FAKE_VOID_FUNC17_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4511__FAKE_VOID_FUNC17_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4516__DECLARE_FAKE_VOID_FUNC18_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4544__DEFINE_FAKE_VOID_FUNC18_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L455__DEFINE_FAKE_VOID_FUNC6.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4611__FAKE_VOID_FUNC18_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4616__DECLARE_FAKE_VOID_FUNC19_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4645__DEFINE_FAKE_VOID_FUNC19_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4714__FAKE_VOID_FUNC19_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4719__DECLARE_FAKE_VOID_FUNC20_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4749__DEFINE_FAKE_VOID_FUNC20_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L47__SET_RETURN_SEQ.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4820__FAKE_VOID_FUNC20_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4825__DECLARE_FAKE_VALUE_FUNC2_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4839__DEFINE_FAKE_VALUE_FUNC2_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4883__FAKE_VALUE_FUNC2_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4888__DECLARE_FAKE_VALUE_FUNC3_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4903__DEFINE_FAKE_VALUE_FUNC3_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L491__FAKE_VOID_FUNC6.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4949__FAKE_VALUE_FUNC3_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4954__DECLARE_FAKE_VALUE_FUNC4_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L496__DECLARE_FAKE_VOID_FUNC7.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L4970__DEFINE_FAKE_VALUE_FUNC4_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5018__FAKE_VALUE_FUNC4_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5023__DECLARE_FAKE_VALUE_FUNC5_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5040__DEFINE_FAKE_VALUE_FUNC5_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5090__FAKE_VALUE_FUNC5_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5095__DECLARE_FAKE_VALUE_FUNC6_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L50__SET_CUSTOM_FAKE_SEQ.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5113__DEFINE_FAKE_VALUE_FUNC6_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L514__DEFINE_FAKE_VOID_FUNC7.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5165__FAKE_VALUE_FUNC6_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5170__DECLARE_FAKE_VALUE_FUNC7_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5189__DEFINE_FAKE_VALUE_FUNC7_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5243__FAKE_VALUE_FUNC7_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5248__DECLARE_FAKE_VALUE_FUNC8_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5268__DEFINE_FAKE_VALUE_FUNC8_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5324__FAKE_VALUE_FUNC8_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5329__DECLARE_FAKE_VALUE_FUNC9_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5350__DEFINE_FAKE_VALUE_FUNC9_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5408__FAKE_VALUE_FUNC9_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5413__DECLARE_FAKE_VALUE_FUNC10_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5435__DEFINE_FAKE_VALUE_FUNC10_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5495__FAKE_VALUE_FUNC10_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5500__DECLARE_FAKE_VALUE_FUNC11_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5523__DEFINE_FAKE_VALUE_FUNC11_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L552__FAKE_VOID_FUNC7.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L557__DECLARE_FAKE_VOID_FUNC8.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5585__FAKE_VALUE_FUNC11_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5590__DECLARE_FAKE_VALUE_FUNC12_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L55__RESET_FAKE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5614__DEFINE_FAKE_VALUE_FUNC12_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5678__FAKE_VALUE_FUNC12_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5683__DECLARE_FAKE_VALUE_FUNC13_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5708__DEFINE_FAKE_VALUE_FUNC13_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L576__DEFINE_FAKE_VOID_FUNC8.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5774__FAKE_VALUE_FUNC13_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5779__DECLARE_FAKE_VALUE_FUNC14_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5805__DEFINE_FAKE_VALUE_FUNC14_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5873__FAKE_VALUE_FUNC14_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5878__DECLARE_FAKE_VALUE_FUNC15_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5905__DEFINE_FAKE_VALUE_FUNC15_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5975__FAKE_VALUE_FUNC15_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L5980__DECLARE_FAKE_VALUE_FUNC16_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6008__DEFINE_FAKE_VALUE_FUNC16_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6080__FAKE_VALUE_FUNC16_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6085__DECLARE_FAKE_VALUE_FUNC17_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L60__DECLARE_ARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6114__DEFINE_FAKE_VALUE_FUNC17_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L616__FAKE_VOID_FUNC8.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6188__FAKE_VALUE_FUNC17_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6193__DECLARE_FAKE_VALUE_FUNC18_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L621__DECLARE_FAKE_VOID_FUNC9.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6223__DEFINE_FAKE_VALUE_FUNC18_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6299__FAKE_VALUE_FUNC18_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6304__DECLARE_FAKE_VALUE_FUNC19_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6335__DEFINE_FAKE_VALUE_FUNC19_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6413__FAKE_VALUE_FUNC19_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6418__DECLARE_FAKE_VALUE_FUNC20_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L641__DEFINE_FAKE_VOID_FUNC9.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6450__DEFINE_FAKE_VALUE_FUNC20_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L64__DECLARE_ALL_FUNC_COMMON.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6530__FAKE_VALUE_FUNC20_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6535__EXPAND.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6537__PP_NARG_MINUS2.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6539__PP_NARG_MINUS2.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6541__PP_ARG_MINUS2_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6543__PP_RSEQ_N_MINUS2.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6545__PP_NARG_MINUS1.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6547__PP_NARG_MINUS1.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6549__PP_ARG_MINUS1_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6551__PP_RSEQ_N_MINUS1.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6557__FAKE_VALUE_FUNC.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6559__FUNC_VALUE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6561__FUNC_VALUE_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6564__FAKE_VOID_FUNC.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6566__FUNC_VOID.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6568__FUNC_VOID_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6571__FAKE_VALUE_FUNC_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6573__FUNC_VALUE_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6575__FUNC_VALUE_VARARG_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6578__FAKE_VOID_FUNC_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6580__FUNC_VOID_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6582__FUNC_VOID_VARARG_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6588__DECLARE_FAKE_VALUE_FUNC.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6590__DECLARE_FUNC_VALUE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6592__DECLARE_FUNC_VALUE_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6595__DECLARE_FAKE_VOID_FUNC.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6597__DECLARE_FUNC_VOID.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6599__DECLARE_FUNC_VOID_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6602__DECLARE_FAKE_VALUE_FUNC_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6604__DECLARE_FUNC_VALUE_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6606__DECLARE_FUNC_VALUE_VARARG_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6609__DECLARE_FAKE_VOID_FUNC_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6611__DECLARE_FUNC_VOID_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6613__DECLARE_FUNC_VOID_VARARG_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6619__DEFINE_FAKE_VALUE_FUNC.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6621__DEFINE_FUNC_VALUE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6623__DEFINE_FUNC_VALUE_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6626__DEFINE_FAKE_VOID_FUNC.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6628__DEFINE_FUNC_VOID.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6630__DEFINE_FUNC_VOID_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6633__DEFINE_FAKE_VALUE_FUNC_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6635__DEFINE_FUNC_VALUE_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6637__DEFINE_FUNC_VALUE_VARARG_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6640__DEFINE_FAKE_VOID_FUNC_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6642__DEFINE_FUNC_VOID_VARARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L6644__DEFINE_FUNC_VOID_VARARG_N.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L683__FAKE_VOID_FUNC9.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L688__DECLARE_FAKE_VOID_FUNC10.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L69__DECLARE_RETURN_VALUE_HISTORY.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L709__DEFINE_FAKE_VOID_FUNC10.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L72__SAVE_ARG.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L753__FAKE_VOID_FUNC10.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L758__DECLARE_FAKE_VOID_FUNC11.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L75__ROOM_FOR_MORE_HISTORY.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L780__DEFINE_FAKE_VOID_FUNC11.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L78__SAVE_RET_HISTORY.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L826__FAKE_VOID_FUNC11.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L82__SAVE_ARG_HISTORY.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L831__DECLARE_FAKE_VOID_FUNC12.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L854__DEFINE_FAKE_VOID_FUNC12.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L85__HISTORY_DROPPED.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L88__DECLARE_VALUE_FUNCTION_VARIABLES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L902__FAKE_VOID_FUNC12.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L907__DECLARE_FAKE_VOID_FUNC13.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L931__DEFINE_FAKE_VOID_FUNC13.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L94__DECLARE_CUSTOM_FAKE_SEQ_VARIABLES.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L981__FAKE_VOID_FUNC13.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L986__DECLARE_FAKE_VOID_FUNC14.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_include_fff_h__L98__INCREMENT_CALL_COUNT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L26__FIELD.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L28__JINTEGER_MAX_STR.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L33__JINTEGER_MAX_TO_FLOAT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L34__JINTEGER_MAX_TO_FLOAT_STR.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L38__JINTEGER_MAX_PLUS_4096.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L39__JINTEGER_MAX_PLUS_4096_STR.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L41__JINTEGER_MAX_PLUS_4096_TO_FLOAT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L42__JINTEGER_MAX_PLUS_4096_TO_FLOAT_STR.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L44__JINTEGER_MIN_STR.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L47__JINTEGER_MIN_TO_FLOAT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L48__JINTEGER_MIN_TO_FLOAT_STR.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L50__JINTEGER_MIN_MINUS_4096.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L51__JINTEGER_MIN_MINUS_4096_STR.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L53__JINTEGER_MIN_MINUS_4096_TO_FLOAT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L54__JINTEGER_MIN_MINUS_4096_TO_FLOAT_STR.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L56__SMALL_FLOAT.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L57__SMALL_FLOAT_STR.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L59__UNIX_TIMESTAMP.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src_JSON_number_handling_test_cpp__L60__UNIX_TIMESTAMP_STR.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/macros/test_src__serialNoteTransaction_test_cpp__L80__SERIAL_CHUNKED_RECEIVE_MULTIPLE_SIZE.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L27__BinaryImage.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L342__TransferDetails.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L356__TransferHandlerContext.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L372__BinaryTransfer.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_lib_notecard_binary_NotecardBinary_h__L37__BinaryGenerator.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_lib_notecard_binary_NotecardComms_h__L6__NotecardInterface.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_binary_generators_cpp__L21__content_check_fn.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_binary_generators_h__L12__BuildAllSameValue.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_binary_generators_h__L29__AllZeros.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_binary_generators_h__L33__AllSevens.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_binary_generators_h__L37__BuildFromBinaryImage.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_binary_generators_h__L49__SmallBinaryImage.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_binary_generators_h__L53__BuildRandom.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_card_binary_cpp__L63__BinaryTestArgs.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_card_binary_cpp__L77__Handler.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_unity_util_h__L13__test_suite_hook_fn.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_card_binary_test_test_unity_util_h__L14__test_suite_filter_fn.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_scripts_md5srv_py__L25__HTTPException.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_hitl_scripts_md5srv_py__L33__WebRequestHandler.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1069__typedef_1069.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1154__typedef_1154.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1242__typedef_1242.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L130__fff_function_t.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L131__typedef_131.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1333__typedef_1333.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1427__typedef_1427.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1524__typedef_1524.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L154__typedef_154.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1624__typedef_1624.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1675__typedef_1675.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1729__typedef_1729.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1786__typedef_1786.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1846__typedef_1846.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1909__typedef_1909.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L194__typedef_194.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L1975__typedef_1975.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2044__typedef_2044.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2116__typedef_2116.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2191__typedef_2191.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2269__typedef_2269.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2350__typedef_2350.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L237__typedef_237.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2434__typedef_2434.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2521__typedef_2521.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2611__typedef_2611.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2704__typedef_2704.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2800__typedef_2800.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L283__typedef_283.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L2899__typedef_2899.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3001__typedef_3001.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3106__typedef_3106.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3214__typedef_3214.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3325__typedef_3325.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L332__typedef_332.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3377__typedef_3377.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3432__typedef_3432.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3490__typedef_3490.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3551__typedef_3551.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3615__typedef_3615.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3682__typedef_3682.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3752__typedef_3752.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3825__typedef_3825.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L384__typedef_384.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3901__typedef_3901.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L3980__typedef_3980.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4062__typedef_4062.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4147__typedef_4147.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4235__typedef_4235.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4326__typedef_4326.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L439__typedef_439.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4420__typedef_4420.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4517__typedef_4517.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4617__typedef_4617.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4720__typedef_4720.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4826__typedef_4826.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4889__typedef_4889.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L4955__typedef_4955.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L497__typedef_497.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5024__typedef_5024.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5096__typedef_5096.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5171__typedef_5171.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5249__typedef_5249.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5330__typedef_5330.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5414__typedef_5414.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5501__typedef_5501.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L558__typedef_558.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5591__typedef_5591.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5684__typedef_5684.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5780__typedef_5780.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5879__typedef_5879.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L5981__typedef_5981.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L6086__typedef_6086.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L6194__typedef_6194.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L622__typedef_622.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L6305__typedef_6305.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L6419__typedef_6419.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L689__typedef_689.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L759__typedef_759.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L832__typedef_832.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L908__typedef_908.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_include_fff_h__L987__typedef_987.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_src_JGetType_test_cpp__L63__AddStringFn.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_src_NoteDebug_test_cpp__L21__typedef_21.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_src_NotePing_test_cpp__L40__class.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_src__noteChunkedReceive_test_cpp__L18__nReceiveFn.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_src__noteChunkedTransmit_test_cpp__L18__nTransmitFn.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_src__noteHardReset_test_cpp__L18__nNoteResetFn.md",
+      "severity": "medium"
+    },
+    {
+      "action": "review_orphan_artifact",
+      "path": "artifacts/types/test_src__noteJSONTransaction_test_cpp__L18__nTransactionFn.md",
+      "severity": "medium"
+    }
+  ],
+  "generated_at_utc": "2026-07-02T23:46:50+00:00",
+  "schema_version": 1,
+  "summary": {
+    "actions": 640,
+    "critical": 0,
+    "high": 0,
+    "medium": 640
+  }
+}
