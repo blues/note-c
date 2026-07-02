@@ -167,7 +167,25 @@ public:
 int MultipleHeartbeatsThenValid::call_count = 0;
 
 bool noteTransactionTestNotecardLocked = false;
-bool crcAddCalledWhileNotecardLocked = false;
+bool noteTransactionRunNestedTransactionOnUnlock = false;
+bool noteTransactionNestedTransactionActive = false;
+bool noteTransactionNestedTransactionStarted = false;
+uint16_t noteTransactionFirstSeqNo = 0;
+uint16_t noteTransactionNestedSeqNo = 0;
+uint8_t noteTransactionCrcAddCallCount = 0;
+
+char * _crcAdd_customFake(char *json, uint16_t seqno)
+{
+    // Custom fake implementation for _crcAdd
+    if (noteTransactionCrcAddCallCount == 0) {
+        noteTransactionFirstSeqNo = seqno;
+    }
+    if (noteTransactionNestedTransactionActive) {
+        noteTransactionNestedSeqNo = seqno;
+    }
+    noteTransactionCrcAddCallCount++;
+    return strdup(json);
+}
 
 void noteTransactionTestLockNote(void)
 {
@@ -176,20 +194,21 @@ void noteTransactionTestLockNote(void)
 
 void noteTransactionTestUnlockNote(void)
 {
+    if (noteTransactionRunNestedTransactionOnUnlock && !noteTransactionNestedTransactionStarted) {
+        noteTransactionNestedTransactionStarted = true;
+        noteTransactionNestedTransactionActive = true;
+        J *req = NoteNewRequest("note.add");
+        if (req != NULL) {
+            J *resp = _noteTransactionShouldLock(req, false);
+            JDelete(req);
+            if (resp != NULL) {
+                JDelete(resp);
+            }
+        }
+        noteTransactionNestedTransactionActive = false;
+    }
+
     noteTransactionTestNotecardLocked = false;
-}
-
-char * _crcAdd_customFake(char *json, uint16_t seqno)
-{
-    // Custom fake implementation for _crcAdd
-    (void)seqno;
-    return strdup(json);
-}
-
-char * _crcAdd_lockCheckCustomFake(char *json, uint16_t seqno)
-{
-    crcAddCalledWhileNotecardLocked = noteTransactionTestNotecardLocked;
-    return _crcAdd_customFake(json, seqno);
 }
 
 SCENARIO("NoteTransaction")
@@ -198,7 +217,12 @@ SCENARIO("NoteTransaction")
     NoteSetFnNoteMutex(NULL, NULL);
     _crcAdd_fake.custom_fake = _crcAdd_customFake;
     noteTransactionTestNotecardLocked = false;
-    crcAddCalledWhileNotecardLocked = false;
+    noteTransactionRunNestedTransactionOnUnlock = false;
+    noteTransactionNestedTransactionActive = false;
+    noteTransactionNestedTransactionStarted = false;
+    noteTransactionFirstSeqNo = 0;
+    noteTransactionNestedSeqNo = 0;
+    noteTransactionCrcAddCallCount = 0;
 
     // NoteReset's mock should succeed unless the test explicitly instructs
     // it to fail.
@@ -472,17 +496,17 @@ SCENARIO("NoteTransaction")
     }
 
 #ifndef NOTE_C_LOW_MEM
-    SECTION("CRC is added while the Notecard lock is held") {
+    SECTION("Sequence number advances before the Notecard lock is released") {
         J *req = NoteNewRequest("note.add");
         REQUIRE(req != NULL);
         _noteJSONTransaction_fake.custom_fake = _noteJSONTransactionValid;
-        _crcAdd_fake.custom_fake = _crcAdd_lockCheckCustomFake;
+        noteTransactionRunNestedTransactionOnUnlock = true;
         NoteSetFnNoteMutex(noteTransactionTestLockNote, noteTransactionTestUnlockNote);
 
         J *resp = NoteTransaction(req);
 
-        CHECK(_crcAdd_fake.call_count == 1);
-        CHECK(crcAddCalledWhileNotecardLocked);
+        CHECK(noteTransactionNestedTransactionStarted);
+        CHECK(noteTransactionNestedSeqNo == (uint16_t)(noteTransactionFirstSeqNo + 1));
         CHECK(resp != NULL);
         CHECK(!NoteResponseError(resp));
         CHECK(!noteTransactionTestNotecardLocked);
