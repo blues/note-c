@@ -491,6 +491,12 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
     // Calculate the transaction timeout based on the parameters in the request.
     const uint32_t transactionTimeoutMs = _noteTransaction_calculateTimeoutMs(req, reqFound);
 
+    // Take the lock on the Notecard.  This is required to ensure that we don't
+    // have multiple threads trying to access the Notecard at the same time.
+    if (lockNotecard) {
+        _LockNote();
+    }
+
 #ifndef NOTE_C_LOW_MEM
     /*
     * Add a CRC value, so the request may be retried if it is received
@@ -510,9 +516,10 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
     *    1     0      1
     *    1     1    1 (UB)
     */
+    const uint16_t transactionSeqNo = seqNo;
     bool crcAddedToRequest = false;
     if (reqFound) {
-        char *newJson = _crcAdd(json, seqNo);
+        char *newJson = _crcAdd(json, transactionSeqNo);
         if (newJson != NULL) {
             _Free(json);
             json = newJson;
@@ -520,12 +527,6 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         }
     }
 #endif // !NOTE_C_LOW_MEM
-
-    // Take the lock on the Notecard.  This is required to ensure that we don't
-    // have multiple threads trying to access the Notecard at the same time.
-    if (lockNotecard) {
-        _LockNote();
-    }
 
     // If a reset of the I/O interface is required for any reason, do it now.
     if (resetRequired) {
@@ -627,7 +628,7 @@ J *_noteTransactionShouldLock(J *req, bool lockNotecard)
         // If we sent a CRC in the request, examine the response JSON to see if
         // it has a CRC error.  Note that the CRC is stripped from the
         // rspJsonStr as a side-effect of this method.
-        if (crcAddedToRequest && _crcError(rspJsonStr, seqNo)) {
+        if (crcAddedToRequest && _crcError(rspJsonStr, transactionSeqNo)) {
             _Free(rspJsonStr);
             errStr = ERRSTR("CRC error {io}", c_iobad);
             NOTE_C_LOG_WARN(ERRSTR("retrying... CRC error", c_iobad));
