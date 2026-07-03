@@ -204,7 +204,10 @@ bool NoteRequest(J *req)
 
 bool NoteRequestWithRetry(J *req, uint32_t timeoutSeconds)
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     J *rsp = NoteRequestResponseWithRetry(req, timeoutSeconds);
+#pragma GCC diagnostic pop
     // If there is no response return false
     if (rsp == NULL) {
         return false;
@@ -758,11 +761,19 @@ void NoteResetRequired(void)
     resetRequired = true;
 }
 
-/*!
- @brief Initialize or re-initialize the I/O inferface (I2C/UART).
+bool NoteConnect(uint32_t timeoutMs)
+{
+    bool result = false;
 
- @returns True if the reset was successful and false if not.
- */
+    for (
+        uint32_t startMs = _GetMs() ;
+        (result = NoteReset()) && ((_GetMs() - startMs) < timeoutMs) ;
+        _DelayMs(RETRY_DELAY_MS)
+    );
+
+    return result;
+}
+
 bool NoteReset(void)
 {
     _LockNote();
