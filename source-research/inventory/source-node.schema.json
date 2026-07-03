@@ -1,0 +1,920 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "source-research/inventory/source-node.schema.json",
+  "title": "Source Research Node Record",
+  "description": "Canonical schema for one source-research graph node enriched with the Markdown artifact facts. Graph files may embed these records under nodes or store them as sidecar node records keyed by id.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "node_type",
+    "kind",
+    "name",
+    "qualified_name",
+    "artifact",
+    "research_status",
+    "source",
+    "api_surface",
+    "aliases",
+    "dependencies",
+    "call_sites",
+    "graph_links",
+    "evidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "description": "Stable graph node id, e.g. function:n_request.c:191:NoteRequest."
+    },
+    "inventory_id": {
+      "type": "string",
+      "description": "Original source inventory id when distinct from graph id."
+    },
+    "node_type": {
+      "type": "string",
+      "enum": [
+        "function",
+        "method",
+        "class",
+        "struct",
+        "enum",
+        "typedef",
+        "macro",
+        "declaration",
+        "module",
+        "subsystem",
+        "external"
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "description": "Language/research-specific kind, e.g. function, test-function, struct, public-api-declaration."
+    },
+    "name": {
+      "type": "string"
+    },
+    "qualified_name": {
+      "type": "string"
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "c",
+        "cpp",
+        "header",
+        "mixed",
+        "unknown"
+      ],
+      "default": "unknown"
+    },
+    "artifact": {
+      "$ref": "#/$defs/artifactRef"
+    },
+    "research_status": {
+      "$ref": "#/$defs/researchStatus"
+    },
+    "source": {
+      "$ref": "#/$defs/sourceFacts"
+    },
+    "api_surface": {
+      "$ref": "#/$defs/apiSurface"
+    },
+    "aliases": {
+      "type": "array",
+      "description": "Macro aliases, wrappers, declaration exports, compatibility names, or type aliases related to this node. Empty when no aliases or public-surface names are known.",
+      "items": {
+        "$ref": "#/$defs/aliasRecord"
+      }
+    },
+    "dependencies": {
+      "$ref": "#/$defs/dependencyFacts"
+    },
+    "behavior": {
+      "$ref": "#/$defs/behaviorFacts"
+    },
+    "boundaries": {
+      "$ref": "#/$defs/boundaryFacts"
+    },
+    "call_sites": {
+      "$ref": "#/$defs/callSiteFacts"
+    },
+    "tests": {
+      "$ref": "#/$defs/testFacts"
+    },
+    "graph_links": {
+      "$ref": "#/$defs/graphLinks"
+    },
+    "evidence": {
+      "$ref": "#/$defs/evidenceFacts"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Tool-specific extension data. Keep stable fields outside metadata.",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "artifactRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "format",
+        "status"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "markdown"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "exists",
+            "missing",
+            "stale"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "researchStatus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coverage",
+        "behavior",
+        "call_sites",
+        "tests"
+      ],
+      "properties": {
+        "coverage": {
+          "type": "string",
+          "enum": [
+            "inventory-complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "behavior": {
+          "type": "string",
+          "enum": [
+            "finalized",
+            "preliminary",
+            "automated-preliminary",
+            "unknown"
+          ]
+        },
+        "call_sites": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "candidate-only",
+            "batched",
+            "none-found",
+            "uninspected",
+            "unknown"
+          ]
+        },
+        "tests": {
+          "type": "string",
+          "enum": [
+            "verified",
+            "candidate-only",
+            "none-found",
+            "uninspected",
+            "unknown"
+          ]
+        },
+        "status_text": {
+          "type": "string",
+          "description": "Verbatim or normalized Status section summary."
+        }
+      }
+    },
+    "sourceFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "definition",
+        "declarations",
+        "signature"
+      ],
+      "properties": {
+        "definition": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sourceLocation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declarations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceLocation"
+          }
+        },
+        "signature": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scope": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_comment": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_comment_location": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sourceLocation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "apiSurface": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "visibility",
+        "public_entrypoint",
+        "headers",
+        "exported_names"
+      ],
+      "properties": {
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "file-local",
+            "translation-unit-local",
+            "project-internal",
+            "public-sdk",
+            "public-cjson",
+            "test-only",
+            "external",
+            "unknown"
+          ]
+        },
+        "public_entrypoint": {
+          "type": "boolean"
+        },
+        "headers": {
+          "type": "array",
+          "description": "Headers or interface files that expose, declare, or alias this node.",
+          "items": {
+            "$ref": "#/$defs/sourceLocation"
+          }
+        },
+        "exported_names": {
+          "type": "array",
+          "description": "Names available to callers through public or internal interfaces, including macro aliases.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exposure_notes": {
+          "type": "string"
+        }
+      }
+    },
+    "aliasRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "alias_name",
+        "alias_kind",
+        "relationship",
+        "source",
+        "target"
+      ],
+      "properties": {
+        "alias_name": {
+          "type": "string"
+        },
+        "alias_kind": {
+          "type": "string",
+          "enum": [
+            "object_macro",
+            "function_macro",
+            "wrapper_function",
+            "public_declaration",
+            "compatibility_name",
+            "typedef",
+            "using_alias",
+            "field_alias",
+            "virtual_override",
+            "test_fake",
+            "unknown"
+          ]
+        },
+        "relationship": {
+          "type": "string",
+          "enum": [
+            "declares",
+            "exports",
+            "expands_to",
+            "wraps",
+            "forwards_to",
+            "delegates_to",
+            "renames",
+            "type_aliases",
+            "overrides",
+            "fakes",
+            "references"
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/sourceLocation"
+        },
+        "target": {
+          "$ref": "#/$defs/symbolRef"
+        },
+        "expansion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Macro expansion or wrapper expression when source-visible."
+        },
+        "signature": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "public_surface": {
+          "type": "boolean",
+          "default": false
+        },
+        "call_semantics": {
+          "type": "string",
+          "enum": [
+            "transparent",
+            "adds_fixed_arguments",
+            "drops_arguments",
+            "converts_types",
+            "changes_ownership",
+            "changes_error_handling",
+            "changes_visibility_only",
+            "unknown"
+          ],
+          "default": "unknown"
+        },
+        "fixed_arguments": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "position_or_name",
+              "value"
+            ],
+            "properties": {
+              "position_or_name": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              },
+              "meaning": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidencePointer"
+        }
+      }
+    },
+    "dependencyFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_local",
+        "external",
+        "data_type_global",
+        "artifact_coverage"
+      ],
+      "properties": {
+        "project_local": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/symbolRef"
+          }
+        },
+        "external": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/symbolRef"
+          }
+        },
+        "data_type_global": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/symbolRef"
+          }
+        },
+        "artifact_coverage": {
+          "type": "string"
+        }
+      }
+    },
+    "behaviorFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "ordered_steps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "automated_facts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": [
+              "string",
+              "number",
+              "integer",
+              "boolean",
+              "null"
+            ]
+          }
+        },
+        "return_values": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "side_effects": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mutation": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allocation": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ownership_lifetime": {
+          "type": "string"
+        },
+        "error_behavior": {
+          "type": "string"
+        }
+      }
+    },
+    "boundaryFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "preconditions": {
+          "type": "string"
+        },
+        "error_null_empty_behavior": {
+          "type": "string"
+        },
+        "ownership_lifetime": {
+          "type": "string"
+        },
+        "concurrency_global_state": {
+          "type": "string"
+        },
+        "portability_platform": {
+          "type": "string"
+        },
+        "performance_shape": {
+          "type": "string"
+        },
+        "security_or_parsing": {
+          "type": "string"
+        }
+      }
+    },
+    "callSiteFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "groups",
+        "negative_searches"
+      ],
+      "properties": {
+        "groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/callSiteGroup"
+          }
+        },
+        "role_in_callers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "negative_searches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/searchEvidence"
+          }
+        }
+      }
+    },
+    "testFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "direct": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/testObservation"
+          }
+        },
+        "indirect": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/testObservation"
+          }
+        },
+        "not_observed": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "graphLinks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "callee_artifacts",
+        "caller_artifact_candidates",
+        "upstream_public_behavior_candidates",
+        "fanout_batches_remaining"
+      ],
+      "properties": {
+        "callee_artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifactPointer"
+          }
+        },
+        "caller_artifact_candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifactPointer"
+          }
+        },
+        "upstream_public_behavior_candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/symbolRef"
+          }
+        },
+        "fanout_batches_remaining": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "evidenceFacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_mode",
+        "gaps"
+      ],
+      "properties": {
+        "source_mode": {
+          "type": "string",
+          "enum": [
+            "source-only",
+            "source-plus-doc-comparison",
+            "unknown"
+          ]
+        },
+        "generated_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "searches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/searchEvidence"
+          }
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceGap"
+          }
+        },
+        "mismatches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/evidenceGap"
+          }
+        }
+      }
+    },
+    "sourceLocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file",
+        "line"
+      ],
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "end_line": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "column": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "context": {
+          "type": "string"
+        }
+      }
+    },
+    "symbolRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "symbol"
+      ],
+      "properties": {
+        "symbol": {
+          "type": "string"
+        },
+        "node_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "artifact": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "location": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sourceLocation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "relationship_notes": {
+          "type": "string"
+        }
+      }
+    },
+    "artifactPointer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "node_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "symbol": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "callSiteGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "category",
+        "sites"
+      ],
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "production",
+            "internal",
+            "test",
+            "hitl",
+            "example",
+            "adapter",
+            "generated",
+            "macro-alias",
+            "public-api",
+            "unknown"
+          ]
+        },
+        "sites": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/callSite"
+          }
+        }
+      }
+    },
+    "callSite": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "caller"
+      ],
+      "properties": {
+        "caller": {
+          "$ref": "#/$defs/symbolRef"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/sourceLocation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "ownership_effect": {
+          "type": "string"
+        },
+        "error_effect": {
+          "type": "string"
+        },
+        "verified": {
+          "type": "boolean"
+        }
+      }
+    },
+    "testObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "location",
+        "coverage"
+      ],
+      "properties": {
+        "location": {
+          "$ref": "#/$defs/sourceLocation"
+        },
+        "coverage": {
+          "type": "string"
+        },
+        "limitations": {
+          "type": "string"
+        }
+      }
+    },
+    "searchEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "query",
+        "scope",
+        "result"
+      ],
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "found",
+            "not-found",
+            "partial",
+            "not-run",
+            "unknown"
+          ]
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "evidenceGap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "severity"
+      ],
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "unknown"
+          ]
+        },
+        "next_step": {
+          "type": "string"
+        }
+      }
+    },
+    "evidencePointer": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source_text": {
+          "type": "string"
+        },
+        "locations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/sourceLocation"
+          }
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

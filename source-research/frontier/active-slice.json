@@ -1,0 +1,1542 @@
+{
+  "blocked_nodes": [],
+  "checkpoint_reason": null,
+  "current_node_id": null,
+  "dfs_stack": [],
+  "fanout_batches": [],
+  "finalized_nodes": [
+    "macro:n_hooks.c:33:NOTE_C_SHOW_MALLOC",
+    "macro:note.h:1400:JTYPE_NOT_PRESENT",
+    "macro:note.h:1401:JTYPE_BOOL_TRUE",
+    "macro:note.h:1402:JTYPE_BOOL_FALSE",
+    "macro:note.h:1403:JTYPE_BOOL",
+    "macro:note.h:1404:JTYPE_NULL",
+    "macro:note.h:1405:JTYPE_NUMBER_ZERO",
+    "macro:note.h:1406:JTYPE_NUMBER",
+    "macro:note.h:1407:JTYPE_STRING_BLANK",
+    "macro:note.h:1408:JTYPE_STRING_ZERO",
+    "macro:note.h:1409:JTYPE_STRING_NUMBER",
+    "macro:note.h:1410:JTYPE_STRING_BOOL_TRUE",
+    "macro:note.h:1411:JTYPE_STRING_BOOL_FALSE",
+    "macro:note.h:1412:JTYPE_STRING",
+    "macro:note.h:1413:JTYPE_OBJECT",
+    "macro:note.h:1414:JTYPE_ARRAY",
+    "macro:n_lib.h:35:NOTE_C_STATIC",
+    "macro:n_lib.h:44:CARD_INTER_TRANSACTION_TIMEOUT_SEC",
+    "macro:n_lib.h:45:CARD_INTRA_TRANSACTION_TIMEOUT_SEC",
+    "macro:n_lib.h:56:CARD_REQUEST_I2C_SEGMENT_MAX_LEN",
+    "macro:n_lib.h:62:CARD_REQUEST_I2C_SEGMENT_DELAY_MS",
+    "macro:n_lib.h:68:CARD_REQUEST_I2C_CHUNK_DELAY_MS",
+    "macro:n_lib.h:74:CARD_REQUEST_I2C_NACK_WAIT_MS",
+    "macro:n_lib.h:80:CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN",
+    "macro:n_lib.h:86:CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS",
+    "macro:n_lib.h:92:CARD_RESET_DRAIN_MS",
+    "macro:n_lib.h:98:CARD_REQUEST_RETRIES_ALLOWED",
+    "macro:n_lib.h:104:CARD_RESET_SYNC_RETRIES",
+    "macro:n_lib.h:111:ALLOC_CHUNK",
+    "macro:n_lib.h:113:ALLOC_CHUNK",
+    "macro:n_lib.h:258:_DebugIntln",
+    "macro:n_request.c:31:CRC_FIELD_LENGTH",
+    "macro:n_request.c:32:CRC_FIELD_NAME_OFFSET",
+    "macro:n_request.c:33:CRC_FIELD_NAME_TEST",
+    "macro:n_request.c:34:ERR_FIELD_NAME_TEST",
+    "macro:n_ua.c:107:PLUS",
+    "macro:n_ua.c:109:PLUS",
+    "macro:note.h:1022:NOTE_C_LOG_LEVEL_DEFAULT",
+    "macro:note.h:1028:NOTE_C_LOG_LEVEL",
+    "macro:n_lib.h:174:c_bad_len",
+    "macro:n_lib.h:177:c_badbinerr_len",
+    "macro:n_lib.h:180:c_cmd_len",
+    "macro:n_lib.h:183:c_err_len",
+    "macro:n_lib.h:186:c_false_len",
+    "macro:n_lib.h:189:c_heartbeat_len",
+    "macro:n_lib.h:192:c_iobad_len",
+    "macro:n_lib.h:195:c_ioerr_len",
+    "macro:n_lib.h:198:c_iotimeout_len",
+    "macro:n_lib.h:201:c_mem_len",
+    "macro:n_lib.h:204:c_newline_len",
+    "macro:n_lib.h:207:c_null_len",
+    "macro:n_lib.h:210:c_nullstring_len",
+    "macro:n_lib.h:213:c_req_len",
+    "macro:n_lib.h:216:c_status_len",
+    "macro:n_lib.h:219:c_true_len",
+    "macro:n_lib.h:222:c_unsupported_len",
+    "macro:note.h:322:NoteNewBody",
+    "macro:note.h:323:NoteAddBodyToObject",
+    "macro:note.h:324:NoteGetBody",
+    "macro:note.h:410:SYNCSTATUS_LEVEL_MAJOR",
+    "macro:note.h:411:SYNCSTATUS_LEVEL_MINOR",
+    "macro:note.h:412:SYNCSTATUS_LEVEL_DETAILED",
+    "macro:note.h:413:SYNCSTATUS_LEVEL_ALGORITHMIC",
+    "macro:note.h:414:SYNCSTATUS_LEVEL_ALL",
+    "macro:note.h:480:NoteResponseErrorContains",
+    "macro:note.h:953:NOTE_C_LOG_LEVEL_ERROR",
+    "macro:note.h:954:NOTE_C_LOG_LEVEL_WARN",
+    "macro:note.h:955:NOTE_C_LOG_LEVEL_INFO",
+    "macro:note.h:956:NOTE_C_LOG_LEVEL_DEBUG",
+    "macro:note.h:1440:JGetObjectItemName",
+    "macro:note.h:1443:JNTOA_PRECISION",
+    "macro:note.h:1444:JNTOA_MAX",
+    "macro:note.h:1528:NOTE_MD5_HASH_SIZE",
+    "macro:note.h:1529:NOTE_MD5_HASH_STRING_SIZE",
+    "macro:note.h:19:NOTE_C_DEPRECATED",
+    "macro:note.h:21:NOTE_C_DEPRECATED",
+    "macro:note.h:39:_NOTE_C_STRINGIZE",
+    "macro:note.h:42:NOTE_C_VERSION_MAJOR",
+    "macro:note.h:43:NOTE_C_VERSION_MINOR",
+    "macro:note.h:44:NOTE_C_VERSION_PATCH",
+    "macro:note.h:46:NOTE_C_VERSION",
+    "macro:note.h:94:JINTEGER_MIN",
+    "macro:note.h:95:JINTEGER_MAX",
+    "macro:note.h:829:NOTE_I2C_ADDR_DEFAULT",
+    "macro:note.h:833:NOTE_I2C_HEADER_SIZE",
+    "macro:note.h:843:NOTE_I2C_MAX_MAX",
+    "macro:note.h:845:NOTE_I2C_MAX_MAX",
+    "macro:note.h:849:NOTE_I2C_MTU_MAX",
+    "macro:note.h:866:NOTE_I2C_MAX_DEFAULT",
+    "macro:note.h:869:NOTE_I2C_MAX_DEFAULT",
+    "macro:note.h:876:NOTE_I2C_MAX_DEFAULT",
+    "macro:note.h:880:NOTE_I2C_MTU_DEFAULT",
+    "macro:note.h:2102:NP_SEGTYPE_LEN",
+    "macro:note.h:2103:NP_SEGLEN_LEN",
+    "macro:note.h:2104:NP_SEGHDR_LEN",
+    "macro:note.h:2182:TBOOL",
+    "macro:note.h:2183:TINT8",
+    "macro:note.h:2184:TINT16",
+    "macro:note.h:2185:TINT24",
+    "macro:note.h:2186:TINT32",
+    "macro:note.h:2187:TINT64",
+    "macro:note.h:2188:TUINT8",
+    "macro:note.h:2189:TUINT16",
+    "macro:note.h:2190:TUINT24",
+    "macro:note.h:2191:TUINT32",
+    "macro:note.h:2192:TFLOAT16",
+    "macro:note.h:2193:TFLOAT32",
+    "macro:note.h:2194:TFLOAT64",
+    "macro:note.h:2195:TSTRING",
+    "macro:note.h:2196:TSTRINGV",
+    "macro:note.h:982:NOTE_C_LOG_FILE_AND_LINE",
+    "struct:n_cjson.c:232:lconv",
+    "struct:n_cjson.h:80:J",
+    "struct:n_cjson.h:81:J",
+    "struct:n_cjson.h:83:J",
+    "struct:n_helpers.c:2389:objHeader_s",
+    "typedef:n_cjson.c:82:typedef_82",
+    "typedef:n_cjson.c:239:typedef_239",
+    "typedef:n_cjson.c:340:typedef_340",
+    "typedef:n_cjson.h:103:Jbool",
+    "typedef:n_cjson.h:78:typedef_78",
+    "typedef:n_cjson.h:98:typedef_98",
+    "typedef:n_helpers.c:2388:typedef_2388",
+    "typedef:n_hooks.c:190:nNoteResetFn",
+    "typedef:n_hooks.c:191:nTransactionFn",
+    "typedef:n_hooks.c:192:nReceiveFn",
+    "typedef:n_hooks.c:193:nTransmitFn",
+    "typedef:note.h:100:JUINTEGER",
+    "typedef:note.h:105:JTIME",
+    "typedef:note.h:124:delayMsFn",
+    "typedef:note.h:133:freeFn",
+    "typedef:note.h:142:getMsFn",
+    "typedef:note.h:1523:typedef_1523",
+    "typedef:note.h:153:debugOutputFn",
+    "typedef:note.h:166:heartbeatFn",
+    "typedef:note.h:183:i2cReceiveFn",
+    "typedef:note.h:196:i2cResetFn",
+    "typedef:note.h:2109:typedef_2109",
+    "typedef:note.h:211:i2cTransmitFn",
+    "typedef:note.h:223:mallocFn",
+    "typedef:note.h:230:mutexFn",
+    "typedef:note.h:239:serialAvailableFn",
+    "typedef:note.h:248:serialReceiveFn",
+    "typedef:note.h:260:serialResetFn",
+    "typedef:note.h:271:serialTransmitFn",
+    "typedef:note.h:282:txnStartFn",
+    "typedef:note.h:289:txnStopFn",
+    "typedef:note.h:85:JNUMBER",
+    "typedef:note.h:87:JNUMBER",
+    "typedef:note.h:93:JINTEGER"
+  ],
+  "generated_at_utc": "2026-06-29T22:19:02+00:00",
+  "history": [
+    {
+      "at": "2026-06-29T22:19:02+00:00",
+      "event": "start",
+      "node_id": "macro:n_hooks.c:33:NOTE_C_SHOW_MALLOC",
+      "note": null
+    },
+    {
+      "at": "2026-06-29T22:19:02+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_hooks.c:33:NOTE_C_SHOW_MALLOC",
+      "note": "Source-inspected malloc/free debug logging compile-time switch; verified compile-guard edges from _n_ptoa32, NoteMalloc, and NoteFree; no focused enabled-logging test found.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:19:02+00:00",
+      "event": "complete",
+      "note": "Completed NOTE_C_SHOW_MALLOC compile-time logging slice."
+    },
+    {
+      "at": "2026-06-29T22:25:06+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1400:JTYPE_NOT_PRESENT",
+      "note": "Verified absent/unclassifiable JSON type code from note.h and n_cjson_helpers.c JGetType/JGetItemType; focused JGetType tests cover missing, null-item, and invalid cases.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:06+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1401:JTYPE_BOOL_TRUE",
+      "note": "Verified true JSON classification from note.h and JGetItemType, with JBaseItemType bool coalescing; focused tests cover true and base-type behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1402:JTYPE_BOOL_FALSE",
+      "note": "Verified false JSON classification and omit-empty checks in object printing; focused tests cover false and bool base-type behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1403:JTYPE_BOOL",
+      "note": "Verified alias to JTYPE_BOOL_TRUE and base bool code returned by JBaseItemType; focused base-type tests cover bool coalescing and passthrough.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1404:JTYPE_NULL",
+      "note": "Verified null JSON classification from JGetItemType; focused JGetType and print behavior tests cover null classification behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1405:JTYPE_NUMBER_ZERO",
+      "note": "Verified zero-number detailed code and omit-empty checks; focused tests cover zero-number classification and base number coalescing.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1406:JTYPE_NUMBER",
+      "note": "Verified nonzero/base numeric classification through JGetItemType and JBaseItemType; focused tests cover numeric and base-type behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1407:JTYPE_STRING_BLANK",
+      "note": "Verified blank-string detailed code and omit-empty checks; focused tests cover blank-string classification and base string coalescing.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1408:JTYPE_STRING_ZERO",
+      "note": "Verified numeric zero string classification through JAtoN branch and JBaseItemType; focused tests cover string-zero and base string behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1409:JTYPE_STRING_NUMBER",
+      "note": "Verified nonzero numeric string classification through JAtoN branch and JBaseItemType; focused tests cover numeric-string and base string behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1410:JTYPE_STRING_BOOL_TRUE",
+      "note": "Verified case-insensitive true-string classification and base string coalescing; focused tests cover string-bool-true behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1411:JTYPE_STRING_BOOL_FALSE",
+      "note": "Verified case-insensitive false-string classification and base string coalescing; focused tests cover string-bool-false behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1412:JTYPE_STRING",
+      "note": "Verified ordinary/base string classification through JGetItemType and JBaseItemType; focused tests cover string and base string behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1413:JTYPE_OBJECT",
+      "note": "Verified object classification from JGetItemType; focused tests cover object classification and base-type passthrough.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:25:07+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1414:JTYPE_ARRAY",
+      "note": "Verified array classification from JGetItemType; focused tests cover array classification and base-type passthrough.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:41+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:35:NOTE_C_STATIC",
+      "note": "Verified NOTE_C_STATIC linkage macro branches from n_lib.h, CMake NOTE_C_TEST definition, and test_static override.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:44:CARD_INTER_TRANSACTION_TIMEOUT_SEC",
+      "note": "Verified inter-transaction timeout macro, override global, n_request users, and focused timeout tests.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:45:CARD_INTRA_TRANSACTION_TIMEOUT_SEC",
+      "note": "Verified intra-transaction timeout macro across binary, I2C, and serial receive paths.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:56:CARD_REQUEST_I2C_SEGMENT_MAX_LEN",
+      "note": "Verified I2C segment max constant in _i2cChunkedTransmit.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:62:CARD_REQUEST_I2C_SEGMENT_DELAY_MS",
+      "note": "Verified I2C segment delay use in reset and chunked transmit pacing.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:68:CARD_REQUEST_I2C_CHUNK_DELAY_MS",
+      "note": "Verified I2C chunk delay use in reset drain and chunked transmit loops.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:74:CARD_REQUEST_I2C_NACK_WAIT_MS",
+      "note": "Verified I2C NACK wait use in _i2cNoteReset retry path.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:80:CARD_REQUEST_SERIAL_SEGMENT_MAX_LEN",
+      "note": "Verified serial segment max constant in _serialChunkedTransmit.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:86:CARD_REQUEST_SERIAL_SEGMENT_DELAY_MS",
+      "note": "Verified serial segment delay use in reset and chunked transmit pacing.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:92:CARD_RESET_DRAIN_MS",
+      "note": "Verified reset drain duration in I2C and serial reset loops.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:98:CARD_REQUEST_RETRIES_ALLOWED",
+      "note": "Verified request retry budget in _noteTransactionShouldLock, including heartbeat non-consumption behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:104:CARD_RESET_SYNC_RETRIES",
+      "note": "Verified reset sync retry cap in I2C and serial reset loops.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:111:ALLOC_CHUNK",
+      "note": "Verified low-memory ALLOC_CHUNK branch and allocation users in I/O buffers and cJSON print growth.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:113:ALLOC_CHUNK",
+      "note": "Verified default ALLOC_CHUNK branch and allocation users in I/O buffers and cJSON print growth.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:258:_DebugIntln",
+      "note": "Verified debug-enabled wrapper to NoteDebugIntln and NOTE_NODEBUG no-op branch; exact production macro calls none found.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_request.c:31:CRC_FIELD_LENGTH",
+      "note": "Verified CRC field length in _crcAdd allocation and _crcError tail math.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_request.c:32:CRC_FIELD_NAME_OFFSET",
+      "note": "Verified CRC field name offset in _crcError tail matching and payload pointer math.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_request.c:33:CRC_FIELD_NAME_TEST",
+      "note": "Verified CRC field prefix matching in _crcError.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_request.c:34:ERR_FIELD_NAME_TEST",
+      "note": "Verified early error-response bypass in _crcError.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_ua.c:107:PLUS",
+      "note": "Verified C++ PLUS marker in NoteUserAgent compiler string construction.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_ua.c:109:PLUS",
+      "note": "Verified C PLUS empty branch in NoteUserAgent compiler string construction.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1022:NOTE_C_LOG_LEVEL_DEFAULT",
+      "note": "Verified default log level alias to NOTE_C_LOG_LEVEL_INFO and focused log-level tests.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:42+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1028:NOTE_C_LOG_LEVEL",
+      "note": "Verified guarded compile-time log-level fallback and n_hooks noteLogLevel initialization/filtering behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:174:c_bad_len",
+      "note": "Verified c_bad_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:177:c_badbinerr_len",
+      "note": "Verified c_badbinerr_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:180:c_cmd_len",
+      "note": "Verified c_cmd_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:183:c_err_len",
+      "note": "Verified c_err_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:186:c_false_len",
+      "note": "Verified c_false_len parse and print users in n_cjson.c.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:189:c_heartbeat_len",
+      "note": "Verified c_heartbeat_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:192:c_iobad_len",
+      "note": "Verified c_iobad_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:195:c_ioerr_len",
+      "note": "Verified c_ioerr_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:198:c_iotimeout_len",
+      "note": "Verified c_iotimeout_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:201:c_mem_len",
+      "note": "Verified c_mem_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:204:c_newline_len",
+      "note": "Verified c_newline_len serial CRLF transmit use.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:207:c_null_len",
+      "note": "Verified c_null_len parse and print users in n_cjson.c.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:210:c_nullstring_len",
+      "note": "Verified c_nullstring_len literal and paired empty n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:213:c_req_len",
+      "note": "Verified c_req_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:216:c_status_len",
+      "note": "Verified c_status_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:219:c_true_len",
+      "note": "Verified c_true_len parse and print users in n_cjson.c.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:30:43+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:n_lib.h:222:c_unsupported_len",
+      "note": "Verified c_unsupported_len literal and paired n_const.c string; exact _len production use none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:34:28+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:322:NoteNewBody",
+      "note": "Verified public body creation alias to JCreateObject; exact production macro calls none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:34:28+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:323:NoteAddBodyToObject",
+      "note": "Verified public body add wrapper to JAddItemToObject with fixed body key; exact production macro calls none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:34:28+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:324:NoteGetBody",
+      "note": "Verified public body getter wrapper to JGetObject with fixed body key; exact production macro calls none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:34:28+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:410:SYNCSTATUS_LEVEL_MAJOR",
+      "note": "Verified sync status level 0 public constant against NoteDebugSyncStatus max-level contract; exact production macro calls none found.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:28+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:411:SYNCSTATUS_LEVEL_MINOR",
+      "note": "Verified sync status level 1 public constant against NoteDebugSyncStatus max-level contract; exact production macro calls none found.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:412:SYNCSTATUS_LEVEL_DETAILED",
+      "note": "Verified sync status level 2 public constant against NoteDebugSyncStatus max-level contract; exact production macro calls none found.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:413:SYNCSTATUS_LEVEL_ALGORITHMIC",
+      "note": "Verified sync status level 3 public constant against NoteDebugSyncStatus max-level contract; exact production macro calls none found.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:414:SYNCSTATUS_LEVEL_ALL",
+      "note": "Verified negative sync status all-level constant and NoteDebugSyncStatus maxLevel < 0 behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:480:NoteResponseErrorContains",
+      "note": "Verified public error contains wrapper to JContainsString with fixed err key; focused test calls macro directly.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:953:NOTE_C_LOG_LEVEL_ERROR",
+      "note": "Verified error log-level constant in log wrappers and direct request error logging.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:954:NOTE_C_LOG_LEVEL_WARN",
+      "note": "Verified warn log-level constant in log wrappers and runtime log-level tests.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:955:NOTE_C_LOG_LEVEL_INFO",
+      "note": "Verified info log-level constant in log wrappers and default log level alias.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:956:NOTE_C_LOG_LEVEL_DEBUG",
+      "note": "Verified debug log-level constant in log wrappers and default suppression tests.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1440:JGetObjectItemName",
+      "note": "Verified direct J item string-field accessor; exact production macro calls none found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1443:JNTOA_PRECISION",
+      "note": "Verified default JNtoA precision use for negative precision requests.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1444:JNTOA_MAX",
+      "note": "Verified number formatting buffer bound across ftoa, cJSON printing, and environment number helpers.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1528:NOTE_MD5_HASH_SIZE",
+      "note": "Verified binary MD5 digest byte count in MD5 helper loops and buffers.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:34:29+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:1529:NOTE_MD5_HASH_STRING_SIZE",
+      "note": "Verified derived MD5 hex string buffer size in binary receive/transmit helpers and tests.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:19:NOTE_C_DEPRECATED",
+      "note": "GCC/Clang deprecated attribute branch annotates deprecated public declarations.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:21:NOTE_C_DEPRECATED",
+      "note": "MSVC deprecated attribute branch annotates deprecated public declarations.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:39:_NOTE_C_STRINGIZE",
+      "note": "Raw stringize primitive verified through NOTE_C_STRINGIZE, TSTRING, and TSTRINGV macro users.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:42:NOTE_C_VERSION_MAJOR",
+      "note": "Version major component verified as dependency of NOTE_C_VERSION.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:43:NOTE_C_VERSION_MINOR",
+      "note": "Version minor component verified as dependency of NOTE_C_VERSION.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:44:NOTE_C_VERSION_PATCH",
+      "note": "Version patch component verified as dependency of NOTE_C_VERSION.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:46:NOTE_C_VERSION",
+      "note": "Version string verified through NOTE_C_STRINGIZE expression and NoteUserAgent default agent use.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:94:JINTEGER_MIN",
+      "note": "JINTEGER minimum alias verified in cJSON saturation and JItoA minimum conversion paths.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:95:JINTEGER_MAX",
+      "note": "JINTEGER maximum alias verified in cJSON saturation paths.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:829:NOTE_I2C_ADDR_DEFAULT",
+      "note": "I2C default address verified in NoteI2CAddress and focused tests.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:833:NOTE_I2C_HEADER_SIZE",
+      "note": "I2C header-size default verified as dependency of default max MTU computation.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:843:NOTE_I2C_MAX_MAX",
+      "note": "I2C max compatibility branch verified in macro lattice.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:845:NOTE_I2C_MAX_MAX",
+      "note": "I2C default max branch verified as UCHAR_MAX minus header size.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:849:NOTE_I2C_MTU_MAX",
+      "note": "I2C MTU max mirror verified in NoteI2CMax clamp behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:866:NOTE_I2C_MAX_DEFAULT",
+      "note": "I2C default compatibility branch verified in macro lattice.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:39+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:869:NOTE_I2C_MAX_DEFAULT",
+      "note": "STM32 I2C default branch verified as max-MTU default.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:876:NOTE_I2C_MAX_DEFAULT",
+      "note": "Conservative I2C default branch verified as 30-byte default.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:880:NOTE_I2C_MTU_DEFAULT",
+      "note": "I2C MTU default mirror verified in NoteI2CMax default behavior.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2102:NP_SEGTYPE_LEN",
+      "note": "Payload segment type width verified in add/find segment logic.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2103:NP_SEGLEN_LEN",
+      "note": "Payload segment length-field width verified in add-segment serialization.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2104:NP_SEGHDR_LEN",
+      "note": "Payload segment header width verified in add/find segment logic.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2182:TBOOL",
+      "note": "Public template bool code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2183:TINT8",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2184:TINT16",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2185:TINT24",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2186:TINT32",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2187:TINT64",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2188:TUINT8",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2189:TUINT16",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2190:TUINT24",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2191:TUINT32",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2192:TFLOAT16",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2193:TFLOAT32",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2194:TFLOAT64",
+      "note": "Public template numeric code verified; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2195:TSTRING",
+      "note": "Public template string code verified through _NOTE_C_STRINGIZE; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:37:40+00:00",
+      "caller_status": "none-found",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:2196:TSTRINGV",
+      "note": "Public template variable string code verified through _NOTE_C_STRINGIZE; no in-repo direct macro use found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "macro:note.h:982:NOTE_C_LOG_FILE_AND_LINE",
+      "note": "Verified optional file/line logging macro branch and log-wrapper users.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "struct:n_cjson.c:232:lconv",
+      "note": "Verified external locale struct reference in _get_decimal_point ENABLE_LOCALES branch.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "struct:n_cjson.h:80:J",
+      "note": "Verified J next-pointer field as part of core JSON object topology.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "struct:n_cjson.h:81:J",
+      "note": "Verified J prev-pointer field as part of core JSON object topology.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "struct:n_cjson.h:83:J",
+      "note": "Verified J child-pointer field as part of array/object child topology.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "struct:n_helpers.c:2389:objHeader_s",
+      "note": "Verified objHeader_s recursive field use in NoteMemAvailable allocation probe.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_cjson.c:82:typedef_82",
+      "note": "Verified internal parse error typedef and global_error/JGetErrorPtr users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_cjson.c:239:typedef_239",
+      "note": "Verified parse_buffer parser cursor/depth state users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_cjson.c:340:typedef_340",
+      "note": "Verified printbuffer print/growth state users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_cjson.h:103:Jbool",
+      "note": "Verified cJSON Jbool API/internal boolean type users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_cjson.h:78:typedef_78",
+      "note": "Verified core J object typedef and representative JSON API users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_cjson.h:98:typedef_98",
+      "note": "Verified JHooks allocator hook typedef declaration; no in-repo implementation/test found.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_helpers.c:2388:typedef_2388",
+      "note": "Verified objHeader typedef use in NoteMemAvailable allocation probe.",
+      "test_status": "none"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_hooks.c:190:nNoteResetFn",
+      "note": "Verified internal active-interface reset function pointer type.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:04+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_hooks.c:191:nTransactionFn",
+      "note": "Verified internal active-interface JSON transaction function pointer type.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_hooks.c:192:nReceiveFn",
+      "note": "Verified internal active-interface chunked receive function pointer type.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:n_hooks.c:193:nTransmitFn",
+      "note": "Verified internal active-interface chunked transmit function pointer type.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:100:JUINTEGER",
+      "note": "Verified public unsigned integer typedef used by JTIME and JItoA conversion support.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:105:JTIME",
+      "note": "Verified public epoch time typedef across time/location/status APIs.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:124:delayMsFn",
+      "note": "Verified delay hook function pointer typedef and setter/getter/dispatch users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:133:freeFn",
+      "note": "Verified free hook function pointer typedef and setter/getter/dispatch users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:142:getMsFn",
+      "note": "Verified millisecond hook function pointer typedef and setter/getter/dispatch users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:1523:typedef_1523",
+      "note": "Verified NoteMD5Context public MD5 state typedef and MD5 function users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:153:debugOutputFn",
+      "note": "Verified debug output hook typedef and setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:166:heartbeatFn",
+      "note": "Verified heartbeat callback typedef and callback setter/getter users under callback feature.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:183:i2cReceiveFn",
+      "note": "Verified I2C receive hook typedef and I2C hook setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:196:i2cResetFn",
+      "note": "Verified I2C reset hook typedef and I2C hook setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:2109:typedef_2109",
+      "note": "Verified NotePayloadDesc public payload descriptor typedef and payload function users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:211:i2cTransmitFn",
+      "note": "Verified I2C transmit hook typedef and I2C hook setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:223:mallocFn",
+      "note": "Verified malloc hook typedef and setter/getter/dispatch users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:230:mutexFn",
+      "note": "Verified mutex hook typedef and mutex setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:239:serialAvailableFn",
+      "note": "Verified serial available hook typedef and serial setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:248:serialReceiveFn",
+      "note": "Verified serial receive hook typedef and serial setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:260:serialResetFn",
+      "note": "Verified serial reset hook typedef and serial setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:271:serialTransmitFn",
+      "note": "Verified serial transmit hook typedef and serial setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:282:txnStartFn",
+      "note": "Verified transaction start hook typedef and transaction setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:05+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:289:txnStopFn",
+      "note": "Verified transaction stop hook typedef and transaction setter/getter users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:06+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:85:JNUMBER",
+      "note": "Verified single-precision JNUMBER branch and numeric API users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:06+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:87:JNUMBER",
+      "note": "Verified default double JNUMBER branch and numeric API users.",
+      "test_status": "focused"
+    },
+    {
+      "at": "2026-06-29T22:41:06+00:00",
+      "caller_status": "verified",
+      "confidence": "high",
+      "event": "finalize",
+      "node_id": "typedef:note.h:93:JINTEGER",
+      "note": "Verified public signed JSON integer typedef and integer API users.",
+      "test_status": "focused"
+    }
+  ],
+  "next_commands": [],
+  "next_node_id": null,
+  "next_required_action": "complete_slice",
+  "queued_callers": [],
+  "root_target": {
+    "artifact": "artifacts/macros/n_hooks_c__L33__NOTE_C_SHOW_MALLOC.md",
+    "file": "n_hooks.c",
+    "line": 33,
+    "node_id": "macro:n_hooks.c:33:NOTE_C_SHOW_MALLOC",
+    "node_type": "macro",
+    "qualified_name": "NOTE_C_SHOW_MALLOC"
+  },
+  "schema_version": 1,
+  "slice_id": "slice-f95c3d2e0317",
+  "status": "complete",
+  "unresolved_callees": {
+    "macro:n_hooks.c:33:NOTE_C_SHOW_MALLOC": []
+  },
+  "updated_at_utc": "2026-06-29T22:41:06+00:00"
+}

@@ -1,0 +1,86 @@
+[
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_atof.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_atof.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_atof.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_atof.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_b64.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_b64.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_b64.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_b64.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_cjson.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_cjson.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_cjson.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_cjson.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_cjson_helpers.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_cjson_helpers.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_cjson_helpers.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_cjson_helpers.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_cobs.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_cobs.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_cobs.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_cobs.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_const.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_const.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_const.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_const.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_ftoa.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_ftoa.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_ftoa.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_ftoa.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_helpers.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_helpers.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_helpers.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_helpers.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_hooks.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_hooks.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_hooks.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_hooks.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_i2c.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_i2c.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_i2c.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_i2c.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_md5.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_md5.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_md5.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_md5.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_printf.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_printf.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_printf.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_printf.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_request.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_request.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_request.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_request.c.o"
+},
+{
+  "directory": "/private/tmp/note-c-cmake-lowmem",
+  "command": "/usr/bin/cc -DHAVE_STRLCAT -DHAVE_STRLCPY -DNOTE_C_LOW_MEM -DNOTE_C_SINGLE_PRECISION -I/Users/zak/Development/GitHub/blues/note-c  -o CMakeFiles/note_c_lib.dir/n_serial.c.o -c /Users/zak/Development/GitHub/blues/note-c/n_serial.c",
+  "file": "/Users/zak/Development/GitHub/blues/note-c/n_serial.c",
+  "output": "CMakeFiles/note_c_lib.dir/n_serial.c.o"
+}
+]

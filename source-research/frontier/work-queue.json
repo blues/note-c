@@ -1,0 +1,12 @@
+{
+  "fanout_batches": [],
+  "generated_at_utc": "2026-07-02T23:46:50+00:00",
+  "ready_nodes": [],
+  "schema_version": 1,
+  "summary": {
+    "fanout_batches_total": 0,
+    "fanout_threshold": 20,
+    "ready_nodes_emitted": 0,
+    "ready_nodes_total": 0
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "current_inventory_compared": false,
+  "edges": {
+    "added": [],
+    "removed": [],
+    "unchanged": []
+  },
+  "files": {
+    "added": [],
+    "modified": [],
+    "removed": [],
+    "unchanged": [
+      ".devcontainer/ci/Dockerfile",
+      "CMakeLists.txt",
+      "n_atof.c",
+      "n_b64.c",
+      "n_cjson.c",
+      "n_cjson.h",
+      "n_cjson_helpers.c",
+      "n_cobs.c",
+      "n_const.c",
+      "n_ftoa.c",
+      "n_helpers.c",
+      "n_hooks.c",
+      "n_i2c.c",
+      "n_lib.h",
+      "n_md5.c",
+      "n_printf.c",
+      "n_request.c",
+      "n_serial.c",
+      "n_str.c",
+      "n_ua.c",
+      "note.h",
+      "scripts/build_docs.sh",
+      "scripts/check_libc_dependencies.sh",
+      "scripts/run_astyle.sh",
+      "scripts/run_cppcheck.sh",
+      "scripts/run_md5srv.sh",
+      "scripts/run_ngrok.sh",
+      "scripts/run_unit_tests.sh"
+    ],
+    "unknown": []
+  },
+  "generated_at_utc": "2026-07-02T23:46:50+00:00",
+  "schema_version": 1,
+  "summary": {
+    "edges_added": 0,
+    "edges_removed": 0,
+    "files_added": 0,
+    "files_modified": 0,
+    "files_removed": 0,
+    "files_unknown": 0,
+    "symbols_added": 0,
+    "symbols_modified": 0,
+    "symbols_removed": 0
+  },
+  "symbols": {
+    "added": [],
+    "modified": [],
+    "removed": [],
+    "unchanged": [],
+    "unknown": []
+  }
+}

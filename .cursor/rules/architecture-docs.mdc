@@ -9,10 +9,10 @@ Before non-trivial code changes, read the repository architecture context:
 
 - `AGENTS.md`
 - `ARCHITECTURE.md`
-- `docs/architecture/architecture.json`
-- `docs/architecture/architecture.html` when a visual overview helps
+- `docs/architecture/architecture.html` when a visual graph or traversal overview helps
 - Relevant files under `docs/architecture/`
+- `source-research/research-index.md` and relevant source-research artifacts for architecture, dependency, public API, hook, transport, runtime-flow, build-variant, or broad code-generation work
 
-When a change affects module boundaries, public APIs, hook signatures, dependencies, data/control flow, transport behavior, runtime assumptions, or build/test strategy, update the closest relevant architecture docs in the same change. Keep the Markdown, JSON, and HTML architecture maps synchronized when applicable.
+When a change affects module boundaries, public APIs, hook signatures, dependencies, data/control flow, transport behavior, runtime assumptions, or build/test strategy, update the closest relevant architecture docs in the same change. Keep the Markdown docs and `docs/architecture/architecture.html` synchronized when applicable. Update `source-research/` when the same change affects source-derived behavior, dependencies, public APIs, hooks, runtime flow, build variants, or architecture claims.
 
 If no architecture doc update is needed, say so explicitly in the final response or PR notes.

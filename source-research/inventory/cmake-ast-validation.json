@@ -1,0 +1,2983 @@
+{
+  "ambiguous_edge_candidates": [],
+  "ast_function_definitions": 335,
+  "ast_project_call_edges": 768,
+  "ast_project_call_edges_missing_from_graph_by_name": [
+    {
+      "caller": "JDelete",
+      "caller_file": "n_cjson.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "JFree",
+      "caller_file": "n_cjson.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "JMalloc",
+      "caller_file": "n_cjson.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "JPrintBuffered",
+      "caller_file": "n_cjson.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "JPrintBuffered",
+      "caller_file": "n_cjson.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_add_item_to_object",
+      "caller_file": "n_cjson.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_ensure",
+      "caller_file": "n_cjson.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_ensure",
+      "caller_file": "n_cjson.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_jNew_Item",
+      "caller_file": "n_cjson.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_j_strdup",
+      "caller_file": "n_cjson.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_parse_string",
+      "caller_file": "n_cjson.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_parse_string",
+      "caller_file": "n_cjson.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_print",
+      "caller_file": "n_cjson.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_print",
+      "caller_file": "n_cjson.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_replace_item_in_object",
+      "caller_file": "n_cjson.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "JAddBinaryToObject",
+      "caller_file": "n_cjson_helpers.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "JAddBinaryToObject",
+      "caller_file": "n_cjson_helpers.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "JAllocString",
+      "caller_file": "n_cjson_helpers.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "JGetBinaryFromObject",
+      "caller_file": "n_cjson_helpers.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NoteAuxSerialFlowControl",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteAuxSerialFlowControl",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryCodecDecode",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryCodecDecode",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryCodecEncode",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryCodecEncode",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreDecodedLength",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryStoreDecodedLength",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreEncodedLength",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryStoreEncodedLength",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreReceive",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryStoreReceive",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreReceive",
+      "caller_file": "n_helpers.c",
+      "target": "_noteChunkedReceive"
+    },
+    {
+      "caller": "NoteBinaryStoreReceive",
+      "caller_file": "n_helpers.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteBinaryStoreReceive",
+      "caller_file": "n_helpers.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteBinaryStoreReset",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryStoreReset",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreTransmit",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryStoreTransmit",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreTransmit",
+      "caller_file": "n_helpers.c",
+      "target": "_noteChunkedTransmit"
+    },
+    {
+      "caller": "NoteBinaryStoreTransmit",
+      "caller_file": "n_helpers.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteBinaryStoreTransmit",
+      "caller_file": "n_helpers.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteDebugSyncStatus",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteDebugSyncStatus",
+      "caller_file": "n_helpers.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "NoteFactoryReset",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "NoteGetContact",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetEnv",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetLocation",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetLocationMode",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetNetStatus",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetServiceConfigST",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetStatusST",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetTemperature",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetVersion",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetVoltage",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteIsConnectedST",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteLocationValidST",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteMemAvailable",
+      "caller_file": "n_helpers.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NoteMemAvailable",
+      "caller_file": "n_helpers.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NotePayloadAddSegment",
+      "caller_file": "n_helpers.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NotePayloadAddSegment",
+      "caller_file": "n_helpers.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NotePayloadFree",
+      "caller_file": "n_helpers.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NotePayloadRetrieveAfterSleep",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NotePayloadRetrieveAfterSleep",
+      "caller_file": "n_helpers.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NotePayloadSaveAndSleep",
+      "caller_file": "n_helpers.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NotePayloadSaveAndSleep",
+      "caller_file": "n_helpers.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NoteSleep",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteSleep",
+      "caller_file": "n_helpers.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteTimeST",
+      "caller_file": "n_helpers.c",
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteTimeST",
+      "caller_file": "n_helpers.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "NoteTimeSet",
+      "caller_file": "n_helpers.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_setTime",
+      "caller_file": "n_helpers.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_timerExpiredSecs",
+      "caller_file": "n_helpers.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "NoteGetFn",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteGetFn",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteGetFnI2C",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteGetFnI2C",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteGetFnSerial",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteGetFnSerial",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteGetFnTransaction",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteGetFnTransaction",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetActiveInterface",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetActiveInterface",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFn",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFn",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnDebugOutput",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnDebugOutput",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnDefault",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnDefault",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnDisabled",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnDisabled",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnI2C",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnI2C",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnI2CDefault",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnI2CDefault",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnSerial",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnSerial",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnSerialDefault",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnSerialDefault",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnTransaction",
+      "caller_file": "n_hooks.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnTransaction",
+      "caller_file": "n_hooks.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "_delayIO",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "target": "NoteI2CAddress"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "target": "NoteI2CMax"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "target": "_noteI2CReceive"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "target": "NoteI2CAddress"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "target": "NoteI2CMax"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "target": "_noteI2CReset"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "target": "_noteI2CTransmit"
+    },
+    {
+      "caller": "_i2cNoteChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "target": "NoteLockI2C"
+    },
+    {
+      "caller": "_i2cNoteChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "target": "NoteUnlockI2C"
+    },
+    {
+      "caller": "_i2cNoteChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "target": "NoteLockI2C"
+    },
+    {
+      "caller": "_i2cNoteChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "target": "NoteUnlockI2C"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "target": "NoteI2CAddress"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "target": "_noteI2CReceive"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "NoteI2CAddress"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "NoteI2CMax"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "NoteLockI2C"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "NoteUnlockI2C"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "_noteI2CReceive"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "_noteI2CReset"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "target": "_noteI2CTransmit"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "target": "NoteLockI2C"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "target": "NoteUnlockI2C"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "target": "_noteJSONTransaction"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "target": "_noteTransactionStart"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "target": "_noteTransactionStop"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "target": "_noteJSONTransaction"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "target": "_noteTransactionStart"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "target": "_noteTransactionStop"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteRequestResponseWithRetry",
+      "caller_file": "n_request.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "NoteReset",
+      "caller_file": "n_request.c",
+      "target": "_noteHardReset"
+    },
+    {
+      "caller": "NoteReset",
+      "caller_file": "n_request.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteReset",
+      "caller_file": "n_request.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "_crcAdd",
+      "caller_file": "n_request.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_errDoc",
+      "caller_file": "n_request.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_errDoc",
+      "caller_file": "n_request.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "target": "NoteI2CAddress"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "target": "NoteLockI2C"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "target": "NoteUnlockI2C"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "target": "_noteI2CReceive"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "target": "_noteSerialAvailable"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "target": "_noteSerialReceive"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "target": "_noteHardReset"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "target": "_noteJSONTransaction"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "target": "_noteTransactionStart"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "target": "_noteTransactionStop"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "target": "_noteSerialAvailable"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "target": "_noteSerialReceive"
+    },
+    {
+      "caller": "_serialChunkedTransmit",
+      "caller_file": "n_serial.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_serialChunkedTransmit",
+      "caller_file": "n_serial.c",
+      "target": "_noteSerialTransmit"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "target": "_noteSerialAvailable"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "target": "_noteSerialReceive"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "target": "_noteSerialReset"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "target": "_noteSerialTransmit"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "target": "_noteSerialAvailable"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "target": "_noteSerialTransmit"
+    }
+  ],
+  "compile_database": "/Users/zak/Development/GitHub/blues/note-c/source-research/inventory/compile_commands.default.json",
+  "compiled_files": [
+    "n_atof.c",
+    "n_b64.c",
+    "n_cjson.c",
+    "n_cjson_helpers.c",
+    "n_cobs.c",
+    "n_const.c",
+    "n_ftoa.c",
+    "n_helpers.c",
+    "n_hooks.c",
+    "n_i2c.c",
+    "n_md5.c",
+    "n_printf.c",
+    "n_request.c",
+    "n_serial.c",
+    "n_ua.c"
+  ],
+  "covered_by_existing_macro_alias_edges": [
+    {
+      "caller": "JDelete",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "JFree",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "JMalloc",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "JPrintBuffered",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "JPrintBuffered",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_add_item_to_object",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_ensure",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_ensure",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_jNew_Item",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_j_strdup",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_parse_string",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_parse_string",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_print",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_print",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_replace_item_in_object",
+      "caller_file": "n_cjson.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "JAddBinaryToObject",
+      "caller_file": "n_cjson_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "JAddBinaryToObject",
+      "caller_file": "n_cjson_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "JAllocString",
+      "caller_file": "n_cjson_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "JGetBinaryFromObject",
+      "caller_file": "n_cjson_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NoteAuxSerialFlowControl",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteAuxSerialFlowControl",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryCodecDecode",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryCodecDecode",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryCodecEncode",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryCodecEncode",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreDecodedLength",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryStoreDecodedLength",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreEncodedLength",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryStoreEncodedLength",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreReceive",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryStoreReceive",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreReceive",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:239:_ChunkedReceive",
+        "via_name": "_ChunkedReceive"
+      },
+      "target": "_noteChunkedReceive"
+    },
+    {
+      "caller": "NoteBinaryStoreReceive",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteBinaryStoreReceive",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteBinaryStoreReset",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryStoreReset",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreTransmit",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteBinaryStoreTransmit",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteBinaryStoreTransmit",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:240:_ChunkedTransmit",
+        "via_name": "_ChunkedTransmit"
+      },
+      "target": "_noteChunkedTransmit"
+    },
+    {
+      "caller": "NoteBinaryStoreTransmit",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteBinaryStoreTransmit",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteDebugSyncStatus",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteDebugSyncStatus",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "NoteFactoryReset",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "NoteGetContact",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetEnv",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetLocation",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetLocationMode",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetNetStatus",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetServiceConfigST",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetStatusST",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetTemperature",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetVersion",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteGetVoltage",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteIsConnectedST",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteLocationValidST",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteMemAvailable",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NoteMemAvailable",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NotePayloadAddSegment",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NotePayloadAddSegment",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NotePayloadFree",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NotePayloadRetrieveAfterSleep",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NotePayloadRetrieveAfterSleep",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NotePayloadSaveAndSleep",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NotePayloadSaveAndSleep",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NoteSleep",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteSleep",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteTimeST",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:note.h:486:NoteDeleteResponse",
+        "via_name": "NoteDeleteResponse"
+      },
+      "target": "JDelete"
+    },
+    {
+      "caller": "NoteTimeST",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "NoteTimeSet",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_setTime",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_timerExpiredSecs",
+      "caller_file": "n_helpers.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "NoteGetFn",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteGetFn",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteGetFnI2C",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteGetFnI2C",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteGetFnSerial",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteGetFnSerial",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteGetFnTransaction",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteGetFnTransaction",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetActiveInterface",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetActiveInterface",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFn",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFn",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnDebugOutput",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnDebugOutput",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnDefault",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnDefault",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnDisabled",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnDisabled",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnI2C",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnI2C",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnI2CDefault",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnI2CDefault",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnSerial",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnSerial",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnSerialDefault",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnSerialDefault",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteSetFnTransaction",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteSetFnTransaction",
+      "caller_file": "n_hooks.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "_delayIO",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:247:_I2CAddress",
+        "via_name": "_I2CAddress"
+      },
+      "target": "NoteI2CAddress"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:248:_I2CMax",
+        "via_name": "_I2CMax"
+      },
+      "target": "NoteI2CMax"
+    },
+    {
+      "caller": "_i2cChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:236:_I2CReceive",
+        "via_name": "_I2CReceive"
+      },
+      "target": "_noteI2CReceive"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:247:_I2CAddress",
+        "via_name": "_I2CAddress"
+      },
+      "target": "NoteI2CAddress"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:248:_I2CMax",
+        "via_name": "_I2CMax"
+      },
+      "target": "NoteI2CMax"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:234:_I2CReset",
+        "via_name": "_I2CReset"
+      },
+      "target": "_noteI2CReset"
+    },
+    {
+      "caller": "_i2cChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:235:_I2CTransmit",
+        "via_name": "_I2CTransmit"
+      },
+      "target": "_noteI2CTransmit"
+    },
+    {
+      "caller": "_i2cNoteChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:245:_LockI2C",
+        "via_name": "_LockI2C"
+      },
+      "target": "NoteLockI2C"
+    },
+    {
+      "caller": "_i2cNoteChunkedReceive",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:246:_UnlockI2C",
+        "via_name": "_UnlockI2C"
+      },
+      "target": "NoteUnlockI2C"
+    },
+    {
+      "caller": "_i2cNoteChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:245:_LockI2C",
+        "via_name": "_LockI2C"
+      },
+      "target": "NoteLockI2C"
+    },
+    {
+      "caller": "_i2cNoteChunkedTransmit",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:246:_UnlockI2C",
+        "via_name": "_UnlockI2C"
+      },
+      "target": "NoteUnlockI2C"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:247:_I2CAddress",
+        "via_name": "_I2CAddress"
+      },
+      "target": "NoteI2CAddress"
+    },
+    {
+      "caller": "_i2cNoteQueryLength",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:236:_I2CReceive",
+        "via_name": "_I2CReceive"
+      },
+      "target": "_noteI2CReceive"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:247:_I2CAddress",
+        "via_name": "_I2CAddress"
+      },
+      "target": "NoteI2CAddress"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:248:_I2CMax",
+        "via_name": "_I2CMax"
+      },
+      "target": "NoteI2CMax"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:245:_LockI2C",
+        "via_name": "_LockI2C"
+      },
+      "target": "NoteLockI2C"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:246:_UnlockI2C",
+        "via_name": "_UnlockI2C"
+      },
+      "target": "NoteUnlockI2C"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:236:_I2CReceive",
+        "via_name": "_I2CReceive"
+      },
+      "target": "_noteI2CReceive"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:234:_I2CReset",
+        "via_name": "_I2CReset"
+      },
+      "target": "_noteI2CReset"
+    },
+    {
+      "caller": "_i2cNoteReset",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:235:_I2CTransmit",
+        "via_name": "_I2CTransmit"
+      },
+      "target": "_noteI2CTransmit"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:245:_LockI2C",
+        "via_name": "_LockI2C"
+      },
+      "target": "NoteLockI2C"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_i2cNoteTransaction",
+      "caller_file": "n_i2c.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:246:_UnlockI2C",
+        "via_name": "_UnlockI2C"
+      },
+      "target": "NoteUnlockI2C"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:238:_Transaction",
+        "via_name": "_Transaction"
+      },
+      "target": "_noteJSONTransaction"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:228:_TransactionStart",
+        "via_name": "_TransactionStart"
+      },
+      "target": "_noteTransactionStart"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:229:_TransactionStop",
+        "via_name": "_TransactionStop"
+      },
+      "target": "_noteTransactionStop"
+    },
+    {
+      "caller": "NotePing",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:238:_Transaction",
+        "via_name": "_Transaction"
+      },
+      "target": "_noteJSONTransaction"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:228:_TransactionStart",
+        "via_name": "_TransactionStart"
+      },
+      "target": "_noteTransactionStart"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:229:_TransactionStop",
+        "via_name": "_TransactionStop"
+      },
+      "target": "_noteTransactionStop"
+    },
+    {
+      "caller": "NoteRequestResponseJSON",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "NoteRequestResponseWithRetry",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "NoteReset",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:237:_Reset",
+        "via_name": "_Reset"
+      },
+      "target": "_noteHardReset"
+    },
+    {
+      "caller": "NoteReset",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "NoteReset",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "_crcAdd",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_errDoc",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_errDoc",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:247:_I2CAddress",
+        "via_name": "_I2CAddress"
+      },
+      "target": "NoteI2CAddress"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:245:_LockI2C",
+        "via_name": "_LockI2C"
+      },
+      "target": "NoteLockI2C"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:246:_UnlockI2C",
+        "via_name": "_UnlockI2C"
+      },
+      "target": "NoteUnlockI2C"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:236:_I2CReceive",
+        "via_name": "_I2CReceive"
+      },
+      "target": "_noteI2CReceive"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:232:_SerialAvailable",
+        "via_name": "_SerialAvailable"
+      },
+      "target": "_noteSerialAvailable"
+    },
+    {
+      "caller": "_notePingDrainInput",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:233:_SerialReceive",
+        "via_name": "_SerialReceive"
+      },
+      "target": "_noteSerialReceive"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:237:_Reset",
+        "via_name": "_Reset"
+      },
+      "target": "_noteHardReset"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:238:_Transaction",
+        "via_name": "_Transaction"
+      },
+      "target": "_noteJSONTransaction"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:226:_LockNote",
+        "via_name": "_LockNote"
+      },
+      "target": "_noteLockNote"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:228:_TransactionStart",
+        "via_name": "_TransactionStart"
+      },
+      "target": "_noteTransactionStart"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:229:_TransactionStop",
+        "via_name": "_TransactionStop"
+      },
+      "target": "_noteTransactionStop"
+    },
+    {
+      "caller": "_noteTransactionShouldLock",
+      "caller_file": "n_request.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:227:_UnlockNote",
+        "via_name": "_UnlockNote"
+      },
+      "target": "_noteUnlockNote"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:232:_SerialAvailable",
+        "via_name": "_SerialAvailable"
+      },
+      "target": "_noteSerialAvailable"
+    },
+    {
+      "caller": "_serialChunkedReceive",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:233:_SerialReceive",
+        "via_name": "_SerialReceive"
+      },
+      "target": "_noteSerialReceive"
+    },
+    {
+      "caller": "_serialChunkedTransmit",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_serialChunkedTransmit",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:231:_SerialTransmit",
+        "via_name": "_SerialTransmit"
+      },
+      "target": "_noteSerialTransmit"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:232:_SerialAvailable",
+        "via_name": "_SerialAvailable"
+      },
+      "target": "_noteSerialAvailable"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:233:_SerialReceive",
+        "via_name": "_SerialReceive"
+      },
+      "target": "_noteSerialReceive"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:230:_SerialReset",
+        "via_name": "_SerialReset"
+      },
+      "target": "_noteSerialReset"
+    },
+    {
+      "caller": "_serialNoteReset",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:231:_SerialTransmit",
+        "via_name": "_SerialTransmit"
+      },
+      "target": "_noteSerialTransmit"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevel"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:note.h:990:NOTE_C_LOG_ERROR",
+        "via_name": "NOTE_C_LOG_ERROR"
+      },
+      "target": "NoteDebugWithLevelLn"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:244:_DelayMs",
+        "via_name": "_DelayMs"
+      },
+      "target": "NoteDelayMs"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:242:_Free",
+        "via_name": "_Free"
+      },
+      "target": "NoteFree"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:243:_GetMs",
+        "via_name": "_GetMs"
+      },
+      "target": "NoteGetMs"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:241:_Malloc",
+        "via_name": "_Malloc"
+      },
+      "target": "NoteMalloc"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:232:_SerialAvailable",
+        "via_name": "_SerialAvailable"
+      },
+      "target": "_noteSerialAvailable"
+    },
+    {
+      "caller": "_serialNoteTransaction",
+      "caller_file": "n_serial.c",
+      "covered_by": {
+        "via": "macro:n_lib.h:231:_SerialTransmit",
+        "via_name": "_SerialTransmit"
+      },
+      "target": "_noteSerialTransmit"
+    }
+  ],
+  "edge_candidates": [],
+  "failures": [],
+  "generated_at_utc": "2026-07-02T23:45:39+00:00",
+  "graph_defs_not_seen_by_ast": [
+    {
+      "file": "n_hooks.c",
+      "name": "NoteGetFnHeartbeat"
+    },
+    {
+      "file": "n_hooks.c",
+      "name": "NoteSetFnHeartbeat"
+    },
+    {
+      "file": "n_hooks.c",
+      "name": "_n_ptoa32"
+    },
+    {
+      "file": "n_hooks.c",
+      "name": "_noteHeartbeat"
+    }
+  ],
+  "graph_function_definitions_in_compiled_source_files": 339,
+  "missing_ast_definitions_in_graph": [],
+  "notes": [
+    "Apple Clang JSON may omit isThisDeclarationADefinition; definitions are detected as FunctionDecl nodes with direct CompoundStmt children.",
+    "Source files are taken from AST file locations when available and fall back to the compile command source only when the node is not from an included file.",
+    "Macro or wrapper expansion paths already present in the graph are counted as coverage and are not emitted as duplicate direct-call candidates."
+  ],
+  "repo_root": "/Users/zak/Development/GitHub/blues/note-c",
+  "schema_version": 1,
+  "summary": {
+    "ambiguous_edge_candidates": 0,
+    "ast_function_definitions": 335,
+    "ast_project_call_edges": 768,
+    "direct_missing_call_edges": 207,
+    "edge_candidates": 0,
+    "failures": 0,
+    "graph_defs_not_seen_by_ast": 4,
+    "macro_alias_covered_missing_call_edges": 207,
+    "missing_ast_definitions_in_graph": 0,
+    "translation_units": 15,
+    "unresolved_missing_call_edges": 0,
+    "warnings": 2
+  },
+  "tool": "cmake_ast_validate.py",
+  "translation_units": 15,
+  "unresolved_project_call_edges_missing_from_graph": [],
+  "variant_name": "default",
+  "warnings": [
+    {
+      "file": "n_cjson.c",
+      "stderr_tail": "/Users/zak/Development/GitHub/blues/note-c/n_cjson.c:307:19: warning: implicit conversion from 'long long' to 'JNUMBER' (aka 'double') changes value from 9223372036854775807 to 9223372036854775808 [-Wimplicit-const-int-float-conversion]\n  307 |     if (number >= JINTEGER_MAX) {\n      |                ~~ ^~~~~~~~~~~~\n/Users/zak/Development/GitHub/blues/note-c/note.h:95:22: note: expanded from macro 'JINTEGER_MAX'\n   95 | #define JINTEGER_MAX INT64_MAX\n      |                      ^~~~~~~~~\n/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdint.h:94:26: note: expanded from macro 'INT64_MAX'\n   94 | #define INT64_MAX        9223372036854775807LL\n      |                          ^~~~~~~~~~~~~~~~~~~~~\n/Users/zak/Development/GitHub/blues/note-c/n_cjson.c:329:19: warning: implicit conversion from 'long long' to 'JNUMBER' (aka 'double') changes value from 9223372036854775807 to 9223372036854775808 [-Wimplicit-const-int-float-conversion]\n  329 |     if (number >= JINTEGER_MAX) {\n      |                ~~ ^~~~~~~~~~~~\n/Users/zak/Development/GitHub/blues/note-c/note.h:95:22: note: expanded from macro 'JINTEGER_MAX'\n   95 | #define JINTEGER_MAX INT64_MAX\n      |                      ^~~~~~~~~\n/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdint.h:94:26: note: expanded from macro 'INT64_MAX'\n   94 | #define INT64_MAX        9223372036854775807LL\n      |                          ^~~~~~~~~~~~~~~~~~~~~\n/Users/zak/Development/GitHub/blues/note-c/n_cjson.c:2338:20: warning: implicit conversion from 'long long' to 'JNUMBER' (aka 'double') changes value from 9223372036854775807 to 9223372036854775808 [-Wimplicit-const-int-float-conversion]\n 2338 |         if (num >= JINTEGER_MAX) {\n      |                 ~~ ^~~~~~~~~~~~\n/Users/zak/Development/GitHub/blues/note-c/note.h:95:22: note: expanded from macro 'JINTEGER_MAX'\n   95 | #define JINTEGER_MAX INT64_MAX\n      |                      ^~~~~~~~~\n/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdint.h:94:26: note: expanded from macro 'INT64_MAX'\n   94 | #define INT64_MAX        9223372036854775807LL\n      |                          ^~~~~~~~~~~~~~~~~~~~~\n3 warnings generated.\n"
+    },
+    {
+      "file": "n_ftoa.c",
+      "stderr_tail": "/Users/zak/Development/GitHub/blues/note-c/n_ftoa.c:473:18: warning: implicit conversion from 'unsigned long' to 'JNUMBER' (aka 'double') changes value from 18446744073709551615 to 18446744073709551616 [-Wimplicit-const-int-float-conversion]\n  473 |     if (value >= UINTMAX_MAX) {\n      |               ~~ ^~~~~~~~~~~\n/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdint.h:161:27: note: expanded from macro 'UINTMAX_MAX'\n  161 | #define UINTMAX_MAX       UINTMAX_C(18446744073709551615)\n      |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/stdint.h:74:23: note: expanded from macro 'UINTMAX_C'\n   74 | #define UINTMAX_C(v) (v ## UL)\n      |                       ^~~~~~~\n<scratch space>:13:1: note: expanded from here\n   13 | 18446744073709551615UL\n      | ^~~~~~~~~~~~~~~~~~~~~~\n1 warning generated.\n"
+    }
+  ]
+}

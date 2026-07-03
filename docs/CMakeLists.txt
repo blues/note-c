@@ -25,9 +25,6 @@ add_custom_target(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${DOCS_SRC_DIR}/architecture/architecture.html
         ${DOCS_BUILD_DIR}/architecture/architecture.html
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${DOCS_SRC_DIR}/architecture/architecture.json
-        ${DOCS_BUILD_DIR}/architecture/architecture.json
     USES_TERMINAL
     COMMENT "Running Sphinx HTML build..."
 )

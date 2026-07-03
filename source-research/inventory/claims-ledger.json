@@ -1,0 +1,495 @@
+{
+  "claims": [
+    {
+      "claim": "Binary store helpers combine JSON handshakes, raw chunked transport, newline framing, COBS encoding, MD5 status verification, explicit Notecard locking, and reset/error behavior.",
+      "claim_type": "architecture",
+      "evidence_refs": [
+        "n_helpers.c:359",
+        "n_helpers.c:539",
+        "n_hooks.c:1068",
+        "n_hooks.c:1087",
+        "source-research/worker-reports/codecs-binary-portability.md",
+        "source-research/worker-reports/high-level-helpers.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-binary-001",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "NoteBinaryStoreTransmit mutates the caller buffer by shifting unencoded bytes, encoding at the front, appending newline, and sending raw chunks; on many failures it decodes back to restore caller data, but on success the buffer remains modified.",
+      "claim_type": "ownership",
+      "evidence_refs": [
+        "n_helpers.c:539",
+        "source-research/worker-reports/codecs-binary-portability.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-binary-002",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "Public NoteBinaryCodec* APIs wrap private COBS helpers that use newline as the EOP byte and XOR code/data bytes with EOP so encoded payload bytes do not contain newline.",
+      "claim_type": "architecture",
+      "evidence_refs": [
+        "n_cobs.c:32",
+        "n_helpers.c:127",
+        "note.h:1598",
+        "source-research/worker-reports/codecs-binary-portability.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-codec-001",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "COBS decode returns only a decoded length and does not distinguish malformed or truncated input from valid short decode; wrapper buffer validation is strongest for documented in-place or encoded-buffer-sized usage.",
+      "claim_type": "security",
+      "evidence_refs": [
+        "n_cobs.c:32",
+        "n_helpers.c:127",
+        "source-research/worker-reports/codecs-binary-portability.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-codec-002",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "n_helpers.c is the high-level Notecard helper layer: most public helpers build JSON requests with NoteNewRequest or NoteNewCommand and then call NoteRequest, NoteRequestResponse, or raw transaction helpers.",
+      "claim_type": "architecture",
+      "evidence_refs": [
+        "n_helpers.c:1",
+        "n_helpers.c:2083",
+        "source-research/worker-reports/high-level-helpers.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-helper-001",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "Most high-level helpers ignore JAdd* return values, so allocation failure while adding fields can produce partial requests instead of immediate local failure.",
+      "claim_type": "error_handling",
+      "evidence_refs": [
+        "n_helpers.c:1",
+        "source-research/worker-reports/high-level-helpers.md",
+        "source-research/worker-reports/json-core.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-helper-002",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "Current source attempts to insert user-agent body data for hub.set product requests after the request has already been serialized; source evidence does not support claiming that inserted body reaches the wire.",
+      "claim_type": "behavior",
+      "evidence_refs": [
+        "n_request.c:437",
+        "n_request.c:481",
+        "source-research/worker-reports/high-level-helpers.md",
+        "source-research/worker-reports/request-orchestration.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-helper-003",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "The SDK uses a global function-pointer hook registry in n_hooks.c for platform services such as debug output, mutexes, transaction lifecycle, allocation, timing, serial, I2C, and active-interface dispatch.",
+      "claim_type": "architecture",
+      "evidence_refs": [
+        "n_hooks.c:45",
+        "n_hooks.c:63",
+        "n_hooks.c:75",
+        "n_hooks.c:189",
+        "source-research/worker-reports/hooks-and-adapter-layer.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-hook-001",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "`_LockNote` is an internal macro alias for `_noteLockNote`, and `_noteLockNote` conditionally dispatches the caller-owned `hookLockNote` mutex function pointer.",
+      "claim_type": "behavior",
+      "evidence_refs": [
+        "n_lib.h:226",
+        "n_hooks.c:657",
+        "source-research/artifacts/macros/n_lib_h__L226__LockNote.md",
+        "source-research/artifacts/functions/n_hooks_c__L657__noteLockNote.md"
+      ],
+      "gaps": [
+        "Runtime target of `hookLockNote` is supplied by external adapter code and is not statically resolvable in this repository."
+      ],
+      "id": "claim-hook-002",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "`_noteSetActiveInterface` selects internal transport dispatch pointers for serial or I2C and clears them for NONE or unrecognized interface values.",
+      "claim_type": "boundary",
+      "evidence_refs": [
+        "n_hooks.c:214",
+        "n_hooks.c:224",
+        "n_hooks.c:230",
+        "n_hooks.c:236",
+        "source-research/worker-reports/hooks-and-adapter-layer.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-hook-003",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "Hook registration setters store raw caller-owned function pointers; default setters only populate NULL slots, while non-default setters overwrite existing values and can set hooks to NULL.",
+      "claim_type": "ownership",
+      "evidence_refs": [
+        "n_hooks.c:248",
+        "n_hooks.c:266",
+        "n_hooks.c:356",
+        "n_hooks.c:381",
+        "n_hooks.c:399",
+        "source-research/worker-reports/hooks-and-adapter-layer.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-hook-004",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "Runtime hook wrappers are null-tolerant and provide defaults such as no-op free/delay/locks/debug, NULL allocation, zero milliseconds, true reset/transaction-start defaults, false serial-available, and error strings for inactive transport dispatch.",
+      "claim_type": "error_handling",
+      "evidence_refs": [
+        "n_hooks.c:520",
+        "n_hooks.c:528",
+        "n_hooks.c:569",
+        "n_hooks.c:595",
+        "n_hooks.c:616",
+        "n_hooks.c:681",
+        "n_hooks.c:855",
+        "n_hooks.c:934",
+        "n_hooks.c:1042",
+        "source-research/worker-reports/hooks-and-adapter-layer.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-hook-005",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "Hook-layer concurrency is optional and global-state based: many setters/getters take `_LockNote`, but mutex setters/getters, debug getter, I2C address/MTU accessors, and active-interface getter do not all take that lock.",
+      "claim_type": "concurrency",
+      "evidence_refs": [
+        "n_hooks.c:321",
+        "n_hooks.c:329",
+        "n_hooks.c:335",
+        "n_hooks.c:701",
+        "n_hooks.c:734",
+        "n_hooks.c:764",
+        "n_hooks.c:969",
+        "n_hooks.c:994",
+        "source-research/worker-reports/hooks-and-adapter-layer.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-hook-006",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "`NoteSetFnDisabled` disables active transport dispatch by setting the active interface to NONE, but it does not clear registered serial, I2C, mutex, debug, or system hook pointers.",
+      "claim_type": "behavior",
+      "evidence_refs": [
+        "n_hooks.c:433",
+        "n_hooks.c:214",
+        "source-research/worker-reports/hooks-and-adapter-layer.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-hook-007",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "`_noteActiveInterface(void)` is declared internally but has no implementation or production caller found by exact source search.",
+      "claim_type": "boundary",
+      "evidence_refs": [
+        "n_lib.h:140",
+        "source-research/worker-reports/hooks-and-adapter-layer.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-hook-008",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "The SDK embeds a cJSON-derived linked-node JSON core exposed through n_cjson.h and included by note.h; production code usually uses typed helper wrappers rather than raw JGetObjectItem.",
+      "claim_type": "architecture",
+      "evidence_refs": [
+        "n_cjson.h:43",
+        "note.h:104",
+        "n_cjson_helpers.c:19",
+        "source-research/worker-reports/json-core.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-json-001",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "JSON allocation and freeing flow through JMalloc/JFree to _Malloc/_Free, which map to NoteMalloc/NoteFree and the platform allocator hooks installed by NoteSetFn or NoteSetFnDefault.",
+      "claim_type": "ownership",
+      "evidence_refs": [
+        "n_cjson.c:204",
+        "n_lib.h:241",
+        "n_hooks.c:248",
+        "n_hooks.c:569",
+        "source-research/worker-reports/json-core.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-json-002",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "JAddItemToArray/Object transfer child ownership to the parent on success and delete the child on invalid input or failure; JDetach returns caller-owned nodes and JDelete recursively frees owned children and strings.",
+      "claim_type": "ownership",
+      "evidence_refs": [
+        "n_cjson.c:1860",
+        "n_cjson.c:2089",
+        "n_cjson.c:209",
+        "source-research/worker-reports/json-core.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-json-003",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "JParse permits prefix parsing by default, while JParseWithOpts can require null termination; parsing uses a nesting limit, global parse-error state, and custom numeric conversion with bounded mantissa/exponent handling.",
+      "claim_type": "parsing",
+      "evidence_refs": [
+        "n_cjson.c:300",
+        "n_cjson.c:976",
+        "n_cjson.c:985",
+        "n_atof.c:70",
+        "source-research/worker-reports/json-core.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-json-004",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "Low-memory mode disables user-agent support, omits n_ua.c from the CMake target, disables request CRC paths, uses compact ERRSTR constants, and reduces allocation chunk size.",
+      "claim_type": "portability",
+      "evidence_refs": [
+        "note.h:59",
+        "note.h:73",
+        "n_lib.h:64",
+        "CMakeLists.txt:97",
+        "source-research/worker-reports/high-level-helpers.md",
+        "source-research/inventory/graph-substrate.json",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-lowmem-001",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "strlcpy and strlcat are conditional bundled portability helpers: CMake detects platform symbols, publishes HAVE_STRLCPY/HAVE_STRLCAT compile definitions, and includes n_str.c only when either helper is missing.",
+      "claim_type": "portability",
+      "evidence_refs": [
+        "CMakeLists.txt:44",
+        "CMakeLists.txt:79",
+        "note.h:1138",
+        "n_str.c:30",
+        "source-research/worker-reports/codecs-binary-portability.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-portability-001",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "The primary object request path is NoteRequest -> NoteRequestResponse -> NoteTransaction -> _noteTransactionShouldLock -> _noteJSONTransaction, with NoteRequestResponse consuming and deleting the input request object.",
+      "claim_type": "architecture",
+      "evidence_refs": [
+        "n_request.c:220",
+        "n_request.c:228",
+        "n_request.c:250",
+        "n_request.c:413",
+        "n_hooks.c:1042",
+        "source-research/worker-reports/request-orchestration.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-request-001",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "NoteTransaction and _noteTransactionShouldLock do not delete the input request object; callers retain ownership unless they use consuming wrappers such as NoteRequestResponse or NoteRequestResponseWithRetry.",
+      "claim_type": "ownership",
+      "evidence_refs": [
+        "n_request.c:220",
+        "n_request.c:413",
+        "n_helpers.c:392",
+        "n_helpers.c:653",
+        "source-research/worker-reports/request-orchestration.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-request-002",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "NoteRequestResponseJSON is a separate raw newline-delimited JSON string API path that does not free caller request strings and returns caller-owned response strings.",
+      "claim_type": "public_api",
+      "evidence_refs": [
+        "n_request.c:279",
+        "source-research/worker-reports/request-orchestration.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-request-003",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "_noteTransaction_calculateTimeoutMs defaults to the inter-transaction timeout, honors milliseconds or seconds on note.add and web.* requests, and adds 1000 ms; the inspected implementation does not set a 90-second default for web.* despite a source comment.",
+      "claim_type": "behavior",
+      "evidence_refs": [
+        "n_request.c:93",
+        "source-research/worker-reports/request-orchestration.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-request-004",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "The active interface selects internal function-pointer dispatch: serial maps to serial reset/transaction/chunked functions, I2C maps to I2C reset/transaction/chunked functions, and NONE or invalid interface clears active dispatch pointers.",
+      "claim_type": "architecture",
+      "evidence_refs": [
+        "n_hooks.c:214",
+        "n_hooks.c:224",
+        "n_hooks.c:230",
+        "n_hooks.c:236",
+        "source-research/worker-reports/transports.md",
+        "source-research/worker-reports/hooks-and-adapter-layer.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-transport-001",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "I2C transactions use a priming zero-length receive query, drain after newline while available bytes remain, chunk by I2C MTU and 0xffff, and reset I2C after transmit errors.",
+      "claim_type": "behavior",
+      "evidence_refs": [
+        "n_i2c.c:48",
+        "n_i2c.c:87",
+        "n_i2c.c:338",
+        "n_i2c.c:456",
+        "source-research/worker-reports/transports.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-transport-002",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "Serial transactions normalize request endings to CRLF, read one byte at a time until newline or buffer continuation, and cannot surface platform transmit errors because serial transmit hooks return void.",
+      "claim_type": "behavior",
+      "evidence_refs": [
+        "n_serial.c:35",
+        "n_serial.c:237",
+        "n_serial.c:303",
+        "source-research/worker-reports/transports.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-transport-003",
+      "inference": false,
+      "status": "finalized"
+    },
+    {
+      "claim": "COBS framing is owned by binary helpers, not the I2C or serial transport implementations; transports move raw newline-framed bytes through hook dispatch.",
+      "claim_type": "boundary",
+      "evidence_refs": [
+        "n_helpers.c:81",
+        "n_helpers.c:631",
+        "n_i2c.c:338",
+        "n_serial.c:237",
+        "source-research/worker-reports/transports.md",
+        "source-research/worker-reports/codecs-binary-portability.md",
+        "source-research/inventory/artifact-status.json",
+        "source-research/inventory/evidence-validation.json"
+      ],
+      "gaps": [],
+      "id": "claim-transport-004",
+      "inference": false,
+      "status": "finalized"
+    }
+  ],
+  "finalized_at_utc": "2026-06-29T22:42:19+00:00",
+  "schema_version": 1,
+  "summary": {
+    "finalized": 29,
+    "generated": 0,
+    "inferred": 0,
+    "inspected": 0,
+    "total": 29
+  }
+}
