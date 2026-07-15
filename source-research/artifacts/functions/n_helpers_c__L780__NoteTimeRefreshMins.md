@@ -19,7 +19,7 @@ Finalized. Source-inspected public time-refresh interval setter.
 
 - Project-local dependencies: none
 - External/system dependencies: none
-- Data/type/global dependencies: writes static `refreshTimerSecs`, which defaults to 86400 seconds and is read by `NoteTimeST`
+- Data/type/global dependencies: writes static `refreshTimerSecs`, which defaults to 300 seconds (five minutes) and is read by `NoteTimeST`
 - Artifact coverage: source-inspected artifact
 
 ## Behavior
@@ -46,7 +46,7 @@ No production repository caller role. Public configuration helper for downstream
 
 ## Tests Observed
 
-No focused tests for `NoteTimeRefreshMins` were found. Gaps include zero disabling refresh, minutes-to-seconds conversion, overflow, and downstream `NoteTimeST` refresh behavior.
+Focused `test/src/NoteTime_test.cpp` covers a five-minute `NoteTimeRefreshMins` period driving a second `card.time` fetch via `NoteTimeST` after the interval elapses, while an in-window `NoteTimeST` call does not re-fetch. Gaps remain for zero disabling refresh, minutes-to-seconds conversion edge cases, and overflow.
 
 ## Graph Links
 
