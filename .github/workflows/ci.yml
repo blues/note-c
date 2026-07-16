@@ -230,6 +230,9 @@ jobs:
           docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_cppcheck.sh ghcr.io/blues/note_c_ci:latest
 
   run_macos_unit_tests:
+    # Stay on macos-latest (currently macOS 26 / Xcode 26.5). Integer limit
+    # comparisons in n_cjson.c / n_ftoa.c use explicit (JNUMBER) casts so
+    # AppleClang -Wimplicit-const-int-float-conversion does not fail -Werror.
     runs-on: macos-latest
 
     steps:
