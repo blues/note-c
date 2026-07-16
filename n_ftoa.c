@@ -469,8 +469,12 @@ static uintmax_t cast(JNUMBER value)
      * it may be increased to the nearest higher representable value for the
      * comparison (cf. C99: 6.3.1.4, 2).  It might then equal the JNUMBER
      * value although converting the latter to uintmax_t would overflow.
+     *
+     * Cast UINTMAX_MAX to JNUMBER so the conversion is explicit. Newer
+     * AppleClang rejects the implicit const int→float conversion under
+     * -Werror (-Wimplicit-const-int-float-conversion).
      */
-    if (value >= UINTMAX_MAX) {
+    if (value >= (JNUMBER)UINTMAX_MAX) {
         return UINTMAX_MAX;
     }
 

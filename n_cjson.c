@@ -304,9 +304,11 @@ loop_end:
     item->valuenumber = number;
 
     // Saturate valueint in the case of overflow.
-    if (number >= JINTEGER_MAX) {
+    // Cast integer limits to JNUMBER: INT64_MAX is not exactly representable as
+    // double, and newer AppleClang rejects the implicit conversion under -Werror.
+    if (number >= (JNUMBER)JINTEGER_MAX) {
         item->valueint = JINTEGER_MAX;
-    } else if (number <= JINTEGER_MIN) {
+    } else if (number <= (JNUMBER)JINTEGER_MIN) {
         item->valueint = JINTEGER_MIN;
     } else {
         item->valueint = JAtoI((const char*)number_c_string);
@@ -326,9 +328,11 @@ N_CJSON_PUBLIC(JNUMBER) JSetNumberHelper(J *object, JNUMBER number)
     }
 
     // Saturate valueint in the case of overflow.
-    if (number >= JINTEGER_MAX) {
+    // Cast integer limits to JNUMBER: INT64_MAX is not exactly representable as
+    // double, and newer AppleClang rejects the implicit conversion under -Werror.
+    if (number >= (JNUMBER)JINTEGER_MAX) {
         object->valueint = JINTEGER_MAX;
-    } else if (number <= JINTEGER_MIN) {
+    } else if (number <= (JNUMBER)JINTEGER_MIN) {
         object->valueint = JINTEGER_MIN;
     } else {
         object->valueint = (JINTEGER)number;
@@ -2335,9 +2339,11 @@ N_CJSON_PUBLIC(J *) JCreateNumber(JNUMBER num)
         item->valuenumber = num;
 
         // Saturate valueint in the case of overflow.
-        if (num >= JINTEGER_MAX) {
+        // Cast integer limits to JNUMBER: INT64_MAX is not exactly representable as
+        // double, and newer AppleClang rejects the implicit conversion under -Werror.
+        if (num >= (JNUMBER)JINTEGER_MAX) {
             item->valueint = JINTEGER_MAX;
-        } else if (num <= JINTEGER_MIN) {
+        } else if (num <= (JNUMBER)JINTEGER_MIN) {
             item->valueint = JINTEGER_MIN;
         } else {
             item->valueint = (JINTEGER)num;
