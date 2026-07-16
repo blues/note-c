@@ -34,7 +34,7 @@ static uint32_t timeBaseSetAtMs = 0;
 static JTIME timeBaseSec = 0;
 static bool timeBaseSetManually = false;
 static uint32_t suppressionTimerSecs = 10;
-static uint32_t refreshTimerSecs = 86400;
+static uint32_t refreshTimerSecs = 300;
 static uint32_t timeTimer = 0;
 static uint32_t timeRefreshTimer = 0;
 static bool zoneStillUnavailable = true;
@@ -773,7 +773,7 @@ JTIME NoteTime(void)
 /*!
   @brief Set the number of minutes between refreshes of the time from the
          Notecard, to help minimize clock drift on this host. Set this to 0 for
-         no auto-refresh; it defaults to daily.
+         no auto-refresh; it defaults to every five minutes.
 
   @param mins Minutes between time refreshes.
  */

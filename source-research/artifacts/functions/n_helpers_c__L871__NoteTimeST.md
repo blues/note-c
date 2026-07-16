@@ -60,7 +60,7 @@ This is the central cached time/zone refresh API. `NoteTime` and `NoteTimeValidS
 
 ## Tests Observed
 
-Focused `test/src/NoteTime_test.cpp` covers null response, error/missing time response, valid `card.time` response with zone fields, and millisecond rollover through `NoteTime`.
+Focused `test/src/NoteTime_test.cpp` covers null response, error/missing time response, valid `card.time` response with zone fields, millisecond rollover through `NoteTime`, and refresh-timer-driven re-fetch of `card.time` through `NoteTimeST` (without the force-refresh `NoteTime` path).
 
 ## Graph Links
 

@@ -25,6 +25,33 @@ FAKE_VALUE_FUNC(uint32_t, NoteGetMs)
 namespace
 {
 
+// Controllable millisecond clock for timer-gated NoteTimeST tests.
+static uint32_t mockMs;
+
+uint32_t NoteGetMsMock(void)
+{
+    return mockMs;
+}
+
+// Fresh card.time response each call; NoteTimeST deletes the object it receives.
+J *NoteRequestResponseValidCardTime(J *req)
+{
+    (void)req;
+
+    J *resp = JCreateObject();
+    if (resp == NULL) {
+        return NULL;
+    }
+
+    JAddNumberToObject(resp, "time", 1599769214);
+    JAddStringToObject(resp, "area", "Beverly, MA");
+    JAddStringToObject(resp, "zone", "CDT,America/New York");
+    JAddNumberToObject(resp, "minutes", -300);
+    JAddStringToObject(resp, "country", "US");
+
+    return resp;
+}
+
 SCENARIO("NoteTime")
 {
     NoteSetFnDefault(malloc, free, NULL, NULL);
@@ -91,6 +118,37 @@ SCENARIO("NoteTime")
         JTIME newBaseTime = baseTime + (0x100000000LL + rolloverMs -
                                         baseTimeSetAtMs) / 1000;
         CHECK(NoteTime() == newBaseTime);
+    }
+
+    SECTION("Refresh timer alone re-fetches card.time via NoteTimeST") {
+        // Clear any prior cached/manual time so auto Notecard fetch is enabled.
+        NoteTimeSet(0, 0, NULL, NULL, NULL);
+        // Match the SDK default (five minutes). Using the public setter keeps
+        // the period explicit even if static state was polluted by earlier
+        // sections.
+        const uint32_t refreshMins = 5;
+        const uint32_t refreshMs = refreshMins * 60 * 1000;
+        NoteTimeRefreshMins(refreshMins);
+
+        mockMs = 1000;
+        NoteGetMs_fake.custom_fake = NoteGetMsMock;
+        NoteRequestResponse_fake.custom_fake = NoteRequestResponseValidCardTime;
+
+        // First NoteTimeST: no base time yet, so one card.time transaction.
+        CHECK(NoteTimeST() > 0);
+        CHECK(NoteRequestResponse_fake.call_count == 1);
+
+        // Still inside the refresh window: cached time is returned without a
+        // new Notecard transaction. NoteTimeST (not NoteTime) is required so
+        // the suppression timer is not force-cleared.
+        mockMs = 1000 + (refreshMs / 2);
+        CHECK(NoteTimeST() > 0);
+        CHECK(NoteRequestResponse_fake.call_count == 1);
+
+        // At/after the refresh period, NoteTimeST should issue card.time again.
+        mockMs = 1000 + refreshMs;
+        CHECK(NoteTimeST() > 0);
+        CHECK(NoteRequestResponse_fake.call_count == 2);
     }
 
     RESET_FAKE(NoteNewRequest);
