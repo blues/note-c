@@ -2723,7 +2723,14 @@ N_CJSON_PUBLIC(J*) JAddIntToObject(J * const object, const char * const name, co
 
     J *integer_item = _j_new_keyed(JNumber, name, NULL);
     if (integer_item != NULL) {
-        JSetIntHelper(integer_item, integer);
+        /* Assign valueint DIRECTLY from the JINTEGER, exactly as
+         * JCreateInteger() does. Routing this through JSetIntHelper() would
+         * pass the value as a JNUMBER, and under NOTE_C_SINGLE_PRECISION that
+         * is a float: a Unix timestamp, which is exact in an int32 but not in a
+         * float, comes back rounded. The node is a fresh JNumber, so nothing is
+         * packed in the numeric region and the fields can be written as-is. */
+        integer_item->valuenumber = (JNUMBER)integer;
+        integer_item->valueint = integer;
     }
     if (_add_item_to_object(object, name, integer_item, false)) {
         return integer_item;

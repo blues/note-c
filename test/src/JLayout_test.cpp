@@ -20,6 +20,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <cstddef>   // offsetof, for the layout-derived size expectations
+
 #include "j_layout_test_support.hpp"
 
 using namespace jlayout;
@@ -693,23 +695,29 @@ SCENARIO("The packing actually happens")
         const char *json;
         size_t packedAllocs;      // parse path
         size_t unpackedAllocs;
-        // Bytes a member node needs beyond sizeof(J). Zero means its key and
-        // value fit entirely inside the struct's inline region. A number member
-        // cannot use that region, so its key extends past the struct by exactly
-        // its own length.
-        size_t memberExtra;
+        // Each member's key and value length, INCLUDING the NUL. Every member
+        // in a given case has the same shape. The expected node size is derived
+        // from these rather than hardcoded, because the size of the inline
+        // region is not the same on every ABI: JINTEGER is 8-byte aligned on
+        // ARM and x86-64 but only 4-byte aligned on i386, so the same layout
+        // yields a different sizeof(J) and a different amount of room before
+        // the struct ends. Hardcoding "fits in sizeof(J)" passed everywhere the
+        // region is 16 bytes and failed on 32-bit Linux, where it is 12.
+        bool   memberIsString;
+        size_t memberKeyLen;
+        size_t memberValLen;
     };
     static const Case parsed[] = {
         // node+key+value in ONE allocation. Fails if the parser's value
         // lookahead is removed, or if _j_alloc_size stops using the inline
         // region as the string base.
-        { "short string member",   "{\"a\":\"b\"}",            2, 4,  0 },
-        { "empty string value",    "{\"a\":\"\"}",             2, 4,  0 },
-        { "realistic member",      "{\"aqi_level\":\"good\"}",  2, 4,  0 },
+        { "short string member",   "{\"a\":\"b\"}",            2, 4,  true,  2,  2 },
+        { "empty string value",    "{\"a\":\"\"}",             2, 4,  true,  2,  1 },
+        { "realistic member",      "{\"aqi_level\":\"good\"}",  2, 4,  true, 10,  5 },
         // node+key in one allocation; the number occupies the inline region.
-        { "number member",         "{\"temperature\":22.5}",   2, 3, 12 },
+        { "number member",         "{\"temperature\":22.5}",   2, 3,  false, 12,  0 },
         // three members, each self-contained.
-        { "three string members",  "{\"a\":\"\",\"b\":\"\",\"c\":\"\"}", 4, 10, 0 },
+        { "three string members",  "{\"a\":\"\",\"b\":\"\",\"c\":\"\"}", 4, 10, true,  2,  1 },
     };
 
     for (size_t i = 0; i < sizeof(parsed) / sizeof(parsed[0]); ++i) {
@@ -725,15 +733,31 @@ SCENARIO("The packing actually happens")
                                : parsed[i].unpackedAllocs));
             }
 
-            THEN("Each node is no larger than the struct itself") {
+            THEN("Each node is exactly the size its content requires") {
                 // Counting allocations is not enough: a layout that packs into
                 // an over-sized node makes the same number of allocations and
-                // costs more memory. Every shape here fits entirely inside
-                // sizeof(J), so any growth means the inline region is no longer
-                // being used as the base for string content.
+                // costs more memory. This pins the exact allocation formula.
+                //
+                // A string member's content starts at the inline region and the
+                // node grows only if it overflows the struct; a number member
+                // keeps its numeric fields, so its key always extends past the
+                // struct by exactly its own length.
                 if (isPacked()) {
+                    const size_t inlineOff = offsetof(J, valueint);
+                    size_t expected;
+                    if (parsed[i].memberIsString) {
+                        expected = inlineOff + parsed[i].memberValLen
+                                   + parsed[i].memberKeyLen;
+                        if (expected < sizeof(J)) {
+                            expected = sizeof(J);
+                        }
+                    } else {
+                        expected = sizeof(J) + parsed[i].memberKeyLen;
+                    }
                     for (J *n = j->child; n != NULL; n = n->next) {
-                        CHECK(nodeAllocSize(n) == sizeof(J) + parsed[i].memberExtra);
+                        INFO("sizeof(J)=" << sizeof(J)
+                             << " inline region=" << (sizeof(J) - inlineOff));
+                        CHECK(nodeAllocSize(n) == expected);
                     }
                 }
             }

@@ -147,10 +147,22 @@ SCENARIO("Reference nodes describe their own allocation, not the referent's")
             J *reference = JGetObjectItem(destination, "x");
             REQUIRE(reference != NULL);
 
+            // Catch2 re-enters this GIVEN once per leaf THEN, so EVERY leaf has
+            // to free the fixture. The deletion-order sections below do that as
+            // the thing they are testing; the inspect-only sections call this.
+            // Missing it leaks the fixture once per section -- invisible to the
+            // tracked allocator (which resets per entry) but caught by valgrind.
+            auto releaseFixture = [&]() {
+                JDelete(destination);
+                JDelete(r.keyed ? owner : referent);
+                CHECK(stats().liveBlocks == 0);
+            };
+
             THEN("the reference's key is inside the reference, never the referent") {
                 REQUIRE(JGetItemName(reference) != NULL);
                 CHECK(strcmp(JGetItemName(reference), "x") == 0);
                 CHECK(!insideNodeAllocation(referent, JGetItemName(reference)));
+                releaseFixture();
             }
 
             THEN("the reference claims no more storage than it allocated") {
@@ -158,6 +170,7 @@ SCENARIO("Reference nodes describe their own allocation, not the referent's")
                 // believed it was as large as its (larger) source.
                 CHECK(nodeAllocSize(reference) <= nodeAllocSize(referent));
                 CHECK(nodeAllocSize(reference) == sizeof(J));
+                releaseFixture();
             }
 
             THEN("the referent is untouched") {
@@ -168,6 +181,7 @@ SCENARIO("Reference nodes describe their own allocation, not the referent's")
                 if (JIsString(referent)) {
                     CHECK(strcmp(JStringValue(referent), JStringValue(reference)) == 0);
                 }
+                releaseFixture();
             }
 
             // Deletion order is the whole point: a reference must not free
@@ -238,12 +252,25 @@ SCENARIO("Array references behave the same as object references")
             J *reference = JGetArrayItem(destination, 0);
             REQUIRE(reference != NULL);
 
+            // Catch2 re-enters this GIVEN once per leaf THEN, so EVERY leaf has
+            // to free the fixture. The deletion-order sections below do that as
+            // the thing they are testing; the inspect-only sections call this.
+            // Missing it leaks the fixture once per section -- invisible to the
+            // tracked allocator (which resets per entry) but caught by valgrind.
+            auto releaseFixture = [&]() {
+                JDelete(destination);
+                JDelete(r.keyed ? owner : referent);
+                CHECK(stats().liveBlocks == 0);
+            };
+
             THEN("an array reference carries no key") {
                 CHECK(reference->string == NULL);
+                releaseFixture();
             }
 
             THEN("the reference claims only its own allocation") {
                 CHECK(nodeAllocSize(reference) == sizeof(J));
+                releaseFixture();
             }
 
             THEN("either deletion order is clean") {
