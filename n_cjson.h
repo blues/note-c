@@ -54,6 +54,7 @@ extern "C"
 #define N_CJSON_VERSION_PATCH 7
 
 #include <stddef.h>
+#include <stdint.h>   /* uint16_t, for the packed J layout */
 
 /* J Types: */
 #define JInvalid (0)
@@ -67,14 +68,112 @@ extern "C"
 #define JRaw    (1 << 7) /* raw json */
 
 #define JIsReference 256
+/* Set when valuestring points into this node's own allocation, so JDelete must
+ * not free it separately. Distinct from JIsReference, which also governs whether
+ * JDelete recurses into child. */
+#define JValueInline 1024
+
+/* Largest total allocation a single packed node may have.
+ *
+ * A node records its own allocation size in `objlen`, a uint16_t, so the packing
+ * logic can tell how much inline room is left after a mutation. A node whose key
+ * and value would push it past this bound keeps both on the heap and is
+ * allocated at exactly sizeof(J), which bounds objlen by construction. A string
+ * that large needs its own allocation regardless. */
+#define J_MAX_PACKED_ALLOC 50000
 #define JStringIsConst 512
+
+/* Set when `string` (the key) points into this node's own allocation, as
+ * opposed to a caller-owned buffer. Always accompanied by JStringIsConst, which
+ * keeps its historical "do not free the key" meaning; this says WHERE the key
+ * lives, which JStringIsConst alone cannot distinguish.
+ *
+ * The distinction is not cosmetic. Deciding "is this key inside my allocation?"
+ * by comparing `item->string` against the node's address is only meaningful
+ * when both pointers are already known to address the same object -- relational
+ * comparison of pointers into different objects is undefined in C, and a
+ * caller-owned key is very often a string literal in a different segment
+ * entirely. Recording the answer at the moment the key is placed, when it is
+ * known for free, removes the question.
+ *
+ * Only ever set under NOTE_C_STORAGE_OPTIMIZATION; the historical layout never
+ * stores a key inside the node. Defined unconditionally so the shared code that
+ * masks flags does not need a conditional. */
+#define JKeyInline 2048
+
+/* Set when valueint/valuenumber on a JString or JRaw node genuinely hold
+ * numbers, because a setter put them there.
+ *
+ * A string node's numeric bytes are normally lending themselves to inline
+ * content, but `JSetIntValue`/`JSetNumberValue` have always been able to write
+ * numbers onto a string node without changing its type. Both states exist and
+ * the base type cannot tell them apart, so the fact is recorded here.
+ *
+ * Inferring it instead -- "no inline pointer currently occupies the region,
+ * therefore it holds numbers" -- is unsound in both directions, and an earlier
+ * revision was wrong in both:
+ *
+ *   FALSE POSITIVE. _create_reference() copies a source node's bytes verbatim
+ *   and then clears the inline ownership flags, because the reference borrows
+ *   rather than owns. The copied CHARACTERS remain in the numeric region with
+ *   no flag pointing at them, so a reference to JCreateString("abc") reported
+ *   JIntValue() == 6513249 -- the bytes of "abc" read as an integer.
+ *
+ *   DESTRUCTION. After a setter evacuates the region and writes a number, the
+ *   region looks unoccupied again, so _j_key_set() would reclaim it for a short
+ *   key and silently overwrite the number that was just stored.
+ *
+ * With the fact recorded, the region is off limits to inline placement while
+ * the flag is set, and the accessors read it only while it is set.
+ *
+ * Only ever set under NOTE_C_STORAGE_OPTIMIZATION. In the historical layout the
+ * members are never overlaid, so nothing needs recording -- and setting a new
+ * bit there would change the value a consumer reads from `item->type`. */
+#define JNumericLive 4096
+
+/* NOTE_C_STORAGE_OPTIMIZATION selects the memory-optimized `J` storage model.
+ *
+ * By default `J` has the historical layout: a 48-byte node on a 32-bit target,
+ * whose key and string value always live in separate heap allocations. Defining
+ * NOTE_C_STORAGE_OPTIMIZATION, or setting the CMake option of the same name,
+ * selects a 40-byte node that carves an object member's key and short string
+ * value out of the node's own allocation, so a short string member costs one
+ * allocation instead of three.
+ *
+ * Both produce byte-identical JSON. On a representative corpus the optimization
+ * removes roughly 38% of the allocations and 26% of the heap a parsed document
+ * holds at double precision, and 38%/16% at single precision, where a float
+ * JNUMBER already removes the historical layout's tail padding.
+ *
+ * IMPORTANT: this changes sizeof(J) AND the offset and width of nearly every
+ * member. Every translation unit that sees `J` must be compiled with the same
+ * setting -- the note-c sources and the consumer's sources alike -- exactly as
+ * NOTE_C_SINGLE_PRECISION must be. The CMake option propagates it PUBLIC for
+ * that reason. See docs/architecture/decisions/0002-j-node-storage-layout.md
+ * for the full contract, including the fields whose observable content
+ * changes. */
 
 /*!
  @brief The core JSON object type used by note-c.
 
  When using note-c, treat this struct as opaque. You should never have to work
  directly with its members.
+
+ A note on two long-standing member names, which are NOT being renamed because
+ `J` is a public type and downstream code reads these fields directly:
+
+ - `string` is the object member KEY, never a value. It is NULL for array
+   elements and for a root item. `JGetItemName()` is the accessor.
+ - `valuestring` is the value, for `JString` and `JRaw` items.
+ - The flag guarding `string` is spelled `JStringIsConst`, but what it actually
+   means is "the key is not separately allocated, so do not free it". Read it as
+   JKeyIsConst.
  */
+#ifndef NOTE_C_STORAGE_OPTIMIZATION
+
+/* The historical layout, and the default. Every member keeps the offset, width
+ * and meaning it has had since note-c 2.x, and a key or string value always
+ * occupies its own heap allocation. */
 typedef struct J {
     /* next/prev allow you to walk array/object chains. Alternatively, use GetArraySize/GetArrayItem/GetObjectItem */
     struct J *next;
@@ -94,6 +193,110 @@ typedef struct J {
     /* The item's name string, if this item is the child of, or is in the list of subitems of an object. */
     char *string;
 } J;
+
+#else /* NOTE_C_STORAGE_OPTIMIZATION */
+
+typedef struct J {
+    /* MEMBER ORDER IS LOAD-BEARING. JINTEGER and JNUMBER require 8-byte
+     * alignment even where pointers are 4 bytes, so placing them last lets the
+     * six 4-byte members pack into offsets 0..23 and the struct end exactly on
+     * 40. Any other order costs 8 bytes of padding.
+     *
+     * INLINE STORAGE. valueint and valuenumber are meaningless for a JString or
+     * JRaw item, so for those items the bytes they occupy hold the value string
+     * and then the key instead, and the allocation is extended past the struct
+     * only as far as the content needs:
+     *
+     *   string item : alloc = MAX(sizeof(J), offsetof(J, valueint)
+     *                                        + strlen(value)+1 + strlen(key)+1)
+     *                 laid out [value NUL][key NUL] from offsetof(J, valueint)
+     *   other item  : alloc = sizeof(J) + strlen(key)+1
+     *                 laid out [key NUL] from sizeof(J)
+     *
+     * So a short string member -- node, key and value together -- is ONE
+     * allocation. Inline storage is an optimization, never a mode: any content
+     * may live inline or in its own block, JValueInline and JStringIsConst say
+     * which, and a setter that no longer fits or that needs the numeric members
+     * back moves the affected content out to the heap first. The address of the
+     * J itself never changes. */
+
+    /* next/prev allow you to walk array/object chains. Alternatively, use GetArraySize/GetArrayItem/GetObjectItem */
+    struct J *next;
+    struct J *prev;
+    /* An array or object item will have a child pointer pointing to a chain of the items in the array/object. */
+    struct J *child;
+
+    /* The item's string, if type==JString and type == JRaw. May point into this
+     * node's own allocation (JValueInline), at a caller-owned buffer
+     * (JIsReference), or at a separate heap block (neither flag). */
+    char *valuestring;
+    /* The item's name string, if this item is the child of, or is in the list of subitems of an object.
+     * May point into this node's own allocation or at a caller-owned buffer
+     * (JStringIsConst either way), or at a separate heap block. */
+    char *string;
+
+    /* The type of the item, as above. Narrowed from int to uint16_t: the base
+     * types occupy 8 bits and the three flags reach 1024, so 16 bits is ample. */
+    uint16_t type;
+    /* Total bytes allocated for this node, including any inline storage past
+     * the struct. Bounded by J_MAX_PACKED_ALLOC so it always fits. */
+    uint16_t objlen;
+
+    /* ===================================================================
+     * THE NUMERIC PAIR IS ALSO THE INLINE CHARACTER BUFFER. READ THIS.
+     * ===================================================================
+     *
+     * For a JString or JRaw item these two members are meaningless, so the
+     * bytes they occupy are used to hold the item's value string and then its
+     * key. Conceptually the declaration is this union:
+     *
+     *     union {
+     *         char kvbuf[sizeof(JINTEGER) + sizeof(JNUMBER)];
+     *         struct {
+     *             JINTEGER valueint;
+     *             JNUMBER  valuenumber;
+     *         };
+     *     };
+     *
+     * It is NOT written that way, deliberately. An anonymous struct inside a
+     * union is standard only from C11; in C89, C99 and every C++ standard it is
+     * a compiler extension, and under -pedantic-errors it is a hard error
+     * rather than a warning. note-c pins no C standard, compiles with
+     * -Wpedantic, and is parsed by C++ consumers such as note-arduino, so the
+     * union form would make the header unbuildable on toolchains this library
+     * is expected to work on. The members are therefore declared plainly and
+     * the overlay is expressed in code instead.
+     *
+     * The overlay is addressed as (char *)item + offsetof(J, valueint), never
+     * as sizeof(J) minus a constant, so nothing depends on these members
+     * happening to be last. n_cjson.c carries a compile-time assertion that
+     * they are contiguous and do run to the end of the struct; a reorder that
+     * broke either property fails the build rather than corrupting nodes.
+     *
+     * Byte layout of a node on a 32-bit target (sizeof(J) == 40):
+     *
+     *     offset  0   4    8      12           16      20    22    24    32  40
+     *            +----+----+------+------------+-------+-----+-----+-----+----+
+     *            |next|prev|child |valuestring |string |type |objln|valueint |
+     *            |    |    |      |            |       |     |     |valuenum |
+     *            +----+----+------+------------+-------+-----+-----+-----+----+
+     *     JString item:                                       [value\0][key\0]
+     *                                                         ^ offsetof(valueint)
+     *                                                         ...extending past 40
+     *                                                         if the two need more
+     *     other item:  valueint/valuenumber live here          [key\0] from 40 on
+     *
+     * The two are never used at once: kvbuf bytes are only written when the
+     * item is a string type, and valueint/valuenumber are only read when it is
+     * not. _j_is_string_type() gates that internally; JIntValue() and
+     * JNumberValue() enforce it for callers. Accessing the bytes through a char
+     * pointer is explicitly permitted by the aliasing rules of both C and C++.
+     */
+    JINTEGER valueint;
+    JNUMBER valuenumber;
+} J;
+
+#endif /* NOTE_C_STORAGE_OPTIMIZATION */
 
 typedef struct JHooks {
     void *(*malloc_fn)(size_t sz);
@@ -310,13 +513,55 @@ N_CJSON_PUBLIC(J*) JAddArrayToObject(J * const object, const char * const name);
 #define JConvertToJSONString JPrintUnformatted
 #define JConvertFromJSONString JParse
 
-/* When assigning an integer value, it needs to be propagated to valuenumber too. */
-#define JSetIntValue(object, number) ((object) ? (object)->valueint = (object)->valuenumber = (number) : (number))
-/* helper for the JSetNumberValue macro */
+/* Assign an item's numeric value.
+ *
+ * Both macro names are retained and both keep their historical behavior: the
+ * value is written to valueint AND valuenumber, `number` is evaluated exactly
+ * once, and a NULL object is a no-op that returns the operand. The macros now
+ * expand to a call rather than to an assignment reaching into the struct.
+ *
+ * The outer conditional is retained deliberately, even though both helpers
+ * handle a NULL object themselves. It is what preserves the NULL branch's
+ * VALUE and TYPE: historically that branch was the unconverted `(number)`
+ * operand, so `JSetIntValue(NULL, 1.5)` yielded 1.5 as a double. Calling a
+ * helper unconditionally would yield 1 as a JINTEGER -- and under
+ * NOTE_C_SINGLE_PRECISION would round the operand through a float on the way
+ * out. Letting the conditional pick the common type reproduces both exactly.
+ *
+ * JSetNumberValue was already a call. JSetIntValue was
+ *
+ *     ((object) ? (object)->valueint = (object)->valuenumber = (number) : (number))
+ *
+ * which wrote two members directly from the caller's translation unit. Under
+ * NOTE_C_STORAGE_OPTIMIZATION those bytes may hold a packed key or string
+ * value, so writing them from outside the library would corrupt the node with
+ * no way for the library to intervene. Routing through a function lets the
+ * library evacuate that content first.
+ *
+ * `object` is evaluated TWICE: once by the conditional, once by the call. The
+ * historical JSetIntValue evaluated it three times, so that is a change from
+ * three to two; the historical JSetNumberValue already evaluated it twice, so
+ * it is unchanged. `number` was never repeated and still is not.
+ *
+ * JSetIntHelper takes JNUMBER on purpose. The old macro parsed as
+ * `valueint = (valuenumber = number)`, so both members saw the operand in its
+ * original arithmetic form: JSetIntValue(item, 1.5) left valueint == 1 and
+ * valuenumber == 1.5. A JINTEGER parameter would truncate at the call site and
+ * store 1 in both.
+ *
+ * Both propagate to the sibling member, because valueint and valuenumber must
+ * stay in step: valueint carries integers that valuenumber cannot represent
+ * exactly (the parser converts the original text with JAtoI, so values beyond
+ * 2^53 are exact in valueint and lossy in valuenumber), and _print_number
+ * compares the two to decide integer-vs-float rendering. */
 N_CJSON_PUBLIC(JNUMBER) JSetNumberHelper(J *object, JNUMBER number);
-#define JSetNumberValue(object, number) ((object != NULL) ? JSetNumberHelper(object, (JNUMBER)number) : (number))
+N_CJSON_PUBLIC(JINTEGER) JSetIntHelper(J *object, JNUMBER number);
+#define JSetIntValue(object, number) ((object) ? JSetIntHelper((object), (JNUMBER)(number)) : (number))
+#define JSetNumberValue(object, number) ((object) ? JSetNumberHelper((object), (JNUMBER)(number)) : (number))
 
-/* Macro for iterating over an array or object */
+/* Macro for iterating over an array or object. These read child/next rather
+ * than writing a member, so unlike the setters above they carry no aliasing or
+ * storage-layout hazard, and a for-loop cannot be expressed as a function. */
 #define JArrayForEach(element, array) for(element = (array != NULL) ? (array)->child : NULL; element != NULL; element = element->next)
 // Iterate over the fields of an object
 #define JObjectForEach(element, array) JArrayForEach(element, array)
