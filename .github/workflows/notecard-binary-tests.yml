@@ -19,6 +19,14 @@ permissions:
   contents: read
   id-token: write
 
+# Don't let a run collide with itself: a new push to the same ref (e.g. a PR
+# update) cancels the in-flight run instead of racing it for the single
+# barcelona-notestation-1 reservation. Different refs (other PRs, the nightly
+# schedule) get separate groups and are unaffected.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   md5srv-test:
     uses: ./.github/workflows/md5srv-tests.yml
@@ -30,6 +38,10 @@ jobs:
       github.event.repository.fork != true &&
       (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
+    # A healthy run reserves, flashes, and runs the suite in well under this.
+    # The cap ensures a stuck serial monitor fails fast instead of burning the
+    # default 6h job timeout.
+    timeout-minutes: 30
     defaults:
       run:
         shell: bash
@@ -69,7 +81,7 @@ jobs:
           aws-region: us-east-1
           mask-aws-account-id: 'false'
 
-      # Needed for asyncio.TaskGroup, which the card_client code uses.
+      # Needed to run PlatformIO (installed and invoked below).
       - name: Set up Python 3.11
         uses: actions/setup-python@v4
         with:
@@ -97,18 +109,6 @@ jobs:
 
           sudo apt update
           sudo apt install gdb-multiarch ngrok jq
-
-      # We need socat 1.7.4.4 because prior to that there are some issues with
-      # setting the baud rate properly. socat is used by the card_client code
-      # for various tunnels (e.g. Swan USB port, Swan OpenOCD server, etc.).
-      - name: Install socat 1.7.4.4
-        run: |
-          wget http://www.dest-unreach.org/socat/download/socat-1.7.4.4.tar.gz
-          tar xvf socat-1.7.4.4.tar.gz
-          cd socat-1.7.4.4
-          ./configure
-          make -j
-          sudo make install
 
       - name: Install PlatformIO dependencies
         run: |
@@ -193,49 +193,28 @@ jobs:
             exit 1
           fi
 
-      # The notestation CLI uses the notecard CLI.
-      - name: Install notecard CLI
-        run: |
-          git clone --depth=1 https://github.com/blues/note-cli.git
-          cd note-cli/notecard
-          go build .
-          sudo cp notecard /usr/bin/
-
-      - name: Download and install notestation CLI v2.2.0
-        env:
-          GH_TOKEN: ${{ secrets.NOTESTATION_RELEASE_DOWNLOAD_TOKEN }}
-        run: |
-          api_url="https://api.github.com/repos/blues/notestation/releases/tags/v2.2.0"
-
-          # Query the release asset metadata.
-          asset_info=$(curl -s -H "Authorization: token $GH_TOKEN" "$api_url")
-
-          # Extract the release asset URL and name.
-          asset_url=$(echo "$asset_info" | jq -r '.assets[] | select(.name | endswith(".whl")) | .url')
-          asset_name=$(echo "$asset_info" | jq -r '.assets[] | select(.name | endswith(".whl")) | .name')
-
-          if [ -z "$asset_url" ] || [ -z "$asset_name" ]; then
-            echo "ERROR: No wheel found in release assets."
-            exit 1
-          fi
-
-          # Download the wheel using the original filename.
-          curl -L -H "Authorization: token $GH_TOKEN" \
-               -H "Accept: application/octet-stream" \
-               "$asset_url" -o "$asset_name"
-
-          # Create a virtual environment and install the notestation CLI in it.
-          python -m venv venv
-          source venv/bin/activate
-          wheel_file=$(ls *.whl)
-          pip install "$wheel_file"
+      # Use the Go notestation-client (notestation-v3.2.1+). Its SerialTunnel
+      # publishes the host_mcu_usb symlink only after the server confirms the
+      # USB device is live, and removes it on drop -- so the symlink is a
+      # reliable device-liveness signal, which is what after_upload.py checks
+      # with os.path.exists() before running the tests. The old v2.2.0 Python
+      # client built the tunnel with `socat PTY,link=host_mcu_usb TCP:...`,
+      # which created the symlink as soon as socat started -- before the Swan's
+      # USB was up -- so it flickered while the Swan re-enumerated after
+      # flashing: after_upload.py caught a blink and let the run proceed, then
+      # socat removed the symlink before PlatformIO opened the port, giving
+      # "could not open port .../host_mcu_usb" and 0 tests. See
+      # blues/notestation f6fc011 (first released in notestation-v3.2.1).
+      - name: Install notestation-client
+        uses: blues/notestation-actions/install_notestation_client@v1.0.2
+        with:
+          version: notestation-v3.5.1
+          token: ${{ secrets.NOTESTATION_RELEASE_DOWNLOAD_TOKEN }}
 
       - name: Build and upload test firmware and run tests
         run: |
-          source venv/bin/activate
-
           # Reserve the Notestation in the background
-          nohup notestation client reserve --notestation barcelona-notestation-1 &> card_client.log &
+          nohup notestation-client reserve --notestation barcelona-notestation-1 &> card_client.log &
           PID=$!
 
           timeout=600  # 10 minutes in seconds
@@ -265,10 +244,10 @@ jobs:
 
           echo "Notestation reserved."
 
-          # If firmware update is requested, flash it using notestation client flash
+          # If firmware update is requested, flash it using notestation-client flash
           if [ "${{ env.FIRMWARE_S3_URI }}" == "nightly" ]; then
             echo "Flashing nightly firmware..."
-            notestation client flash --notecard-nightly
+            notestation-client flash --notecard-nightly --notestation barcelona-notestation-1
             echo "Firmware flash complete."
           fi
 
@@ -299,8 +278,10 @@ jobs:
           # Enable Notecard USB trace output.
           printf '{"req":"card.trace","mode":"usb","trace":"req,comm,sync,mem"}\n' > "$RESERVATION_DIR/notecard_usb"
 
-          # Stream Notecard USB output to trace.log in the background.
-          socat -u GOPEN:"$RESERVATION_DIR/notecard_usb",rawer - >> "$GITHUB_WORKSPACE/trace.log" &
+          # Stream Notecard USB output to trace.log in the background. The
+          # notestation-client already exposes notecard_usb as a raw PTY, so a
+          # plain read is enough -- no socat needed.
+          cat "$RESERVATION_DIR/notecard_usb" >> "$GITHUB_WORKSPACE/trace.log" &
           TRACE_PID=$!
           echo "Notecard trace capture started (PID: $TRACE_PID)."
 
