@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structerror" kind="struct" language="C++" prot="public">
+    <compoundname>error</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structerror_1a9b123855d5dd48e86de846588462b39f" prot="public" static="no" mutable="no">
+        <type>const unsigned char *</type>
+        <definition>const unsigned char* error::json</definition>
+        <argsstring></argsstring>
+        <name>json</name>
+        <qualifiedname>error::json</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="83" column="25" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structerror_1a24de70a4d517ab351d80c18582cadb66" prot="public" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t error::position</definition>
+        <argsstring></argsstring>
+        <name>position</name>
+        <qualifiedname>error::position</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="84" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="84" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/note-c/note-c/n_cjson.c" line="82" column="1" bodyfile="/home/runner/work/note-c/note-c/n_cjson.c" bodystart="82" bodyend="85"/>
+    <listofallmembers>
+      <member refid="structerror_1a9b123855d5dd48e86de846588462b39f" prot="public" virt="non-virtual"><scope>error</scope><name>json</name></member>
+      <member refid="structerror_1a24de70a4d517ab351d80c18582cadb66" prot="public" virt="non-virtual"><scope>error</scope><name>position</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
