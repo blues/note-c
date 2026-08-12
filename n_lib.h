@@ -117,6 +117,17 @@ extern uint32_t cardTransactionTimeoutOverrideSecs;
 #define NOTE_DISABLE_USER_AGENT
 #endif // NOTE_C_LOW_MEM
 
+// JSON node storage
+//
+// True when this node's valueint/valuenumber hold the numbers they appear to
+// hold, rather than packed character data. Always true in the default layout;
+// under NOTE_C_STORAGE_OPTIMIZATION it is false only while an inline value or
+// key is actually occupying those bytes. Callers outside n_cjson.c need it
+// because the answer is not derivable from the node's base type: a JString node
+// whose value has been evacuated to the heap has live numeric members, which is
+// exactly what JSetIntValue/JSetNumberValue leave behind.
+bool _jNumericIsLive(const J * const item);
+
 // Transactions
 void _noteResumeTransactionDebug(void);
 void _noteSuspendTransactionDebug(void);

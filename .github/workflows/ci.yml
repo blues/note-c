@@ -191,6 +191,92 @@ jobs:
         run: |
           docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_unit_tests.sh ghcr.io/blues/note_c_ci:latest --mem-check --low-mem --single-precision
 
+  run_layout_matrix_unit_tests:
+    # The historical J layout is the default; NOTE_C_STORAGE_OPTIMIZATION packs
+    # keys and short string values into the node's own allocation. Both layouts
+    # are shipped, so both must stay green.
+    #
+    # Precision is crossed in because it is not independent of layout: JNUMBER
+    # is a float under NOTE_C_SINGLE_PRECISION, which changes the size and tail
+    # padding of the inline region the packed layout carves its storage out of.
+    # A defect confined to one cell of this matrix is otherwise easy to miss.
+    #
+    # Low memory is crossed in as an independent axis too, because it changes
+    # which code compiles at all.
+    #
+    # Between this matrix and the two standalone jobs, all eight cells of
+    # {layout} x {precision} x {low-mem} are built and run: default/double is
+    # run_unit_tests, default/low-mem/single is run_low_mem_unit_tests, and the
+    # remaining six are below.
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build_ci_docker_image]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: default layout, single precision
+            flags: --single-precision
+          - name: storage optimization, default precision
+            flags: --storage-optimization
+          - name: storage optimization, single precision
+            flags: --storage-optimization --single-precision
+          - name: storage optimization, low memory, single precision
+            flags: --storage-optimization --low-mem --single-precision
+          - name: default layout, low memory, double precision
+            flags: --low-mem
+          - name: storage optimization, low memory, double precision
+            flags: --storage-optimization --low-mem
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Load CI Docker image
+        # Only load the Docker image artifact if build_ci_docker_image actually
+        # ran (e.g. it wasn't skipped and was successful).
+        if: ${{ needs.build_ci_docker_image.result == 'success' }}
+        uses: ./.github/actions/load-ci-image
+
+      - name: Run tests (${{ matrix.name }})
+        run: |
+          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_unit_tests.sh ghcr.io/blues/note_c_ci:latest --mem-check ${{ matrix.flags }}
+
+  run_j_layout_ab_comparison:
+    # Proves the two layouts render byte-identically, and publishes the memory
+    # difference in the job log.
+    #
+    # Run at both precisions. JNUMBER is a float under NOTE_C_SINGLE_PRECISION,
+    # which removes the historical layout's tail padding on its own: sizeof(J)
+    # is 40 in BOTH layouts there, so the saving is materially smaller and comes
+    # entirely from inline packing. Publishing only the double-precision table
+    # would overstate the win for single-precision targets.
+    runs-on: ubuntu-latest
+    if: ${{ always() }}
+    needs: [build_ci_docker_image]
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: double precision
+            flags: ""
+          - name: single precision
+            flags: --single-precision
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Load CI Docker image
+        if: ${{ needs.build_ci_docker_image.result == 'success' }}
+        uses: ./.github/actions/load-ci-image
+
+      - name: Compare default and storage-optimized J layouts (${{ matrix.name }})
+        run: |
+          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_ab_layout_comparison.sh ghcr.io/blues/note_c_ci:latest ${{ matrix.flags }}
+
   run_astyle:
     runs-on: ubuntu-latest
     if: ${{ always() }}
