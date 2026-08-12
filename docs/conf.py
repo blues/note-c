@@ -32,7 +32,15 @@ extensions = [
     'sphinx.ext.autosectionlabel',
     'sphinxcontrib.jquery',
 ]
-suppress_warnings = ['autosectionlabel.*']
+
+# Only load sphinx_markdown_builder when building markdown
+if args.builder == 'markdown':
+    extensions.append('sphinx_markdown_builder')
+suppress_warnings = [
+    'autosectionlabel.*',
+    'config.cache',  # Suppress locale directory warnings
+    'misc.highlighting_failure',  # Suppress highlighting warnings
+]
 templates_path = ['_templates']
 exclude_patterns = ['build/']
 master_doc = 'index'
@@ -68,3 +76,45 @@ html_theme_options = {
     'logo_only': True,
     'prev_next_buttons_location': None
 }
+
+# Options for Markdown output
+
+markdown_http_base = 'https://blues.github.io/note-c'
+markdown_uri_doc_suffix = '.html'
+
+# Custom handling for sphinx-markdown-builder compatibility
+def setup(app):
+    """Setup custom handlers for node types not supported by sphinx-markdown-builder."""
+    from docutils import nodes
+    from sphinx import addnodes
+    import logging
+
+    # Suppress the parallel reading warning for sphinx_markdown_builder
+    logger = logging.getLogger('sphinx')
+
+    # Check if we're using the markdown builder
+    if app.config._raw_config.get('_running_markdown_builder', False):
+        return
+
+    # Add a flag to detect when markdown builder is running
+    def builder_inited(app):
+        if app.builder.name == 'markdown':
+            app.config._running_markdown_builder = True
+            # Register handlers for unsupported node types
+            try:
+                from sphinx_markdown_builder.translator import MarkdownTranslator
+
+                # Handle desc_signature_line by treating it as a regular paragraph
+                def visit_desc_signature_line(self, node):
+                    pass
+
+                def depart_desc_signature_line(self, node):
+                    pass
+
+                MarkdownTranslator.visit_desc_signature_line = visit_desc_signature_line
+                MarkdownTranslator.depart_desc_signature_line = depart_desc_signature_line
+
+            except ImportError:
+                pass
+
+    app.connect('builder-inited', builder_inited)
