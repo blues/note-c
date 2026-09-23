@@ -208,7 +208,7 @@ jobs:
       - name: Install notestation-client
         uses: blues/notestation-actions/install_notestation_client@v1.0.2
         with:
-          version: notestation-v3.5.1
+          version: notestation-v3.7.0
           token: ${{ secrets.NOTESTATION_RELEASE_DOWNLOAD_TOKEN }}
 
       - name: Build and upload test firmware and run tests
