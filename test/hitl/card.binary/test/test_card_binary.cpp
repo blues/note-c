@@ -428,6 +428,14 @@ TEST(test_max_length_aux_serial)
 
 void waitForNotecardConnected()
 {
+    // Set the product and mode before waiting. The Notestation is shared, so
+    // the previous user can leave a different product UID on the Notecard. If
+    // that product has no Notehub project, the Notecard delays its connect
+    // attempts ("connect delayed", the penalty box) for several minutes. A
+    // hub.set that changes the product also clears that delay.
+    assert_initialize_notecard(NOTECARD_IF_I2C);
+    TEST_ASSERT_TRUE_MESSAGE(cardBinary.notecardConnectionMode(), "Unable to set Notecard connection mode");
+
     // TODO: waitForNotecardConnected takes timeout in milliseconds, so 5*60 seems wrong?
     TEST_ASSERT_TRUE_MESSAGE(NotecardBinary::waitForNotecardConnected(NOT_CONNECTED_TIMEOUT), "Notecard not connected");
 }

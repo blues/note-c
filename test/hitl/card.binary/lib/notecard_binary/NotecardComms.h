@@ -10,7 +10,7 @@ enum NotecardInterface {
 };
 
 #ifndef NOTECARD_IF_SERIAL_PORT
-#define NOTECARD_IF_SERIAL_PORT Serial3
+#define NOTECARD_IF_SERIAL_PORT notecardSerial
 #endif
 
 #ifndef NOTECARD_IF_SERIAL_BAUDRATE
@@ -35,6 +35,18 @@ HardwareSerial stlinkSerial(PIN_VCP_RX, PIN_VCP_TX);
 #else
 #define dbgSerial Serial
 #endif
+
+// In STM32 Arduino core 3.x, HardwareSerial is an abstract base class and Uart
+// is the concrete UART class. Core 2.x has no Uart class.
+#if STM32_CORE_VERSION_MAJOR >= 3
+typedef Uart UartSerial;
+#else
+typedef HardwareSerial UartSerial;
+#endif
+
+// Don't name this Serial2 or Serial3. Core 3.x declares those itself, and a
+// second declaration with a different type won't compile.
+extern UartSerial notecardSerial;
 
 bool initialize_notecard_interface(NotecardInterface iface);
 size_t readDataUntilTimeout(Stream& serial, size_t timeout, uint8_t* buf, size_t bufLen, size_t dataLen, size_t& duration);
