@@ -8,6 +8,14 @@
 #
 # If the "target extended-remote" -ex before this file fails, the first
 # "monitor" command here fails too, so that case also exits non-zero.
+#
+# GDB prints load progress only for interactive commands, so the echo lines
+# and compare-sections show in the CI log what was flashed. compare-sections
+# reports a mismatch as a warning, not an error.
 monitor reset halt
+echo Loading firmware...\n
 load
+echo Comparing flash with the ELF...\n
+compare-sections
 monitor reset
+echo Upload done.\n
