@@ -92,7 +92,11 @@ jobs:
 
       - name: Generate MD5 Server Token
         run: |
-          [ -n "$MD5SRV_TOKEN" ] || echo "MD5SRV_TOKEN=`uuidgen`" >> $GITHUB_ENV
+          [ -n "$MD5SRV_TOKEN" ] || MD5SRV_TOKEN=`uuidgen`
+          # Mask the token before it goes into GITHUB_ENV. Otherwise, GitHub
+          # prints it in plain text in the env block of every later step.
+          echo "::add-mask::$MD5SRV_TOKEN"
+          echo "MD5SRV_TOKEN=$MD5SRV_TOKEN" >> $GITHUB_ENV
 
       # gdb-multiarch: We used gdb to remotely flash the test firmware onto the
       # Swan attached to the Notestation. Apparently "regular" gdb (i.e.
@@ -148,13 +152,15 @@ jobs:
       - name: Create Notehub accesss token
         if: env.CREATE_NOTEHUB_ROUTES!='false'
         run: |
+          # Mask the token before it goes into GITHUB_ENV. Otherwise, GitHub
+          # prints it in plain text in the env block of every later step.
           curl -f -X POST \
             -L 'https://${{ env.NOTEHUB }}/oauth2/token' \
             -H 'content-type: application/x-www-form-urlencoded' \
             -d grant_type=client_credentials \
             -d client_id=${{ secrets.NOTEHUB_HIL_CLIENT_ID }} \
             -d client_secret=${{ secrets.NOTEHUB_HIL_CLIENT_SECRET }} | \
-            { token=$(jq -r .access_token); echo "NOTEHUB_ACCESS_TOKEN=$token" >> $GITHUB_ENV; }
+            { token=$(jq -r .access_token); echo "::add-mask::$token"; echo "NOTEHUB_ACCESS_TOKEN=$token" >> $GITHUB_ENV; }
 
       - name: Create Notehub HTTP route
         if: env.CREATE_NOTEHUB_ROUTES!='false'
