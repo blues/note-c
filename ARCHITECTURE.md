@@ -35,7 +35,7 @@ Use this file to understand what the architecture is meant to be. Use `source-re
 - `n_serial.c`: serial transport implementation and chunked newline-framed serial transmit/receive behavior.
 - `n_i2c.c`: I2C transport implementation and chunked newline-framed I2C transmit/receive behavior.
 - `n_hooks.c`: global function-pointer hook registry, active-interface dispatch, and invocation of platform hooks for memory, time, mutexes, debug output, and transports.
-- `n_cjson.c`, `n_cjson.h`, `n_cjson_helpers.c`: bundled JSON representation and helper APIs.
+- `n_cjson.c`, `n_cjson.h`, `n_cjson_helpers.c`: bundled JSON representation and helper APIs. The `J` node has two compile-time storage layouts; see "JSON node storage" below.
 - `n_helpers.c`, `n_str.c`, `n_printf.c`, `n_atof.c`, `n_ftoa.c`, `n_b64.c`, `n_cobs.c`, `n_md5.c`, `n_const.c`, `n_ua.c`: portability helpers, encoding, formatting, constants, and utility behavior.
 - `test/`: unit tests and mocks for protecting SDK behavior without requiring real hardware.
 - `scripts/`: local automation for checks, documentation, and release support.
@@ -68,6 +68,17 @@ Applications normally build requests as `J` objects, send them through `NoteRequ
 
 Transport and platform behavior is supplied through hooks so the same core code can run on microcontrollers, embedded Linux, tests, and other C/C++ environments. Serial and I2C transports move raw newline-framed bytes through hook dispatch. Binary payload helpers, not the transport implementations, own COBS framing and MD5 verification.
 
+## JSON Node Storage
+
+`J` has two storage layouts, selected at compile time. Both produce byte-identical JSON and expose the same API; they differ only in how a node's key and string value are allocated.
+
+- **Historical layout (default).** A node is 48 bytes on a 32-bit target. A member's key and its string value each occupy their own heap allocation, so `"key":"value"` costs three allocations.
+- **`NOTE_C_STORAGE_OPTIMIZATION`.** A node is 40 bytes, and a member's key and short string value are carved out of the node's own allocation, so the same member costs one allocation. The bytes occupied by `valueint` and `valuenumber` — which a `JString`/`JRaw` node never uses — hold that content, and a `objlen` member records the node's allocation size. Over a representative corpus this removes roughly 38% of allocations and 26% of the heap a parsed document holds.
+
+Ownership is expressed by four `type` flags: `JIsReference` and `JStringIsConst` (pre-existing, unchanged meanings), plus `JValueInline` and `JKeyInline`, which are only set under the optimization and record that a pointer addresses the node's own allocation. Every mutation of `valuestring` and `string` routes through storage helpers in `n_cjson.c`, so the layout-conditional code stays confined to those helpers; the parser, printer, and public API are layout-agnostic.
+
+The optimization is **off by default**, deferred pending a planned external beta of the historical layout, and because it changes the public representation of `J`: `sizeof(J)` changes, member offsets move, `type` narrows from `int` to `uint16_t`, `objlen` is added, and on a string node `valueint`/`valuenumber` may hold character data. note-c is always compiled from source as part of the customer solution, so the requirement is that every translation unit seeing `J` uses the same setting — the note-c sources and the customer sources alike. The CMake option propagates `PUBLIC` to enforce that, exactly as `NOTE_C_SINGLE_PRECISION` does. See `docs/architecture/decisions/0002-j-node-storage-layout.md`.
+
 ## Public Contracts
 
 The main compatibility contracts are:
@@ -77,7 +88,8 @@ The main compatibility contracts are:
 - Request/response ownership semantics for public transaction APIs.
 - Hook signatures for serial, I2C, memory, mutex, time, and debug output.
 - Notecard request/response semantics and timeout/retry behavior.
-- Build configuration behavior for low-memory, single-precision, user-agent, CRC, and portability-helper variants.
+- Build configuration behavior for low-memory, single-precision, storage-optimization, user-agent, CRC, and portability-helper variants.
+- The in-memory representation of `J` itself, which downstream code reads directly. `NOTE_C_STORAGE_OPTIMIZATION` changes that representation and is therefore opt-in; see "JSON node storage".
 - Version constants and release expectations documented in `README.md`.
 
 Breaking changes to these contracts require deliberate versioning, migration notes, and architecture documentation updates.
@@ -87,6 +99,8 @@ Breaking changes to these contracts require deliberate versioning, migration not
 `note-c` is intentionally self-contained and portable. It vendors the JSON implementation and avoids mandatory platform runtime dependencies. Adapter repositories may embed or wrap this repository, including `note-arduino`, `note-zephyr`, `note-espidf`, and POSIX-focused integrations.
 
 Build configuration is part of the portability model. CMake detects platform `strlcpy`/`strlcat` support and only includes bundled `n_str.c` helpers when needed. Low-memory builds disable user-agent support and request CRC paths, omit `n_ua.c`, use compact error/log constants, and reduce allocation chunk size.
+
+Two CMake options change the public representation rather than only behavior, and are propagated `PUBLIC` so every translation unit that sees `J` agrees: `NOTE_C_SINGLE_PRECISION` (which changes the width of `JNUMBER`) and `NOTE_C_STORAGE_OPTIMIZATION` (which changes the layout of `J`). note-c is always compiled from source as part of the consuming solution, so this is a single-build consistency requirement.
 
 ## Runtime Model
 

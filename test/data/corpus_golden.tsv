@@ -1,0 +1,205 @@
+# Rendered by the historical note-c implementation.
+# Regenerate with scripts/generate_corpus_golden.sh -- do not hand-edit.
+# revision	9a12cfc
+# precision	double
+#doc	mode	output
+null	compact	null
+null	compact-omitempty	null
+null	formatted	null
+null	formatted-omitempty	null
+true	compact	true
+true	compact-omitempty	true
+true	formatted	true
+true	formatted-omitempty	true
+false	compact	false
+false	compact-omitempty	false
+false	formatted	false
+false	formatted-omitempty	false
+zero	compact	0
+zero	compact-omitempty	0
+zero	formatted	0
+zero	formatted-omitempty	0
+negative-int	compact	-12345
+negative-int	compact-omitempty	-12345
+negative-int	formatted	-12345
+negative-int	formatted-omitempty	-12345
+big-int-exact	compact	9007199254740993
+big-int-exact	compact-omitempty	9007199254740993
+big-int-exact	formatted	9007199254740993
+big-int-exact	formatted-omitempty	9007199254740993
+huge-int	compact	1234567890123456789
+huge-int	compact-omitempty	1234567890123456789
+huge-int	formatted	1234567890123456789
+huge-int	formatted-omitempty	1234567890123456789
+fraction	compact	3.25
+fraction	compact-omitempty	3.25
+fraction	formatted	3.25
+fraction	formatted-omitempty	3.25
+negative-fraction	compact	-0.125
+negative-fraction	compact-omitempty	-0.125
+negative-fraction	formatted	-0.125
+negative-fraction	formatted-omitempty	-0.125
+exp-small	compact	1.5e-07
+exp-small	compact-omitempty	1.5e-07
+exp-small	formatted	1.5e-07
+exp-small	formatted-omitempty	1.5e-07
+string-short	compact	"hi"
+string-short	compact-omitempty	"hi"
+string-short	formatted	"hi"
+string-short	formatted-omitempty	"hi"
+string-empty	compact	""
+string-empty	compact-omitempty	""
+string-empty	formatted	""
+string-empty	formatted-omitempty	""
+val-len-14	compact	"abcdefghijklmn"
+val-len-14	compact-omitempty	"abcdefghijklmn"
+val-len-14	formatted	"abcdefghijklmn"
+val-len-14	formatted-omitempty	"abcdefghijklmn"
+val-len-15	compact	"abcdefghijklmno"
+val-len-15	compact-omitempty	"abcdefghijklmno"
+val-len-15	formatted	"abcdefghijklmno"
+val-len-15	formatted-omitempty	"abcdefghijklmno"
+val-len-16	compact	"abcdefghijklmnop"
+val-len-16	compact-omitempty	"abcdefghijklmnop"
+val-len-16	formatted	"abcdefghijklmnop"
+val-len-16	formatted-omitempty	"abcdefghijklmnop"
+val-len-17	compact	"abcdefghijklmnopq"
+val-len-17	compact-omitempty	"abcdefghijklmnopq"
+val-len-17	formatted	"abcdefghijklmnopq"
+val-len-17	formatted-omitempty	"abcdefghijklmnopq"
+val-len-31	compact	"abcdefghijklmnopqrstuvwxyz01234"
+val-len-31	compact-omitempty	"abcdefghijklmnopqrstuvwxyz01234"
+val-len-31	formatted	"abcdefghijklmnopqrstuvwxyz01234"
+val-len-31	formatted-omitempty	"abcdefghijklmnopqrstuvwxyz01234"
+key-len-14	compact	{"abcdefghijklmn":1}
+key-len-14	compact-omitempty	{"abcdefghijklmn":1}
+key-len-14	formatted	{\n    "abcdefghijklmn": 1\n}
+key-len-14	formatted-omitempty	{\n    "abcdefghijklmn": 1\n}
+key-len-15	compact	{"abcdefghijklmno":1}
+key-len-15	compact-omitempty	{"abcdefghijklmno":1}
+key-len-15	formatted	{\n    "abcdefghijklmno": 1\n}
+key-len-15	formatted-omitempty	{\n    "abcdefghijklmno": 1\n}
+key-len-16	compact	{"abcdefghijklmnop":1}
+key-len-16	compact-omitempty	{"abcdefghijklmnop":1}
+key-len-16	formatted	{\n    "abcdefghijklmnop": 1\n}
+key-len-16	formatted-omitempty	{\n    "abcdefghijklmnop": 1\n}
+key-len-17	compact	{"abcdefghijklmnopq":1}
+key-len-17	compact-omitempty	{"abcdefghijklmnopq":1}
+key-len-17	formatted	{\n    "abcdefghijklmnopq": 1\n}
+key-len-17	formatted-omitempty	{\n    "abcdefghijklmnopq": 1\n}
+key-and-val-boundary	compact	{"abcdefghijklmno":"abcdefghijklmno"}
+key-and-val-boundary	compact-omitempty	{"abcdefghijklmno":"abcdefghijklmno"}
+key-and-val-boundary	formatted	{\n    "abcdefghijklmno": "abcdefghijklmno"\n}
+key-and-val-boundary	formatted-omitempty	{\n    "abcdefghijklmno": "abcdefghijklmno"\n}
+escapes-short	compact	"q\\"w\\\\e\\nr\\tt\\b\\f\\r"
+escapes-short	compact-omitempty	"q\\"w\\\\e\\nr\\tt\\b\\f\\r"
+escapes-short	formatted	"q\\"w\\\\e\\nr\\tt\\b\\f\\r"
+escapes-short	formatted-omitempty	"q\\"w\\\\e\\nr\\tt\\b\\f\\r"
+escapes-control	compact	"\\u0001
+escapes-control	compact-omitempty	"\\u0001
+escapes-control	formatted	"\\u0001
+escapes-control	formatted-omitempty	"\\u0001
+escapes-mixed	compact	"a\\u0001
+escapes-mixed	compact-omitempty	"a\\u0001
+escapes-mixed	formatted	"a\\u0001
+escapes-mixed	formatted-omitempty	"a\\u0001
+escaped-key	compact	{"a\\u0001:"v"}
+escaped-key	compact-omitempty	{"a\\u0001:"v"}
+escaped-key	formatted	{\n    "a\\u0001: "v"\n}
+escaped-key	formatted-omitempty	{\n    "a\\u0001: "v"\n}
+escaped-key-quote	compact	{"q\\"k":"w"}
+escaped-key-quote	compact-omitempty	{"q\\"k":"w"}
+escaped-key-quote	formatted	{\n    "q\\"k": "w"\n}
+escaped-key-quote	formatted-omitempty	{\n    "q\\"k": "w"\n}
+utf8-value	compact	"é€"
+utf8-value	compact-omitempty	"é€"
+utf8-value	formatted	"é€"
+utf8-value	formatted-omitempty	"é€"
+empty-object	compact	{}
+empty-object	compact-omitempty	{}
+empty-object	formatted	{\n}
+empty-object	formatted-omitempty	{\n}
+empty-array	compact	[]
+empty-array	compact-omitempty	[]
+empty-array	formatted	[]
+empty-array	formatted-omitempty	[]
+flat-array	compact	[1,2,3]
+flat-array	compact-omitempty	[1,2,3]
+flat-array	formatted	[1, 2, 3]
+flat-array	formatted-omitempty	[1, 2, 3]
+mixed-array	compact	[1,"two",false,3.25,null,{},[]]
+mixed-array	compact-omitempty	[1,"two",false,3.25,null,{},[]]
+mixed-array	formatted	[1, "two", false, 3.25, null, {\n    }, []]
+mixed-array	formatted-omitempty	[1, "two", false, 3.25, null, {\n    }, []]
+simple-object	compact	{"a":"b"}
+simple-object	compact-omitempty	{"a":"b"}
+simple-object	formatted	{\n    "a": "b"\n}
+simple-object	formatted-omitempty	{\n    "a": "b"\n}
+nested-object	compact	{"a":{"b":{"c":1}}}
+nested-object	compact-omitempty	{"a":{"b":{"c":1}}}
+nested-object	formatted	{\n    "a": {\n        "b": {\n            "c": 1\n        }\n    }\n}
+nested-object	formatted-omitempty	{\n    "a": {\n        "b": {\n            "c": 1\n        }\n    }\n}
+object-of-arrays	compact	{"a":[1,[2,[3]]],"b":[]}
+object-of-arrays	compact-omitempty	{"a":[1,[2,[3]]],"b":[]}
+object-of-arrays	formatted	{\n    "a": [1, [2, [3]]],\n    "b": []\n}
+object-of-arrays	formatted-omitempty	{\n    "a": [1, [2, [3]]],\n    "b": []\n}
+array-of-objects	compact	[{"a":1},{"b":2}]
+array-of-objects	compact-omitempty	[{"a":1},{"b":2}]
+array-of-objects	formatted	[{\n        "a": 1\n    }, {\n        "b": 2\n    }]
+array-of-objects	formatted-omitempty	[{\n        "a": 1\n    }, {\n        "b": 2\n    }]
+all-falsy	compact	{"a":0,"b":false,"c":""}
+all-falsy	compact-omitempty	{}
+all-falsy	formatted	{\n    "a": 0,\n    "b": false,\n    "c": ""\n}
+all-falsy	formatted-omitempty	{\n            }
+falsy-around	compact	{"a":0,"b":1,"c":0}
+falsy-around	compact-omitempty	{"b":1}
+falsy-around	formatted	{\n    "a": 0,\n    "b": 1,\n    "c": 0\n}
+falsy-around	formatted-omitempty	{\n        "b": 1\n    }
+falsy-array	compact	[0,false,"",1]
+falsy-array	compact-omitempty	[0,false,"",1]
+falsy-array	formatted	[0, false, "", 1]
+falsy-array	formatted-omitempty	[0, false, "", 1]
+nested-falsy	compact	{"outer":{"a":0,"b":2,"c":false},"keep":1,"drop":0}
+nested-falsy	compact-omitempty	{"outer":{"b":2},"keep":1}
+nested-falsy	formatted	{\n    "outer": {\n        "a": 0,\n        "b": 2,\n        "c": false\n    },\n    "keep": 1,\n    "drop": 0\n}
+nested-falsy	formatted-omitempty	{\n    "outer": {\n                "b": 2\n            },\n    "keep": 1\n    }
+note-add	compact	{"req":"note.add","file":"sensors.qo","sync":true,"body":{"temp":22.5,"humid":48.2,"volts":3.31,"count":17}}
+note-add	compact-omitempty	{"req":"note.add","file":"sensors.qo","sync":true,"body":{"temp":22.5,"humid":48.2,"volts":3.31,"count":17}}
+note-add	formatted	{\n    "req": "note.add",\n    "file": "sensors.qo",\n    "sync": true,\n    "body": {\n        "temp": 22.5,\n        "humid": 48.2,\n        "volts": 3.31,\n        "count": 17\n    }\n}
+note-add	formatted-omitempty	{\n    "req": "note.add",\n    "file": "sensors.qo",\n    "sync": true,\n    "body": {\n        "temp": 22.5,\n        "humid": 48.2,\n        "volts": 3.31,\n        "count": 17\n    }\n}
+env-vars	compact	{"body":{"a":"1","b":"2","c":"3","d":"4","e":"5","f":"6","g":"7","h":"8"}}
+env-vars	compact-omitempty	{"body":{"a":"1","b":"2","c":"3","d":"4","e":"5","f":"6","g":"7","h":"8"}}
+env-vars	formatted	{\n    "body": {\n        "a": "1",\n        "b": "2",\n        "c": "3",\n        "d": "4",\n        "e": "5",\n        "f": "6",\n        "g": "7",\n        "h": "8"\n    }\n}
+env-vars	formatted-omitempty	{\n    "body": {\n        "a": "1",\n        "b": "2",\n        "c": "3",\n        "d": "4",\n        "e": "5",\n        "f": "6",\n        "g": "7",\n        "h": "8"\n    }\n}
+note-changes	compact	{"notes":{"a1":{"body":{"t":1}},"a2":{"body":{"t":2}},"a3":{"body":{"t":3}}}}
+note-changes	compact-omitempty	{"notes":{"a1":{"body":{"t":1}},"a2":{"body":{"t":2}},"a3":{"body":{"t":3}}}}
+note-changes	formatted	{\n    "notes": {\n        "a1": {\n            "body": {\n                "t": 1\n            }\n        },\n        "a2": {\n            "body": {\n                "t": 2\n            }\n        },\n        "a3": {\n            "body": {\n                "t": 3\n            }\n        }\n    }\n}
+note-changes	formatted-omitempty	{\n    "notes": {\n        "a1": {\n            "body": {\n                "t": 1\n            }\n        },\n        "a2": {\n            "body": {\n                "t": 2\n            }\n        },\n        "a3": {\n            "body": {\n                "t": 3\n            }\n        }\n    }\n}
+card-status	compact	{"status":"{normal}","usb":true,"storage":8,"time":1598479763,"connected":true}
+card-status	compact-omitempty	{"status":"{normal}","usb":true,"storage":8,"time":1598479763,"connected":true}
+card-status	formatted	{\n    "status": "{normal}",\n    "usb": true,\n    "storage": 8,\n    "time": 1598479763,\n    "connected": true\n}
+card-status	formatted-omitempty	{\n    "status": "{normal}",\n    "usb": true,\n    "storage": 8,\n    "time": 1598479763,\n    "connected": true\n}
+web-post	compact	{"req":"web.post","route":"weather","name":"/current","body":{"lat":42.36,"lon":-71.06},"content":"application/json"}
+web-post	compact-omitempty	{"req":"web.post","route":"weather","name":"/current","body":{"lat":42.36,"lon":-71.06},"content":"application/json"}
+web-post	formatted	{\n    "req": "web.post",\n    "route": "weather",\n    "name": "/current",\n    "body": {\n        "lat": 42.36,\n        "lon": -71.06\n    },\n    "content": "application/json"\n}
+web-post	formatted-omitempty	{\n    "req": "web.post",\n    "route": "weather",\n    "name": "/current",\n    "body": {\n        "lat": 42.36,\n        "lon": -71.06\n    },\n    "content": "application/json"\n}
+long-string-value	compact	{"body":{"msg":"this string is definitely longer than sixteen characters and forces the overflow path"}}
+long-string-value	compact-omitempty	{"body":{"msg":"this string is definitely longer than sixteen characters and forces the overflow path"}}
+long-string-value	formatted	{\n    "body": {\n        "msg": "this string is definitely longer than sixteen characters and forces the overflow path"\n    }\n}
+long-string-value	formatted-omitempty	{\n    "body": {\n        "msg": "this string is definitely longer than sixteen characters and forces the overflow path"\n    }\n}
+many-members	compact	{"k00":0,"k01":1,"k02":2,"k03":3,"k04":4,"k05":5,"k06":6,"k07":7,"k08":8,"k09":9,"k10":10,"k11":11}
+many-members	compact-omitempty	{"k01":1,"k02":2,"k03":3,"k04":4,"k05":5,"k06":6,"k07":7,"k08":8,"k09":9,"k10":10,"k11":11}
+many-members	formatted	{\n    "k00": 0,\n    "k01": 1,\n    "k02": 2,\n    "k03": 3,\n    "k04": 4,\n    "k05": 5,\n    "k06": 6,\n    "k07": 7,\n    "k08": 8,\n    "k09": 9,\n    "k10": 10,\n    "k11": 11\n}
+many-members	formatted-omitempty	{\n        "k01": 1,\n    "k02": 2,\n    "k03": 3,\n    "k04": 4,\n    "k05": 5,\n    "k06": 6,\n    "k07": 7,\n    "k08": 8,\n    "k09": 9,\n    "k10": 10,\n    "k11": 11\n}
+deep-nesting	compact	[[[[[[[[[[1]]]]]]]]]]
+deep-nesting	compact-omitempty	[[[[[[[[[[1]]]]]]]]]]
+deep-nesting	formatted	[[[[[[[[[[1]]]]]]]]]]
+deep-nesting	formatted-omitempty	[[[[[[[[[[1]]]]]]]]]]
+number-array-20	compact	{"data":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]}
+number-array-20	compact-omitempty	{"data":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]}
+number-array-20	formatted	{\n    "data": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]\n}
+number-array-20	formatted-omitempty	{\n    "data": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]\n}
+string-array	compact	["alpha","beta","gamma","delta","epsilon"]
+string-array	compact-omitempty	["alpha","beta","gamma","delta","epsilon"]
+string-array	formatted	["alpha", "beta", "gamma", "delta", "epsilon"]
+string-array	formatted-omitempty	["alpha", "beta", "gamma", "delta", "epsilon"]

@@ -90,7 +90,18 @@ char *JStringValue(J *item)
 
 JNUMBER JNumberValue(J *item)
 {
-    if (item == NULL) {
+    // Guarded on whether the numeric members currently hold numbers, NOT on the
+    // node's base type. Under NOTE_C_STORAGE_OPTIMIZATION a JString/JRaw node
+    // may be lending those bytes to an inline value or key, and reading them as
+    // a number would return character data.
+    //
+    // But a string node whose content is on the heap has genuinely live numeric
+    // members, and JSetIntValue/JSetNumberValue have always been able to put
+    // numbers there without changing the node's type. Keying this on the type
+    // made that state unreadable -- including in the default layout, where
+    // nothing is ever overlaid. _jNumericIsLive() is unconditionally true
+    // there, so the historical behavior is exact.
+    if (!_jNumericIsLive(item)) {
         return 0.0;
     }
     return item->valuenumber;
@@ -113,7 +124,8 @@ JNUMBER JGetNumber(J *json, const char *field)
 
 JINTEGER JIntValue(J *item)
 {
-    if (item == NULL) {
+    // See JNumberValue() above.
+    if (!_jNumericIsLive(item)) {
         return 0;
     }
     return item->valueint;

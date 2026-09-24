@@ -47,6 +47,11 @@ macro(add_test TEST_NAME)
         PRIVATE -Og
         PRIVATE -ggdb
     )
+    # Where the checked-in goldens live, so a test can read them at runtime
+    # without depending on the working directory ctest happens to use.
+    target_compile_definitions(${TEST_NAME}
+        PRIVATE J_TEST_DATA_DIR="${CMAKE_CURRENT_SOURCE_DIR}/data"
+    )
     if(APPLE)
         # Allow test fakes (FFF) to interpose symbols from the note_c dylib
         target_link_options(${TEST_NAME} PRIVATE -Wl,-flat_namespace)
@@ -112,9 +117,25 @@ add_test(JIsExactString_test)
 add_test(JIsNullString_test)
 add_test(JIsPresent_test)
 add_test(JItoA_test)
+add_test(JLayout_test)
 add_test(JNtoA_test)
 add_test(JNumberValue_test)
 add_test(JPrintUnformatted_test)
+add_test(JPublicApiCompat_test)
+add_test(JReferenceAndFailure_test)
+
+# note-c is a C library, but every test above is a C++ translation unit, so the
+# public J macros would otherwise never be compiled as C. This adds a C source
+# to the compatibility test that exercises them, with -Werror so that binding a
+# const-qualified result to `char *` -- a hard error in C++ but only a warning
+# in C -- fails the build here too.
+target_sources(JPublicApiCompat_test
+    PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/j_public_api_compat_c.c
+)
+set_source_files_properties(
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/j_public_api_compat_c.c
+    PROPERTIES COMPILE_OPTIONS "-Wall;-Wextra;-Werror"
+)
 add_test(JSON_number_handling_test)
 add_test(JStringValue_test)
 add_test(JType_test)

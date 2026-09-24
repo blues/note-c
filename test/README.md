@@ -113,6 +113,27 @@ basic behavior.
     Some platforms (like AVR) do not provide a 64-bit double precision type.
     On such platforms, `double` is typically implemented as `float`.
 
+- `--storage-optimization`
+
+    Builds and runs the unit-tests with the `NOTE_C_STORAGE_OPTIMIZATION` flag
+    present, selecting the memory-optimized `J` layout. By default `J` uses the
+    historical layout, in which a node is 48 bytes on a 32-bit target and a
+    member's key and string value each take their own heap allocation. With this
+    flag the node is 40 bytes and short keys and values are packed into the
+    node's own allocation, so a short string member costs one allocation instead
+    of three.
+
+    Both layouts are shipped and both must stay green. They must produce
+    byte-identical JSON; `scripts/run_ab_layout_comparison.sh` builds both,
+    proves the outputs match, and tabulates the memory difference. The
+    specification is in
+    `docs/architecture/decisions/0002-j-node-storage-layout.md`.
+
+    > _**NOTE:** this flag changes `sizeof(J)` and the offset of nearly every
+    member, so it must be set identically for the library and for every consumer
+    that includes `note.h` — exactly as `NOTE_C_SINGLE_PRECISION` must be. The
+    CMake option propagates it `PUBLIC` for that reason._
+
 - `--verbose`
 
     Provides comprehensive build logs to assist in test debugging.
@@ -153,6 +174,11 @@ each memory allocation and free (Default: `OFF`).
 - `-DNOTE_C_SINGLE_PRECISION:BOOL=ON`: Runs the unit-tests over code compiled
 with the `NOTE_C_SINGLE_PRECISION` flag enabled. All doubles are treated as
 single precision, which is commonplace on many MCUs (Default: `OFF`).
+- `-DNOTE_C_STORAGE_OPTIMIZATION:BOOL=ON`: Runs the unit-tests over code
+compiled with the `NOTE_C_STORAGE_OPTIMIZATION` flag enabled, selecting the
+memory-optimized `J` layout described above. Like `NOTE_C_SINGLE_PRECISION`
+this changes `sizeof(J)`, so it is propagated `PUBLIC` and must match between
+the library and every consumer (Default: `OFF`).
 - `-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON --log-level=VERBOSE`: Increase the verbosity
 of the build system (Default: `OFF`).
 

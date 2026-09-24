@@ -491,10 +491,24 @@ SCENARIO("NoteRequestResponseJSON")
 
             AND_GIVEN("_Malloc fails to allocate rspJSON") {
                 NoteMalloc_fake.custom_fake = [](size_t size) -> void * {
-                    // Allow the first seventeen calls to malloc to succeed for
-                    // JParse(6), JCreateObject(9) and JPrintUnformatted(2), but
-                    // fail the eighteenth call.
-                    if (NoteMalloc_fake.call_count > 17)
+                    // Fail the allocation of rspJSON itself, identified by its
+                    // SIZE rather than by a fixed call ordinal.
+                    //
+                    // An ordinal cannot work here: the number of allocations
+                    // that precede this one depends on the J storage layout,
+                    // and NOTE_C_STORAGE_OPTIMIZATION makes fewer of them. The
+                    // previous "fail the eighteenth call" never fired in that
+                    // build, so the case silently stopped testing anything and
+                    // NoteRequestResponseJSON returned a non-NULL result that
+                    // the assertion below then rejected.
+                    //
+                    // The size is that of the rendered error document, which is
+                    // layout-independent because both layouts print identical
+                    // JSON. _errDoc builds it from the transaction error and
+                    // the request's id, both fixed by this scenario.
+                    const size_t rspJSONAllocSize =
+                        sizeof("{\"err\":\"an error occurred\",\"src\":\"note-c\",\"id\":917}") + 1;
+                    if (size == rspJSONAllocSize)
                     {
                         return NULL;
                     }
