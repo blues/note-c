@@ -39,7 +39,7 @@ jobs:
       github.event.repository.fork != true &&
       github.actor != 'dependabot[bot]' &&
       (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # A healthy run reserves, flashes, and runs the suite in well under this.
     # The cap ensures a stuck serial monitor fails fast instead of burning the
     # default 6h job timeout.

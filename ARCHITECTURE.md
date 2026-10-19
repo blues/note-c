@@ -104,7 +104,7 @@ Before heavy Docker-based test runs in the OpenClaw workspace, follow the resour
 
 ### Continuous Integration
 
-CI runs on GitHub-hosted runners from `.github/workflows/`:
+CI runs on GitHub-hosted runners from `.github/workflows/`. Linux jobs are pinned to `ubuntu-24.04` so runner-image upgrades happen deliberately; the macOS job stays on `macos-latest`.
 
 - `ci.yml`: unit tests (with coverage and valgrind memcheck), low-memory/single-precision tests, astyle, cppcheck, the docs build, and the libc dependency check run inside the `ghcr.io/blues/note_c_ci` image built from `.devcontainer/ci/Dockerfile`. The `add_subdirectory` integration test and a build-only macOS job run directly on the runner.
 - CI image: when the Dockerfile changes (or `force_build` is dispatched), the image is rebuilt and every image-consuming job tests that build. `:latest` is published only from `master`, and only after all of those jobs pass.
