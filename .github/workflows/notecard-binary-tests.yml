@@ -33,11 +33,13 @@ jobs:
 
   notecard-binary-test:
     needs: md5srv-test
-    # Skip on fork PRs, nightly builds, etc. -> Secrets (Tailscale, Notehub, ngrok) aren't available.
+    # Skip where Actions secrets (Tailscale, Notehub, ngrok) aren't available:
+    # runs in forks of this repo, fork PRs, and Dependabot PRs.
     if: >-
       github.event.repository.fork != true &&
+      github.actor != 'dependabot[bot]' &&
       (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # A healthy run reserves, flashes, and runs the suite in well under this.
     # The cap ensures a stuck serial monitor fails fast instead of burning the
     # default 6h job timeout.
@@ -65,7 +67,7 @@ jobs:
         CREATE_NOTEHUB_ROUTES: true
     steps:
       - name: Connect to Tailscale
-        uses: tailscale/github-action@v3
+        uses: tailscale/github-action@v4
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           oauth-secret: ${{ secrets.TS_OAUTH_CLIENT_SECRET }}
@@ -75,7 +77,7 @@ jobs:
 
       # Needed so we can download Notecard firmware from S3.
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::163050375163:role/S3ReadAccessForHil_LabGitHubActions
           aws-region: us-east-1
@@ -83,12 +85,12 @@ jobs:
 
       # Needed to run PlatformIO (installed and invoked below).
       - name: Set up Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v7
         with:
           python-version: '3.11'
 
       - name: Checkout note-c repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Generate MD5 Server Token
         run: |
@@ -174,7 +176,7 @@ jobs:
                   -H "Authorization: Bearer $NOTEHUB_ACCESS_TOKEN" -d @-`
           echo "Notehub HTTP route: $route"
           route_uid=`echo $route | jq -r .uid`
-          if [ -n "$route_uid" ]; then
+          if [ -n "$route_uid" ] && [ "$route_uid" != "null" ]; then
             echo "NOTEHUB_HTTP_ROUTE_UID=$route_uid" >> $GITHUB_ENV
           else
             echo "Failed to create or parse Notehub HTTP route."
@@ -191,7 +193,7 @@ jobs:
                   -H "Authorization: Bearer $NOTEHUB_ACCESS_TOKEN" -d @-`
           echo "Notehub proxy route: $route"
           route_uid=`echo "$route" | jq -r .uid`
-          if [ -n $route_uid ]; then
+          if [ -n "$route_uid" ] && [ "$route_uid" != "null" ]; then
             echo "NOTEHUB_PROXY_ROUTE_UID=$route_uid" >> $GITHUB_ENV
             echo "NOTEHUB_PROXY_ROUTE_ALIAS=$ALIAS" >> $GITHUB_ENV
           else
@@ -308,7 +310,7 @@ jobs:
           kill $PID 2>/dev/null
 
       - name: Publish test report
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         if: env.GITHUB_TOKEN && (success() || failure()) # always run even if the previous step fails
@@ -318,7 +320,7 @@ jobs:
           require_tests: true
 
       - name: Upload trace log
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: notecard-trace
@@ -326,7 +328,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload MD5 server log
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: md5srv-log
