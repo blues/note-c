@@ -100,6 +100,8 @@ Unit tests use mocks to validate behavior without hardware. Hardware validation 
 
 Use the existing unit test suite for core request, JSON, hook, and transport behavior. Add or update tests when a change affects public APIs, retry/timeout behavior, memory ownership, transport chunking, or edge cases that can regress across adapter repositories.
 
+CI runs the unit tests under valgrind memcheck with ctest in parallel, one test process per runner core (`CTEST_PARALLEL_LEVEL`). Each test case runs in its own process, so tests must not depend on shared files, sockets, environment, or execution order.
+
 Before heavy Docker-based test runs in the OpenClaw workspace, follow the resource policy in the workspace `AGENTS.md` and run the resource check first.
 
 ## Update Triggers

@@ -161,6 +161,7 @@ jobs:
                           --workdir /note-c/ \
                           --entrypoint ./scripts/run_unit_tests.sh \
                           --user root \
+                          --env CTEST_PARALLEL_LEVEL="$(nproc)" \
                           ghcr.io/blues/note_c_ci:latest --coverage --mem-check
 
       - name: Adjust lcov source file paths for Coveralls
@@ -189,7 +190,7 @@ jobs:
 
       - name: Run tests with NOTE_LOWMEM defined
         run: |
-          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/run_unit_tests.sh ghcr.io/blues/note_c_ci:latest --mem-check --low-mem --single-precision
+          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --env CTEST_PARALLEL_LEVEL="$(nproc)" --entrypoint ./scripts/run_unit_tests.sh ghcr.io/blues/note_c_ci:latest --mem-check --low-mem --single-precision
 
   run_astyle:
     runs-on: ubuntu-latest
