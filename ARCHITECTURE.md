@@ -102,6 +102,17 @@ Use the existing unit test suite for core request, JSON, hook, and transport beh
 
 Before heavy Docker-based test runs in the OpenClaw workspace, follow the resource policy in the workspace `AGENTS.md` and run the resource check first.
 
+### Continuous Integration
+
+CI runs on GitHub-hosted runners from `.github/workflows/`:
+
+- `ci.yml`: unit tests (with coverage and valgrind memcheck), low-memory/single-precision tests, astyle, cppcheck, the docs build, and the libc dependency check run inside the `ghcr.io/blues/note_c_ci` image built from `.devcontainer/ci/Dockerfile`. The `add_subdirectory` integration test and a build-only macOS job run directly on the runner.
+- CI image: when the Dockerfile changes (or `force_build` is dispatched), the image is rebuilt and every image-consuming job tests that build. `:latest` is published only from `master`, and only after all of those jobs pass.
+- `notecard-binary-tests.yml`: hardware-in-the-loop `card.binary` tests on a Notestation, run for same-repo PRs, nightly, and on demand. They need Actions secrets, so they are skipped for fork and Dependabot PRs; the secret-free `md5srv-tests.yml` still runs.
+- `publish_docs_site.yml`: pushes to `master` publish the docs site to `gh-pages`.
+
+GitHub-hosted runners are free for this public repository. Namespace runners were evaluated in October 2026 and not adopted: the unit-test critical path is valgrind-bound and the hardware tests are device-bound, so faster runners would not materially shorten either.
+
 ## Update Triggers
 
 Update this file or `docs/architecture/` when a change affects:
