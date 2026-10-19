@@ -8,25 +8,37 @@ on:
   workflow_dispatch:
     inputs:
       force_build:
-        description: 'Force rebuild and publish Docker image (even if Dockerfile unchanged)'
+        description: 'Force rebuild of the Docker image (even if Dockerfile unchanged); only published when run on master'
         required: false
         type: boolean
         default: false
 
+permissions:
+  contents: read
+
+# Master runs get a per-SHA group so a newer push can't cancel a pending one.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}${{ github.ref == 'refs/heads/master' && format('-{0}', github.sha) || '' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
 jobs:
   check_dockerfile_changed:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       changed: ${{ steps.filter.outputs.changed }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # TODO: This is a 3rd party GitHub action from some dude. Ideally, we'd
       #       use something more "official".
       - name: Check if Dockerfile changed
-        uses: dorny/paths-filter@v2
+        uses: dorny/paths-filter@v4
         id: filter
         with:
           base: 'master'
@@ -36,64 +48,62 @@ jobs:
 
   build_ci_docker_image:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs: [check_dockerfile_changed]
     if: ${{ needs.check_dockerfile_changed.outputs.changed == 'true' || inputs.force_build == true }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
 
       - name: Rebuild image
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: .devcontainer/ci/Dockerfile
-          load: true
           tags: ghcr.io/blues/note_c_ci:latest
           outputs: type=docker,dest=/tmp/note_c_ci_image.tar
 
       - name: Upload image artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: note_c_ci_image
           path: /tmp/note_c_ci_image.tar
+          retention-days: 7
 
   check_architecture_docs:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Check architecture docs do not reference removed JSON map
         run: |
           architecture_json_pattern='architecture[.]''json'
           embed_script_pattern='embed-architecture''-json'
           for pattern in "$architecture_json_pattern" "$embed_script_pattern"; do
-            ! grep -R "$pattern" \
+            rc=0
+            grep -R "$pattern" \
               AGENTS.md ARCHITECTURE.md CLAUDE.md GEMINI.md \
               .github/copilot-instructions.md .cursor/rules/architecture-docs.mdc \
-              docs
+              docs || rc=$?
+            [ "$rc" -eq 1 ] || exit 1
           done
 
   build_docs:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    timeout-minutes: 10
+    if: ${{ !cancelled() && (needs.build_ci_docker_image.result == 'success' || needs.build_ci_docker_image.result == 'skipped') }}
     needs: [build_ci_docker_image]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Load CI Docker image
         # Only load the Docker image artifact if build_ci_docker_image actually
@@ -107,12 +117,13 @@ jobs:
 
   check_libc_dependencies:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    timeout-minutes: 10
+    if: ${{ !cancelled() && (needs.build_ci_docker_image.result == 'success' || needs.build_ci_docker_image.result == 'skipped') }}
     needs: [build_ci_docker_image]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Load CI Docker image
         # Only load the Docker image artifact if build_ci_docker_image actually
@@ -126,10 +137,11 @@ jobs:
 
   run_integration_tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure add_subdirectory integration test
         run: cmake -S test/integration -B build-integration
@@ -142,12 +154,13 @@ jobs:
 
   run_unit_tests:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    timeout-minutes: 20
+    if: ${{ !cancelled() && (needs.build_ci_docker_image.result == 'success' || needs.build_ci_docker_image.result == 'skipped') }}
     needs: [build_ci_docker_image]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Load CI Docker image
         # Only load the Docker image artifact if build_ci_docker_image actually
@@ -167,19 +180,21 @@ jobs:
         run: sudo sed -i 's/\/note-c\///g' ./build/test/coverage/lcov.info
 
       - name: Publish test coverage
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: ./build/test/coverage/lcov.info
+          file: ./build/test/coverage/lcov.info
+          format: lcov
 
   run_low_mem_unit_tests:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    timeout-minutes: 20
+    if: ${{ !cancelled() && (needs.build_ci_docker_image.result == 'success' || needs.build_ci_docker_image.result == 'skipped') }}
     needs: [build_ci_docker_image]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Load CI Docker image
         # Only load the Docker image artifact if build_ci_docker_image actually
@@ -193,12 +208,13 @@ jobs:
 
   run_astyle:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    timeout-minutes: 10
+    if: ${{ !cancelled() && (needs.build_ci_docker_image.result == 'success' || needs.build_ci_docker_image.result == 'skipped') }}
     needs: [build_ci_docker_image]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Load CI Docker image
         # Only load the Docker image artifact if build_ci_docker_image actually
@@ -212,12 +228,13 @@ jobs:
 
   run_cppcheck:
     runs-on: ubuntu-latest
-    if: ${{ always() }}
+    timeout-minutes: 10
+    if: ${{ !cancelled() && (needs.build_ci_docker_image.result == 'success' || needs.build_ci_docker_image.result == 'skipped') }}
     needs: [build_ci_docker_image]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Load CI Docker image
         # Only load the Docker image artifact if build_ci_docker_image actually
@@ -234,10 +251,11 @@ jobs:
     # comparisons in n_cjson.c / n_ftoa.c use explicit (JNUMBER) casts so
     # AppleClang -Wimplicit-const-int-float-conversion does not fail -Werror.
     runs-on: macos-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Configure
         run: cmake -B build -DNOTE_C_BUILD_TESTS=ON
@@ -258,20 +276,24 @@ jobs:
 
   publish_ci_image:
     runs-on: ubuntu-latest
-    # Make sure unit tests unit tests passed before publishing.
-    needs: [build_ci_docker_image, run_unit_tests]
-    # Only publish the image if this is a push event (or manual trigger with force_build) and the Docker image was rebuilt
-    if: ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.force_build == true)) && needs.build_ci_docker_image.result == 'success' }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    # Make sure every job that uses the image passed before publishing.
+    needs: [build_ci_docker_image, build_docs, check_libc_dependencies, run_unit_tests, run_low_mem_unit_tests, run_astyle, run_cppcheck]
+    # Only publish from master, on a push (or manual trigger with force_build), and only if the Docker image was rebuilt.
+    if: ${{ github.ref == 'refs/heads/master' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.force_build == true)) && needs.build_ci_docker_image.result == 'success' }}
 
     steps:
       - name: Download image artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: note_c_ci_image
           path: /tmp
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}

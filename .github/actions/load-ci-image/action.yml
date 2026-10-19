@@ -1,12 +1,10 @@
 name: 'Load note-c CI Docker image'
+description: 'Download the note-c CI Docker image artifact and load it into the local Docker engine'
 runs:
   using: 'composite'
   steps:
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
     - name: Download image artifact
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: note_c_ci_image
         path: /tmp
