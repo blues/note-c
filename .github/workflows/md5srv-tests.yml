@@ -25,6 +25,9 @@ jobs:
         with:
             bats-install: true
             bats-version: 1.14.0
+            # Outside $HOME the libraries' cache can't be restored without root.
+            support-path: ${{ runner.temp }}/bats-support
+            assert-path: ${{ runner.temp }}/bats-assert
             file-install: false
             detik-install: false
             github-token: ${{ github.token }}
