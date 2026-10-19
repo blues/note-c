@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="struct_j" kind="struct" language="C++" prot="public">
+    <compoundname>J</compoundname>
+    <includes refid="n__cjson_8h" local="no">n_cjson.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_j_1aa07e8b542090fe62bf0469e85d69c37c" prot="public" static="no" mutable="no">
+        <type>struct <ref refid="struct_j" kindref="compound">J</ref> *</type>
+        <definition>struct J* J::next</definition>
+        <argsstring></argsstring>
+        <name>next</name>
+        <qualifiedname>J::next</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="80" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_j_1a970543539919061d72e5973433964bee" prot="public" static="no" mutable="no">
+        <type>struct <ref refid="struct_j" kindref="compound">J</ref> *</type>
+        <definition>struct J* J::prev</definition>
+        <argsstring></argsstring>
+        <name>prev</name>
+        <qualifiedname>J::prev</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="81" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_j_1ab4ff5a4f92fa47b521015ef15e6da518" prot="public" static="no" mutable="no">
+        <type>struct <ref refid="struct_j" kindref="compound">J</ref> *</type>
+        <definition>struct J* J::child</definition>
+        <argsstring></argsstring>
+        <name>child</name>
+        <qualifiedname>J::child</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="83" column="12" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_j_1a1bb6f40b6adc8640b4beb11102b21c4b" prot="public" static="no" mutable="no">
+        <type>int</type>
+        <definition>int J::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>J::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="86" column="9" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="86" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_j_1a54f8d507791671d5f5951e8cae540232" prot="public" static="no" mutable="no">
+        <type>char *</type>
+        <definition>char* J::valuestring</definition>
+        <argsstring></argsstring>
+        <name>valuestring</name>
+        <qualifiedname>J::valuestring</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="89" column="10" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_j_1a55e3d5d8de0cc6aff4d92c1b1228f7ea" prot="public" static="no" mutable="no">
+        <type><ref refid="note_8h_1ab76f50f98a2aef9bf6ea1e6c7a2c8cbb" kindref="member">JINTEGER</ref></type>
+        <definition>JINTEGER J::valueint</definition>
+        <argsstring></argsstring>
+        <name>valueint</name>
+        <qualifiedname>J::valueint</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="91" column="14" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="91" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_j_1ac62cf00a5cadeafc84d8d9fec38cfa50" prot="public" static="no" mutable="no">
+        <type><ref refid="note_8h_1a9c9eb17c00d2f5af0a9fd4f3bc43bdc6" kindref="member">JNUMBER</ref></type>
+        <definition>JNUMBER J::valuenumber</definition>
+        <argsstring></argsstring>
+        <name>valuenumber</name>
+        <qualifiedname>J::valuenumber</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="93" column="13" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_j_1aedd40ac50e584c7b93e0046e404ae543" prot="public" static="no" mutable="no">
+        <type>char *</type>
+        <definition>char* J::string</definition>
+        <argsstring></argsstring>
+        <name>string</name>
+        <qualifiedname>J::string</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="95" column="10" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>The core JSON object type used by note-c. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>When using note-c, treat this struct as opaque. You should never have to work directly with its members. </para>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>J</label>
+        <link refid="struct_j"/>
+        <childnode refid="1" relation="usage">
+          <edgelabel>child</edgelabel>
+          <edgelabel>next</edgelabel>
+          <edgelabel>prev</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="78" column="1" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="78" bodyend="96"/>
+    <listofallmembers>
+      <member refid="struct_j_1ab4ff5a4f92fa47b521015ef15e6da518" prot="public" virt="non-virtual"><scope>J</scope><name>child</name></member>
+      <member refid="struct_j_1aa07e8b542090fe62bf0469e85d69c37c" prot="public" virt="non-virtual"><scope>J</scope><name>next</name></member>
+      <member refid="struct_j_1a970543539919061d72e5973433964bee" prot="public" virt="non-virtual"><scope>J</scope><name>prev</name></member>
+      <member refid="struct_j_1aedd40ac50e584c7b93e0046e404ae543" prot="public" virt="non-virtual"><scope>J</scope><name>string</name></member>
+      <member refid="struct_j_1a1bb6f40b6adc8640b4beb11102b21c4b" prot="public" virt="non-virtual"><scope>J</scope><name>type</name></member>
+      <member refid="struct_j_1a55e3d5d8de0cc6aff4d92c1b1228f7ea" prot="public" virt="non-virtual"><scope>J</scope><name>valueint</name></member>
+      <member refid="struct_j_1ac62cf00a5cadeafc84d8d9fec38cfa50" prot="public" virt="non-virtual"><scope>J</scope><name>valuenumber</name></member>
+      <member refid="struct_j_1a54f8d507791671d5f5951e8cae540232" prot="public" virt="non-virtual"><scope>J</scope><name>valuestring</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

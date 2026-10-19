@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="struct_j_hooks" kind="struct" language="C++" prot="public">
+    <compoundname>JHooks</compoundname>
+    <includes refid="n__cjson_8h" local="no">n_cjson.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="struct_j_hooks_1a3110cadbf9f5bd602ec7c70164eaf31c" prot="public" static="no" mutable="no">
+        <type>void *(*</type>
+        <definition>void *(* JHooks::malloc_fn) (size_t sz)</definition>
+        <argsstring>)(size_t sz)</argsstring>
+        <name>malloc_fn</name>
+        <qualifiedname>JHooks::malloc_fn</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="99" column="5" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="99" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="struct_j_hooks_1a154d673fa4669abf51f7848c2c299718" prot="public" static="no" mutable="no">
+        <type>void(*</type>
+        <definition>void(* JHooks::free_fn) (void *ptr)</definition>
+        <argsstring>)(void *ptr)</argsstring>
+        <name>free_fn</name>
+        <qualifiedname>JHooks::free_fn</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="100" column="5" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/runner/work/note-c/note-c/n_cjson.h" line="98" column="1" bodyfile="/home/runner/work/note-c/note-c/n_cjson.h" bodystart="98" bodyend="101"/>
+    <listofallmembers>
+      <member refid="struct_j_hooks_1a154d673fa4669abf51f7848c2c299718" prot="public" virt="non-virtual"><scope>JHooks</scope><name>free_fn</name></member>
+      <member refid="struct_j_hooks_1a3110cadbf9f5bd602ec7c70164eaf31c" prot="public" virt="non-virtual"><scope>JHooks</scope><name>malloc_fn</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
