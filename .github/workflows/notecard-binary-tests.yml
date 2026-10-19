@@ -33,9 +33,11 @@ jobs:
 
   notecard-binary-test:
     needs: md5srv-test
-    # Skip on fork PRs, nightly builds, etc. -> Secrets (Tailscale, Notehub, ngrok) aren't available.
+    # Skip where Actions secrets (Tailscale, Notehub, ngrok) aren't available:
+    # runs in forks of this repo, fork PRs, and Dependabot PRs.
     if: >-
       github.event.repository.fork != true &&
+      github.actor != 'dependabot[bot]' &&
       (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     # A healthy run reserves, flashes, and runs the suite in well under this.
