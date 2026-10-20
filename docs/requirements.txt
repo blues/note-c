@@ -1,0 +1,6 @@
+# Python dependencies for building note-c documentation
+sphinx>=5.0
+breathe
+sphinx-rtd-theme
+sphinxcontrib-jquery
+sphinx-markdown-builder
