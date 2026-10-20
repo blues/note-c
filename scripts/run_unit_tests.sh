@@ -4,6 +4,7 @@ COVERAGE=0
 HEARTBEAT_CALLBACK=0
 MEM_CHECK=0
 LOW_MEM=0
+STORAGE_OPTIMIZATION=0
 NO_DEBUG=0
 SHOW_MALLOC=0
 SINGLE_PRECISION=0
@@ -15,6 +16,7 @@ while [[ "$#" -gt 0 ]]; do
         --coverage) COVERAGE=1 ;;
         --heartbeat-callback) HEARTBEAT_CALLBACK=1 ;;
         --low-mem) LOW_MEM=1 ;;
+        --storage-optimization) STORAGE_OPTIMIZATION=1 ;;
         --mem-check) MEM_CHECK=1 ;;
         --no-debug) NO_DEBUG=1 ;;
         --show-malloc) SHOW_MALLOC=1 ;;
@@ -48,6 +50,9 @@ if [[ $COVERAGE -eq 1 ]]; then
 fi
 if [[ $LOW_MEM -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_LOW_MEM:BOOL=ON"
+fi
+if [[ $STORAGE_OPTIMIZATION -eq 1 ]]; then
+    CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_STORAGE_OPTIMIZATION:BOOL=ON"
 fi
 if [[ $MEM_CHECK -eq 1 ]]; then
     CMAKE_OPTIONS="${CMAKE_OPTIONS} -DNOTE_C_MEM_CHECK:BOOL=ON"

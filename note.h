@@ -630,6 +630,8 @@ void NoteSetFnNoteMutex(mutexFn lockFn, mutexFn unlockFn);
        interested in that particular function pointer.
  */
 void NoteGetFnNoteMutex(mutexFn *lockFn, mutexFn *unlockFn);
+
+
 /*!
  @brief Set the default system functions (memory allocation, delay, timing).
 
@@ -1437,6 +1439,16 @@ int JGetItemType(J *item);
  @returns The base type code.
  */
 int JBaseItemType(int type);
+/* The object member key, as a mutable `char *` that is NULL when the item has
+ * no key.
+ *
+ * Left as a direct member read, unlike the JSetValue macros. Those had to
+ * become calls because they WRITE bytes that NOTE_C_STORAGE_OPTIMIZATION may be
+ * using for packed storage; this only READS a pointer member that means the
+ * same thing and holds the same value in either layout. Routing it through
+ * JGetItemName() would change the result type to `const char *` and substitute
+ * "" for NULL, breaking `char *name = JGetObjectItemName(item);` and every
+ * caller that tests the result against NULL. */
 #define JGetObjectItemName(j) (j->string)
 
 // Helper functions for apps that wish to limit their C library dependencies
