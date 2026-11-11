@@ -17,6 +17,8 @@ After every non-trivial code change, explicitly evaluate both maintenance surfac
 
 If either surface is not affected, say so explicitly in the final response or PR notes.
 
+`docs/api_reference.md` is generated. After changing the doc comment of anything listed in `docs/api_reference.rst`, run `./scripts/build_docs.sh` and `python3 scripts/gen_api_reference_md.py`; CI fails if the file is stale.
+
 ## Source Research Artifacts
 
 This repository includes durable source-derived research under `source-research/`. Use these artifacts as required orientation and impact-analysis context for architecture questions, dependency analysis, public API changes, hook/transport changes, runtime-flow changes, build/test strategy changes, and broad code-generation or refactoring work.

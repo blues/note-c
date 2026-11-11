@@ -15,6 +15,7 @@
   ],
   "excludeFiles": [
     "architecture.rst",
+    "api_reference.rst",
     "CMakeLists.txt",
     "AGENTS.md",
     "CLAUDE.md",

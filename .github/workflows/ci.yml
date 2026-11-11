@@ -114,6 +114,10 @@ jobs:
         run: |
           docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint ./scripts/build_docs.sh ghcr.io/blues/note_c_ci:latest
 
+      - name: Check docs/api_reference.md is current
+        run: |
+          docker run --rm --volume $(pwd):/note-c/ --workdir /note-c/ --entrypoint python3 ghcr.io/blues/note_c_ci:latest scripts/gen_api_reference_md.py --check
+
   check_libc_dependencies:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
