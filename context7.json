@@ -30,6 +30,7 @@
     "NoteRequest() and NoteRequestResponse() always free the request, even on failure; never use or free req after the call.",
     "Treat `rsp == NULL || NoteResponseError(rsp)` as failure, and free every non-NULL response from NoteRequestResponse() with NoteDeleteResponse().",
     "Enable logging by passing a debugOutputFn callback to NoteSetFnDebugOutput() (hookDebugOutput is internal), and set verbosity with NoteSetLogLevel() or -DNOTE_C_LOG_LEVEL.",
+    "For function signatures, parameters and return values, use the C library reference at https://dev.blues.io/tools-and-sdks/firmware-libraries/c-library/ (Context7 library /websites/dev_blues_io).",
     "Copy Notecard request and argument names exactly from the Notecard API reference; do not invent requests, arguments, or response fields.",
     "When the Blues Expert MCP server is connected, check generated Notecard JSON requests with its api_validate tool before using them."
   ]

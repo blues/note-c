@@ -14,7 +14,7 @@ it as a git subtree.
 
 ## API Documentation
 
-The API documentation for this library can be found [here][note-c API docs].
+The API documentation for this library is on the [Blues developer site][note-c API docs].
 
 ## Logging Control
 
@@ -154,9 +154,9 @@ Copyright (c) 2019 Blues Inc. Released under the MIT license. See
 [code of conduct]: https://blues.github.io/opensource/code-of-conduct
 [coverage badge]: https://coveralls.io/repos/github/blues/note-c/badge.svg?branch=master
 [coverage details]: https://coveralls.io/github/blues/note-c?branch=master
-[NoteDebugSyncStatus]: https://blues.github.io/note-c/api_reference.html#c.NoteDebugSyncStatus
+[NoteDebugSyncStatus]: https://dev.blues.io/tools-and-sdks/firmware-libraries/c-library/#notedebugsyncstatus
 [notehub]: https://notehub.io
 [note-arduino]: https://github.com/blues/note-arduino
-[note-c API docs]: https://blues.github.io/note-c/index.html
+[note-c API docs]: https://dev.blues.io/tools-and-sdks/firmware-libraries/c-library/
 [note-go]: https://github.com/blues/note-go
 [note-python]: https://github.com/blues/note-python
