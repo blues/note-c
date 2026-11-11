@@ -1,0 +1,36 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "url": "https://context7.com/blues/note-c",
+  "public_key": "pk_nVFOrz6sC1j4Aqx8A32xw",
+  "projectTitle": "note-c: C library for Blues Notecard",
+  "description": "C library for communicating with a Blues Notecard over Serial or I2C from C or C++ firmware. It builds and sends Notecard API requests as JSON with a bundled cJSON variant, parses responses, and defines platform hooks for memory, timing, transport, mutexes, and logging. note-arduino, note-zephyr, and other Blues ports are built on it.",
+  "folders": [
+    "docs"
+  ],
+  "excludeFolders": [
+    "docs/architecture",
+    "source-research",
+    "test",
+    ".github"
+  ],
+  "excludeFiles": [
+    "architecture.rst",
+    "CMakeLists.txt",
+    "AGENTS.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    "ARCHITECTURE.md",
+    "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md"
+  ],
+  "rules": [
+    "Before any request, set note-c's hooks: NoteSetFn() for malloc, free, delay and millis, then NoteSetFnSerial() or NoteSetFnI2C() for the transport. note-c cannot supply them; ports such as note-arduino do.",
+    "With NoteSetFnI2C(), pass NOTE_I2C_ADDR_DEFAULT and NOTE_I2C_MTU_DEFAULT for the address and MTU, and implement the I2C hooks with the Notecard's serial-over-I2C protocol.",
+    "Create requests with NoteNewRequest() and add arguments with the JAdd*ToObject() functions, such as JAddStringToObject(). NoteNewCommand() builds a \"cmd\", which gets no response.",
+    "NoteRequest() and NoteRequestResponse() always free the request, even on failure; never use or free req after the call.",
+    "Treat `rsp == NULL || NoteResponseError(rsp)` as failure, and free every non-NULL response from NoteRequestResponse() with NoteDeleteResponse().",
+    "Enable logging by passing a debugOutputFn callback to NoteSetFnDebugOutput() (hookDebugOutput is internal), and set verbosity with NoteSetLogLevel() or -DNOTE_C_LOG_LEVEL.",
+    "Copy Notecard request and argument names exactly from the Notecard API reference; do not invent requests, arguments, or response fields.",
+    "When the Blues Expert MCP server is connected, check generated Notecard JSON requests with its api_validate tool before using them."
+  ]
+}

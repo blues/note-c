@@ -21,7 +21,7 @@ The API documentation for this library can be found [here][note-c API docs].
 `note-c` provides a comprehensive and flexible logging functionality.
 
 To activate logging, you must provide a callback for logging via
-`hookDebugOutput()`. The callback takes the following form:
+`NoteSetFnDebugOutput()`. The callback takes the following form:
 
 ```c
 typedef size_t (*debugOutputFn) (const char *text);
