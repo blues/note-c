@@ -187,19 +187,19 @@ def signature(kind, member):
     return tidy_pointer(sig)
 
 
-def render_member(kind, name, members):
+def render_member(kind, name, members, heading):
     member = members.get((kind, name))
     if member is None:
         raise SystemExit(f"error: {kind} {name} is in {RST.name} but not in the Doxygen XML")
-    parts = [f"#### {name}", f"```c\n{signature(kind, member)}\n```", *description(member)]
+    parts = [f"{heading} {name}", f"```c\n{signature(kind, member)}\n```", *description(member)]
     return "\n\n".join(parts)
 
 
-def render_struct(name, structs):
+def render_struct(name, structs, heading):
     compound = structs.get(name)
     if compound is None:
         raise SystemExit(f"error: struct {name} is in {RST.name} but not in the Doxygen XML")
-    parts = [f"#### {name}", *description(compound)]
+    parts = [f"{heading} {name}", *description(compound)]
     fields = []
     for member in compound.iter("memberdef"):
         if member.get("kind") != "variable":
@@ -223,6 +223,9 @@ def generate(xml_dir):
             out.append(" ".join(para))
             para.clear()
 
+    # As in reStructuredText, a heading's level is the order in which its
+    # underline character first appears; the overlined title is level 1.
+    underlines, level = [], 1
     i = 0
     while i < len(lines):
         line, nxt = lines[i], lines[i + 1] if i + 1 < len(lines) else ""
@@ -231,22 +234,22 @@ def generate(xml_dir):
             out.append(f"# {lines[i + 1].strip()}")
             i += 3
             continue
-        if line.strip() and re.fullmatch(r"=+", nxt):
+        underline = re.fullmatch(r"([=\-^~\"'`#+:.])\1+", nxt)
+        if line.strip() and underline and len(nxt) >= len(line.strip()):
             flush()
-            out.append(f"## {line.strip()}")
-            i += 2
-            continue
-        if line.strip() and re.fullmatch(r"-+", nxt):
-            flush()
-            out.append(f"### {line.strip()}")
+            if underline.group(1) not in underlines:
+                underlines.append(underline.group(1))
+            level = min(2 + underlines.index(underline.group(1)), 6)
+            out.append(f"{'#' * level} {line.strip()}")
             i += 2
             continue
         match = DIRECTIVE.match(line)
         if match:
             flush()
             kind, name = match.groups()
-            out.append(render_struct(name, structs) if kind == "struct"
-                       else render_member(kind, name, members))
+            heading = "#" * min(level + 1, 6)
+            out.append(render_struct(name, structs, heading) if kind == "struct"
+                       else render_member(kind, name, members, heading))
         elif line.startswith(".. ") or line.startswith("   :"):
             flush()  # other directives and their options (e.g. contents)
         elif line.strip():

@@ -81,9 +81,9 @@ The type for the millisecond counter hook.
 
 ### Serial Hooks
 
-Functions ^^^^^^^^^
+#### Functions
 
-#### NoteSetFnSerial
+##### NoteSetFnSerial
 
 ```c
 void NoteSetFnSerial(serialResetFn resetFn, serialTransmitFn transmitFn, serialAvailableFn availFn, serialReceiveFn receiveFn);
@@ -104,9 +104,9 @@ Set the platform-specific serial communication hook functions.
 
 **Note:** This operation will lock Notecard access while in progress, if Notecard mutex functions have been set.
 
-Types ^^^^^
+#### Types
 
-#### serialResetFn
+##### serialResetFn
 
 ```c
 typedef bool (*serialResetFn)(void);
@@ -118,7 +118,7 @@ This hook is used to reset the serial peripheral used to communicate with the No
 
 **Returns:** `true` on success and `false` on failure.
 
-#### serialTransmitFn
+##### serialTransmitFn
 
 ```c
 typedef void (*serialTransmitFn)(uint8_t *txBuf, size_t txBufSize, bool flush);
@@ -132,7 +132,7 @@ The type for the serial transmit hook.
 - `txBufSize`: The size, in bytes, of `txBuf`.
 - `flush`: If true, flush the serial peripheral's transmit buffer.
 
-#### serialAvailableFn
+##### serialAvailableFn
 
 ```c
 typedef bool (*serialAvailableFn)(void);
@@ -142,7 +142,7 @@ The type for the serial available hook.
 
 **Returns:** `true` if there's data to read and `false` otherwise.
 
-#### serialReceiveFn
+##### serialReceiveFn
 
 ```c
 typedef char (*serialReceiveFn)(void);
@@ -154,9 +154,9 @@ The type for the serial receive hook.
 
 ### I2C
 
-Functions ^^^^^^^^^
+#### Functions
 
-#### NoteSetFnI2C
+##### NoteSetFnI2C
 
 ```c
 void NoteSetFnI2C(uint32_t notecardAddr, uint32_t maxTransmitSize, i2cResetFn resetFn, i2cTransmitFn transmitFn, i2cReceiveFn receiveFn);
@@ -178,9 +178,9 @@ Set the platform-specific I2C communication hook functions, address and MTU.
 
 **Note:** This operation will lock Notecard access while in progress, if Notecard mutex functions have been set.
 
-Types ^^^^^
+#### Types
 
-#### i2cResetFn
+##### i2cResetFn
 
 ```c
 typedef bool (*i2cResetFn)(uint16_t address);
@@ -194,7 +194,7 @@ This hook is used to reset the I2C peripheral used to communicate with the Notec
 
 - `address`: The I2C address of the Notecard.
 
-#### i2cTransmitFn
+##### i2cTransmitFn
 
 ```c
 typedef const char *(*i2cTransmitFn)(uint16_t address, uint8_t *txBuf, uint16_t txBufSize);
@@ -212,7 +212,7 @@ This hook is used to send a buffer of bytes to the Notecard.
 
 **Returns:** NULL on success and an error string on failure.
 
-#### i2cReceiveFn
+##### i2cReceiveFn
 
 ```c
 typedef const char *(*i2cReceiveFn)(uint16_t address, uint8_t *rxBuf, uint16_t rxBufSize, uint32_t *available);
@@ -231,9 +231,9 @@ This hook is used to receive a buffer of bytes from the Notecard.
 
 **Returns:** NULL on success and an error string on failure.
 
-Macros ^^^^^^
+#### Macros
 
-#### NOTE_I2C_ADDR_DEFAULT
+##### NOTE_I2C_ADDR_DEFAULT
 
 ```c
 #define NOTE_I2C_ADDR_DEFAULT 0x17
@@ -241,13 +241,13 @@ Macros ^^^^^^
 
 The default I2C address of the Notecard.
 
-#### NOTE_I2C_MTU_DEFAULT
+##### NOTE_I2C_MTU_DEFAULT
 
 ```c
 #define NOTE_I2C_MTU_DEFAULT NOTE_I2C_MAX_DEFAULT
 ```
 
-#### NOTE_I2C_MTU_MAX
+##### NOTE_I2C_MTU_MAX
 
 ```c
 #define NOTE_I2C_MTU_MAX NOTE_I2C_MAX_MAX
@@ -257,9 +257,9 @@ The default I2C address of the Notecard.
 
 ### Notecard Mutex
 
-Functions ^^^^^^^^^
+#### Functions
 
-#### NoteSetFnNoteMutex
+##### NoteSetFnNoteMutex
 
 ```c
 void NoteSetFnNoteMutex(mutexFn lockFn, mutexFn unlockFn);
@@ -272,9 +272,9 @@ Set the Notecard mutex functions.
 - `lockFn`: Function to lock Notecard access.
 - `unlockFn`: Function to unlock Notecard access.
 
-Types ^^^^^
+#### Types
 
-#### mutexFn
+##### mutexFn
 
 ```c
 typedef void (*mutexFn)(void);
@@ -284,9 +284,9 @@ The type for the various mutex (i.e. lock/unlock) hooks.
 
 ### I2C Mutex
 
-Functions ^^^^^^^^^
+#### Functions
 
-#### NoteSetFnI2CMutex
+##### NoteSetFnI2CMutex
 
 ```c
 void NoteSetFnI2CMutex(mutexFn lockI2Cfn, mutexFn unlockI2Cfn);
@@ -299,7 +299,7 @@ Set the I2C mutex functions.
 - `lockI2Cfn`: Function to lock I2C access.
 - `unlockI2Cfn`: Function to unlock I2C access.
 
-Types ^^^^^
+#### Types
 
 See :c:type:`mutexFn`.
 
@@ -850,9 +850,9 @@ This exists to prevent the cJSON parser from causing a stack overflow. The user 
 
 ### Hooks
 
-Functions ^^^^^^^^^
+#### Functions
 
-#### NoteGetFnDebugOutput
+##### NoteGetFnDebugOutput
 
 ```c
 void NoteGetFnDebugOutput(debugOutputFn *fn);
@@ -864,7 +864,7 @@ Get the currently set debug output function hook.
 
 - `fn`: Pointer to store the current debug output function pointer.
 
-#### NoteSetFnDebugOutput
+##### NoteSetFnDebugOutput
 
 ```c
 void NoteSetFnDebugOutput(debugOutputFn fn);
@@ -878,9 +878,9 @@ Set the debug output function hook.
 
 **Note:** This operation will lock Notecard access while in progress, if Notecard mutex functions have been set.
 
-Types ^^^^^
+#### Types
 
-#### debugOutputFn
+##### debugOutputFn
 
 ```c
 typedef size_t (*debugOutputFn)(const char *text);
@@ -896,9 +896,9 @@ The type for the debug output hook.
 
 ### Control
 
-Functions ^^^^^^^^^
+#### Functions
 
-#### NoteSetLogLevel
+##### NoteSetLogLevel
 
 ```c
 void NoteSetLogLevel(int level);
@@ -913,7 +913,7 @@ Set the current log level for debug output filtering.
 - NOTE_C_LOG_LEVEL_INFO
 - NOTE_C_LOG_LEVEL_DEBUG
 
-#### NoteDebugSyncStatus
+##### NoteDebugSyncStatus
 
 ```c
 bool NoteDebugSyncStatus(int pollFrequencyMs, int maxLevel);
@@ -928,57 +928,57 @@ Enable debug output for sync status monitoring.
 
 **Returns:** `true` if debugging was enabled successfully, `false` otherwise.
 
-Macros ^^^^^^
+#### Macros
 
-#### NOTE_C_LOG_LEVEL_ERROR
+##### NOTE_C_LOG_LEVEL_ERROR
 
 ```c
 #define NOTE_C_LOG_LEVEL_ERROR 0
 ```
 
-#### NOTE_C_LOG_LEVEL_WARN
+##### NOTE_C_LOG_LEVEL_WARN
 
 ```c
 #define NOTE_C_LOG_LEVEL_WARN 1
 ```
 
-#### NOTE_C_LOG_LEVEL_INFO
+##### NOTE_C_LOG_LEVEL_INFO
 
 ```c
 #define NOTE_C_LOG_LEVEL_INFO 2
 ```
 
-#### NOTE_C_LOG_LEVEL_DEBUG
+##### NOTE_C_LOG_LEVEL_DEBUG
 
 ```c
 #define NOTE_C_LOG_LEVEL_DEBUG 3
 ```
 
-#### SYNCSTATUS_LEVEL_MAJOR
+##### SYNCSTATUS_LEVEL_MAJOR
 
 ```c
 #define SYNCSTATUS_LEVEL_MAJOR 0
 ```
 
-#### SYNCSTATUS_LEVEL_MINOR
+##### SYNCSTATUS_LEVEL_MINOR
 
 ```c
 #define SYNCSTATUS_LEVEL_MINOR 1
 ```
 
-#### SYNCSTATUS_LEVEL_DETAILED
+##### SYNCSTATUS_LEVEL_DETAILED
 
 ```c
 #define SYNCSTATUS_LEVEL_DETAILED 2
 ```
 
-#### SYNCSTATUS_LEVEL_ALGORITHMIC
+##### SYNCSTATUS_LEVEL_ALGORITHMIC
 
 ```c
 #define SYNCSTATUS_LEVEL_ALGORITHMIC 3
 ```
 
-#### SYNCSTATUS_LEVEL_ALL
+##### SYNCSTATUS_LEVEL_ALL
 
 ```c
 #define SYNCSTATUS_LEVEL_ALL -1
