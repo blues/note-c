@@ -55,3 +55,12 @@ When you change architecture-relevant behavior:
 - Apply the two-surface maintenance check above after every non-trivial code change.
 
 `note-c` is a portable C SDK. Keep platform-specific behavior behind hooks or in adapter libraries unless the public architecture intentionally changes.
+
+## Cursor Cloud specific instructions
+
+The Cloud Agent base image points `/usr/bin/cc` and `/usr/bin/c++` at Clang. Clang's C++ driver on that image selects a GCC installation that has no `libstdc++` linker script, so CMake's compiler check fails. Environment install switches those alternatives to `gcc` and `g++`. Linux x86_64 unit tests pass `-m32` (see the root `CMakeLists.txt`), which needs the i386 architecture plus `gcc-multilib` and `g++-multilib`.
+
+- Out-of-source builds are required. `./scripts/run_unit_tests.sh` configures `build/`, builds, and runs `ctest`. The first configure clones Catch2 v3.3.0 with CMake FetchContent.
+- Downstream linking of `note_c_lib` is covered by `test/integration`: `cmake -S test/integration -B build-integration && cmake --build build-integration && ctest --test-dir build-integration --output-on-failure`.
+- API docs: `./scripts/build_docs.sh` (Doxygen and Sphinx).
+- Ubuntu GCC enables `-fstack-protector-strong` and, at `-Og`, `-D_FORTIFY_SOURCE=3`. `./scripts/check_libc_dependencies.sh` then reports the compiler-inserted symbols `__stack_chk_fail_local` and `__vsnprintf_chk`. The `JItoA` scenario in `test/src/JItoA_test.cpp` uses a 16-byte buffer; `JINTEGER_MIN` formats to 21 bytes, so that one test aborts under the stack protector. The other unit tests pass.
