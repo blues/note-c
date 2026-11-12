@@ -1,0 +1,33 @@
+name: Package Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create release archive
+        run: |
+          version="${GITHUB_REF_NAME}"
+          archive="note-c-${version}.tar.gz"
+          tar czf "${archive}" \
+            LICENSE \
+            note.h \
+            n_lib.h \
+            n_cjson.h \
+            n_*.c \
+            scripts/update_note_c.sh
+          echo "ARCHIVE=${archive}" >> "$GITHUB_ENV"
+
+      - name: Upload release asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.event.release.tag_name }}" "${{ env.ARCHIVE }}"
