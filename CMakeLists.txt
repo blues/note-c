@@ -24,6 +24,13 @@ option(NOTE_NODEBUG "Build the library without debug information." OFF)
 option(NOTE_C_NO_LIBC "Audit libc dependencies by linking the note_c test/audit library without libc, generating errors for any undefined symbols." OFF)
 option(NOTE_C_SHOW_MALLOC "Build the library with flags required to log memory usage." OFF)
 option(NOTE_C_SINGLE_PRECISION "Use single precision for JSON floating point numbers." OFF)
+# Opt in to the packed J layout, which carves a member's key and short string
+# value out of the node's own allocation instead of giving each its own heap
+# block. The historical layout is the default. Like NOTE_C_SINGLE_PRECISION this
+# changes sizeof(J), so it is propagated PUBLIC and must match between the
+# library and every consumer. See docs/architecture/decisions/
+# 0002-j-node-storage-layout.md.
+option(NOTE_C_STORAGE_OPTIMIZATION "Pack J keys and short string values into the node's own allocation (smaller, fewer allocations; changes the public J representation)." OFF)
 option(NOTE_C_HEARTBEAT_CALLBACK "Enable heartbeat callback support." OFF)
 
 # NOTE_C_NO_LIBC is a link-time undefined-symbol audit (see
@@ -102,6 +109,9 @@ function(note_c_configure_common target)
     endif()
     if(NOTE_C_SINGLE_PRECISION)
         target_compile_definitions(${target} PUBLIC NOTE_C_SINGLE_PRECISION)
+    endif()
+    if(NOTE_C_STORAGE_OPTIMIZATION)
+        target_compile_definitions(${target} PUBLIC NOTE_C_STORAGE_OPTIMIZATION)
     endif()
     if(NOTE_C_HEARTBEAT_CALLBACK)
         target_compile_definitions(${target} PUBLIC NOTE_C_HEARTBEAT_CALLBACK)
